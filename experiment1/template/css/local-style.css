@@ -3,3 +3,11 @@
 	width: 400;
 	margin: 10px;
 }
+
+.hidden {
+    display: none;
+}
+
+.revealed {
+    display: inline;
+}

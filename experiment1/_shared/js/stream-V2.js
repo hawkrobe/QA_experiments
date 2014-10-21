@@ -7,7 +7,7 @@ var slide = function (_slide, _private) {
     utils.showSlide(this.name);
     this.phaseid++;
     if (this.start) {this.start();};
-    if(this.handle) this.handle();
+    if (this.handle) this.handle();
     _stream.apply(this);
   };
 

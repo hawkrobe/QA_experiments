@@ -9,16 +9,16 @@ table {
 
 /*the experiment happens in "slides"*/
 .slide {
-	/*pad the inside of the slide*/
-	padding-top: 10px;
-	padding-left: 20px;
-	padding-right: 20px;
+    /*pad the inside of the slide*/
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
 
     /*center slide within the window*/
-	margin: auto auto;
-	margin-top: 0px;
+    margin: auto auto;
+    margin-top: 0px;
 
-	/*all elements in a slide will be centered by default*/
+    /*all elements in a slide will be centered by default*/
     text-align: center;
 
     border: 1px solid #04abe3;

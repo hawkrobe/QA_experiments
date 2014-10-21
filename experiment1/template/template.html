@@ -58,15 +58,34 @@
     <button onclick="_s.button()">Continue</button>
   </div>
 
-  <div class="slide" id="one_slider">
-    <p>Here is one slider.</p>
-    <table id="slider_table" class="slider_table">
-      <tr><td class="left">completely disagree</td><td class="right">completely agree</td></tr>
-      <tr><td colspan="2"><div id="single_slider" class="slider"></div></td></tr>
-    </table>
-    <button onclick="_s.button()">Continue</button>
-    <div class="err">Please adjust the slider before continuing.</div>
+
+
+
+
+
+  <div class="slide" id="text">
+    <p id= 'info_instruction'></p>
+    <p> "What information might they be interested in? Please enter some possibilities below." </p>
+    <p><textarea id="part1" rows="3" cols="50"></textarea></p>
+    <input type="button" id="instruct_button" onclick="_s.button1()" class="revealed" 
+	   value="Continue">
+    <div class = "err1">Please enter a response before continuing.</div>
+
+    <p id= 'question'></p>
+    <input type="button" id="q_button" onclick="_s.button2()" class="hidden" 
+	   value="Continue">
+    <div class = "err2">Please enter a response before continuing.</div>
+
+    <p id= 'answer'></p>
+    <input type="button" id="a_button"  onclick="_s.button3()" class="hidden" 
+	   value="Continue">
+    <div class = "err3">Please enter a response before continuing.</div>   
   </div>
+
+
+
+
+
 
   <div class="slide" id="multi_slider">
     <p id= 'ms_instruction'></p>

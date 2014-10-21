@@ -6,18 +6,18 @@ var utils = {
 	},
 
 	get_exp_length: function() {
-		if (exp.structure && exp.slides) {
-				var length = 0;
-				for (var i=0; i<exp.structure.length; i++) {
-						var a_slide = exp.slides[exp.structure[i]];
-						if (a_slide.present) {
-								length += a_slide.present.length;
-						} else {
-								length ++;
-						}
-				}
-				return length - 1; //don't count the last slide
-		}
+	  if (exp.structure && exp.slides) {
+	    var length = 0;
+	    for (var i=0; i<exp.structure.length; i++) {
+	      var a_slide = exp.slides[exp.structure[i]];
+	      if (a_slide.present) {
+		length += a_slide.present.length;
+	      } else {
+		length ++;
+	      }
+	    }
+	    return length - 1; //don't count the last slide
+	  }
 	},
 
 	/* eq_el_height and match_row_height adapted from:

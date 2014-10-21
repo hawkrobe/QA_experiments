@@ -1,13 +1,13 @@
 function make_slides(f) {
-  var   slides = {};
-
+  var slides = {};
+    
   slides.i0 = slide({
-     name : "i0",
-     start: function() {
+    name : "i0",
+    start: function() {
       exp.startT = Date.now();
-     }
+    }
   });
-
+  
   slides.instructions = slide({
     name : "instructions",
     button : function() {
@@ -25,6 +25,7 @@ function make_slides(f) {
     },
     end : function() {/*what to do at the end of a block*/}
   });
+  
 
   slides.one_slider = slide({
     name : "one_slider",
@@ -54,6 +55,61 @@ function make_slides(f) {
     }
   });
 
+  var stim_list = [ {scenario : "Paul is looking for a pet",
+		     question : "What kind of pet should I get?",
+		     answer   : "An animal"},
+		    {scenario : "Susan is hungry",
+		     question : "What are we having for dinner?",
+		     answer   : "Mexican food"},
+    ];
+    
+  slides.text = slide({
+    name: "text",
+    present : _.shuffle([0,1]),
+    present_handle : function(stim_num) {
+      $(".err1").hide();
+      $(".err2").hide();
+      $(".err3").hide();
+      this.stim = stim_list[stim_num];
+      $('#info_instruction').text(this.stim.scenario);
+    },
+    button1 : function() {
+      if($("#part1").val() == "") {
+        $(".err1").show();
+      } else {
+	$(".err1").hide();
+	$('#instruct_button').hide()
+	$('#question').text("Suppose they ask: \"" + this.stim.question + 
+			    "\"\nPlease rate how helpful this question is" +
+			    "for obtaining the above information:");
+	$('#q_button').show()
+      }},
+    button2 : function() {
+      // Want to put a slider here
+      if($("#part1").val() == "") {
+        $(".err2").show();
+      } else {
+	$(".err2").hide();
+	$('#q_button').hide()
+	$('#answer').text("Suppose the other person responds: \"" + this.stim.answer + 
+			    "\"\nPlease rate how helpful this answer is" +
+			    "for answering the above question");
+	$('#a_button').show()
+      }},
+    button3 : function() {
+      this.log_responses(); 
+      _stream.apply(this); 
+    },
+    log_responses : function() {
+      exp.data_trials.push({
+        "trial_type" : "information",
+        "response" : $("#part1").val()
+	// put slider vals here
+      });
+    }
+    });
+  
+
   slides.multi_slider = slide({
     name : "multi_slider",
     present : _.shuffle([
@@ -63,29 +119,30 @@ function make_slides(f) {
       {"critter":"Blicks", "property":"spots"},
       {catchT: 1, one:'left', two:'left', three:'right', four:'right', five: 'left'},
     ]),
-    present_handle : function(stim) {
-      $(".err").hide();
-      this.stim = stim; //FRED: allows you to access stim in helpers
-      $('#ms_instruction').text("Here are some sliders"); //FRED
-      this.sentence_types = _.shuffle(["generic", "negation", "always", "sometimes", "usually"]);
-      var sentences = {
+
+   present_handle : function(stim) {
+     $(".err").hide();
+     this.stim = stim; //FRED: allows you to access stim in helpers
+     $('#ms_instruction').text("Here are some sliders"); //FRED
+     this.sentence_types = _.shuffle(["generic", "negation", "always", "sometimes", "usually"]);
+     var sentences = {
         "generic": stim.critter + " have " + stim.property + ".",
         "negation": stim.critter + " do not have " + stim.property + ".",
         "always": stim.critter + " always have " + stim.property + ".",
         "sometimes": stim.critter + " sometimes have " + stim.property + ".",
         "usually": stim.critter + " usually have " + stim.property + "."
       };
-      this.n_sliders = this.sentence_types.length;
-      $(".slider_row").remove();
-      for (var i=0; i<this.n_sliders; i++) {
-        var sentence_type = this.sentence_types[i];
-        var sentence = sentences[sentence_type];
-        $("#multi_slider_table").append('<tr class="slider_row"><td class="slider_target" id="sentence' + i + '">' + sentence + '</td><td colspan="2"><div id="slider' + i + '" class="slider">-------[ ]--------</div></td></tr>');
-        utils.match_row_height("#multi_slider_table", ".slider_target");
-      }
-      this.init_sliders(this.sentence_types);
-      exp.sliderPost = [];
-    },
+     this.n_sliders = this.sentence_types.length;
+     $(".slider_row").remove();
+     for (var i=0; i<this.n_sliders; i++) {
+       var sentence_type = this.sentence_types[i];
+       var sentence = sentences[sentence_type];
+       $("#multi_slider_table").append('<tr class="slider_row"><td class="slider_target" id="sentence' + i + '">' + sentence + '</td><td colspan="2"><div id="slider' + i + '" class="slider">-------[ ]--------</div></td></tr>');
+       utils.match_row_height("#multi_slider_table", ".slider_target");
+     }
+     this.init_sliders(this.sentence_types);
+     exp.sliderPost = [];
+   },
     catch_trial_handle : function(stim) { //FRED: catch trials tell the subject to move the sliders to left or right
       $(".err").hide();
       this.stim = stim; //FRED: allows you to access stim in helpers
@@ -189,22 +246,22 @@ function init() {
   exp.catch_trials = [];
   exp.condition = {}; //can randomize between subject conditions here
   exp.system = {
-      Browser : BrowserDetect.browser,
-      OS : BrowserDetect.OS,
-      screenH: screen.height,
-      screenUH: exp.height,
-      screenW: screen.width,
-      screenUW: exp.width
-    };
+    Browser : BrowserDetect.browser,
+    OS : BrowserDetect.OS,
+    screenH: screen.height,
+    screenUH: exp.height,
+    screenW: screen.width,
+    screenUW: exp.width
+  };
   //blocks of the experiment:
-  exp.structure=["i0", "instructions", "familiarization", "one_slider", "multi_slider", 'subj_info', 'thanks'];
+  exp.structure=[ "text","i0", "instructions", "familiarization", "multi_slider", 'subj_info', 'thanks'];
   
   exp.data_trials = [];
   //make corresponding slides:
   exp.slides = make_slides(exp);
 
   exp.nQs = utils.get_exp_length(); //this does not work if there are stacks of stims (but does work for an experiment with this structure)
-                    //relies on structure and slides being defined
+  //relies on structure and slides being defined
 
   $('.slide').hide(); //hide everything
 
