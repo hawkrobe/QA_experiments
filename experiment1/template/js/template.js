@@ -55,51 +55,69 @@ function make_slides(f) {
     }
   });
 
-  var stim_list = [ {scenario : "Paul is looking for a pet",
+  var stim_list = [ {person   : "Paul",
+		     scenario : "Paul is looking for a pet. He has a small apartment",
 		     question : "What kind of pet should I get?",
 		     answer   : "An animal"},
-		    {scenario : "Susan is hungry",
+		    {person   : "Susan",
+		     scenario : "Susan is hungry",
 		     question : "What are we having for dinner?",
 		     answer   : "Mexican food"},
-    ];
+		  ];
     
   slides.text = slide({
     name: "text",
     present : _.shuffle([0,1]),
     present_handle : function(stim_num) {
+      $("#part2").hide();
+      $("#part3").hide();
       $(".err1").hide();
-      $(".err2").hide();
-      $(".err3").hide();
       this.stim = stim_list[stim_num];
-      $('#info_instruction').text(this.stim.scenario);
+      $('#instruct_button').show()
+      $('#info_instruction').text(this.stim.scenario)
+	.append("<p> What information might they be interested in? "
+		+ "Please enter some possibilities below. </p>");
+      $("#part1").val("");
     },
     button1 : function() {
       if($("#part1").val() == "") {
         $(".err1").show();
       } else {
 	$(".err1").hide();
-	$('#instruct_button').hide()
-	$('#question').text("Suppose they ask: \"" + this.stim.question + 
-			    "\"\nPlease rate how helpful this question is" +
-			    "for obtaining the above information:");
-	$('#q_button').show()
+	$("#part2").show();
+	$('#question').text("Suppose " +this.stim.person+" asks: \""
+			    + this.stim.question + "\"");
+	$('#question').append("<p>Please rate how helpful this question is " +
+			      "for obtaining the above information:</p>")
+	utils.make_slider("#q_slider", function(event, ui) {
+	  exp.sliderPost1 = ui.value;
+	});
+	exp.sliderPost1 = null;
       }},
     button2 : function() {
-      // Want to put a slider here
-      if($("#part1").val() == "") {
+      if(exp.sliderPost1 == null) {
         $(".err2").show();
       } else {
 	$(".err2").hide();
-	$('#q_button').hide()
-	$('#answer').text("Suppose the other person responds: \"" + this.stim.answer + 
-			    "\"\nPlease rate how helpful this answer is" +
-			    "for answering the above question");
-	$('#a_button').show()
+	$("#part3").show();
+	$('#answer').text("Suppose the other person responds: \"" 
+			  + this.stim.answer + "\"")
+	$('#answer').append("<p>Please rate how informative this response is " 
+			    + "for answering the above question: </p>");
+	utils.make_slider("#a_slider", function(event, ui) {
+	  exp.sliderPost2 = ui.value;
+	});
+	exp.sliderPost2 = null;
       }},
     button3 : function() {
-      this.log_responses(); 
-      _stream.apply(this); 
+      if(exp.sliderPost2 == null) {
+        $(".err3").show();
+      } else {
+	this.log_responses(); 
+	_stream.apply(this);
+      }
     },
+    
     log_responses : function() {
       exp.data_trials.push({
         "trial_type" : "information",
