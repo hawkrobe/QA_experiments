@@ -54,20 +54,10 @@ function make_slides(f) {
       });
     }
   });
-
-  var stim_list = [ {person   : "Paul",
-		     scenario : "Paul is looking for a pet. He has a small apartment",
-		     question : "What kind of pet should I get?",
-		     answer   : "An animal"},
-		    {person   : "Susan",
-		     scenario : "Susan is hungry",
-		     question : "What are we having for dinner?",
-		     answer   : "Mexican food"},
-		  ];
     
   slides.text = slide({
     name: "text",
-    present : _.shuffle([0,1]),
+    present : _.shuffle(_.range(stim_list.length)),
     present_handle : function(stim_num) {
       $("#part2").hide();
       $("#part3").hide();
@@ -75,7 +65,7 @@ function make_slides(f) {
       this.stim = stim_list[stim_num];
       $('#instruct_button').show()
       $('#info_instruction').text(this.stim.scenario)
-	.append("<p> What information might they be interested in? "
+	.append("<p> What information might " + this.stim.person + " be interested in? "
 		+ "Please enter some possibilities below. </p>");
       $("#part1").val("");
     },
@@ -109,6 +99,7 @@ function make_slides(f) {
 	});
 	exp.sliderPost2 = null;
       }},
+
     button3 : function() {
       if(exp.sliderPost2 == null) {
         $(".err3").show();
@@ -121,11 +112,12 @@ function make_slides(f) {
     log_responses : function() {
       exp.data_trials.push({
         "trial_type" : "information",
-        "response" : $("#part1").val()
-	// put slider vals here
+        "free_response" : $("#part1").val(),
+	"q_response" : exp.sliderPost1,
+	"a_response" : exp.sliderPost2
       });
     }
-    });
+  });
   
 
   slides.multi_slider = slide({
@@ -271,8 +263,10 @@ function init() {
     screenW: screen.width,
     screenUW: exp.width
   };
+  
   //blocks of the experiment:
-  exp.structure=[ "text","i0", "instructions", "familiarization", "multi_slider", 'subj_info', 'thanks'];
+  exp.structure=[ "i0", "instructions",// "familiarization",
+		  "text", 'subj_info', 'thanks'];
   
   exp.data_trials = [];
   //make corresponding slides:
