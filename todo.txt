@@ -13,5 +13,5 @@
 
 * change scale to have "not useful" on the left and "very useful" on the right
 
-
+* counterbalance order of answers ACROSS subjects, but keep order the same within subject?
 
