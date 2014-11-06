@@ -1,8 +1,3 @@
-var d = {"dog" : [1,2,3],
-	 "cat" : [4,5,6]}
-
-console.log(d["dog"])
-
 function make_slides(f) {
   var slides = {};
     
