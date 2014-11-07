@@ -1,17 +1,3 @@
 *Check that correct info is included in submission results
 
-*fill in title page time estimate.
-
-*instructions:
-  -include an example
-
-*change first question to "why is x asking this question?" and provide a "fill in the blank" interface
-
-*remove slider for second question and change to "why did y give this answer?"
-
-*change question for 2nd slider to: "how useful or appropriate was this answer?"
-
-* change scale to have "not useful" on the left and "very useful" on the right
-
-* counterbalance order of answers ACROSS subjects, but keep order the same within subject?
 

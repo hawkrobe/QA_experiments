@@ -1,11 +1,6 @@
-var d = {"dog" : [1,2,3],
-	 "cat" : [4,5,6]}
-
-console.log(d["dog"])
-
 function make_slides(f) {
+  var domains = _.shuffle(["pets", "clothes", "foods", "vehicles"])
   var slides = {};
-    
   slides.i0 = slide({
     name : "i0",
     start: function() {
@@ -31,80 +26,49 @@ function make_slides(f) {
     end : function() {/*what to do at the end of a block*/}
   });
   
-
-  slides.one_slider = slide({
-    name : "one_slider",
-    start : function() {
-      $(".err").hide();
-      this.init_sliders();
-      exp.sliderPost = null;
-    },
-    button : function() {
-      if (exp.sliderPost != null) {
-        exp.go(); //use exp.go() if and only if there is no "present" data.
-        this.log_responses();
-      } else {
-        $(".err").show();
-      }
-    },
-    init_sliders : function() {
-      utils.make_slider("#single_slider", function(event, ui) {
-        exp.sliderPost = ui.value;
-      });
-    },
-    log_responses : function() {
-      exp.data_trials.push({
-        "trial_type" : "one_slider",
-        "response" : exp.sliderPost
-      });
-    }
-  });
-    
   slides.text = slide({
     name: "text",
-    present : _.shuffle(_.range(stim_list.length)),
+    present : _.shuffle(_.range(domains.length)),
     present_handle : function(stim_num) {
+      console.log(stim_num)
       $("#part2").hide();
       $("#part3").hide();
       $(".err1").hide();
-      this.stim = stim_list[stim_num];
+      var domain = domains[stim_num]
+      this.stim = stim_list[domain][stim_num];
       $('#instruct_button').show()
-      $('#info_instruction').text(this.stim.scenario)
-	.append("<p> What information might " + this.stim.person + " be interested in? "
-		+ "Please enter some possibilities below. </p>");
-      $("#part1").val("");
+      $('#info_instruction').text("Suppose " + this.stim.person + " asks, \""
+				  + this.stim.q_obj + "\"")
+      $('#Q1').text("1. Why do you think " + this.stim.person + " asked this question?")
+      $('#label1').text(this.stim.person + " asked this question because...");
+      $('#a1').val('');
     },
     button1 : function() {
-      if($("#part1").val() == "") {
+      if($("#a1").val() == "") {
         $(".err1").show();
       } else {
 	$(".err1").hide();
 	$("#part2").show();
-	$('#question').text("Suppose " +this.stim.person+" asks: \""
-			    + this.stim.question + "\"");
-	$('#question').append("<p>Please rate how helpful this question is " +
-			      "for obtaining the above information:</p>")
-	utils.make_slider("#q_slider", function(event, ui) {
-	  exp.sliderPost1 = ui.value;
-	});
-	exp.sliderPost1 = null;
+	$('#question').text("Suppose the other person answers: \""
+			    + this.stim.a_obj + "\"");
+	$('#question').append("<p>2. Why do you think they responded this way?</p>")
+	$('#label2').text("They responded this way because...");
+	$('#a2').val('');
       }},
     button2 : function() {
-      if(exp.sliderPost1 == null) {
+      if($("#a2").val() == "") {
         $(".err2").show();
       } else {
 	$(".err2").hide();
 	$("#part3").show();
-	$('#answer').text("Suppose the other person responds: \"" 
-			  + this.stim.answer + "\"")
-	$('#answer').append("<p>Please rate how informative this response is " 
-			    + "for answering the above question: </p>");
+	$('#answer').text("3. Please rate how useful this response might be " 
+			  + "for answering " + this.stim.person + "'s question:");
 	utils.make_slider("#a_slider", function(event, ui) {
 	  exp.sliderPost2 = ui.value;
 	});
 	exp.sliderPost2 = null;
       }},
-
+    
     button3 : function() {
       if(exp.sliderPost2 == null) {
         $(".err3").show();
@@ -116,110 +80,14 @@ function make_slides(f) {
     
     log_responses : function() {
       exp.data_trials.push({
-        "trial_type" : "information",
-        "free_response" : $("#part1").val(),
-	"q_response" : exp.sliderPost1,
-	"a_response" : exp.sliderPost2
+        "trial_type" : this.stim.trial_t,
+        "q_explanation" : $("#a1").val(),
+	"a_explanation" : $("#a2").val(),
+	"helpful" : exp.sliderPost2,
       });
     }
   });
   
-
-  slides.multi_slider = slide({
-    name : "multi_slider",
-    present : _.shuffle([
-      {"critter":"Wugs", "property":"fur"},
-      {"critter":"Blicks", "property":"fur"},
-      {"critter":"Wugs", "property":"spots"},
-      {"critter":"Blicks", "property":"spots"},
-      {catchT: 1, one:'left', two:'left', three:'right', four:'right', five: 'left'},
-    ]),
-
-   present_handle : function(stim) {
-     $(".err").hide();
-     this.stim = stim; //FRED: allows you to access stim in helpers
-     $('#ms_instruction').text("Here are some sliders"); //FRED
-     this.sentence_types = _.shuffle(["generic", "negation", "always", "sometimes", "usually"]);
-     var sentences = {
-        "generic": stim.critter + " have " + stim.property + ".",
-        "negation": stim.critter + " do not have " + stim.property + ".",
-        "always": stim.critter + " always have " + stim.property + ".",
-        "sometimes": stim.critter + " sometimes have " + stim.property + ".",
-        "usually": stim.critter + " usually have " + stim.property + "."
-      };
-     this.n_sliders = this.sentence_types.length;
-     $(".slider_row").remove();
-     for (var i=0; i<this.n_sliders; i++) {
-       var sentence_type = this.sentence_types[i];
-       var sentence = sentences[sentence_type];
-       $("#multi_slider_table").append('<tr class="slider_row"><td class="slider_target" id="sentence' + i + '">' + sentence + '</td><td colspan="2"><div id="slider' + i + '" class="slider">-------[ ]--------</div></td></tr>');
-       utils.match_row_height("#multi_slider_table", ".slider_target");
-     }
-     this.init_sliders(this.sentence_types);
-     exp.sliderPost = [];
-   },
-    catch_trial_handle : function(stim) { //FRED: catch trials tell the subject to move the sliders to left or right
-      $(".err").hide();
-      this.stim = stim; //FRED: allows you to access stim in helpers
-      $('#ms_instruction').text("Slide each slider all the way in the direction indicated");
-      this.direction_nums = ['one', 'two', 'three', 'four', 'five'];
-      this.n_sliders = this.direction_nums.length;
-      $(".slider_row").remove();
-      for (var i=0; i<this.direction_nums.length; i++) {
-        var direction_num = this.direction_nums[i];
-        var direction = stim[direction_num];
-        $("#multi_slider_table").append('<tr class="slider_row"><td class="slider_target" id="direction' + i + '">' + direction + '</td><td colspan="2"><div id="slider' + i + '" class="slider">-------[ ]--------</div></td></tr>');
-        utils.match_row_height("#multi_slider_table", ".slider_target");
-      }
-      this.init_sliders(this.direction_nums);
-      exp.sliderPost = [];
-    },
-    button : function() {
-      if (exp.sliderPost.length < this.n_sliders) {
-        $(".err").show();
-      } else {
-        if (! this.stim.catchT) this.log_responses(); //FRED: added if statement to handle catch trials
-        else this.log_catch_trial();
-        _stream.apply(this); //use _stream.apply(this); if and only if there is "present" data.
-      }
-    },
-    init_sliders : function(sentence_types) {
-      for (var i=0; i<sentence_types.length; i++) {
-        var sentence_type = sentence_types[i];
-        utils.make_slider("#slider" + i, this.make_slider_callback(i));
-      }
-    },
-    make_slider_callback : function(i) {
-      return function(event, ui) {
-        exp.sliderPost[i] = ui.value;
-      };
-    },
-    log_responses : function() {
-      for (var i=0; i<this.sentence_types.length; i++) {
-        var sentence_type = this.sentence_types[i];
-        exp.data_trials.push({
-          "trial_type" : "multi_slider",
-          "sentence_type" : sentence_type,
-          "response" : exp.sliderPost[i]
-        });
-      }
-    },
-    // FRED: a catch trial is recorded as one object with (direction_nums.length) 
-    //       properties, each of which is either 'pass' or 'FAIL'
-    log_catch_trial : function() {
-      var performance = {};
-      for (var i=0; i<this.direction_nums.length; i++) {
-        var direction_num = this.direction_nums[i];
-        var direction = this.stim[direction_num];
-        //check if slider is in right direction
-        var correct = (direction == 'right') ? 1:0;
-        if (Math.abs(correct - exp.sliderPost[i]) < 0.4) performance[direction_num] = 'pass';
-        else performance[direction_num] = 'FAIL';
-      }
-      exp.catch_trials.push(performance);
-    }
-  });
-
   slides.subj_info =  slide({
     name : "subj_info",
     submit : function(e){
