@@ -139,6 +139,9 @@ This is counterintuitive as the best question overall, though -- suppose Mary as
 
 We now extend the model to allow for "no" answers. This works by utilizing the standard Groenendijk partition semantics. Instead of returning a distribution over worlds in which the utterance is true, the literal answerer will return a distribution over worlds in the appropriate cell of the partition. If the answer to the question is true in the given world, the answerer will return that world, but if it is false, they will return a distribution over the remaining worlds that it could be. 
 
+Formally, suppose we first fix a question utterance $u$. This question creates a partition $P_u$ on the space of possible worlds. For every world $w^*$ that could be the case (and the questioner does not know which is *actually* the case), one cell of this partition is selected by the answerer, denoted $P_u(w^*)$, containing one or more possible worlds. We can then compute the expected value of the decision problem given $w^*$ to be 
+$$\max_{a\in\mathcal{A}}[\sum_{w\inP_u(w^*)}P(w|P_u(w^*)) \times U(a, w)]$$
+using a hard max rule over the set of actions. Note that the inner sum ranges over the worlds in the selected cell of the partition. The questioner then marginalizes over the possible values of $w^*$ to get the expected value of the question given utterance $u$. By picking the $u$ that maximizes this expected utility, we get a decision rule for optimally selecting questions.
 
 ~~~~
 // returns a distribution over worlds in the appropriate cell of the partition
@@ -153,21 +156,25 @@ var literalAnswerer = function(utt, w) {
 }
 
 var valDP_hardMax = function(utt, dp) {
-  // Marginalize over possible "true" worlds
-  expectation(Enumerate(function(){
-    var true_w = worldPrior()
-    // Compute the average value of the DP after hearing the answer, assuming this world
-    var res = maxWith(function(a){
-      expectation(Enumerate(function(){
+  var res = maxWith(function(a){
+    expectation(Enumerate(function(){
+      var true_w = worldPrior()
+      var exp = expectation(Enumerate(function(){
         var w = utt == "null" ? worldPrior() : sample(literalAnswerer(utt, true_w));
         return dp(a, w);
       }), function(v) {return v})
-    }, [0,1,2]);
-    return res[1];
-  }), function(v) {return v})
+      return true_w * exp;
+    }), function(v) {return v})
+  }, [0,1,2]);
+  return res[1];
 }
+
 
 print(questioner(dp_factory))
 ~~~~
 
 We now recover the expected 'best question'. Note that we have been using the hard max, as in Van Rooy (2003), since it shows the effect most starkly. The softMax shows less of a difference between questions.
+
+~~~~
+
+~~~~
