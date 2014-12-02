@@ -115,7 +115,7 @@ We see that if Mary knows for a fact that her workers are tired, she will get a 
 
 ~~~~
 var questionPrior = function() {
-  var questionSpace = ["tired?", "reg?", "motivated?"]
+  var questionSpace = ["tired?", "reg?", "motivated?", "null"]
   var i = randomInteger(questionSpace.length)
   return questionSpace[i]
 }
@@ -156,17 +156,17 @@ var literalAnswerer = function(utt, w) {
 }
 
 var valDP_hardMax = function(utt, dp) {
-  var res = maxWith(function(a){
-    expectation(Enumerate(function(){
-      var true_w = worldPrior()
+  expectation(Enumerate(function(){
+    var true_w = worldPrior()
+    var res = maxWith(function(a){
       var exp = expectation(Enumerate(function(){
         var w = utt == "null" ? worldPrior() : sample(literalAnswerer(utt, true_w));
         return dp(a, w);
       }), function(v) {return v})
-      return true_w * exp;
-    }), function(v) {return v})
-  }, [0,1,2]);
-  return res[1];
+      return exp;
+    }, [0,1,2])
+    return res[1];
+  }), function(v) {return v})
 }
 
 
