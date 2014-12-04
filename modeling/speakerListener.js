@@ -12,6 +12,14 @@ var negate = function(predicate){
     return !predicate(x);
   };
 };
+
+var identity = function(x){
+  return x;
+};
+
+var condition = function(x){
+  factor(x ? 0 : -Infinity);
+};
 ///
 
 var getUtility = function(dp, action, world){
@@ -27,29 +35,49 @@ var questionPrior = function() {
   return uniformDraw(questionSpace);
 };
 
+var answerPrior = function(){
+  var answerSpace = ["yes", "no"];
+  return uniformDraw(answerSpace);
+};
+
 var meaning = function(utterance){
   return (utterance == "tired?"     ? function(world){return world==0;} :
           utterance == "reg?"       ? function(world){return world==1;} :
           utterance == "motivated?" ? function(world){return world==2;} :
+          utterance == "yes" ? identity :
+          utterance == "no" ? negate :
           function(w){return true;});
 };
 
-var literalAnswerer = function(utterance, trueWorld, dp) {
+var literalListener = function(question, answer, dp){
   Enumerate(function(){
-    var wordMeaning = meaning(utterance);
-    var condition = wordMeaning(trueWorld) ? wordMeaning : negate(wordMeaning);
-    var validWorlds = filter(condition, dp.worlds);
-    return uniformDraw(validWorlds);
+    var world = worldPrior(dp);
+    var questionMeaning = meaning(question);
+    var answerMeaning = meaning(answer);
+    condition(answerMeaning(questionMeaning)(world));
+    return world;
   });
 };
 
-var valDP_hardMax = function(utterance, dp) {
+var answerer = function(question, trueWorld, dp) {
+  Enumerate(function(){
+    var answer = (question == "null") ? "yes" : answerPrior();
+    // condition on listener inferring the true world given this answer
+    factor(literalListener(question, answer, dp).score([], trueWorld));
+    return answer;
+  });
+};
+
+var valDP_hardMax = function(question, dp) {
   return mean(function(){
     var trueWorld = worldPrior(dp);
     var actionAndEU = maxWith(
       function(action){
         var expectedUtility = mean(function(){
-          var world = sample(literalAnswerer(utterance, trueWorld, dp));
+          // If I ask this question, what answer do I expect to get?
+          var answer = sample(answerer(question, trueWorld, dp));
+          // Given this answer, how do I update my distribution on worlds?
+          var world = sample(literalListener(question, answer, dp));
           return getUtility(dp, action, world);
         });
         return expectedUtility;
@@ -61,11 +89,11 @@ var valDP_hardMax = function(utterance, dp) {
 
 var questioner = function(dp) {
   Enumerate(function(){
-    var utterance = questionPrior();
-    var value = valDP_hardMax(utterance, dp) - valDP_hardMax("null", dp);
-    print([utterance, value]);
+    var question = questionPrior();
+    var value = valDP_hardMax(question, dp) - valDP_hardMax("null", dp);
+    print([question, value]);
     factor(value);
-    return utterance;
+    return question;
   });
 };
 
