@@ -30,11 +30,12 @@ function make_slides(f) {
       $('#instructs').text("Please indicate how appropriate it would be for " + this.stim.a_name + " to give each of the following answers:") 
 
       // Set up sliders
-      this.sentences = _.shuffle(this.stim.a)
+      this.sentences = _.shuffle(_.zip(this.stim.a, ["id","sib","sup","sub"]))
+      console.log(this.sentences)
       this.n_sliders = this.sentences.length;
       $(".slider_row").remove();
       for (var i=0; i < this.n_sliders; i++) {
-        var sentence = this.sentences[i];
+        var sentence = this.sentences[i][0];
         $("#multi_slider_table").append('<tr class="slider_row"><td class="slider_target" id="sentence' + i + '"> <b>' + sentence + ' </b></td><td colspan="2"><div id="slider' + i + '" class="slider">-------[ ]--------</div></td></tr>');
         utils.match_row_height("#multi_slider_table", ".slider_target");
       }
@@ -65,11 +66,9 @@ function make_slides(f) {
     
     log_responses : function() {
       for (var i=0; i<this.sentences.length; i++) {
-        var sentence_types = ['id', 'sib', 'sup', 'sub']
-        var sentence_type = sentence_types[i];
         exp.data_trials.push({
           "trial_type" : this.stim.tt,
-          "sentence_type" : sentence_type,
+          "sentence_type" : this.sentences[i][1],
           "other" : $("#other").val(),
           "response" : exp.sliderPost[i]
         });
