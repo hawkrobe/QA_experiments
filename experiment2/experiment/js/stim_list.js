@@ -35,7 +35,7 @@ var stim_list = {
                   "q_entity" : "shirt",
                   "tt": "shirt_pr_any",
                   "a" : ["I have a shirt", "I have some pants", "I have some clothing", "I have a button-down shirt"]}], 
-    "foods":    [{"s" : "Steve is organizing catering for his business's annual picnic. He calls Josh, the owner of a local restaurant and asks: ",
+    "foods":    [{"s" : "Steve is organizing catering for his business's annual picnic. He calls Josh, the owner of a local restaurant, and asks: ",
                   "q" : "'Do you have Mexican food?'",    
                   "a_name" : "Josh",    
                   "q_entity" : "mexican food",

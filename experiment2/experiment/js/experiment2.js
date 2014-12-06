@@ -30,7 +30,7 @@ function make_slides(f) {
       $('#instructs').text("Please indicate how appropriate it would be for " + this.stim.a_name + " to give each of the following answers:") 
 
       // Set up sliders
-      this.sentences = this.stim.a
+      this.sentences = _.shuffle(this.stim.a)
       this.n_sliders = this.sentences.length;
       $(".slider_row").remove();
       for (var i=0; i < this.n_sliders; i++) {
