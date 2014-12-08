@@ -1,0 +1,9 @@
+* generalize meaning function to arbitrary trees
+  - implement or find library for lightweight tree data structure 
+  - implement function that checks whether a given leaf is descendent of given node
+
+* generalize answers to non-polar utterances (e.g. I have an animal)
+
+* implement pragmatic answerer that reasons about questioner
+
+* implement dp prior specifying space of different decision problems to select from
