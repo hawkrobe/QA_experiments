@@ -115,7 +115,7 @@ var worldPrior = function(dp) {
 
 // Questions
 
-var questionNodes = nodes(taxonomy).slice(1); // don't ask "thing?"
+var questionNodes = nodes(taxonomy).slice(1); // everything except 'thing'
 
 var questionSpace = map(
   function(node){return node + "?";},
@@ -147,19 +147,52 @@ var taxonomyQuestionMeaning = cache(function(utterance){
 
 // Answers
 
-var answerPrior = function(){
-  var answerSpace = ["yes", "no"];
-  return uniformDraw(answerSpace);
+var polarAnswerSpace = ["yes.", "no."];
+
+var fullAnswerSpace = polarAnswerSpace.concat(
+  map(function(node){return node + ".";},
+      questionNodes));
+
+var polarAnswerPrior = function(){  
+  return uniformDraw(polarAnswerSpace);
 };
 
+var fullAnswerPrior = function(){
+  return uniformDraw(fullAnswerSpace);
+};
+
+var isPolarAnswer = function(x){
+  return _.contains(polarAnswerSpace, x);
+};
+
+var isTaxonomyAnswer = function(x){
+  return (last(x) === ".") & (isNodeInTree(butLast(x), taxonomy));
+};
+
+var polarAnswerMeaning = cache(function(utterance){
+  return (utterance == "yes." ? identity :
+          utterance == "no." ? negate :
+          undefined);
+});
+
+var taxonomyAnswerMeaning = cache(function(utterance){
+  var node = butLast(utterance); // remove . at the end
+  var subtree = findSubtree(node, taxonomy);
+  var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
+  return function(pred){
+    return function(x){
+      return _.contains(leavesBelowNode, x);
+    }
+  };
+});
 
 
 // Sentence meaning (questions and answers)
 
 var meaning = cache(function(utterance){
-  return (isTaxonomyQuestion(utterance) ? taxonomyQuestionMeaning(utterance):
-          utterance == "yes" ? identity :
-          utterance == "no" ? negate :
+  return (isTaxonomyQuestion(utterance) ? taxonomyQuestionMeaning(utterance) :
+          isPolarAnswer(utterance) ? polarAnswerMeaning(utterance) :
+          isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) : 
           function(w){return true;});
 });
 
@@ -177,26 +210,36 @@ var literalListener = cache(function(question, answer, dp){
   });
 });
 
-var answerer = cache(function(question, trueWorld, dp) {
+var polarAnswerer = cache(function(question, trueWorld, dp) {
   Enumerate(function(){
-    var answer = (question == "null") ? "yes" : answerPrior();
+    var answer = (question == "null") ? "yes." : polarAnswerPrior();
     // condition on listener inferring the true world given this answer
     factor(literalListener(question, answer, dp).score([], trueWorld));
     return answer;
   });
 });
 
-var valDP_hardMax = function(question, dp) {
+var fullAnswerer = cache(function(question, trueWorld, dp) {
+  Enumerate(function(){
+    var answer = (question == "null") ? "yes." : fullAnswerPrior();
+    // condition on listener inferring the true world given this answer
+    factor(literalListener(question, answer, dp).score([], trueWorld));
+    return answer;
+  });
+});
+
+var valDP_hardMax = function(question, dp, answererType) {
   return mean(function(){
     var trueWorld = worldPrior(dp);
     var actionAndEU = maxWith(
       function(action){
         var expectedUtility = mean(function(){
           // If I ask this question, what answer do I expect to get?
+          var answerer = answererType == "polar" ? polarAnswerer : fullAnswerer;
           var answer = sample(answerer(question, trueWorld, dp));
           // Given this answer, how do I update my distribution on worlds?
           var world = sample(literalListener(question, answer, dp));
-          return dp.utility[world][action];
+          return getUtility(dp, action, world);
         });
         return expectedUtility;
       },
@@ -205,12 +248,13 @@ var valDP_hardMax = function(question, dp) {
   });
 };
 
-var questioner = function(dp) {
+var questioner = function(dp, answererType) {
   Enumerate(function(){
     var question = questionPrior();
-    var value = valDP_hardMax(question, dp) - valDP_hardMax("null", dp);
+    var value = (valDP_hardMax(question, dp, answererType) 
+               - valDP_hardMax("null", dp, answererType));
     print([question, value]);
-    factor(value);
+    factor(value);    
     return question;
   });
 };
@@ -290,5 +334,7 @@ var dp_DOGS = {
   }
 };
 
-print(questioner(dp_id));
-print(questioner(dp_DOGS));
+print(questioner(dp_id, 'polar'));
+print(questioner(dp_id, 'full'));
+print(questioner(dp_DOGS, 'polar'));
+print(questioner(dp_DOGS, 'full'));
