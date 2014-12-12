@@ -86,6 +86,10 @@ var findSubtree = function(key, obj){
     return find(function(x){return x !== undefined;}, xs);
   }
 };
+
+var isNodeInTree = function(node, tree){
+  return findSubtree(node, tree) !== undefined;
+};
 ///
 
 
@@ -108,6 +112,8 @@ var taxonomy = {
   }
 };
 
+var nonRootNodes = nodes(taxonomy).slice(1); // everything except 'thing'
+
 var worldPrior = function(dp) {
   return uniformDraw(dp.worlds);
 };
@@ -115,22 +121,16 @@ var worldPrior = function(dp) {
 
 // Questions
 
-var questionNodes = nodes(taxonomy).slice(1); // everything except 'thing'
-
-var questionSpace = map(
-  function(node){return node + "?";},
-  questionNodes).concat(["null"]);
+var questionSpace = ['null'].concat(
+  map(function(node){return node + '?';},
+      nonRootNodes));
 
 var questionPrior = function() {
   return uniformDraw(questionSpace);
 };
 
-var isNodeInTree = function(node, tree){
-  return findSubtree(node, tree) !== undefined;
-};
-
 var isTaxonomyQuestion = function(x){
-  return (last(x) === "?") & (isNodeInTree(butLast(x), taxonomy));
+  return (last(x) === '?') & (isNodeInTree(butLast(x), taxonomy));
 };
 
 var taxonomyQuestionMeaning = cache(function(utterance){
@@ -147,11 +147,11 @@ var taxonomyQuestionMeaning = cache(function(utterance){
 
 // Answers
 
-var polarAnswerSpace = ["yes.", "no."];
+var polarAnswerSpace = ['yes.', 'no.'];
 
 var fullAnswerSpace = polarAnswerSpace.concat(
-  map(function(node){return node + ".";},
-      questionNodes));
+  map(function(node){return node + '.';},
+      nonRootNodes));
 
 var polarAnswerPrior = function(){  
   return uniformDraw(polarAnswerSpace);
@@ -166,12 +166,12 @@ var isPolarAnswer = function(x){
 };
 
 var isTaxonomyAnswer = function(x){
-  return (last(x) === ".") & (isNodeInTree(butLast(x), taxonomy));
+  return (last(x) === '.') & (isNodeInTree(butLast(x), taxonomy));
 };
 
 var polarAnswerMeaning = cache(function(utterance){
-  return (utterance == "yes." ? identity :
-          utterance == "no." ? negate :
+  return (utterance == 'yes.' ? identity :
+          utterance == 'no.' ? negate :
           undefined);
 });
 
@@ -193,7 +193,8 @@ var meaning = cache(function(utterance){
   return (isTaxonomyQuestion(utterance) ? taxonomyQuestionMeaning(utterance) :
           isPolarAnswer(utterance) ? polarAnswerMeaning(utterance) :
           isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) : 
-          function(w){return true;});
+          utterance === 'null' ? function(w){return true} :
+          undefined);
 });
 
 
@@ -212,7 +213,7 @@ var literalListener = cache(function(question, answer, dp){
 
 var polarAnswerer = cache(function(question, trueWorld, dp) {
   Enumerate(function(){
-    var answer = (question == "null") ? "yes." : polarAnswerPrior();
+    var answer = (question === 'null') ? 'yes.' : polarAnswerPrior();
     // condition on listener inferring the true world given this answer
     factor(literalListener(question, answer, dp).score([], trueWorld));
     return answer;
@@ -221,7 +222,7 @@ var polarAnswerer = cache(function(question, trueWorld, dp) {
 
 var fullAnswerer = cache(function(question, trueWorld, dp) {
   Enumerate(function(){
-    var answer = (question == "null") ? "yes." : fullAnswerPrior();
+    var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
     // condition on listener inferring the true world given this answer
     factor(literalListener(question, answer, dp).score([], trueWorld));
     return answer;
@@ -235,7 +236,7 @@ var valDP_hardMax = function(question, dp, answererType) {
       function(action){
         var expectedUtility = mean(function(){
           // If I ask this question, what answer do I expect to get?
-          var answerer = answererType == "polar" ? polarAnswerer : fullAnswerer;
+          var answerer = answererType === 'polar' ? polarAnswerer : fullAnswerer;
           var answer = sample(answerer(question, trueWorld, dp));
           // Given this answer, how do I update my distribution on worlds?
           var world = sample(literalListener(question, answer, dp));
@@ -252,7 +253,7 @@ var questioner = function(dp, answererType) {
   Enumerate(function(){
     var question = questionPrior();
     var value = (valDP_hardMax(question, dp, answererType) 
-               - valDP_hardMax("null", dp, answererType));
+                 - valDP_hardMax('null', dp, answererType));
     print([question, value]);
     factor(value);    
     return question;
