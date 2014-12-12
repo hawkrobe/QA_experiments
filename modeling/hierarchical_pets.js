@@ -1,4 +1,24 @@
 ///fold:
+var flatten = function(xs){
+  if (xs.length == 0) {
+    return [];
+  } else {
+    return xs[0].concat(flatten(xs.slice(1)));
+  }
+};
+
+var getLeaves = function(key, obj){
+  if (obj === null){
+    return [key];
+  } else {
+    var pairs = _.pairs(obj);
+    return flatten(
+      map(
+        function(pair){
+          return leaves(pair[0], pair[1])}, pairs));
+  }
+};
+
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
 };
@@ -126,6 +146,23 @@ var questioner = function(dp, answererType) {
     factor(value);    
     return question;
   });
+};
+
+var taxonomy = {
+  thing: {
+    animal: {
+      dog: {
+        poodle: null,
+        dalmatian: null
+      },
+      cat: {
+        siamese: null
+      }
+    },
+    plant: {
+      basil: null
+    }
+  }
 };
 
 // Questioner is REALLY concerned with whether you have a siamese cat.
