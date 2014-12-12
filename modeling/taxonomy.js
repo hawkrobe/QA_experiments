@@ -1,9 +1,5 @@
 ///fold:
 
-var print = function(xs){
-  console.log(xs);
-};
-
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
 };
