@@ -14,11 +14,11 @@ var negate = function(predicate){
 };
 
 var identity = function(x){
-  return x;
+ return x;
 };
 
 var condition = function(x){
-  factor(x ? 0 : -Infinity);
+ factor(x ? 0 : -Infinity);
 };
 ///
 
@@ -92,14 +92,14 @@ var questioner = function(dp) {
     var question = questionPrior();
     var value = valDP_hardMax(question, dp) - valDP_hardMax("null", dp);
     print([question, value]);
-    factor(value);
+    factor(value);    
     return question;
   });
 };
 
 var dp = {
   actions: [0, 1, 2],
-  worlds: [0, 1, 2],
+  worlds:  [0, 1, 2],
   utility: [[0,-4,-10], // utility[world][action]
             [0,5,2],
             [0,6,10]]

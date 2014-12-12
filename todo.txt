@@ -1,3 +1,0 @@
-*Check that correct info is included in submission results
-
-
