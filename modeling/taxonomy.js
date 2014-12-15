@@ -240,7 +240,7 @@ var valDP_hardMax = function(question, dp, answererType) {
           var answer = sample(answerer(question, trueWorld, dp));
           // Given this answer, how do I update my distribution on worlds?
           var world = sample(literalListener(question, answer, dp));
-          return getUtility(dp, action, world);
+          return dp.utility[world][action];
         });
         return expectedUtility;
       },
