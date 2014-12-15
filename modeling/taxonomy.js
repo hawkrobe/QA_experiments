@@ -61,7 +61,7 @@ var _leaves = function(key, obj){
 var leaves = function(obj){
   return flatten(
     map(
-      function(key){return _leaves(key, obj);}, 
+      function(key){return _leaves(key, obj);},
       _.keys(obj)));
 };
 
@@ -153,7 +153,7 @@ var fullAnswerSpace = polarAnswerSpace.concat(
   map(function(node){return node + '.';},
       nonRootNodes));
 
-var polarAnswerPrior = function(){  
+var polarAnswerPrior = function(){
   return uniformDraw(polarAnswerSpace);
 };
 
@@ -182,7 +182,7 @@ var taxonomyAnswerMeaning = cache(function(utterance){
   return function(pred){
     return function(x){
       return _.contains(leavesBelowNode, x);
-    }
+    };
   };
 });
 
@@ -192,8 +192,8 @@ var taxonomyAnswerMeaning = cache(function(utterance){
 var meaning = cache(function(utterance){
   return (isTaxonomyQuestion(utterance) ? taxonomyQuestionMeaning(utterance) :
           isPolarAnswer(utterance) ? polarAnswerMeaning(utterance) :
-          isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) : 
-          utterance === 'null' ? function(w){return true} :
+          isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) :
+          utterance === 'null' ? function(w){return true;} :
           undefined);
 });
 
@@ -252,10 +252,10 @@ var valDP_hardMax = function(question, dp, answererType) {
 var questioner = function(dp, answererType) {
   Enumerate(function(){
     var question = questionPrior();
-    var value = (valDP_hardMax(question, dp, answererType) 
+    var value = (valDP_hardMax(question, dp, answererType)
                  - valDP_hardMax('null', dp, answererType));
     print([question, value]);
-    factor(value);    
+    factor(value);
     return question;
   });
 };
