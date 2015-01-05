@@ -52,6 +52,11 @@ for k1, gframe1 in dog_gb_type :
 
 # <codecell>
 
+import numpy as np
+
+# <codecell>
+
+np.outer(range(10000), range(10000))
 
 # <codecell>
 
