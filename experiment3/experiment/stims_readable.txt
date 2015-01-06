@@ -1,0 +1,18 @@
+Dogs:
+1. (convo) Mary is at a party making polite conversation. Susan asks “do you have a dog?”
+2. (polite request) Mary knows Susan's family is coming into town and she wants to impress them with a cute pet. Susan calls Mary and asks “do you have a dog?”
+3. (info) Susan is visiting Mary's house for dinner, and Mary knows she is allergic to dogs. Before coming over, Susan asks “do you have a dog?”
+
+Shirts:
+1. (info) Bob's friends roped him into going to the opera with them and want to make sure he has the appropriate clothes to wear. His friend Mark asks, “Do you have a shirt?”
+2. (polite request — id level) Mark is drinking coffee at a coffee shop before going on a date and accidentally spills coffee all over his shirt. He calls his friend Bob who lives close by, explains the situation, and asks: “Do you have a shirt?”
+3. (polite request — super level) Bob's school is collecting clothes to send to those in need and Bob wants to donate. Mark, who's working at the collection, asks him: “Do you have a shirt?”
+
+Foods:
+1. (Info) Steve is organizing catering for his business's annual picnic. He calls Josh, the owner of a local restaurant, and asks: “Do you have Mexican food?”
+2. (polite request — super level) Steve is at a party and starts to feel hungry. He tells the host, Josh, how hungry he is and asks: “Do you have Mexican food?”
+
+Cars:
+1. (conversation) Jane is at a party making polite conversation. Jessica asks: “Do you have a car?”
+2. (polite request — super level) Jessica realizes at the last minute that she needs a ride to the airport because the train isn't running. She calls her friend Jane, explains the situation, and asks: “Do you have a car?”
+3. (info — formal?) Jessica is conducting a survey on car ownership among young Americans. She calls Jane and asks: “Do you have a car?”
