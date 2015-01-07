@@ -14,6 +14,11 @@ function make_slides(f) {
     }
   });
   
+    var list_items = [["dalmatian", "Which gate has a dalmatian behind it?"],
+		      ["animal", "Which gate has an animal behind it?"],
+		      ["dog","Which gate has a dog behind it?"],
+		      ["thing", "Which gate has a thing behind it?"]]
+
   slides.text = slide({
     name: "text",
     present : _.shuffle(["dalmatian", "poodle", "siamese cat", "daisy"]),
@@ -21,8 +26,17 @@ function make_slides(f) {
       // Set up scenario & instructions
       this.qud = qud
       $(".err1").hide();
-      $("#other").val(" ")
-      $('#select_box').val(0);
+	$("#other").val(" ")
+	//  shuffle drop down list order, and set to null
+	$('#select_box').empty()
+	console.log(list_items)
+	$.each(_.shuffle(list_items), function (index, value) {
+	    $('#select_box').append($('<option/>', { 
+		value: value[0],
+		text : value[1] 
+	    }));
+	});  
+	$('#select_box').val(0);
       $("#" + qud.split(" ")[0]).addClass('border')
       $('#instruct_button').show()
       $('#question').text("Goal: Find the " + qud + "!")
@@ -34,8 +48,7 @@ function make_slides(f) {
     },
 
     button : function() {
-      console.log($('#select_box')[0].value)
-      if ($('#select_box')[0].value == 'null') {
+      if ($('#select_box').val() == null) {
         $(".err1").show();
       } else {
         $("#" + this.qud.split(" ")[0]).removeClass('border')
@@ -99,7 +112,15 @@ function make_slides(f) {
   return slides;
 }
 
-  
+jQuery.fn.shuffle = function () {
+    var j;
+    for (var i = 0; i < this.length; i++) {
+        j = Math.floor(Math.random() * this.length);
+        $(this[i]).before($(this[j]));
+    }
+    return this;
+};  
+
 /// init ///
 function init() {
   exp.trials = [];
