@@ -274,18 +274,18 @@ var makeQUD = function(node){
   };
 };
 
-var qudPrior = function(){
-  var qudNode = uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower', 'dog']);
-  return makeQUD(qudNode);
+var qudNodePrior = function() {
+  return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower', 'dog']);
 };
 
 var pragmaticAnswerer = function(question, trueWorld){  
-  var qudPosterior = Enumerate(function(){
-    var qud = qudPrior();
+  var qudNodePosterior = Enumerate(function(){
+    var qudNode = qudNodePrior();
+    var qud = makeQUD(qudNode);
     factor(questioner(qud).score([], question));
-    return qud;
+    return qudNode;
   });
-  var qud = sample(qudPosterior);
+  var qud = makeQUD(sample(qudNodePosterior));
   Enumerate(function(){
     var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
     condition(qud(sample(literalListener(question, answer))) === qud(trueWorld));
