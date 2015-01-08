@@ -151,6 +151,7 @@ var taxonomy = {
 
 var nonRootNodes = nodes(taxonomy).slice(1); // everything except 'thing'
 
+// All possible assignments of four objects to four positions
 var worldSpace = map(function(perm) {
   return _.object(leaves(taxonomy), perm)
 }, permute([1,2,3,4]))
@@ -173,53 +174,45 @@ var makeQUD = function(node){
 };
 
 var qudNodePrior = function() {
-	return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower', 'dog'])
+	return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower'])
 }
 
-var questionSpace = ['null'].concat(['animal@1?', 'dog@1?', 'dalmatian@1?']);
+//var questionSpace = ['null'].concat(['animal@1?', 'dog@1?', 'dalmatian@1?']);
+var questionSpace = ['whereIsAnimal?', 'whereIsDog?', 'whereIsDalmatian?', 'whereIsThing?'];
 
 var questionPrior = function() {
   return uniformDraw(questionSpace);
 };
 
 var isTaxonomyQuestion = function(x){
-  return (last(x) === '?') & (isNodeInTree(butLast(x).split("@")[0], taxonomy));
+  var testableX = (last(x) === '?') ? x.split("Is")[1].toLowerCase() : x
+  return (last(testableX) === '?') & (isNodeInTree(butLast(testableX), taxonomy));
 };
 
 // in our case, the meaning of the question should be equivalent to the qud, 
 // a mapping from a world to set of values we're interested in...
 var taxonomyQuestionMeaning = cache(function(utterance){
-  var temp = utterance.split("@")
-  var node = temp[0]; 
+  console.log("determining meaning of " + utterance)
+  var temp = butLast(utterance).split("Is")
+  var node = temp[1].toLowerCase(); 
   console.log("node is " + node)
-  var location = butLast(temp[1]);
   var subtree = findSubtree(node, taxonomy);
   var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
   return function(world){
-    // return true if world appears as one of the leaves below utterance node
-//    console.log(leavesBelowNode)
-//    return map(function(node) {return world[node];}, leavesBelowNode);
-
-    var truth_val = reduce(function(node, rest) {return (world[node] == location) | rest}, 
-      false, leavesBelowNode); 
-	return truth_val
-
-    //return uniformDraw(map(function(node) {return world[node];}, leavesBelowNode));
-  //    return find(function(leaf){return leaf===world;}, leavesBelowNode) !== undefined;
+    // map from a world to the one answer of interest
+    return uniformDraw(map(function(node) {return world[node];}, leavesBelowNode));
   };
 });
 
-
 // Answers
 
-var polarAnswerSpace = ['yes.', 'no.'];
-
-var fullAnswerSpace = polarAnswerSpace.concat(
-  flatten(map(function(leaf){
-    map(function(loc){
-      return leaf + '@' + loc + ".";
-    }, [1,2,3,4])
-  }, leaves(taxonomy))));
+// Can tell questioner about a location of one object
+var polarAnswerSpace = []
+var fullAnswerSpace = flatten(map(function(leaf){
+  map(function(loc){
+    return leaf + '@' + loc + ".";
+  }, [1,2,3,4])
+  }, leaves(taxonomy)));
   
 var fullAnswerPrior = function(){
   return uniformDraw(fullAnswerSpace);
@@ -274,17 +267,20 @@ var literalListener = cache(function(question, answer){
   });
 });
 
-// This answerer tries to be informative wrt the qud
+// This answerer tries to be informative wrt the literal question
 var tradAnswerer = cache(function(question, trueWorld) {
   Enumerate(function(){
     var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
-    // NEW: condition on listener inferring the correct qud value given this answer
     var questionMeaning = meaning(question);
-//    console.log(questionMeaning(trueWorld))
+    // Be TRUTHFUL (get rid of answers that lead to false worlds)
+    factor(literalListener(question, answer).score([], trueWorld));
+    // Be RELEVANT(i.e. condition on listener inferring the correct qud value given this answer
     condition(questionMeaning(sample(literalListener(question, answer))) === questionMeaning(trueWorld));
     return answer;
   });
 });
+
+cmd_print(tradAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
 
 var tradQuestioner = cache(function(qud) {
   Enumerate(function(){
@@ -320,6 +316,9 @@ var tradQuestioner = cache(function(qud) {
     return question;
   });
 });
+
+//cmd_print(tradQuestioner(makeQUD('dalmatian')));
+
 
 // // This answerer does not try to be informative with respect to the QUD
 // var pragAnswerer = cache(function(question, trueWorld) {
@@ -370,9 +369,7 @@ var tradQuestioner = cache(function(qud) {
 //   });
 // };
 
-//cmd_print(answerer("dalmatian@1?", {poodle: 2, dalmatian: 1, siamese: 3, vorp: 4}))
 //console.log(permute([1,2,3,4]))
-cmd_print(tradQuestioner(makeQUD('siamese')));
 // console.log("\n")
 //pragAnswerer("dalmatian@1?", {poodle: 1, dalmatian: 2, siamese: 3, vorp: 4})
 //cmd_print(questioner(makeQUD('dalmatian')));
