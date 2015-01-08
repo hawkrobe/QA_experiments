@@ -1,5 +1,4 @@
 ///fold:
-
 var KL = function(erpTrue, erpApprox){
   var values = erpTrue.support([]);
   var xs = map(
@@ -14,6 +13,10 @@ var KL = function(erpTrue, erpApprox){
     },
     values);
   return sum(xs);
+};
+
+var arraysEqual = function(a1, a2) {
+  return JSON.stringify(a1) == JSON.stringify(a2);
 };
 
 var printERP = function(erp) {
@@ -152,9 +155,11 @@ var taxonomy = {
 };
 
 // All possible assignments of four objects to four positions
-var worldSpace = map(function(perm) {
-  return _.object(leaves(taxonomy), perm);
-}, permute([1,2,3,4]));
+var worldSpace = map(
+  function(perm) {
+    return _.object(leaves(taxonomy), perm);
+  },
+  permute([1,2,3,4]));
 
 var worldPrior = function() {
   return uniformDraw(worldSpace);
@@ -165,17 +170,17 @@ var worldPrior = function() {
 
 // returns a function that maps world to the gate we should pick to find
 // a leaf under the given node
-var makeQUD = function(node){
-  var subtree = findSubtree(node, taxonomy);
-  var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
-  return function(world){
-    return uniformDraw(map(function(node) {return world[node];}, leavesBelowNode));
-  };
-};
+// var makeQUD = function(node){
+//   var subtree = findSubtree(node, taxonomy);
+//   var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
+//   return function(world){
+//     return uniformDraw(map(function(node) {return world[node];}, leavesBelowNode));
+//   };
+// };
 
-var qudNodePrior = function() {
-  return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower']);
-};
+// var qudNodePrior = function() {
+//   return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower']);
+// };
 
 //var questionSpace = ['null'].concat(['animal@1?', 'dog@1?', 'dalmatian@1?']);
 var questionSpace = ['whereIsAnimal?', 'whereIsDog?', 'whereIsDalmatian?', 'whereIsThing?'];
@@ -198,7 +203,7 @@ var taxonomyQuestionMeaning = cache(function(utterance){
   var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
   return function(world){
     // map from a world to the one answer of interest
-    return uniformDraw(map(function(node) {return world[node];}, leavesBelowNode));
+    return map(function(node) {return world[node];}, leavesBelowNode);
   };
 });
 
@@ -254,8 +259,8 @@ var meaning = cache(function(utterance){
           undefined);
 });
 
-// Agents
 
+// For "x@n."-style answers, the question doesn't play any role.
 var literalListener = cache(function(question, answer){
   Enumerate(function(){
     var world = worldPrior();
@@ -266,117 +271,27 @@ var literalListener = cache(function(question, answer){
   });
 });
 
-// This answerer tries to be informative wrt the literal question
-var tradAnswerer = cache(function(question, trueWorld) {
-  console.log("calculating response distribution for question: " + question);
-  console.log("in world: ");
-  console.log(trueWorld);
+var literalAnswerer = cache(function(question, trueWorld) {
   Enumerate(function(){
-    var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
+    // 1. Restrict to truthful answers
+    var truthfulAnswerPrior = Enumerate(
+      function(){
+        var answer = fullAnswerPrior();
+        factor(literalListener(question, answer).score([], trueWorld));
+        return answer;
+      });
+    // 2. Pick answer conditioned on communicating question predicate value
+    var answer = sample(truthfulAnswerPrior);
     var questionMeaning = meaning(question);
-    // Be TRUTHFUL (get rid of answers that lead to false worlds)
-    factor(literalListener(question, answer).score([], trueWorld));
-    // Be RELEVANT(i.e. condition on listener inferring the correct qud value given this answer
-    condition(questionMeaning(sample(literalListener(question, answer))) === questionMeaning(trueWorld));
+    condition(
+      arraysEqual(
+        questionMeaning(sample(literalListener(question, answer))),
+        questionMeaning(trueWorld)));
     return answer;
   });
 });
 
-printERP(tradAnswerer("whereIsDalmatian?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
-printERP(tradAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
-printERP(tradAnswerer("whereIsAnimal?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
-printERP(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
-
-// var tradQuestioner = cache(function(qud) {
-//   Enumerate(function(){
-//     var question = questionPrior();
-//     console.log("asking " + question )
-//     var prior = Enumerate(function(){
-//       // What is the value of the predicate I care about
-//       // under my prior?
-//       return qud(worldPrior());
-//     });
-//     var expectedKL = mean(
-//       function(){
-//         // What do I expect the world to be like?
-//         var trueWorld = worldPrior();
-//         var posterior = Enumerate(function(){
-//           // If I ask this question, what answer do I expect to get,
-//           // given what the world is like?
-//           var answer = sample(tradAnswerer(question, trueWorld));
-//           // Given this answer, how would I update my distribution on worlds?
-//           var world = sample(literalListener(question, answer));
-//           // What is the value of the predicate I care about under this
-//           // new distribution on worlds?
-//           return qud(world);
-//         });
-//         console.log("if true world is ")
-//         console.log(trueWorld)
-//         console.log(" posterior is ")
-//         printERP(posterior)
-//         return KL(posterior, prior);
-//       });
-//     console.log("expectedKL for " + question + " is " + expectedKL)
-//     factor(expectedKL);
-//     return question;
-//   });
-// });
-
-//printERP(tradQuestioner(makeQUD('dalmatian')));
-
-
-// // This answerer does not try to be informative with respect to the QUD
-// var pragAnswerer = cache(function(question, trueWorld) {
-//   Enumerate(function(){
-//   	var qud = makeQUD(qudNodePrior())
-//   	var q_erp = tradQuestioner(qud)
-//   	// upweight quds that are consistent with the question being asked
-//   	factor(q_erp.score([], question))
-
-//   	var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
-//     // condition on listener inferring the true world given this answer
-//     var questionMeaning = meaning(question);
-//     condition(qud(sample(literalListener(question, answer))) === qud(trueWorld));
-//     return answer;
-//   });
-// });
-
-// var pragQuestioner = function(qud) {
-//   Enumerate(function(){
-//     var question = questionPrior();
-//     console.log("asking " + question )
-//     var prior = Enumerate(function(){
-//       // What is the value of the predicate I care about
-//       // under my prior?
-//       return qud(worldPrior());
-//     });
-//     console.log("prior is: ")
-//     printERP(prior)
-//     var expectedKL = mean(
-//       function(){
-//         // What do I expect the world to be like?
-//         var trueWorld = worldPrior();
-//         var posterior = Enumerate(function(){
-//           // If I ask this question, what answer do I expect to get,
-//           // given what the world is like?
-//           var answer = sample(pragAnswerer(question, trueWorld));
-//           // Given this answer, how would I update my distribution on worlds?
-//           var world = sample(literalListener(question, answer));
-//           // What is the value of the predicate I care about under this
-//           // new distribution on worlds?
-//           return qud(world);
-//         });
-//         return KL(posterior, prior);
-//       });
-//     console.log("expectedKL for " + question + " is " + expectedKL)
-//     factor(expectedKL);
-//     return question;
-//   });
-// };
-
-//console.log(permute([1,2,3,4]))
-// console.log("\n")
-//pragAnswerer("dalmatian@1?", {poodle: 1, dalmatian: 2, siamese: 3, vorp: 4})
-//printERP(questioner(makeQUD('dalmatian')));
-// console.log("\n")
-// printERP(questioner(makeQUD('animal')));
+print(literalAnswerer("whereIsDalmatian?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+print(literalAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+print(literalAnswerer("whereIsAnimal?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+print(literalAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));

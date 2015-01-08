@@ -1,0 +1,108 @@
+% 
+% Annual Cognitive Science Conference
+% Sample LaTeX Paper -- Proceedings Format
+% 
+
+% Original : Ashwin Ram (ashwin@cc.gatech.edu)       04/01/1994
+% Modified : Johanna Moore (jmoore@cs.pitt.edu)      03/17/1995
+% Modified : David Noelle (noelle@ucsd.edu)          03/15/1996
+% Modified : Pat Langley (langley@cs.stanford.edu)   01/26/1997
+% Latex2e corrections by Ramin Charles Nakisa        01/28/1997 
+% Modified : Tina Eliassi-Rad (eliassi@cs.wisc.edu)  01/31/1998
+% Modified : Trisha Yannuzzi (trisha@ircs.upenn.edu) 12/28/1999 (in process)
+% Modified : Mary Ellen Foster (M.E.Foster@ed.ac.uk) 12/11/2000
+% Modified : Ken Forbus                              01/23/2004
+% Modified : Eli M. Silk (esilk@pitt.edu)            05/24/2005
+% Modified : Niels Taatgen (taatgen@cmu.edu)         10/24/2006
+% Modified : David Noelle (dnoelle@ucmerced.edu)     11/19/2014
+
+%% Change "letterpaper" in the following line to "a4paper" if you must.
+
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{cogsci}
+\usepackage{pslatex}
+\usepackage{apacite}
+\usepackage{color}
+
+\definecolor{Red}{RGB}{255,0,0}
+\newcommand{\red}[1]{\textcolor{Red}{#1}}
+
+\newcommand{\jd}[1]{\green{$^*$}\marginpar{\footnotesize{JD: \green{#1}}}}
+
+\newcommand{\subsubsubsection}[1]{{\em #1}}
+\newcommand{\eref}[1]{(\ref{#1})}
+\newcommand{\tableref}[1]{Table \ref{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\sectionref}[1]{Section \ref{#1}}
+
+\title{What's a useful question? One that prompts an informative answer.}
+ 
+\author{{\large \bf Robert Hawkins (rxdh@stanford.edu)} \AND {\large \bf Andreas Stuhlm\"uller (andreas@stuhlmueller.org)}\\ 
+	\AND
+	{\large \bf Judith Degen (jdegen@stanford.edu)} 
+  \AND {\large \bf Noah D.~Goodman (ngoodman@stanford.edu)} \\
+  Department of Psychology, 450 Serra Mall \\
+  Stanford, CA 94305 USA}
+
+
+\begin{document}
+
+\maketitle
+
+
+\begin{abstract}
+
+
+\textbf{Keywords:} 
+questions; answers; computational pragmatics; 
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+What makes a question useful? What makes an answer to a question useful? 
+
+\red{XXX what are some useful anwers other people have given? why do we think those answers are nevertheless lacking? \textbf{Judith}}
+
+We propose that a useful answer to a question is one that is maximally informative with respect to an inferred underlying decision problem that the questioner has. A useful question, then, is one that optimally signals the questioner's underlying decision problem and has a high probability of resulting in an answer that is maximally informative with respect to that decision problem. 
+
+The rest of this paper is structured as follows. First we formalize the optimal questioner and answerer within the Rational Speech Act framework \cite{frank2012}. In Experiment 1, we test questioners' behavior in a task that requires asking a question (from a fixed set of possible questions), given a decision problem. In Experiment 2, we test answerers' behavior in a task that requires giving an answer (from a fixed set of possible answers) to a question (from a fixed set of possible questions). We then compare performance of the Rational Speech Act model at capturing the obtained human data to two simpler models; one that takes into account only that an answerer wants to be maximally informative with respect to the question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).
+
+
+\section{A Rational Speech Act model of questions and answers}
+\label{sec:model}
+
+\red{XXX \textbf{Robert/Andreas}}
+
+\section{Experiment 1: questions}
+\label{sec:expq}
+
+Experiment 1 tests questioners' choice of question intended to elicit a response that resolves an underlying decision problem or QUD. \red{XXX \textbf{Robert}}
+
+\section{Experiment 2: answers}
+\label{sec:expa}
+
+Experiment 2 tests answerers' choice of answer to a question. \red{XXX \textbf{Robert}}
+
+\section{Model evaluation}
+\label{sec:evaluation}
+
+\red{XXX}
+
+
+\section{General discussion}
+\label{sec:gd}
+
+\red{XXX}
+
+\bibliographystyle{apacite}
+
+\setlength{\bibleftmargin}{.125in}
+\setlength{\bibindent}{-\bibleftmargin}
+
+\bibliography{bibs}
+
+
+\end{document}
