@@ -7,18 +7,20 @@ var KL = function(erpTrue, erpApprox){
       var p = Math.exp(erpTrue.score([], value));
       var q = Math.exp(erpApprox.score([], value));
       if (p == 0.0){
-        return 0.0
+        return 0.0;
       } else {
         return p * Math.log(p / q);
       }
     },
     values);
-  return sum(xs);  
+  return sum(xs);
 };
 
 var cmd_print = function(erp) {
-  map(function(v) {console.log({val: v, prob: Math.exp(erp.score([], v))})}, erp.support())
-}
+  map(
+    function(v) {console.log({val: v, prob: Math.exp(erp.score([], v))});},
+    erp.support());
+};
 
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
@@ -68,10 +70,10 @@ var permute = function (input) {
       doPerm();
       usedChars.pop();
       input.splice(i, 0, ch);
-    }, _.range(input.length))
-  }
+    }, _.range(input.length));
+  };
   doPerm();
-  return permArr
+  return permArr;
 };
 
 // recursively traverse object; return all keys
@@ -153,8 +155,8 @@ var nonRootNodes = nodes(taxonomy).slice(1); // everything except 'thing'
 
 // All possible assignments of four objects to four positions
 var worldSpace = map(function(perm) {
-  return _.object(leaves(taxonomy), perm)
-}, permute([1,2,3,4]))
+  return _.object(leaves(taxonomy), perm);
+}, permute([1,2,3,4]));
 
 var worldPrior = function() {
   return uniformDraw(worldSpace);
@@ -164,7 +166,7 @@ var worldPrior = function() {
 // Questions
 
 // returns a function that maps world to the gate we should pick to find
-// a leaf under the given node 
+// a leaf under the given node
 var makeQUD = function(node){
   var subtree = findSubtree(node, taxonomy);
   var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
@@ -174,8 +176,8 @@ var makeQUD = function(node){
 };
 
 var qudNodePrior = function() {
-	return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower'])
-}
+  return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower']);
+};
 
 //var questionSpace = ['null'].concat(['animal@1?', 'dog@1?', 'dalmatian@1?']);
 var questionSpace = ['whereIsAnimal?', 'whereIsDog?', 'whereIsDalmatian?', 'whereIsThing?'];
@@ -185,15 +187,15 @@ var questionPrior = function() {
 };
 
 var isTaxonomyQuestion = function(x){
-  var testableX = (last(x) === '?') ? x.split("Is")[1].toLowerCase() : x
+  var testableX = (last(x) === '?') ? x.split("Is")[1].toLowerCase() : x;
   return (last(testableX) === '?') & (isNodeInTree(butLast(testableX), taxonomy));
 };
 
-// in our case, the meaning of the question should be equivalent to the qud, 
+// in our case, the meaning of the question should be equivalent to the qud,
 // a mapping from a world to set of values we're interested in...
 var taxonomyQuestionMeaning = cache(function(utterance){
-  var temp = butLast(utterance).split("Is")
-  var node = temp[1].toLowerCase(); 
+  var temp = butLast(utterance).split("Is");
+  var node = temp[1].toLowerCase();
   var subtree = findSubtree(node, taxonomy);
   var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
   return function(world){
@@ -205,13 +207,14 @@ var taxonomyQuestionMeaning = cache(function(utterance){
 // Answers
 
 // Can tell questioner about a location of one object
-var polarAnswerSpace = []
+var polarAnswerSpace = [];
+
 var fullAnswerSpace = flatten(map(function(leaf){
   map(function(loc){
     return leaf + '@' + loc + ".";
-  }, [1,2,3,4])
+  }, [1,2,3,4]);
   }, leaves(taxonomy)));
-  
+
 var fullAnswerPrior = function(){
   return uniformDraw(fullAnswerSpace);
 };
@@ -233,8 +236,8 @@ var polarAnswerMeaning = cache(function(utterance){
 // note: the meaning of a taxonomy answer is independent of  the question
 // in guessing game, answers are all leaves...
 var taxonomyAnswerMeaning = cache(function(utterance){
-  var temp = utterance.split("@")
-  var node = temp[0]; 
+  var temp = utterance.split("@");
+  var node = temp[0];
   var location = butLast(temp[1]);
   return function(pred){
     return function(x){
@@ -267,9 +270,9 @@ var literalListener = cache(function(question, answer){
 
 // This answerer tries to be informative wrt the literal question
 var tradAnswerer = cache(function(question, trueWorld) {
-  console.log("calculating response distribution for question: " + question)
-  console.log("in world: ")
-  console.log(trueWorld)
+  console.log("calculating response distribution for question: " + question);
+  console.log("in world: ");
+  console.log(trueWorld);
   Enumerate(function(){
     var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
     var questionMeaning = meaning(question);
@@ -281,10 +284,10 @@ var tradAnswerer = cache(function(question, trueWorld) {
   });
 });
 
-cmd_print(tradAnswerer("whereIsDalmatian?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
-cmd_print(tradAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
-cmd_print(tradAnswerer("whereIsAnimal?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
-cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
+cmd_print(tradAnswerer("whereIsDalmatian?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+cmd_print(tradAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+cmd_print(tradAnswerer("whereIsAnimal?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
 
 // var tradQuestioner = cache(function(qud) {
 //   Enumerate(function(){
@@ -331,7 +334,7 @@ cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, fl
 //   	var q_erp = tradQuestioner(qud)
 //   	// upweight quds that are consistent with the question being asked
 //   	factor(q_erp.score([], question))
-  	
+
 //   	var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
 //     // condition on listener inferring the true world given this answer
 //     var questionMeaning = meaning(question);
