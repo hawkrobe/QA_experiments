@@ -32,7 +32,7 @@
     <link href="css/local-style.css" rel="stylesheet" type="text/css"/>
 
     <!-- experiment file -->
-    <script src="js/experiment3b.js"></script>
+    <script src="js/experiment3.js"></script>
     <script src="js/stim_list.js"></script>
     
 </head>
@@ -135,20 +135,17 @@
   <!-- MAIN EXPERIMENT SLIDE -->
   <div class="slide" id="a_exp">
     <div id="questions" style="border-collapse:collapse;margin-left:100px;display:table,height:150px,width:400px"> 
-      <div id = "dalmatian_q" class="boxed"> Is there a dalmatian behind gate 1? </div>
-      <div id = "dog_q" class="boxed"> Is there a dog behind gate 1? </div>
-      <div id = "animal_q" class="boxed"> Is there an animal behind gate 1? </div>
-      <div id = "thing_q" class="boxed"> Is there a thing behind gate 1? </div>
+      <div id = "dalmatian_q" class="boxed"> Which gate has a dalmatian behind it? </div>
+      <div id = "dog_q" class="boxed"> Which gate has a dog behind it? </div>
+      <div id = "animal_q" class="boxed"> Which gate has an animal behind it? </div>
+      <div id = "thing_q" class="boxed"> Which gate has a thing behind it? </div>
     </div>
     <h2 id= 'question' style="font-weight: normal;"></h2> 
     <hr>    
     <h3 style="font-weight: normal;"> Given that objects are hidden in the following locations... </h3>
     <div id="gates"> </div>
     <h3 style="font-weight: normal;" id='instructs'> Please select how you would respond: </h3>      
-    <div align="left" style="margin-left:200; margin-top:-10px"><br>
-      <input type="radio" name="group1" value="yes"> Yes<br>
-      <input type="radio" name="group1" value="no"> No<br>
-      <input type="radio" name="group1" value="other"> The 
+    The 
     <select id="select_box_obj">  
       <option> </option>
       <option> Dalmatian </option>
@@ -164,9 +161,6 @@
       <option> 3 </option>
       <option> 4 </option>
     </select>
-    </div>
-
-    
     <p><input type="button" id="a_button"  onclick="_s.button()" class="revealed" 
      value="Continue"></p>
     <div class = "err1">Please enter a response before continuing.</div>
