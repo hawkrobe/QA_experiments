@@ -192,10 +192,8 @@ var isTaxonomyQuestion = function(x){
 // in our case, the meaning of the question should be equivalent to the qud, 
 // a mapping from a world to set of values we're interested in...
 var taxonomyQuestionMeaning = cache(function(utterance){
-  console.log("determining meaning of " + utterance)
   var temp = butLast(utterance).split("Is")
   var node = temp[1].toLowerCase(); 
-  console.log("node is " + node)
   var subtree = findSubtree(node, taxonomy);
   var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
   return function(world){
@@ -269,6 +267,9 @@ var literalListener = cache(function(question, answer){
 
 // This answerer tries to be informative wrt the literal question
 var tradAnswerer = cache(function(question, trueWorld) {
+  console.log("calculating response distribution for question: " + question)
+  console.log("in world: ")
+  console.log(trueWorld)
   Enumerate(function(){
     var answer = (question === 'null') ? 'yes.' : fullAnswerPrior();
     var questionMeaning = meaning(question);
@@ -280,42 +281,45 @@ var tradAnswerer = cache(function(question, trueWorld) {
   });
 });
 
+cmd_print(tradAnswerer("whereIsDalmatian?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
 cmd_print(tradAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
+cmd_print(tradAnswerer("whereIsAnimal?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
+cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}))
 
-var tradQuestioner = cache(function(qud) {
-  Enumerate(function(){
-    var question = questionPrior();
-    console.log("asking " + question )
-    var prior = Enumerate(function(){
-      // What is the value of the predicate I care about
-      // under my prior?
-      return qud(worldPrior());
-    });
-    var expectedKL = mean(
-      function(){
-        // What do I expect the world to be like?
-        var trueWorld = worldPrior();
-        var posterior = Enumerate(function(){
-          // If I ask this question, what answer do I expect to get,
-          // given what the world is like?
-          var answer = sample(tradAnswerer(question, trueWorld));
-          // Given this answer, how would I update my distribution on worlds?
-          var world = sample(literalListener(question, answer));
-          // What is the value of the predicate I care about under this
-          // new distribution on worlds?
-          return qud(world);
-        });
-        console.log("if true world is ")
-        console.log(trueWorld)
-        console.log(" posterior is ")
-        cmd_print(posterior)
-        return KL(posterior, prior);
-      });
-    console.log("expectedKL for " + question + " is " + expectedKL)
-    factor(expectedKL);
-    return question;
-  });
-});
+// var tradQuestioner = cache(function(qud) {
+//   Enumerate(function(){
+//     var question = questionPrior();
+//     console.log("asking " + question )
+//     var prior = Enumerate(function(){
+//       // What is the value of the predicate I care about
+//       // under my prior?
+//       return qud(worldPrior());
+//     });
+//     var expectedKL = mean(
+//       function(){
+//         // What do I expect the world to be like?
+//         var trueWorld = worldPrior();
+//         var posterior = Enumerate(function(){
+//           // If I ask this question, what answer do I expect to get,
+//           // given what the world is like?
+//           var answer = sample(tradAnswerer(question, trueWorld));
+//           // Given this answer, how would I update my distribution on worlds?
+//           var world = sample(literalListener(question, answer));
+//           // What is the value of the predicate I care about under this
+//           // new distribution on worlds?
+//           return qud(world);
+//         });
+//         console.log("if true world is ")
+//         console.log(trueWorld)
+//         console.log(" posterior is ")
+//         cmd_print(posterior)
+//         return KL(posterior, prior);
+//       });
+//     console.log("expectedKL for " + question + " is " + expectedKL)
+//     factor(expectedKL);
+//     return question;
+//   });
+// });
 
 //cmd_print(tradQuestioner(makeQUD('dalmatian')));
 
