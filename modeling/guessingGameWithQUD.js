@@ -16,7 +16,7 @@ var KL = function(erpTrue, erpApprox){
   return sum(xs);
 };
 
-var cmd_print = function(erp) {
+var printERP = function(erp) {
   map(
     function(v) {console.log({val: v, prob: Math.exp(erp.score([], v))});},
     erp.support());
@@ -282,10 +282,10 @@ var tradAnswerer = cache(function(question, trueWorld) {
   });
 });
 
-cmd_print(tradAnswerer("whereIsDalmatian?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
-cmd_print(tradAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
-cmd_print(tradAnswerer("whereIsAnimal?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
-cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+printERP(tradAnswerer("whereIsDalmatian?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+printERP(tradAnswerer("whereIsDog?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+printERP(tradAnswerer("whereIsAnimal?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
+printERP(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, flower: 4}));
 
 // var tradQuestioner = cache(function(qud) {
 //   Enumerate(function(){
@@ -313,7 +313,7 @@ cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, fl
 //         console.log("if true world is ")
 //         console.log(trueWorld)
 //         console.log(" posterior is ")
-//         cmd_print(posterior)
+//         printERP(posterior)
 //         return KL(posterior, prior);
 //       });
 //     console.log("expectedKL for " + question + " is " + expectedKL)
@@ -322,7 +322,7 @@ cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, fl
 //   });
 // });
 
-//cmd_print(tradQuestioner(makeQUD('dalmatian')));
+//printERP(tradQuestioner(makeQUD('dalmatian')));
 
 
 // // This answerer does not try to be informative with respect to the QUD
@@ -351,7 +351,7 @@ cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, fl
 //       return qud(worldPrior());
 //     });
 //     console.log("prior is: ")
-//     cmd_print(prior)
+//     printERP(prior)
 //     var expectedKL = mean(
 //       function(){
 //         // What do I expect the world to be like?
@@ -377,6 +377,6 @@ cmd_print(tradAnswerer("whereIsThing?", {poodle: 2, dalmatian: 1, siamese: 3, fl
 //console.log(permute([1,2,3,4]))
 // console.log("\n")
 //pragAnswerer("dalmatian@1?", {poodle: 1, dalmatian: 2, siamese: 3, vorp: 4})
-//cmd_print(questioner(makeQUD('dalmatian')));
+//printERP(questioner(makeQUD('dalmatian')));
 // console.log("\n")
-// cmd_print(questioner(makeQUD('animal')));
+// printERP(questioner(makeQUD('animal')));
