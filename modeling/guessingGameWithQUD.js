@@ -151,8 +151,6 @@ var taxonomy = {
   }
 };
 
-var nonRootNodes = nodes(taxonomy).slice(1); // everything except 'thing'
-
 // All possible assignments of four objects to four positions
 var worldSpace = map(function(perm) {
   return _.object(leaves(taxonomy), perm);
