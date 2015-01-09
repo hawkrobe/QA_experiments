@@ -30,10 +30,17 @@ g4 + facet_wrap(~facet_label)
 
 Next, we evaluate the answers:
 
+Note that participants always tell the truth -- the gate they give always matches the true location of the item they give
+
 ```{r}
 d0_a = subset(d0, trial_type == 'ans:', 
               select=c(workerid, utterance, world_state, gate_response, item_response))
-d1_a = subset(d1, trial_type == 'ans:', 
-              select=c(workerid, utterance, world_state, response))
+d0_a$world_state = strsplit(as.character(d0_a$world_state), split = ',')
+for(i in 1:dim(d0_a)[1]){
+  d0_a$telling_truth = d0_a$gate_response[i] == match(tolower(d0_a$item_response[i]), 
+                                                      d0_a$world_state[i][[1]])
+}
+g4<-ggplot(d0_a, aes(x=item_response)) + geom_histogram(color="black", fill='black')
+g4 + facet_wrap(~utterance)
 str(e3_a)
 ```
