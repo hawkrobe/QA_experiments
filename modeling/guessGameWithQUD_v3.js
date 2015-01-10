@@ -150,6 +150,7 @@ var taxonomy = {
       },
       siamese: null // no super category allowed
     },
+    computer: null,
     flower: null // no good category for this thing
   }
 };
@@ -159,7 +160,7 @@ var worldSpace = map(
   function(perm) {
     return _.object(leaves(taxonomy), perm);
   },
-  permute([1,2,3,4]));
+  permute([1,2,3,4,5]));
 
 var worldPrior = function() {
   return uniformDraw(worldSpace);
@@ -179,7 +180,7 @@ var makeQUD = function(node){
 };
 
 var qudNodePrior = function() {
-  return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower']);
+  return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower', 'computer']);
 };
 
 //var questionSpace = ['null'].concat(['animal@1?', 'dog@1?', 'dalmatian@1?']);
@@ -215,7 +216,7 @@ var polarAnswerSpace = [];
 var fullAnswerSpace = flatten(map(function(leaf){
   map(function(loc){
     return leaf + '@' + loc + ".";
-  }, [1,2,3,4]);
+  }, [1,2,3,4,5]);
   }, leaves(taxonomy)));
 
 var fullAnswerPrior = function(){
@@ -319,22 +320,24 @@ var questioner = cache(function(qud_node) {
   });
 });
 
-// console.log("for QUD = dalmatian")
-// printERP(questioner(makeQUD("dalmatian")))
-// console.log("for QUD = poodle")
-// printERP(questioner(makeQUD("poodle")))
-// console.log("for QUD = siamese")
-// printERP(questioner(makeQUD("siamese")))
-// console.log("for QUD = flower")
-// printERP(questioner(makeQUD("flower")))
+console.log("for QUD = dalmatian")
+printERP(questioner("dalmatian"))
+console.log("for QUD = poodle")
+printERP(questioner("poodle"))
+console.log("for QUD = siamese")
+printERP(questioner("siamese"))
+console.log("for QUD = flower")
+printERP(questioner("flower"))
 
 var pragmaticAnswerer = cache(function(question, trueWorld){  
   var qudNodePosterior = Enumerate(function(){
     var qudNode = qudNodePrior();
     var q_erp = questioner(qudNode);
-    factor(q_erp.score([], question));
+    factor(q_erp.score([], question) * 100);
     return qudNode;
   });
+  console.log("for question " + question)
+  printERP(qudNodePosterior)
   return Enumerate(function(){
     var qud = makeQUD(sample(qudNodePosterior));
     var truthfulAnswerPrior = Enumerate(
@@ -352,14 +355,14 @@ var pragmaticAnswerer = cache(function(question, trueWorld){
   });  
 })
 
-console.log("prag responses for dalmation q")
-printERP(pragmaticAnswerer('whereIsDalmatian?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
-console.log("prag responses for dog q")
-printERP(pragmaticAnswerer('whereIsDog?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
-console.log("prag responses for animal q")
-printERP(pragmaticAnswerer('whereIsAnimal?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
-console.log("prag responses for thing q")
-printERP(pragmaticAnswerer('whereIsThing?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
+// console.log("prag responses for dalmation q")
+// printERP(pragmaticAnswerer('whereIsDalmatian?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
+// console.log("prag responses for dog q")
+// printERP(pragmaticAnswerer('whereIsDog?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
+// console.log("prag responses for animal q")
+// printERP(pragmaticAnswerer('whereIsAnimal?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
+// console.log("prag responses for thing q")
+// printERP(pragmaticAnswerer('whereIsThing?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
 
 var pragQuestioner = function(qud_node) {
   var qud = (makeQUD(qud_node))
@@ -388,11 +391,11 @@ var pragQuestioner = function(qud_node) {
   });
 };
 
-console.log("prag question for QUD = dalmatian")
-printERP(pragQuestioner("dalmatian"))
-console.log("prag question for QUD = poodle")
-printERP(pragQuestioner("poodle"))
-console.log("prag question for QUD = siamese")
-printERP(pragQuestioner("siamese"))
-console.log("prag question for QUD = flower")
-printERP(pragQuestioner("flower"))
+// console.log("prag question for QUD = dalmatian")
+// printERP(pragQuestioner("dalmatian"))
+// console.log("prag question for QUD = poodle")
+// printERP(pragQuestioner("poodle"))
+// console.log("prag question for QUD = siamese")
+// printERP(pragQuestioner("siamese"))
+// console.log("prag question for QUD = flower")
+// printERP(pragQuestioner("flower"))
