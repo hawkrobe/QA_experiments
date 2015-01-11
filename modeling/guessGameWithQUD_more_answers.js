@@ -223,10 +223,18 @@ var polarAnswerSpace = [];
 var answerLocs = butLast(powerset(locations))
 
 // want to allow every node and every set of gates... 
-var fullAnswerSpace = flatten(map(function(leaf){
+var fullAnswerSpace = flatten(map(function(node){
+  var goodAnswers = []
   map(function(loc){
-    return leaf + '@' + loc + ".";
+    // only allow for statements that can be possible in at least one world 
+    // e.g. can't say a dalmatian is at gate 1 and 3
+    var ls = leaves(findSubtree(node, taxonomy))
+    // this condition is hard to read
+    if((ls.length == 0 & loc.length == 1) | (loc.length <= ls.length)) {
+      goodAnswers.push(node + '@' + loc + ".");
+    }
   }, answerLocs);
+  return goodAnswers
 }, nodes(taxonomy)));
 
 var fullAnswerPrior = function(){
@@ -289,10 +297,10 @@ var literalListener = cache(function(question, answer){
     var world = worldPrior();
     var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-    console.log("in world")
-    console.log(world)
-    console.log("answer: " + answer + "and question: " + question)
-    console.log(answerMeaning(questionMeaning)(world))
+    // console.log("in world")
+    // console.log(world)
+    // console.log("answer: " + answer + "and question: " + question)
+    // console.log(answerMeaning(questionMeaning)(world))
     condition(answerMeaning(questionMeaning)(world));
     return world;
   });
@@ -304,9 +312,16 @@ var literalAnswerer = cache(function(question, trueWorld) {
     var truthfulAnswerPrior = Enumerate(
       function(){
         var answer = fullAnswerPrior();
+//         console.log("if I give answer " + answer)
+// //        printERP(literalListener(question,answer))
+//         console.log("likely of true world")
+//         console.log(trueWorld)
+//         console.log("is" +  literalListener(question, answer).score([], trueWorld))
         factor(literalListener(question, answer).score([], trueWorld));
         return answer;
       });
+//    printERP(truthfulAnswerPrior)
+//    console.log('\n')
     // 2. Pick answer conditioned on communicating question predicate value
     var answer = sample(truthfulAnswerPrior);
     var questionMeaning = meaning(question);
@@ -317,6 +332,8 @@ var literalAnswerer = cache(function(question, trueWorld) {
     return answer;
   });
 });
+
+//printERP(literalAnswerer('whereIsAnimal?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
 
 var questioner = cache(function(qud_node) {
   var qud = (makeQUD(qud_node))
@@ -346,14 +363,14 @@ var questioner = cache(function(qud_node) {
   });
 });
 
-console.log("for QUD = dalmatian")
-printERP(questioner("dalmatian"))
-console.log("for QUD = poodle")
-printERP(questioner("poodle"))
-console.log("for QUD = siamese")
-printERP(questioner("siamese"))
-console.log("for QUD = flower")
-printERP(questioner("flower"))
+// console.log("for QUD = dalmatian")
+// printERP(questioner("dalmatian"))
+// console.log("for QUD = poodle")
+// printERP(questioner("poodle"))
+// console.log("for QUD = siamese")
+// printERP(questioner("siamese"))
+// console.log("for QUD = flower")
+// printERP(questioner("flower"))
 
 var pragmaticAnswerer = cache(function(question, trueWorld){  
   var qudNodePosterior = Enumerate(function(){
@@ -417,11 +434,11 @@ var pragQuestioner = function(qud_node) {
   });
 };
 
-// console.log("prag question for QUD = dalmatian")
-// printERP(pragQuestioner("dalmatian"))
-// console.log("prag question for QUD = poodle")
-// printERP(pragQuestioner("poodle"))
-// console.log("prag question for QUD = siamese")
-// printERP(pragQuestioner("siamese"))
-// console.log("prag question for QUD = flower")
-// printERP(pragQuestioner("flower"))
+console.log("prag question for QUD = dalmatian")
+printERP(pragQuestioner("dalmatian"))
+console.log("prag question for QUD = poodle")
+printERP(pragQuestioner("poodle"))
+console.log("prag question for QUD = siamese")
+printERP(pragQuestioner("siamese"))
+console.log("prag question for QUD = flower")
+printERP(pragQuestioner("flower"))
