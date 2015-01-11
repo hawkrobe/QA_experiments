@@ -247,26 +247,33 @@ var polarAnswerMeaning = cache(function(utterance){
           undefined);
 });
 
+// takes a location and a set of nodes and returns true if ANY of them are there in the given world
+var nodeAtLocation = function (location, nodes, world) {
+  reduce(function(node, rest){
+    return rest | (world[node] == location)
+  }, false, nodes)
+}
+
 // with this big answer space, need to check whether an item of the type given 
 // really exists at all the locations given. This will automatically take care of
 // nonsense answers like "dalmatian at 3 and 4", which will be false in all possible worlds.
-// Another tricky question is whether we should allow responses like "3" by itself, referring back 
-// to the question.
+// for now, we won't allow answers like '3', by itself, so that answers are independent of questions.
 var taxonomyAnswerMeaning = cache(function(utterance){
   var temp = utterance.split("@");
   var node = temp[0];
-  var locations = butLast(temp[1]);
+  var locations = butLast(temp[1]).split('');
   var subtree = findSubtree(node, taxonomy);
   var leavesBelowNode = subtree === null ? [node] : leaves(subtree);
   return function(pred){
-    return function(x){
-      return map(function(x[node] == location; // return true if the object really is in this location
+    return function(world){
+      return reduce(function(loc, rest){
+        return rest & (nodeAtLocation(loc, leavesBelowNode, world))
+      }, true, locations)
     };
   };
 });
 
 // Sentence meaning (questions and answers)
-
 var meaning = cache(function(utterance){
   return (isTaxonomyQuestion(utterance) ? taxonomyQuestionMeaning(utterance) :
           isPolarAnswer(utterance) ? polarAnswerMeaning(utterance) :
@@ -282,6 +289,10 @@ var literalListener = cache(function(question, answer){
     var world = worldPrior();
     var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
+    console.log("in world")
+    console.log(world)
+    console.log("answer: " + answer + "and question: " + question)
+    console.log(answerMeaning(questionMeaning)(world))
     condition(answerMeaning(questionMeaning)(world));
     return world;
   });
