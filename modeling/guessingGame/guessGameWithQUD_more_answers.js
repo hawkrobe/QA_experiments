@@ -117,12 +117,12 @@ var _leaves = function(key, obj){
 
 // recursively traverse object; return all keys that map to null
 var leaves = function(obj){
-	var pairs = _.pairs(obj);
-	return flatten(
-		map(
-			function(pair){return _leaves(pair[0], pair[1]);},
-			pairs));
-	};
+  var pairs = _.pairs(obj);
+  return flatten(
+    map(
+      function(pair){return _leaves(pair[0], pair[1]);},
+      pairs));
+  };
 
 // recursively traverse object; return value of key
 var findSubtree = function(key, obj){
@@ -196,7 +196,7 @@ var makeQUD = function(node){
 };
 
 var qudNodePrior = function() {
-  return uniformDraw(['dalmatian', 'poodle', 'siamese', 'flower']);
+  return uniformDraw(leaves(taxonomy));
 };
 
 //var questionSpace = ['null'].concat(['animal@1?', 'dog@1?', 'dalmatian@1?']);
@@ -237,7 +237,7 @@ var fullAnswerSpace = flatten(map(function(node){
     }
   }, answerLocs);
   return goodAnswers
-}, ['dog', 'thing', 'dalmatian', 'poodle', 'siamese', 'flower', 'animal', 'computer']));
+}, nodes(taxonomy)));
 
 var fullAnswerPrior = function(){
   return uniformDraw(fullAnswerSpace);
@@ -303,25 +303,26 @@ var literalAnswerer = cache(function(question, trueWorld) {
         factor(literalListener(question, answer).score([], trueWorld));
         return answer;
       });
-    // console.log("For question " + question)
-    // printERP(truthfulAnswerPrior)
-   // console.log('\n')
     // 2. Pick answer conditioned on communicating question predicate value
     var answer = sample(truthfulAnswerPrior);
     var questionMeaning = meaning(question);
-    var consistentWorld = sample(literalListener(question,answer))
+    var possibleWorld = sample(literalListener(question,answer))
     condition(
       arraysEqual(
-        questionMeaning(consistentWorld),
+        questionMeaning(possibleWorld),
         questionMeaning(trueWorld)));
     return answer;
   });
 });
 
-// printERP(literalListener("whereIsDog?", "dog@13."))
-//console.log(literalListener("whereIsDog?", "dog@13.").score([], {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4}))
-//literalAnswerer('whereIsDog?', {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4, })
-
+// console.log("for question whereIsDalmatian?, literalAnswerer says")
+// printERP(literalAnswerer('whereIsDalmatian?', {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4, }))
+// console.log("for question whereIsDog?, literalAnswerer says")
+// printERP(literalAnswerer('whereIsDog?', {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4, }))
+// console.log("for question whereIsAnimal?, literalAnswerer says")
+// printERP(literalAnswerer('whereIsAnimal?', {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4, }))
+// console.log("for question whereIsThing?, literalAnswerer says")
+// printERP(literalAnswerer('whereIsThing?', {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4, }))
 
 var questioner = cache(function(qud_node) {
   var qud = (makeQUD(qud_node))
@@ -351,8 +352,8 @@ var questioner = cache(function(qud_node) {
   });
 });
 
-// console.log("for QUD = dalmatian")
-// printERP(questioner("dalmatian"))
+ console.log("for QUD = dalmatian")
+ printERP(questioner("dalmatian"))
 // console.log("for QUD = poodle")
 // printERP(questioner("poodle"))
 // console.log("for QUD = siamese")
@@ -423,7 +424,7 @@ var pragQuestioner = function(qud_node) {
 };
 
 // console.log("prag question for QUD = dalmatian")
-  printERP(pragQuestioner("dalmatian"))
+//  printERP(pragQuestioner("dalmatian"))
 // console.log("prag question for QUD = poodle")
 // printERP(pragQuestioner("poodle"))
 // console.log("prag question for QUD = siamese")
