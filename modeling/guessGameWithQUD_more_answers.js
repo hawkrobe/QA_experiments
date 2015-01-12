@@ -16,6 +16,8 @@ var KL = function(erpTrue, erpApprox){
 };
 
 var arraysEqual = function(a1, a2) {
+  a1.sort()
+  a2.sort()
   return JSON.stringify(a1) == JSON.stringify(a2);
 };
 
@@ -161,7 +163,8 @@ var taxonomy = {
       },
       siamese: null // no super category allowed
     },
-    flower: null // no good category for this thing
+    computer: null,
+    flower: null 
   }
 };
 
@@ -235,7 +238,7 @@ var fullAnswerSpace = flatten(map(function(node){
     }
   }, answerLocs);
   return goodAnswers
-}, nodes(taxonomy)));
+}, ['dog', 'thing', 'dalmatian', 'poodle', 'siamese', 'flower', 'animal']));
 
 var fullAnswerPrior = function(){
   return uniformDraw(fullAnswerSpace);
@@ -297,10 +300,6 @@ var literalListener = cache(function(question, answer){
     var world = worldPrior();
     var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-    // console.log("in world")
-    // console.log(world)
-    // console.log("answer: " + answer + "and question: " + question)
-    // console.log(answerMeaning(questionMeaning)(world))
     condition(answerMeaning(questionMeaning)(world));
     return world;
   });
@@ -312,28 +311,28 @@ var literalAnswerer = cache(function(question, trueWorld) {
     var truthfulAnswerPrior = Enumerate(
       function(){
         var answer = fullAnswerPrior();
-//         console.log("if I give answer " + answer)
-// //        printERP(literalListener(question,answer))
-//         console.log("likely of true world")
-//         console.log(trueWorld)
-//         console.log("is" +  literalListener(question, answer).score([], trueWorld))
         factor(literalListener(question, answer).score([], trueWorld));
         return answer;
       });
-//    printERP(truthfulAnswerPrior)
-//    console.log('\n')
+    // console.log("For question " + question)
+    // printERP(truthfulAnswerPrior)
+   // console.log('\n')
     // 2. Pick answer conditioned on communicating question predicate value
     var answer = sample(truthfulAnswerPrior);
     var questionMeaning = meaning(question);
+    var consistentWorld = sample(literalListener(question,answer))
     condition(
       arraysEqual(
-        questionMeaning(sample(literalListener(question, answer))),
+        questionMeaning(consistentWorld),
         questionMeaning(trueWorld)));
     return answer;
   });
 });
 
-//printERP(literalAnswerer('whereIsAnimal?', {poodle: 1, dalmatian: 2, siamese: 3, flower: 4}))
+// printERP(literalListener("whereIsDog?", "dog@13."))
+//console.log(literalListener("whereIsDog?", "dog@13.").score([], {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4}))
+//literalAnswerer('whereIsDog?', {poodle: 1, dalmatian: 3, siamese: 2, computer: 5, flower: 4, })
+
 
 var questioner = cache(function(qud_node) {
   var qud = (makeQUD(qud_node))
@@ -364,7 +363,7 @@ var questioner = cache(function(qud_node) {
 });
 
 // console.log("for QUD = dalmatian")
-// printERP(questioner("dalmatian"))
+ printERP(questioner("dalmatian"))
 // console.log("for QUD = poodle")
 // printERP(questioner("poodle"))
 // console.log("for QUD = siamese")
@@ -379,8 +378,8 @@ var pragmaticAnswerer = cache(function(question, trueWorld){
     factor(q_erp.score([], question) * 100);
     return qudNode;
   });
-  console.log("for question " + question)
-  printERP(qudNodePosterior)
+  // console.log("for question " + question)
+  // printERP(qudNodePosterior)
   return Enumerate(function(){
     var qud = makeQUD(sample(qudNodePosterior));
     var truthfulAnswerPrior = Enumerate(
@@ -434,11 +433,11 @@ var pragQuestioner = function(qud_node) {
   });
 };
 
-console.log("prag question for QUD = dalmatian")
-printERP(pragQuestioner("dalmatian"))
-console.log("prag question for QUD = poodle")
-printERP(pragQuestioner("poodle"))
-console.log("prag question for QUD = siamese")
-printERP(pragQuestioner("siamese"))
-console.log("prag question for QUD = flower")
-printERP(pragQuestioner("flower"))
+// console.log("prag question for QUD = dalmatian")
+// printERP(pragQuestioner("dalmatian"))
+// console.log("prag question for QUD = poodle")
+// printERP(pragQuestioner("poodle"))
+// console.log("prag question for QUD = siamese")
+// printERP(pragQuestioner("siamese"))
+// console.log("prag question for QUD = flower")
+// printERP(pragQuestioner("flower"))
