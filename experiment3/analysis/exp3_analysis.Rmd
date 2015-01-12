@@ -70,8 +70,9 @@ for(i in 1:dim(d1_a)[1]){
   # 2. Figure out which item was behind this gate 
   if(nchar(gr) == 1) {
     item_response <- d1_a$world_state[i][[1]][as.numeric(gr)] 
-  } else 
-    item_response <- "mult gates"
+  } else {
+    item_response <- paste("mult: ", as.character(d1_a$utterance[i]))
+  } 
   d1_a$item_response[i] = item_response
 }
 ```
