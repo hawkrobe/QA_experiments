@@ -135,8 +135,13 @@ var butLast = function(xs){
 
 var printERP = function(erp) {
   erp.support().map(
-    function(v) {console.log({val: v, prob: Math.exp(erp.score([], v))});}
-    );
+    function(v) {
+      var prob = Math.exp(erp.score([], v));
+      if (prob > 0.0){
+        console.log({val: v, prob: prob});
+      }
+    }
+  );
 };
 
 module.exports = {
