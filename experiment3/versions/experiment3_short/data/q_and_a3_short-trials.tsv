@@ -1,0 +1,201 @@
+workerid	trial_type	qud	utterance	world_state	response
+0	ans:	NA	animal	[u'poodle', u'siamese cat', u'goldfish', u'dalmatian']	4
+0	ans:	NA	mammal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	3
+0	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'dalmatian', u'poodle']	3
+0	ans:	NA	dog	[u'goldfish', u'siamese cat', u'poodle', u'dalmatian']	3
+0	question	dalmatian	NA	NA	dalmatian
+0	question	goldfish	NA	NA	mammal
+0	question	siamese cat	NA	NA	animal
+0	question	poodle	NA	NA	dog
+1	ans:	NA	dog	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	None
+1	ans:	NA	mammal	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	2
+1	ans:	NA	dalmatian	[u'goldfish', u'dalmatian', u'siamese cat', u'poodle']	2
+1	ans:	NA	animal	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	1
+1	question	dalmatian	NA	NA	dog
+1	question	goldfish	NA	NA	mammal
+1	question	poodle	NA	NA	dog
+1	question	siamese cat	NA	NA	mammal
+2	question	poodle	NA	NA	dog
+2	question	goldfish	NA	NA	mammal
+2	question	siamese cat	NA	NA	dog
+2	question	dalmatian	NA	NA	dalmatian
+2	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'goldfish', u'poodle']	3
+2	ans:	NA	mammal	[u'siamese cat', u'poodle', u'dalmatian', u'goldfish']	1
+2	ans:	NA	dalmatian	[u'dalmatian', u'goldfish', u'poodle', u'siamese cat']	1
+2	ans:	NA	dog	[u'dalmatian', u'goldfish', u'poodle', u'siamese cat']	1
+3	question	goldfish	NA	NA	dog
+3	question	dalmatian	NA	NA	dog
+3	question	poodle	NA	NA	dog
+3	question	siamese cat	NA	NA	animal
+3	ans:	NA	dog	[u'siamese cat', u'poodle', u'goldfish', u'dalmatian']	2
+3	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'poodle', u'goldfish']	2
+3	ans:	NA	mammal	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	3
+3	ans:	NA	animal	[u'siamese cat', u'poodle', u'goldfish', u'dalmatian']	1
+4	question	poodle	NA	NA	dog
+4	question	goldfish	NA	NA	animal
+4	question	dalmatian	NA	NA	dalmatian
+4	question	siamese cat	NA	NA	mammal
+4	ans:	NA	dog	[u'goldfish', u'poodle', u'siamese cat', u'dalmatian']	2
+4	ans:	NA	mammal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	4
+4	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'dalmatian', u'poodle']	3
+4	ans:	NA	animal	[u'goldfish', u'dalmatian', u'poodle', u'siamese cat']	1
+5	question	goldfish	NA	NA	mammal
+5	question	siamese cat	NA	NA	dog
+5	question	poodle	NA	NA	dog
+5	question	dalmatian	NA	NA	dog
+5	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'poodle', u'goldfish']	4
+5	ans:	NA	mammal	[u'goldfish', u'siamese cat', u'poodle', u'dalmatian']	2
+5	ans:	NA	dog	[u'goldfish', u'dalmatian', u'siamese cat', u'poodle']	4
+5	ans:	NA	dalmatian	[u'poodle', u'goldfish', u'siamese cat', u'dalmatian']	1
+6	ans:	NA	dog	[u'poodle', u'dalmatian', u'goldfish', u'siamese cat']	2
+6	ans:	NA	dalmatian	[u'goldfish', u'siamese cat', u'poodle', u'dalmatian']	4
+6	ans:	NA	animal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	4
+6	ans:	NA	mammal	[u'dalmatian', u'siamese cat', u'poodle', u'goldfish']	3
+6	question	siamese cat	NA	NA	animal
+6	question	poodle	NA	NA	dog
+6	question	goldfish	NA	NA	mammal
+6	question	dalmatian	NA	NA	dalmatian
+7	ans:	NA	dalmatian	[u'goldfish', u'dalmatian', u'siamese cat', u'poodle']	2
+7	ans:	NA	mammal	[u'poodle', u'dalmatian', u'siamese cat', u'goldfish']	2
+7	ans:	NA	dog	[u'dalmatian', u'goldfish', u'siamese cat', u'poodle']	1
+7	ans:	NA	animal	[u'poodle', u'goldfish', u'dalmatian', u'siamese cat']	3
+7	question	dalmatian	NA	NA	dalmatian
+7	question	goldfish	NA	NA	mammal
+7	question	poodle	NA	NA	dog
+7	question	siamese cat	NA	NA	animal
+8	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'dalmatian', u'goldfish']	3
+8	ans:	NA	animal	[u'goldfish', u'siamese cat', u'poodle', u'dalmatian']	3
+8	ans:	NA	mammal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	3
+8	ans:	NA	dog	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	3
+8	question	siamese cat	NA	NA	animal
+8	question	poodle	NA	NA	dog
+8	question	goldfish	NA	NA	mammal
+8	question	dalmatian	NA	NA	dalmatian
+9	question	dalmatian	NA	NA	dog
+9	question	poodle	NA	NA	dog
+9	question	siamese cat	NA	NA	mammal
+9	question	goldfish	NA	NA	animal
+9	ans:	NA	mammal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	4
+9	ans:	NA	dog	[u'goldfish', u'dalmatian', u'siamese cat', u'poodle']	4
+9	ans:	NA	animal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	3
+9	ans:	NA	dalmatian	[u'dalmatian', u'siamese cat', u'goldfish', u'poodle']	1
+10	question	poodle	NA	NA	dog
+10	question	siamese cat	NA	NA	dog
+10	question	goldfish	NA	NA	animal
+10	question	dalmatian	NA	NA	dalmatian
+10	ans:	NA	animal	[u'dalmatian', u'goldfish', u'siamese cat', u'poodle']	2
+10	ans:	NA	mammal	[u'dalmatian', u'siamese cat', u'goldfish', u'poodle']	2
+10	ans:	NA	dog	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	2
+10	ans:	NA	dalmatian	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	3
+11	question	siamese cat	NA	NA	mammal
+11	question	dalmatian	NA	NA	mammal
+11	question	goldfish	NA	NA	mammal
+11	question	poodle	NA	NA	dog
+11	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	2
+11	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'poodle', u'goldfish']	4
+11	ans:	NA	mammal	[u'goldfish', u'dalmatian', u'poodle', u'siamese cat']	1
+11	ans:	NA	dog	[u'goldfish', u'poodle', u'siamese cat', u'dalmatian']	3
+12	question	goldfish	NA	NA	dog
+12	question	poodle	NA	NA	dalmatian
+12	question	siamese cat	NA	NA	dog
+12	question	dalmatian	NA	NA	dalmatian
+12	ans:	NA	dog	[u'goldfish', u'siamese cat', u'dalmatian', u'poodle']	3
+12	ans:	NA	animal	[u'goldfish', u'siamese cat', u'poodle', u'dalmatian']	2
+12	ans:	NA	mammal	[u'poodle', u'dalmatian', u'siamese cat', u'goldfish']	1
+12	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'dalmatian', u'poodle']	4
+13	question	siamese cat	NA	NA	animal
+13	question	goldfish	NA	NA	mammal
+13	question	poodle	NA	NA	dog
+13	question	dalmatian	NA	NA	dalmatian
+13	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'poodle', u'goldfish']	2
+13	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'dalmatian', u'poodle']	3
+13	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'poodle', u'goldfish']	3
+13	ans:	NA	mammal	[u'siamese cat', u'dalmatian', u'goldfish', u'poodle']	3
+14	question	goldfish	NA	NA	dalmatian
+14	question	siamese cat	NA	NA	mammal
+14	question	poodle	NA	NA	dalmatian
+14	question	dalmatian	NA	NA	animal
+14	ans:	NA	animal	[u'poodle', u'goldfish', u'siamese cat', u'dalmatian']	4
+14	ans:	NA	dalmatian	[u'goldfish', u'dalmatian', u'siamese cat', u'poodle']	2
+14	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'goldfish']	1
+14	ans:	NA	mammal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	3
+15	question	poodle	NA	NA	dog
+15	question	siamese cat	NA	NA	mammal
+15	question	goldfish	NA	NA	animal
+15	question	dalmatian	NA	NA	dalmatian
+15	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'poodle', u'goldfish']	4
+15	ans:	NA	mammal	[u'goldfish', u'siamese cat', u'poodle', u'dalmatian']	2
+15	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	4
+15	ans:	NA	dog	[u'poodle', u'goldfish', u'siamese cat', u'dalmatian']	1
+16	question	dalmatian	NA	NA	dalmatian
+16	question	poodle	NA	NA	dog
+16	question	siamese cat	NA	NA	mammal
+16	question	goldfish	NA	NA	animal
+16	ans:	NA	dalmatian	[u'dalmatian', u'goldfish', u'poodle', u'siamese cat']	1
+16	ans:	NA	dog	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	3
+16	ans:	NA	animal	[u'siamese cat', u'poodle', u'dalmatian', u'goldfish']	4
+16	ans:	NA	mammal	[u'siamese cat', u'poodle', u'dalmatian', u'goldfish']	1
+17	ans:	NA	animal	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	1
+17	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'siamese cat', u'goldfish']	2
+17	ans:	NA	mammal	[u'siamese cat', u'goldfish', u'dalmatian', u'poodle']	1
+17	ans:	NA	dog	[u'dalmatian', u'goldfish', u'siamese cat', u'poodle']	4
+17	question	dalmatian	NA	NA	dalmatian
+17	question	siamese cat	NA	NA	dog
+17	question	poodle	NA	NA	dog
+17	question	goldfish	NA	NA	mammal
+18	question	poodle	NA	NA	dog
+18	question	goldfish	NA	NA	animal
+18	question	siamese cat	NA	NA	animal
+18	question	dalmatian	NA	NA	dog
+18	ans:	NA	dog	[u'dalmatian', u'poodle', u'goldfish', u'siamese cat']	2
+18	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	4
+18	ans:	NA	mammal	[u'poodle', u'siamese cat', u'dalmatian', u'goldfish']	4
+18	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'goldfish', u'poodle']	2
+19	question	siamese cat	NA	NA	animal
+19	question	poodle	NA	NA	dog
+19	question	goldfish	NA	NA	animal
+19	question	dalmatian	NA	NA	dalmatian
+19	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'siamese cat', u'goldfish']	1
+19	ans:	NA	mammal	[u'poodle', u'dalmatian', u'siamese cat', u'goldfish']	3
+19	ans:	NA	dog	[u'siamese cat', u'poodle', u'dalmatian', u'goldfish']	2
+19	ans:	NA	animal	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	2
+20	question	dalmatian	NA	NA	dalmatian
+20	question	poodle	NA	NA	dog
+20	question	siamese cat	NA	NA	dalmatian
+20	question	goldfish	NA	NA	dog
+20	ans:	NA	dog	[u'poodle', u'dalmatian', u'goldfish', u'siamese cat']	2
+20	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'dalmatian', u'poodle']	3
+20	ans:	NA	mammal	[u'goldfish', u'siamese cat', u'dalmatian', u'poodle']	3
+20	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'poodle', u'goldfish']	1
+21	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'goldfish', u'poodle']	2
+21	ans:	NA	animal	[u'goldfish', u'dalmatian', u'poodle', u'siamese cat']	4
+21	ans:	NA	mammal	[u'siamese cat', u'poodle', u'goldfish', u'dalmatian']	1
+21	ans:	NA	dog	[u'poodle', u'goldfish', u'dalmatian', u'siamese cat']	3
+21	question	poodle	NA	NA	dog
+21	question	goldfish	NA	NA	animal
+21	question	dalmatian	NA	NA	dalmatian
+21	question	siamese cat	NA	NA	mammal
+22	question	siamese cat	NA	NA	dog
+22	question	poodle	NA	NA	dog
+22	question	dalmatian	NA	NA	dalmatian
+22	question	goldfish	NA	NA	animal
+22	ans:	NA	dalmatian	[u'siamese cat', u'goldfish', u'poodle', u'dalmatian']	4
+22	ans:	NA	animal	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	1
+22	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'goldfish', u'poodle']	4
+22	ans:	NA	mammal	[u'siamese cat', u'dalmatian', u'poodle', u'goldfish']	1
+23	ans:	NA	dalmatian	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	3
+23	ans:	NA	dog	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	2
+23	ans:	NA	animal	[u'goldfish', u'dalmatian', u'poodle', u'siamese cat']	1
+23	ans:	NA	mammal	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	4
+23	question	dalmatian	NA	NA	dalmatian
+23	question	poodle	NA	NA	dog
+23	question	siamese cat	NA	NA	mammal
+23	question	goldfish	NA	NA	animal
+24	ans:	NA	dog	[u'goldfish', u'poodle', u'dalmatian', u'siamese cat']	2
+24	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'goldfish', u'dalmatian']	4
+24	ans:	NA	mammal	[u'goldfish', u'dalmatian', u'siamese cat', u'poodle']	3
+24	ans:	NA	animal	[u'dalmatian', u'poodle', u'siamese cat', u'goldfish']	2
+24	question	dalmatian	NA	NA	dalmatian
+24	question	goldfish	NA	NA	animal
+24	question	siamese cat	NA	NA	mammal
+24	question	poodle	NA	NA	dog
