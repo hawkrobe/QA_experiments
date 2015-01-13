@@ -1,0 +1,86 @@
+.slider {
+  /* default is width 400 and margin 10 */
+	width: 400;
+	margin: 10px;
+}
+
+.figure {
+    display: inline-block;
+    margin: 0 0px;
+    text-align: center;
+    vertical-align: top;
+    width: 150px;
+}
+
+.image {
+    width: 150px;
+    height: 150px;
+    border:5px solid black;
+}
+
+.boxed {
+    display: table-cell;
+    padding-right:10px;
+    padding-left:10px;
+    text-align: center;
+    vertical-align: middle;
+    border: 5px solid black ;
+    font-size: 20px;
+    width: 125px;
+    height: 140px;
+
+}
+
+.highlight {
+    background-color: lightgray;
+}
+
+.caption {
+    font-size: 20px;
+    margin: 0 0 5px;
+}
+
+#q_instructions {
+    height: 1050px;
+}
+
+#a_instructions {
+    height: 1050px;
+}
+
+#q_exp {
+    height: 600px;
+}
+
+.border {
+    border:5px solid black;
+}
+
+.hidden {
+    display: none;
+}
+
+.revealed {
+    display: inline;
+}
+
+.err1 {
+    display: none;
+}
+
+.err2 {
+    display: none;
+}
+
+.err3 {
+    display: none;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0));
+    background-image: -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0));
+    background-image: -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0));
+    background-image: -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0));
+}

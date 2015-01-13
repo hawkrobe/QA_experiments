@@ -75,6 +75,7 @@ for(i in 1:dim(d1_a)[1]){
   } 
   d1_a$item_response[i] = item_response
 }
+d1_a$item_response
 ```
 
 Now plot these answers... Note that we collapsed together a participant giving multiple gates (e.g. "a thing is behind gates 1,2,3,and 4")
