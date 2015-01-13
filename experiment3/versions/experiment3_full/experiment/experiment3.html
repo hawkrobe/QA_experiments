@@ -1,0 +1,247 @@
+<html>
+
+<head>
+    <title>Q & A</title>
+
+    <!--JS-->
+
+    <!-- external general utilities -->
+    <script src="../_shared/js/jquery-1.11.1.min.js "></script>
+    <script src="../_shared/full-projects/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../_shared/js/underscore-min.js"></script>
+    <!-- if you want to draw stuff: -->
+    <!-- <script src="../_shared/js/raphael-min.js"></script> -->
+
+    <!-- cocolab experiment logic -->
+    <script src="../_shared/js/exp-V2.js"></script>
+    <script src="../_shared/js/stream-V2.js"></script>
+
+    <!-- cocolab general utilities -->
+    <script src="../_shared/js/mmturkey.js "></script>
+    <script src="../_shared/js/browserCheck.js"></script>
+    <script src="../_shared/js/utils.js"></script>
+    <!-- if you want to draw cute creatures (depends on raphael): -->
+    <!-- <script src="../_shared/js/ecosystem.js"></script> -->
+
+    <!-- experiment specific helper functions -->
+    <!-- <script src="js/local-utils.js"></script> -->
+
+    <!--CSS-->
+    <link href="../_shared/full-projects/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../_shared/css/cocolab-style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/local-style.css" rel="stylesheet" type="text/css"/>
+
+    <!-- experiment file -->
+    <script src="js/experiment3.js"></script>
+    <script src="js/stim_list.js"></script>
+    
+</head>
+
+<body onload="init();">
+  <noscript>This task requires JavaScript.</noscript>
+
+  <div class="slide" id="i0" style="height:600px">
+    <img src="../_shared/images/cocologo.png" alt="Stanford CoCoLab" id="cocologo"></img>
+    <p id="cocolab">Stanford CoCoLab: Questions and Answers</p>
+    <p align="left" id="instruct-text">The actions of asking and
+      answering questions play an important role in our everyday
+      social interactions. It's not always clear why someone is asking a question, but we have strong intuitions about what counts as a 'good question' or 'good answer'.
+    <p align="left" id="instruct-text">In this HIT, you will play a guessing game that tests these intuitions. There are two parts. In one part, you will play the role of the guesser, then you will play the role of the helper. It should take 5 or 6 minutes. Please pay attention and think carefully before responding! Thank you!</p>
+    <button id="start_button" type="button">Start Experiment</button>
+    <hr>
+    <u><p id="legal">Legal information:</p></u>
+    <p id="legal">By answering the following questions, you are
+      participating in a study being performed by cognitive scientists
+      in the Stanford Department of Psychology. If you have questions
+      about this research, please contact <b> Robert Hawkins</b>
+      at <b><a href="mailto://rxdh@stanford.edu">rxdh@stanford.edu</a> </b>
+      or Noah Goodman, at ngoodman@stanford.edu. You must be at least
+      18 years old to participate. Your participation in this research
+      is voluntary. You may decline to answer any or all of the
+      following questions. You may decline further participation, at
+      any time, without adverse consequences. Your anonymity is
+      assured; the researchers who have requested your participation
+      will not receive any personal information about you.</p>
+  </div>
+
+  <div class="slide" id="q_instructions">
+    <h3 id='q_title'></h3>
+    <p align='left'> There are four items in this game: a dalmatian, a poodle, a siamese cat, and a goldfish.</p>
+    <div id="images" style="height:175px; width=650px"> 
+      <img src="poodle.jpg" style="height:150px; width:150px;"> 
+      <img src="dalmatian.jpg" style="height:150px; width:150px;">
+      <img src="goldfish.jpg" style="height:150px; width:150px;">
+      <img src="siamese.jpg" style="height:150px; width:150px;">
+    </div>
+    <p align='left'> These four items are hidden behind four gates, but you don't know the order.</p>
+    <div id="images" style="height:175px; width=650px"> 
+      <img src="gate1.jpg" style="height:150px; width:150px;"> 
+      <img src="gate2.jpg" style="height:150px; width:150px;"> 
+      <img src="gate3.jpg" style="height:150px; width:150px;"> 
+      <img src="gate4.jpg" style="height:150px; width:150px;"> 
+    </div>
+    <p align='left'> In this part of the game, you will play the role of the 'guesser.' In each round, you will be asked to find one of the four items. For example, you may be told to <i>"Find the poodle!"</i> <p>
+    <p align='left'> If you had to guess which gate the poodle is behind without any further information, you wouldn't stand much of a chance. Luckily, you are playing with another player, the 'helper', who knows exactly what is behind each gate. You have the opportunity to ask them a single question before guessing. They can show you <b>the location of exactly one object</b>. For example, they may tell you that "the dalmatian is behind gate 1" or "the siamese cat is behind gate 4", but they are <b>not</b> allowed to tell you "the dogs are behind gates 1 and 3".</p>
+    <p align='left'> The catch is that you won't always be allowed to ask explicitly about the object you're trying to find: <b>you must choose a question from a limited set</b>. For example, you might be trying to find the poodle, but will not be allowed to ask "where is the poodle?" The helper knows that you have this constraint and will try to be as understanding as possible. </p>
+    <p align='left'> In this part of the experiment, you are only required to decide what question you would ask for each goal. You will not actually receive the helper's answer or select a gate. Your progress through the experiment is indicated in the top-right corner of the screen. Thank you for your participation! </p>
+    <button onclick="_s.button()">Continue</button>
+  </div>
+
+
+
+  <!-- MAIN EXPERIMENT SLIDE -->
+  <div class="slide" id="q_exp">
+    <b> <h1 id= 'qud'></h1> </b>
+    <div id="images" style="height:175px; width=650px"> 
+      <img id="poodle" src="poodle.jpg" style="height:150px; width:150px;"> 
+      <img id="dalmatian" src="dalmatian.jpg" style="height:150px; width:150px;">
+      <img id="goldfish" src="goldfish.jpg" style="height:150px; width:150px;">
+      <img id="siamese" src="siamese.jpg" style="height:150px; width:150px;">
+    </div>
+    <hr>    
+    <p align='left' id='instructs'></p>      
+    <select id="select_box">  </select>
+    <p><input type="button" id="a_button"  onclick="_s.button()" class="revealed" 
+     value="Continue"></p>
+    <div class = "err1">Please enter a response before continuing.</div>
+  </div>
+
+
+
+  <div class="slide" id="a_instructions">
+    <h3 id='a_title'></h3>
+    <p align='left'>There are four items hidden behind four gates:</p>
+    <div id="images" style="height:175px; width=650px"> 
+      <img src="poodle.jpg" style="height:150px; width:150px;"> 
+      <img src="dalmatian.jpg" style="height:150px; width:150px;">
+      <img src="goldfish.jpg" style="height:150px; width:150px;">
+      <img src="siamese.jpg" style="height:150px; width:150px;">
+    </div>
+    <div id="images" style="height:175px; width=650px"> 
+      <img src="gate1.jpg" style="height:150px; width:150px;"> 
+      <img src="gate2.jpg" style="height:150px; width:150px;"> 
+      <img src="gate3.jpg" style="height:150px; width:150px;"> 
+      <img src="gate4.jpg" style="height:150px; width:150px;"> 
+    </div>
+    <p align='left'> In this part of the game, you will play the role of the 'helper.' The other player is trying to find one of these four items, but only you know where they are! Before selecting a location, the guesser is allowed to ask you one question. In each round of the following game, you will be asked to give a helpful answer to different possible questions. </p>
+    <p align='left'> All of your answers will take the same form: you will tell them the location of a single item. For example, if the other player asks, "dalmatian?" you may respond "the dalmatian is behind gate 1" or "the siamese cat is behind gate 4", but not "the dogs are behind gates 1 and 3".</p>
+
+    <p align='left'> This seems easy, but the catch is that the other player is not always allowed to ask explicitly about the object they're trying to find: <b>they must choose a question from a limited set</b>. For example, they might be trying to find the poodle, but cannot ask "poodle?" Instead, they may ask something like "dog?" or "animal?" </p>
+
+    <p align='left'> It is your job to try to be as helpful and understanding as possible, keeping this constraint in mind. To succeed, you must consider why the other player chose the question they did, and what object they might be trying to find.</p>
+
+    <p align='left'> Thank you for your participation! </p>
+    <button onclick="_s.button()">Continue</button>
+  </div>
+
+
+
+  <!-- MAIN EXPERIMENT SLIDE -->
+  <div class="slide" id="a_exp">
+    <div id="questions" style="border-collapse:collapse;margin-left:100px;display:table,height:150px,width:400px"> 
+      <div id = "dalmatian_q" class="boxed"> Dalmatian? </div>
+      <div id = "dog_q" class="boxed"> Dog? </div>
+      <div id = "mammal_q" class="boxed"> Mammal? </div>
+      <div id = "animal_q" class="boxed"> Animal? </div>
+    </div>
+    <h2 id= 'question' style="font-weight: normal;"></h2> 
+    <hr>    
+    <h3 style="font-weight: normal;"> Given that objects are hidden in the following locations... </h3>
+    <div id="gates"> </div>
+    <h3 style="font-weight: normal;" id='instructs'> Please select which gate you would show the player: </h3><select id="ans_select_box">
+      <label><option value=""/></label>
+      <label><option value="1"/>Gate 1</label>
+      <label><option value="2"/>Gate 2</label>
+      <label><option value="3"/>Gate 3</label>
+      <label><option value="4"/>Gate 4</label>
+    </select>
+
+    <!--<textarea rows="3" cols="50" id="textbox"></textarea> -->
+
+   <!--  The 
+    <select id="select_box_obj">  
+      <option> </option>
+      <option> Dalmatian </option>
+      <option> Poodle </option>
+      <option> Siamese Cat </option>
+      <option> Daisy </option>
+    </select> 
+    is behind gate 
+    <select id="select_box_gate">  
+      <option>  </option>
+      <option> 1 </option>
+      <option> 2 </option>
+      <option> 3 </option>
+      <option> 4 </option>
+    </select>
+ -->    <p><input type="button" id="a_button"  onclick="_s.button()" class="revealed" 
+     value="Continue"></p>
+    <div class = "err1">Please enter a response before continuing.</div>
+  </div>
+    
+
+
+  <!--- SUBJECT INFO SLIDE -->
+  <div class="slide"  id="subj_info">
+    <div class="long_form">
+      <div class="subj_info_title">Additional information</div>
+      <p class="info">Answering these questions is optional, but will help us understand your answers.</p>
+      <p>Did you read the instructions and do you think you did the HIT correctly?</p>
+      <label><input type="radio"  name="assess" value="No"/>No</label>
+      <label><input type="radio"  name="assess" value="Yes"/>Yes</label>
+      <label><input type="radio"  name="assess" value="Confused"/>I was confused</label>
+
+      <p>Gender:
+        <select id="gender">
+          <label><option value=""/></label>
+          <label><option value="Male"/>Male</label>
+          <label><option value="Female"/>Female</label>
+          <label><option value="Other"/>Other</label>
+        </select>
+      </p>
+
+      <p>Age: <input type="text" id="age"/></p>
+      
+      <p>Level Of Education:
+        <select id="education">
+          <label><option value="-1"/></label>
+          <label><option value="0"/>Some High School</label>
+          <label><option value="1"/>Graduated High School</label>
+          <label><option value="2"/>Some College</label>
+          <label><option value="3"/>Graduated College</label>
+          <label><option value="4"/>Hold a higher degree</label>
+        </select>
+      </p>
+
+      <p>Native Language: <input type="text" id="language"/></p>
+      <label>(the language(s) spoken at home when you were a child)</label>
+
+      <p>Did you enjoy the hit?</p>
+      <select id="enjoyment">
+        <label><option value="-1"></option></label>
+        <label><option value="0">Worse than the Average HIT</option></label>
+        <label><option value="1" >An Average HIT</option></label>
+        <label><option value="2">Better than average HIT</option></label>
+      </select>
+
+      <p>We would be interested in any comments you have about this experiment. Please type them here:</p>
+      <textarea id="comments" rows="3" cols="50"></textarea>
+      <br/>
+      <button onclick="_s.submit()">Submit</button>
+    </div>
+  </div>
+
+  <div id="thanks" class="slide js" >
+    <p  class="big">Thanks for your Time!</p>
+  </div>
+
+  <div class="progress">
+    <span>Progress:</span>
+    <div class="bar-wrapper">
+      <div class="bar" width="0%">
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
