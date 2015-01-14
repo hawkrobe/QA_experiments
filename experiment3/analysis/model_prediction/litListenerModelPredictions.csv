@@ -1,0 +1,17 @@
+utterance	response	prob
+dalmatian	siamese	0.1666666666666667
+dalmatian	poodle	0.1666666666666667
+dalmatian	goldfish	0.1666666666666667
+dalmatian	dalmatian	0.4999999999999999
+dog	siamese	0.16666666666666669
+dog	poodle	0.33333333333333337
+dog	goldfish	0.16666666666666669
+dog	dalmatian	0.33333333333333337
+mammal	siamese	0.2777777777777778
+mammal	poodle	0.2777777777777778
+mammal	goldfish	0.1666666666666667
+mammal	dalmatian	0.2777777777777778
+animal	siamese	0.25
+animal	poodle	0.25
+animal	goldfish	0.25
+animal	dalmatian	0.25
