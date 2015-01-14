@@ -1,5 +1,5 @@
 // Run as:
-// webppl guessGameConditioning.js --require ./qa
+// webppl guessGameConditioning.js --require-js ./qa
 
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
@@ -145,17 +145,12 @@ var literalListener = cache(function(question, answer){
 
 var literalAnswerer = cache(
   function(question, trueWorld) {
-    // 1. Restrict to truthful answers
-    var truthfulAnswerPrior = Enumerate(
-      function(){
-        var answer = fullAnswerPrior();
-        factor(literalListener(question, answer).score([], trueWorld));
-        return answer;
-      });
-    // 2. Pick answer conditioned on communicating question predicate value
     return Enumerate(
       function(){
-        var answer = sample(truthfulAnswerPrior);
+        var answer = fullAnswerPrior();
+        // 1. Restrict to truthful answers
+        factor(literalListener(question, answer).score([], trueWorld));
+        // 2. Score answer based on expected probability of communicating question predicate value
         var score = mean(
           function(){
             // We may be uncertain about which leaf node the question
