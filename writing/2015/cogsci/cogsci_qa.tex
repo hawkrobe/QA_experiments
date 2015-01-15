@@ -37,9 +37,9 @@
 \newcommand{\appref}[1]{Appendix \ref{#1}}
 \newcommand{\sectionref}[1]{Section \ref{#1}}
 
-\title{What's a useful question? One that prompts an informative answer.}
+\title{Why do you ask? To be informative.}
  
-\author{{\large \bf Robert Hawkins (rxdh@stanford.edu)} \AND {\large \bf Andreas Stuhlm\"uller (andreas@stuhlmueller.org)}\\ 
+\author{{\large \bf Robert X.~D.~Hawkins (rxdh@stanford.edu)} \AND {\large \bf Andreas Stuhlm\"uller (andreas@stuhlmueller.org)}\\ 
 	\AND
 	{\large \bf Judith Degen (jdegen@stanford.edu)} 
   \AND {\large \bf Noah D.~Goodman (ngoodman@stanford.edu)} \\
@@ -56,23 +56,39 @@
 
 
 \textbf{Keywords:} 
-questions; answers; computational pragmatics; 
+questions; answers; computational pragmatics; theory of mind; 
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-What makes a question useful? What makes an answer to a question useful? 
+Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_ApparentBehavior}. Experiments in psycholinguistics have shown that this expertise extends to speech acts as well. For example... \red{Herb Clark example, Gibbs and Bryant example}. 
 
-\red{XXX what are some useful anwers other people have given? why do we think those answers are nevertheless lacking? \textbf{Judith}}
+\red{XXX what are some useful anwers other people have given? why do we think those answers are nevertheless lacking? \textbf{Judith} I describe Groenendijk and van Rooy below: any others? \textbf{Robert}}
 
-We propose that a useful answer to a question is one that is maximally informative with respect to an inferred underlying decision problem that the questioner has. A useful question, then, is one that optimally signals the questioner's underlying decision problem and has a high probability of resulting in an answer that is maximally informative with respect to that decision problem. 
+What makes a question useful? What makes an answer to a question useful? Early theories focused on the notion of informativeness. In Groenendijk \& Stokhof's \citeyear{GroenendijkStokhof84_SemanticsOfQuestions} theory of question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \cite{VanRooy03_QuestioningDecisionProblems} and others have pointed out, this predicts that \emph{wh}-questions like ``Where can I buy an Italian newspaper?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location. Clearly, this is not the case: a single nearby location would suffice. These theories also cannot account for the contextual variation in what counts as a useful answer, as encountered by Alice above. 
 
-The rest of this paper is structured as follows. First we formalize the optimal questioner and answerer within the Rational Speech Act framework \cite{frank2012}. In Experiment 1, we test questioners' behavior in a task that requires asking a question (from a fixed set of possible questions), given a decision problem. In Experiment 2, we test answerers' behavior in a task that requires giving an answer (from a fixed set of possible answers) to a question (from a fixed set of possible questions). We then compare performance of the Rational Speech Act model at capturing the obtained human data to two simpler models; one that takes into account only that an answerer wants to be maximally informative with respect to the question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).
+More recent theories have tried to fix these problems by introducing some consideration of the questioner's goals. van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals as a decision problem faced by the questioner. A useful answer under this decision theoretic account is one that maximizes the expected value of the questioner's decision problem. A useful question is one that induces a sufficiently fine-grained partition, optimally distinguishing the worlds relevant to the decision problem. While this framework elegantly accounts for the context-dependence and relevance-maximization of question and answer behavior, it assumes that the questioner's decision problem is known \emph{a priori} by the answerer. If this were the case, the act of asking questions would seem irrelevant: why wouldn't the answerer directly tell the questioner which action to take? 
 
+In this paper, we propose an account of question and answer behavior in which the questioner's intentions are \emph{not} known by the answerer and instead must be inferred. We propose that a useful answer to a question is one that is maximally informative with respect to this inferred underlying decision problem. A useful question, then, is one that optimally \emph{signals} the questioner's underlying decision problem and has a high probability of resulting in an answer that is maximally informative with respect to that decision problem. This places question and answer behavior in the larger class of social behavior governed by theory of mind.
 
-\section{A Rational Speech Act model of questions and answers}
+The rest of this paper is structured as follows. First we formalize the optimal questioner and answerer within the Rational Speech Act (RSA) framework \cite{frank2012}. In Experiment 1, we test questioners' behavior in a task that requires asking a question (from a fixed set of possible questions), given a decision problem. In Experiment 2, we test answerers' behavior in a task that requires giving an answer (from a fixed set of possible answers) to a question (from a fixed set of possible questions). We then compare three RSA models based on their ability to capture the obtained human data. In particular, we compare a model using a sophisticated pragmatic answerer to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).
+
+\section{A Rational Speech Act model of question and answer behavior}
 \label{sec:model}
+
+Suppose there is a set of distinct world states $\mathcal{W}$, a set of goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$. There are three agents in the simplest version of the model: 
+
+\begin{enumerate}
+\item The \textbf{literal listener} takes a question utterance $q \in \mathcal{Q}$ and an answer $a \in \mathcal{A}$ as input and returns a distribution over worlds that are consistent with the pair. Exactly what it means for a particular world to be consistent with the pair depends on the meaning function defined on $\mathcal{A}$ and $\mathcal{Q}$. Importantly, this literal listener is in common ground for the other agents to consult.
+
+\item The \textbf{literal answerer} takes a question utterance $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and returns a distribution over the answer space $\mathcal{A}$. It samples an answer with prior probability $P(a)$ and conditions on the likelihood of the questioner inferring the true world $w$ from this answer, via the literal listener. 
+
+\item The \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a distribution over questions $\mathcal{Q}$. It first computes a prior $P(w)$ over states of the world, weighted by their priority under the goal $g$. Next, it samples a question $q \in \mathcal{Q}$ and computes the expected information gain from hearing the answerer's response to that question. Information gain is measured as the Kullback-Leibler divergence between the prior distribution $P(w)$ and the posterior distribution over world states after conditioning on the answer, where the posterior is also weighted by the world's priority under the goal $g$. 
+
+\end{enumerate}
+
+Within this computational framework, different theories of question and answer behavior can be formalized and compared on the basis of their predictions. Assumptions about what is held in common ground are made transparent, and we can systematically manipulate individual elements of the model to test how they affect overall predictions. 
 
 \red{XXX \textbf{Robert/Andreas}}
 
@@ -94,6 +110,10 @@ Experiment 2 tests answerers' choice of answer to a question. \red{XXX \textbf{R
 
 \section{General discussion}
 \label{sec:gd}
+
+ In this paper we have presented evidence that question and answer behavior, a particular kind of action, also depends critically on participants signaling and inferring intentions. 
+
+Behind every question lies some goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). Intuitively, different intentions seem to warrant different kinds of answers, even if the question is expressed using the same words. Viewing these questions as signals provides a new theoretical framework to analyze particular kinds of questions.
 
 \red{XXX}
 

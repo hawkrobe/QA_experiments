@@ -7,7 +7,8 @@ First, import data
 
 ```{r}
 # Restricted answer space (x is at gate y)
-d0 = read.csv("q_and_a3-trials.tsv", sep = '\t')
+setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment3/")
+d_orig = read.csv("./versions/experiment3_orig/q_and_a3-trials.tsv", sep = '\t')
 # Free response answer space
 d1 = read.csv("../../experiment3_fr/data/q_and_a3_fr-trials.tsv", sep = '\t')
 ```
@@ -15,10 +16,10 @@ d1 = read.csv("../../experiment3_fr/data/q_and_a3_fr-trials.tsv", sep = '\t')
 We begin by analyzing the 'question' part of the experiment. Extract the question items.
 
 ```{r}
-d0_q = subset(d0, trial_type == 'question', select=c(workerid, qud, response))
+d_orig_q = subset(d_orig, trial_type == 'question', select=c(workerid, qud, response))
 d1_q = subset(d1, trial_type == 'question', select=c(workerid, qud, response))
 d1_q$response = factor(d1_q$response)
-pooled_qs = rbind(d0_q, d1_q)
+pooled_qs = rbind(d_orig_q, d1_q)
 str(pooled_qs)
 ```
 
@@ -31,28 +32,26 @@ g4<-ggplot(pooled_qs, aes(x=response)) + geom_histogram(color="black", fill='bla
 g4 + facet_wrap(~qud)
 ```
 
-
-
 Next, we evaluate the answers:
 
 Note that participants always tell the truth -- the gate they give always matches the true location of the item they give.
 
 ```{r}
-d0_a = subset(d0, trial_type == 'ans:', 
+d_orig_a = subset(d_orig, trial_type == 'ans:', 
               select=c(workerid, utterance, world_state, gate_response, item_response))
-d0_a$world_state = strsplit(as.character(d0_a$world_state), split = ',')
-for(i in 1:dim(d0_a)[1]){
-  d0_a$telling_truth = d0_a$gate_response[i] == match(tolower(d0_a$item_response[i]), 
-                                                      d0_a$world_state[i][[1]])
+d_orig_a$world_state = strsplit(as.character(d_orig_a$world_state), split = ',')
+for(i in 1:dim(d_orig_a)[1]){
+  d_orig_a$telling_truth = d_orig_a$gate_response[i] == match(tolower(d_orig_a$item_response[i]), 
+                                                      d_orig_a$world_state[i][[1]])
 }
 ```
 
 This justifies just looking at the item they give:
 
 ```{r}
-new_labels = sapply(X = d0_a$utterance, FUN = function(v) {return(paste("utterance:", v))})
-d0_a$facet_label = new_labels
-g4<-ggplot(d0_a, aes(x=item_response)) + geom_histogram(color="black", fill='black')
+new_labels = sapply(X = d_orig_a$utterance, FUN = function(v) {return(paste("utterance:", v))})
+d_orig_a$facet_label = new_labels
+g4<-ggplot(d_orig_a, aes(x=item_response)) + geom_histogram(color="black", fill='black')
 g4 + facet_wrap(~facet_label)
 ```
 
@@ -96,6 +95,63 @@ Otherwise, it's pretty cool that even for vague questions like 'where is a thing
 
 If you take out the multiple gate references, this is the same result as the non-free form version. 
 
+Experiment3_short analysis
+--------------------------
+
+Load and clean data. We remove people who self-identify as 'confused' 
+
+```{r}
+d_short = read.csv("versions/experiment3_short/data/q_and_a3_short-trials.tsv", 
+                   sep = '\t')
+# Remove people who were confused...
+ps=read.csv("versions/experiment3_short/data/q_and_a3_short-subject_information.tsv", 
+              sep = '\t')
+nonconfused_ps <- (ps %>% 
+                   mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
+                   filter(asses2 != 1))$workerid
+d_short = filter(d_short, workerid %in% nonconfused_ps)
+```
+
+Run questioner 
+
+```{r}
+d_short_q = subset(d_short, trial_type == 'question', 
+                   select=c(workerid, qud, response))
+d_short_q$response = factor(d_short_q$response)
+new_labels = sapply(X = d_short_q$qud, 
+                    FUN = function(v) {return(paste("qud:", v))})
+d_short_q$facet_label = new_labels
+g4<-(ggplot(d_short_q, aes(x=response)) 
+    + geom_histogram(color="black", fill='black')
+    + facet_wrap(~facet_label))
+g4
+```
+
+Answer analysis
+
+```{r}
+d_short_a = subset(d_short, trial_type == 'ans:', 
+                   select=c(workerid, utterance, world_state, response))
+# Remove one trial where someone forgot to respond and somehow got through...
+d_short_a <- d_short_a[d_short_a$response != "None",]
+d_short_a$response = as.numeric(d_short_a$response)
+# Map gate number responses onto the objects at those gates on the given trial
+d_short_a$world_state = strsplit(as.character(d_short_a$world_state), split = ',')
+for(i in 1:dim(d_short_a)[1])
+  d_short_a$item_response[i] = d_short_a$world_state[[i]][d_short_a$response[i]]
+# Make nicer labels for facets
+new_labels = sapply(X = d_short_a$utterance, 
+                    FUN = function(v) {return(paste("utterance:", v))})
+d_short_a$facet_label = new_labels
+g4<-(ggplot(d_short_a, aes(x=item_response)) 
+     + geom_histogram(color="black", fill='black')
+     + facet_wrap(~facet_label))
+g4
+```
+
+Model prediction plots
+----------------------
+
 Now, plot for dumb model:
 
 ```{r}
@@ -123,11 +179,11 @@ Plot for question model predictions
 ```{r}
 pred_q = read.csv("analysis/questionerModelPredictions.txt", sep = '\t')
 new_labels = sapply(X = pred_q$qud, FUN = function(v) {return(paste("qud:", v))})
-pred_q$prob <- pred_q$prob * 25
+pred_q$prob <- pred_q$prob - .22
 str(pred_q)
 pred_q$facet_label = new_labels
 g4<-(ggplot(pred_q, aes(x=response, y=prob)) 
-    + scale_y_continuous(limits = c(0,.3))
+    #+ scale_y_continuous(limits = c(0,.3))
     + geom_bar(stat='identity', color='black', fill='black')
     + facet_wrap(~facet_label)
     )
