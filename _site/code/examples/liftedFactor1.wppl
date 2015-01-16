@@ -1,0 +1,57 @@
+// Basic erp
+
+var xs = [1, 2, 3, 4, 5, 6];
+var ERP1 = makeERP([.1, .1, .1, .1, .1, .1], xs);
+
+// Basic functions
+
+var plus = function(x, y){
+  return x + y;
+};
+
+var timesTwo = function(x){
+  return x * 2;
+};
+
+var scoreResult = function(x){
+  return - 2 * Math.log(x);
+}
+
+// Lifted erps and functions
+
+var liftedERP1 = liftERP(ERP1);
+var liftedPlus = liftFunction(plus, 'plus');
+var liftedTimesTwo = liftFunction(timesTwo, 'timesTwo');
+var liftedScoreResult = liftScorer(scoreResult, 'scoreResult');
+
+// Basic model
+
+var model = function(){
+  globalStore['baseAddress'] = getAddress();
+  var bar = function(){
+    return liftedERP1();
+  };
+  var baz = function(){
+    var y = liftedERP1();
+    return liftedPlus(y, bar());
+  };
+  var result = liftedTimesTwo(baz());
+  liftedFactor(liftedScoreResult(result));
+  return result;
+};
+
+// Ctf model wrapper
+
+var ctfModel = function(level){
+  globalStore['level'] = level;
+  if (level === 0){
+    return model();
+  } else {
+    model();
+    return ctfModel(level - 1);
+  }
+};
+
+ParticleFilter(
+  function(){return ctfModel(3);},
+  3000);

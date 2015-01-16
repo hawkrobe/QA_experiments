@@ -1,27 +1,18 @@
 ---
 layout: default
-title: Coarse-to-Fine Inference
+title: Q & A
 ---
 
 <div class="main">
-  <h1>Coarse-to-Fine Inference</h1>
+  <h1>Questions and Answers</h1>
 </div>
 
-This set of notes contains work-in-progress on applying coarse-to-fine inference techniques to probabilistic programs. To make edits, push commits to the `gh-pages` branch of the (private) [coarse-to-fine](https://github.com/stuhlmueller/coarse-to-fine) repository.
+This set of notes contains work-in-progress on modelling question and answer behavior. To make edits, push commits to the `gh-pages` branch of the [Q_and_A](https://github.com/hawkrobe/Q_and_A) repository.
 
 {% assign sorted_pages = site.pages | sort:"name" %}
 
-### Inference techniques
-
-- Work in progress
-{% for p in sorted_pages %}
-  {% if p.layout == 'page' %}
-    {% if p.status == 'wip' %}
-  - [{{ p.title }}]({{ site.baseurl }}{{ p.url }})
-    {% endif %}
-  {% endif %}
-{% endfor %}
-- Current pages
+### Current models
+<!-- - Current pages-->
 {% for p in sorted_pages %}
   {% if p.layout == 'page' %}
     {% if p.status == 'current' %}
@@ -29,6 +20,15 @@ This set of notes contains work-in-progress on applying coarse-to-fine inference
     {% endif %}
   {% endif %}
 {% endfor %}
+<!--
+- Work in progress
+{% for p in sorted_pages %}
+  {% if p.layout == 'page' %}
+    {% if p.status == 'wip' %}
+  - [{{ p.title }}]({{ site.baseurl }}{{ p.url }})
+    {% endif %}
+  {% endif %}
+{% endfor %} 
 - Outdated pages
 {% for p in sorted_pages %}
   {% if p.layout == 'page' %}
@@ -48,3 +48,4 @@ This set of notes contains work-in-progress on applying coarse-to-fine inference
   {% endif %}
 {% endfor %}
 - Old paper draft: [CoarseToFine.pdf]({{ site.baseurl }}/docs/CoarseToFine.pdf)
+-->

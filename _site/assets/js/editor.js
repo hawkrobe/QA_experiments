@@ -49,6 +49,7 @@ var CodeMirrorComponent = React.createClass({
     this.cm.on("blur", this.props.onBlur);
     this.cm.on("focus", this.props.onFocus);
     this.updateCode();
+    foldCode(this.cm);
   },
 
   componentDidUpdate: function(){

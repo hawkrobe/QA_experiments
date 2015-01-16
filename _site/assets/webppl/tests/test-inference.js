@@ -3,7 +3,9 @@
 var util = require("../src/util.js");
 var _ = require('underscore');
 var webppl = require('../src/main.js');
-var topK = webppl.topK;
+
+var topK;
+var _trampoline;
 
 var testHistsApproxEqual = function(test, hist, expectedHist, tolerance){
   var allOk = true;
@@ -22,7 +24,8 @@ var testHistsApproxEqual = function(test, hist, expectedHist, tolerance){
 
 var runContinuousSamplingTest = function(test, code, checkSamples, numSamples){
   var samples = [];
-  topK = function(s,value){
+  topK = function(s, value){
+    _trampoline = null;
     samples.push(value);
     if (samples.length == numSamples){
       test.ok(checkSamples(samples));
@@ -31,14 +34,15 @@ var runContinuousSamplingTest = function(test, code, checkSamples, numSamples){
   };
   var compiledProgram = webppl.compile(code);
   for (var i=0; i<numSamples; i++){
-    eval(compiledProgram);
+    eval('(function(){' + compiledProgram + '})()');
   }
 };
 
 var runDiscreteSamplingTest = function(test, code, expectedHist, numSamples, tolerance){
   var hist = {};
   var numFinishedSamples = 0;
-  topK = function(s,value){
+  topK = function(s, value){
+    _trampoline = null;
     hist[value] = hist[value] || 0;
     hist[value] += 1;
     numFinishedSamples += 1;
@@ -50,13 +54,14 @@ var runDiscreteSamplingTest = function(test, code, expectedHist, numSamples, tol
   };
   var compiledProgram = webppl.compile(code);
   for (var i=0; i<numSamples; i++){
-    eval(compiledProgram);
+    eval('(function(){' + compiledProgram + '})()');
   }
 };
 
 var runDistributionTest = function(test, code, expectedHist, tolerance){
   var hist = {};
   topK = function(s,erp){
+    _trampoline = null;
     _.each(
       erp.support(),
       function (value){
@@ -200,7 +205,7 @@ exports.testParticleFilter = {
                 "    factor( (x|y) ? 0 : -Infinity);" +
                 "    return x;" +
                 "  }," +
-                "  300) // particles");
+                "  1000) // particles");
     var expectedHist = {
       "true": 2/3,
       "false": 1/3
@@ -219,7 +224,7 @@ exports.testMH = {
                 "    factor( (x|y) ? 0 : -Infinity);" +
                 "    return x;" +
                 "  }," +
-                "  1000) // samples");
+                "  5000) // samples");
     var expectedHist = {
       "true": 2/3,
       "false": 1/3
@@ -238,7 +243,7 @@ exports.testPMCMC = {
                 "    factor( (x|y) ? 0 : -Infinity);" +
                 "    return x;" +
                 "  }," +
-                "  300, 5) // particles");
+                "  1000, 5) // particles");
     var expectedHist = {
       "true": 2/3,
       "false": 1/3
@@ -257,7 +262,7 @@ test1: function(test){
               "    factor( (x|y) ? 0 : -Infinity);" +
               "    return x;" +
               "  }," +
-              "  100, 5) // particles");
+              "  1000, 10) // particles, rejuvenation steps");
   var expectedHist = {
     "true": 2/3,
     "false": 1/3

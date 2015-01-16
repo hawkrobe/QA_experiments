@@ -3,7 +3,7 @@
 var _ = require('underscore');
 
 function runningInBrowser(){
-    return !(typeof window === 'undefined');
+  return !(typeof window === 'undefined');
 }
 
 function makeGensym() {
@@ -41,24 +41,17 @@ var normalizeHist = function(hist){
 };
 
 var normalizeArray = function(xs){
-  var Z = util.sum(xs);
+  var Z = sum(xs);
   return xs.map(function(x){return x/Z;});
 };
 
 var logsumexp = function(a) {
-	var m = Math.max.apply(null, a);
-	var sum = 0;
-	for (var i=0; i<a.length; ++i) {
-    sum += Math.exp(a[i] - m);
+  var m = Math.max.apply(null, a);
+  var sum = 0;
+  for (var i=0; i<a.length; ++i) {
+    sum += (a[i] === -Infinity ? 0 : Math.exp(a[i] - m));
   }
-	return m + Math.log(sum);
-};
-
-var withEmptyStack = function(thunk){
-  var id = setInterval(function() {
-    clearInterval(id);
-    thunk();
-  }, 0);
+  return m + Math.log(sum);
 };
 
 var copyObj = function(obj){
@@ -69,15 +62,28 @@ var copyObj = function(obj){
   return newobj;
 }
 
+// func(x, i, xs, nextK)
+// nextK()
+function cpsForEach(func, nextK, xs, i){
+  i = (i === undefined) ? 0 : i;
+  if (i === xs.length-1){
+    nextK();
+  } else {
+    func(xs[i], i, xs, function(){
+      cpsForEach(func, nextK, xs, i+1);
+    });
+  }
+}
+
 module.exports = {
+  copyObj: copyObj,
+  cpsForEach: cpsForEach,
   gensym: gensym,
-  makeGensym: makeGensym,
-  prettyJSON: prettyJSON,
-  sum: sum,
-  normalizeHist: normalizeHist,
-  normalizeArray: normalizeArray,
   logsumexp: logsumexp,
-  withEmptyStack: withEmptyStack,
+  makeGensym: makeGensym,
+  normalizeArray: normalizeArray,
+  normalizeHist: normalizeHist,
+  prettyJSON: prettyJSON,
   runningInBrowser: runningInBrowser,
-  copyObj: copyObj
+  sum: sum
 };

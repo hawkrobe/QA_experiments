@@ -1,0 +1,96 @@
+var print = function(x){
+  console.log(x);
+};
+
+var printState = function(yieldsofar, symbols, trueyield){
+  if (arrayEq(yieldsofar, trueyield) & (symbols.length == 0)){
+    print([yieldsofar, symbols, '********************************']);
+  } else {
+    print([yieldsofar, symbols]);
+  }
+};
+
+var arrayEq = function(a, b){
+  return (a.length == 0 ?
+          (b.length == 0) :
+          a[0]==b[0] & arrayEq(a.slice(1), b.slice(1)));
+};
+
+var transition = function(symbol){
+  return rules[symbol].rhs[discrete(rules[symbol].probs)];
+};
+
+var rules = {
+  'S': {
+    rhs: [['X'], ['Y']],
+    probs: [.7, 0.3]
+  },
+  'X': {
+    rhs: [['X1'], ['X2'], ['X3']],
+    probs: [.33, .33, .33]
+  },
+  'X1': {
+    rhs: [['X1', 'X1'], ['A', 'X1'], ['A']],
+    probs: [.33, .33, .33]
+  },
+  'X2': {
+    rhs: [['X2', 'X2'], ['A', 'X2'], ['A']],
+    probs: [.33, .33, .33]
+  },
+  'X3': {
+    rhs: [['X3', 'X3'], ['A', 'X3'], ['A']],
+    probs: [.33, .33, .33]
+  },
+  'Y': {
+    rhs: [['Y1'], ['Y', 'Y1']],
+    probs: [.5, .5]
+  },
+  'Y1': {
+    rhs: [['A'], ['B']],
+    probs: [.1, .9]
+  }
+};
+
+var preTerminal = function(symbol){
+  return symbol=='A' | symbol=='B';
+};
+
+var terminal = function(symbol){
+  // deterministic for now
+  return {
+    'A' : 'a',
+    'B' : 'b'
+  }[symbol];
+};
+
+var expand = function(symbols, yieldsofar, trueyield) {
+  printState(yieldsofar, symbols, trueyield);
+  if (symbols.length==0) {
+    return yieldsofar;
+  } else {
+    return expand(symbols.slice(1),
+                  pcfg(symbols[0], yieldsofar, trueyield),
+                  trueyield);
+  }
+};
+
+var pcfg = function(symbol, yieldsofar, trueyield) {
+  if (preTerminal(symbol)){
+    var t = terminal(symbol);
+    if (yieldsofar.length < trueyield.length){
+      factor(t==trueyield[yieldsofar.length] ? 0 : -Infinity);
+          }
+    return yieldsofar.concat([t]);
+  } else {
+    return expand(transition(symbol), yieldsofar, trueyield); }
+};
+
+print(
+  Enumerate(
+    function(){
+      var trueyield = ['a', 'a', 'b'];
+      var out = pcfg('S', [], trueyield);
+      factor(arrayEq(out, trueyield) ? 0 : -Infinity);
+      return out;
+    },
+    32));

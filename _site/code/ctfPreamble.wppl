@@ -1,0 +1,68 @@
+var makeERP = function(ps, vs){
+  return Enumerate(function(){return vs[discrete(ps)]});
+};
+
+var printERP = function(erp) {
+  erp.support().map(
+    function(v) {
+      var prob = Math.exp(erp.score([], v));
+      if (prob > 0.0){
+        console.log({val: v, prob: prob});
+      }
+    }
+  );
+};
+
+var uniformDraw = function(xs){
+  return xs[randomInteger(xs.length)];
+};
+
+var logMeanExp = function(erp){
+  return Math.log(expectation(erp, function(x){return Math.exp(x);}));
+};
+
+var refineValue = function(x){
+  return ctfUtils.refineValue(x);
+};
+
+var marginalizeRefinements = function(fn, args){
+  var argsets = map(refineValue, args);
+  return Enumerate(
+    function(){
+      var fargs = map(uniformDraw, argsets);
+      return ctfUtils.coarsenValue(fn(fargs));
+    }
+  );
+};
+
+var lift = function(fn, fnName, samplerToValue){
+  var fnAtLevel = function(level){
+    if (level === 0){
+      return function(args){
+        return apply(fn, args);
+      };
+    } else {
+      return function(args){
+        var erp = cacheByName(
+          JSON.stringify([fnName, level, args]),
+          function(){
+            var lowerFn = fnAtLevel(level - 1);
+            return marginalizeRefinements(lowerFn, args);
+          });
+        return samplerToValue(erp);
+      };
+    };
+  };
+  return function(){
+    var args = arguments;
+    return fnAtLevel(globalStore['level'])(args);
+  };
+}
+
+var liftFunction = function(fn, fnName){
+  return lift(fn, fnName, sample);
+};
+
+var liftScorer = function(fn, fnName){
+  return lift(fn, fnName, logMeanExp);
+};

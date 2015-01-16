@@ -2,7 +2,7 @@
 
 var topK; // Top-level continuation
 var activeCodeBox;
-
+var _trampoline;
 
 // Utils
 
@@ -233,27 +233,24 @@ function setupCodeBox(element){
   var runWebPPL = function(){
     var oldTopK = topK;
     var oldActiveCodeBox = activeCodeBox;
-    topK = showResult;
+    topK = function(s, x){
+      _trampoline = null;
+      showResult(s, x);
+      topK = oldTopK; };
     activeCodeBox = $element;
-    var activePre = activeCodeBox.parent();
-    activePre.find("canvas").remove();
-    activePre.find(".resultDiv").text("");
-    activePre.find("button").text("compiling...");
-    setTimeout(function(){
-      try {
-        var compiled = webppl.compile(cm.getValue(), true);
-        activePre.find("button").text("running...");
-        setTimeout(function(){
-          try {
-            eval.call(window, compiled);
-          } finally {
-            activePre.find("button").text("run");
-          }
-        }, 10);
-      } finally {
-        activePre.find("button").text("run");
-      }
-    }, 10);
+    activeCodeBox.parent().find("canvas").remove();
+    activeCodeBox.parent().find(".resultDiv").text("");
+    try {
+      var compiled = webppl.compile(cm.getValue(), false);
+      eval.call(window, compiled);
+    // } catch (err) {
+    //   resultDiv.show();
+    //   resultDiv.append(document.createTextNode((err.stack)));
+      // throw err;
+    } finally {
+      // topK = oldTopK;
+      // activeCodeBox = oldActiveCodeBox;
+    }
   };
 
   var runJS = function(){

@@ -1,5 +1,6 @@
 "use strict";
 
+var assert = require('assert');
 var _ = require('underscore');
 var PriorityQueue = require('priorityqueuejs');
 var util = require('./util.js');
@@ -28,11 +29,13 @@ var globalStore = {};
 // erp.sample(params) returns a value sampled from the distribution.
 // erp.score(params, val) returns the log-probability of val under the distribution.
 // erp.support(params) gives an array of support elements.
+// erp.grad(params, val) gives the gradient of score at val wrt params.
 
-function ERP(sampler, scorer, supporter) {
+function ERP(sampler, scorer, supporter, grad) {
   this.sample = sampler;
   this.score = scorer;
   this.support = supporter;
+  this.grad = grad;
 }
 
 var uniformERP = new ERP(
@@ -42,9 +45,9 @@ var uniformERP = new ERP(
   },
   function uniformScore(params, val){
     if (val < params[0] || val > params[1]) {
-	    return -Infinity;
+      return -Infinity;
     }
-	  return -Math.log(params[1] - params[0]);
+    return -Math.log(params[1] - params[0]);
   }
 );
 
@@ -55,19 +58,23 @@ var bernoulliERP = new ERP(
     return val;
   },
   function flipScore(params, val) {
+    //FIXME: check domain
     var weight = params[0];
     return val ? Math.log(weight) : Math.log(1 - weight);
   },
   function flipSupport(params) {
     return [true, false];
+  },
+  function flipGrad(params, val) {
+    //FIXME: check domain
+    var weight = params[0];
+    return val ? [1/weight] : [-1/weight];
   }
 );
 
 var randomIntegerERP = new ERP(
   function randomIntegerSample(params) {
-    var stop = params[0];
-    var val = Math.floor(Math.random() * stop);
-    return val;
+    return Math.floor(Math.random() * params[0]);
   },
   function randomIntegerScore(params, val) {
     var stop = params[0];
@@ -75,8 +82,7 @@ var randomIntegerERP = new ERP(
     return inSupport ? -Math.log(stop) : -Infinity;
   },
   function randomIntegerSupport(params) {
-    var stop = params[0];
-    return _.range(stop);
+    return _.range(params[0]);
   }
 );
 
@@ -97,7 +103,7 @@ function gaussianSample(params){
 function gaussianScore(params, x){
   var mu = params[0];
   var sigma = params[1];
-	return -.5*(1.8378770664093453 + 2*Math.log(sigma) + (x - mu)*(x - mu)/(sigma*sigma));
+  return -.5*(1.8378770664093453 + 2*Math.log(sigma) + (x - mu)*(x - mu)/(sigma*sigma));
 }
 
 function gaussianFactor(store, k, addr, mu, std, val){
@@ -140,7 +146,7 @@ function gammaSample(params){
   var a = params[0];
   var b = params[1];
   if (a < 1) {
-    return gammaSample(1+a,b) * Math.pow(Math.random(), 1/a);
+    return gammaSample([1+a,b]) * Math.pow(Math.random(), 1/a);
   }
   var x, v, u;
   var d = a-1/3;
@@ -167,7 +173,7 @@ var gammaERP = new ERP(
 var exponentialERP = new ERP(
   function exponentialSample(params){
     var a = params[0];
-	  var u = Math.random();
+    var u = Math.random();
     return Math.log(u) / (-1 * a);
   },
   function exponentialScore(params, val){
@@ -177,7 +183,7 @@ var exponentialERP = new ERP(
 );
 
 function logBeta(a, b){
-	return logGamma(a) + logGamma(b) - logGamma(a+b);
+  return logGamma(a) + logGamma(b) - logGamma(a+b);
 }
 
 function betaSample(params){
@@ -193,19 +199,17 @@ var betaERP = new ERP(
     var a = params[0];
     var b = params[1];
     var x = val;
-	  if (x > 0 && x < 1) {
-	    return (a-1)*Math.log(x) + (b-1)*Math.log(1-x) - logBeta(a,b);
-    } else {
-      return -Infinity;
-    }
+    return ((x > 0 && x < 1)
+            ? (a-1)*Math.log(x) + (b-1)*Math.log(1-x) - logBeta(a,b)
+            : -Infinity);
   }
 );
 
 function binomialG(x){
-	if (x == 0) return 1;
-	if (x == 1) return 0;
-	var d = 1 - x;
-	return (1 - (x * x) + (2 * x * Math.log(x))) / (d * d);
+  if (x == 0) return 1;
+  if (x == 1) return 0;
+  var d = 1 - x;
+  return (1 - (x * x) + (2 * x * Math.log(x))) / (d * d);
 }
 
 function binomialSample(params){
@@ -226,9 +230,7 @@ function binomialSample(params){
   var u;
   for (var i=0; i<n; i++){
     u = Math.random();
-    if (u < p) {
-      k++;
-    }
+    if (u < p) k++;
   }
   return k | 0;
 }
@@ -239,22 +241,25 @@ var binomialERP = new ERP(
     var p = params[0];
     var n = params[1];
     var s = val;
-	  var inv2 = 1/2;
-	  var inv3 = 1/3;
-	  var inv6 = 1/6;
-	  if (s >= n) return -Infinity;
-	  var q = 1-p;
-	  var S = s + inv2;
-	  var T = n - s - inv2;
-	  var d1 = s + inv6 - (n + inv3) * p;
-	  var d2 = q/(s+inv2) - p/(T+inv2) + (q-inv2)/(n+1);
-	  d2 = d1 + 0.02*d2;
-	  var num = 1 + q * binomialG(S/(n*p)) + p * binomialG(T/(n*q));
-	  var den = (n + inv6) * p * q;
-	  var z = num / den;
-	  var invsd = Math.sqrt(z);
-	  z = d2 * invsd;
-	  return gaussianScore([0, 1], z) + Math.log(invsd);
+    var inv2 = 1/2;
+    var inv3 = 1/3;
+    var inv6 = 1/6;
+    if (s >= n) return -Infinity;
+    var q = 1-p;
+    var S = s + inv2;
+    var T = n - s - inv2;
+    var d1 = s + inv6 - (n + inv3) * p;
+    var d2 = q/(s+inv2) - p/(T+inv2) + (q-inv2)/(n+1);
+    d2 = d1 + 0.02*d2;
+    var num = 1 + q * binomialG(S/(n*p)) + p * binomialG(T/(n*q));
+    var den = (n + inv6) * p * q;
+    var z = num / den;
+    var invsd = Math.sqrt(z);
+    z = d2 * invsd;
+    return gaussianScore([0, 1], z) + Math.log(invsd);
+  },
+  function binomialSupport(params) {
+    return _.range(params[1]);
   }
 );
 
@@ -300,6 +305,7 @@ var poissonERP = new ERP(
   },
   function poissonScore(params, val){
     var mu = params[0];
+    var k = val;
     return k * Math.log(mu) - mu - lnfact(k);
   }
 );
@@ -307,55 +313,55 @@ var poissonERP = new ERP(
 var dirichletERP = new ERP(
   function dirichletSample(params){
     var alpha = params;
-	  var ssum = 0;
-	  var theta = [];
-	  var t;
-	  for (var i = 0; i < alpha.length; i++) {
-		  t = gammaSample([alpha[i], 1]);
-		  theta[i] = t;
-		  ssum = ssum + t;
-	  }
-	  for (var i = 0; i < theta.length; i++) {
-		  theta[i] /= ssum;
+    var ssum = 0;
+    var theta = [];
+    var t;
+    for (var i = 0; i < alpha.length; i++) {
+      t = gammaSample([alpha[i], 1]);
+      theta[i] = t;
+      ssum = ssum + t;
     }
-	  return theta;
+    for (var i = 0; i < theta.length; i++) {
+      theta[i] /= ssum;
+    }
+    return theta;
   },
   function dirichletScore(params, val){
     var alpha = params;
     var theta = val;
-	  var asum = 0;
-	  for (var i = 0; i < alpha.length; i++) {
+    var asum = 0;
+    for (var i = 0; i < alpha.length; i++) {
       asum += alpha[i];
     }
-	  var logp = logGamma(asum);
-	  for (var i = 0; i < alpha.length; i++){
-		  logp += (alpha[i]-1)*Math.log(theta[i]);
-		  logp -= logGamma(alpha[i]);
-	  }
-	  return logp;
+    var logp = logGamma(asum);
+    for (var i = 0; i < alpha.length; i++){
+      logp += (alpha[i]-1)*Math.log(theta[i]);
+      logp -= logGamma(alpha[i]);
+    }
+    return logp;
   }
 );
 
-
 function multinomialSample(theta) {
-    var thetaSum = util.sum(theta);
-    var x = Math.random() * thetaSum;
-    var k = theta.length;
-    var probAccum = 0;
-    for (var i = 0; i < k; i++) {
-        probAccum += theta[i];
-        if (probAccum >= x) {
-            return i;
-        } //FIXME: if x=0 returns i=0, but this isn't right if theta[0]==0...
-    }
-    return k;
+  var thetaSum = util.sum(theta);
+  var x = Math.random() * thetaSum;
+  var k = theta.length;
+  var probAccum = 0;
+  for (var i = 0; i < k; i++) {
+    probAccum += theta[i];
+    if (probAccum >= x) {
+      return i;
+    } //FIXME: if x=0 returns i=0, but this isn't right if theta[0]==0...
+  }
+  return k;
 }
 
 //make a discrete ERP from a {val: prob, etc.} object (unormalized).
 function makeMarginalERP(marginal) {
+
   //normalize distribution:
-  var norm = 0,
-  supp = [];
+  var norm = 0;
+  var supp = [];
   for (var v in marginal) {
     norm += marginal[v].prob;
     supp.push(marginal[v].val);
@@ -364,8 +370,8 @@ function makeMarginalERP(marginal) {
     marginal[v].prob = marginal[v].prob / norm;
   }
 
-  console.log("Creating distribution: ");
-  console.log(marginal);
+  // console.log("Creating distribution: ");
+  // console.log(marginal);
 
   //make an ERP from marginal:
   var dist = new ERP(
@@ -382,11 +388,13 @@ function makeMarginalERP(marginal) {
       return marginal[i].val;
     },
     function(params, val) {
-                     for(var i in marginal){
-//                     if(marginal[i].val == val){return Math.log(marginal[i].prob)}
-                     if(i == JSON.stringify(val)){return Math.log(marginal[i].prob);}
-                     }
-                     return -Infinity;
+      var valString = JSON.stringify(val);
+
+      if (valString in marginal) {
+        return Math.log( marginal[valString].prob )
+      }
+
+      return -Infinity;
     },
     function(params) {
       return supp;
@@ -413,7 +421,6 @@ function makeMarginalERP(marginal) {
 // The inference function passes exit to the wppl fn, so that it gets
 // called when the fn is exited, it can call the inference cc when
 // inference is done to contintue the program.
-
 
 // This global variable tracks the current coroutine, sample and
 // factor use it to interface with the inference algorithm. Default
@@ -448,7 +455,7 @@ function sampleWithFactor(s, k, a, dist, params, scoreFn) {
   } else {
     sample(s,
            function(v){
-            scoreFn(s, function(sc){factor(s,function(){k(v);},a+"swf2",sc);}, a+"swf1", v);},
+            scoreFn(s, function(sc){factor(s, function(s){k(s, v);},a+"swf2",sc);}, a+"swf1", v);},
            a, dist, params);
   }
 }
@@ -471,7 +478,7 @@ function Enumerate(s, k, a, wpplFn, maxExecutions, Q) {
   this.queue = Q; // Queue of states that we have yet to explore
   this.marginal = {}; // We will accumulate the marginal distribution here
   this.numCompletedExecutions = 0;
-  this.maxExecutions = maxExecutions || 1000;
+  this.maxExecutions = maxExecutions || Infinity;
 
   this.oldStore = s; // will be reinstated at the end
 
@@ -483,9 +490,8 @@ function Enumerate(s, k, a, wpplFn, maxExecutions, Q) {
   // Run the wppl computation, when the computation returns we want it
   // to call the exit method of this coroutine so we pass that as the
   // continuation.
-  wpplFn(s, exit,a);
+  wpplFn(s, exit, a);
 }
-
 
 // The queue is a bunch of computation states. each state is a
 // continuation, a value to apply it to, and a score.
@@ -499,22 +505,14 @@ var stackSize = 0;
 Enumerate.prototype.nextInQueue = function() {
   var nextState = this.queue.deq();
   this.score = nextState.score;
-//  util.withEmptyStack(function(){nextState.continuation(nextState.value)});
-
-  stackSize++;
-  if (stackSize == 5) {
-    util.withEmptyStack(function(){nextState.continuation(nextState.store, nextState.value);});
-  } else {
-    nextState.continuation(nextState.store, nextState.value);
-    stackSize = 0;
-  }
+  nextState.continuation(nextState.store, nextState.value);
 };
 
 
 Enumerate.prototype.sample = function(store, cc, a, dist, params, extraScoreFn) {
 
   //allows extra factors to be taken into account in making exploration decisions:
-  var extraScoreFn = extraScoreFn || function(x){return 0;};
+  extraScoreFn = extraScoreFn || function(x){return 0;};
 
   // Find support of this erp:
   if (!dist.support) {
@@ -551,12 +549,13 @@ Enumerate.prototype.sampleWithFactor = function(s,cc,a,dist,params,scoreFn) {
                     return ret;});
 };
 
+
 Enumerate.prototype.exit = function(s,retval) {
 
   // We have reached an exit of the computation. Accumulate probability into retval bin.
   var r = JSON.stringify(retval);
   if (this.marginal[r] == undefined) {
-      this.marginal[r] = {prob: 0, val: retval};
+    this.marginal[r] = {prob: 0, val: retval};
   }
   this.marginal[r].prob += Math.exp(this.score);
 
@@ -575,7 +574,6 @@ Enumerate.prototype.exit = function(s,retval) {
     this.k(this.oldStore, dist);
   }
 };
-
 
 //helper wraps with 'new' to make a new copy of Enumerate and set 'this' correctly..
 function enuPriority(s,cc, a, wpplFn, maxExecutions) {
@@ -600,7 +598,6 @@ function enuFifo(s,cc,a, wpplFn, maxExecutions) {
 }
 
 
-
 ////////////////////////////////////////////////////////////////////
 // Particle filtering
 //
@@ -616,7 +613,7 @@ function copyParticle(particle){
   };
 }
 
-function ParticleFilter(s,k, a, wpplFn, numParticles) {
+function ParticleFilter(s, k, a, wpplFn, numParticles) {
 
   this.particles = [];
   this.particleIndex = 0;  // marks the active particle
@@ -627,7 +624,7 @@ function ParticleFilter(s,k, a, wpplFn, numParticles) {
       continuation: function(s){wpplFn(s,exit,a);},
       weight: 0,
       value: undefined,
-      store: s
+      store: util.copyObj(s)
     };
     this.particles.push(particle);
   }
@@ -638,7 +635,7 @@ function ParticleFilter(s,k, a, wpplFn, numParticles) {
   this.oldCoroutine = coroutine;
   coroutine = this;
 
-  this.oldStore = s; // will be reinstated at the end
+  this.oldStore = util.copyObj(s); // will be reinstated at the end
 
   // Run first particle
   this.activeParticle().continuation(this.activeParticle().store);
@@ -663,7 +660,7 @@ ParticleFilter.prototype.factor = function(s,cc, a, score) {
     this.particleIndex += 1;
   }
 
-  util.withEmptyStack(function(){coroutine.activeParticle().continuation(coroutine.activeParticle().store);});
+  coroutine.activeParticle().continuation(coroutine.activeParticle().store);
 };
 
 ParticleFilter.prototype.activeParticle = function() {
@@ -749,10 +746,10 @@ ParticleFilter.prototype.exit = function(s,retval) {
 
   // Return from particle filter by calling original continuation:
   this.k(this.oldStore, dist);
-};
+}
 
-function pf(s,cc, a, wpplFn, numParticles) {
-  return new ParticleFilter(s,cc, a, wpplFn, numParticles);
+function pf(s, cc, a, wpplFn, numParticles) {
+  return new ParticleFilter(s, cc, a, wpplFn, numParticles);
 }
 
 
@@ -760,20 +757,17 @@ function pf(s,cc, a, wpplFn, numParticles) {
 ////////////////////////////////////////////////////////////////////
 // Lightweight MH
 
-//FIXME: update for store passing
+function MH(s, k, a, wpplFn, numIterations) {
 
-function MH(k, a, wpplFn, numIterations) {
-
-
-  this.trace = []
-  this.oldTrace = undefined
-  this.currScore = 0
-  this.oldScore = -Infinity
-  this.oldVal = undefined
-  this.regenFrom = 0
-  this.returnHist = {}
-  this.k = k
-
+  this.trace = [];
+  this.oldTrace = undefined;
+  this.currScore = 0;
+  this.oldScore = -Infinity;
+  this.oldVal = undefined;
+  this.regenFrom = 0;
+  this.returnHist = {};
+  this.k = k;
+  this.oldStore = util.copyObj(s);
   this.iterations = numIterations;
 
   // Move old coroutine out of the way and install this as the current
@@ -781,78 +775,81 @@ function MH(k, a, wpplFn, numIterations) {
   this.oldCoroutine = coroutine;
   coroutine = this;
 
-  wpplFn(exit,a);
+  wpplFn(s, exit, a);
 }
 
-
-MH.prototype.factor = function(k,a,s) {
-  coroutine.currScore += s;
-  util.withEmptyStack(k);
+MH.prototype.factor = function(s, k, a, score) {
+  coroutine.currScore += score;
+  k(s);
 };
 
-MH.prototype.sample = function(cont, name, erp, params, forceSample) {
+MH.prototype.sample = function(s, cont, name, erp, params, forceSample) {
   var prev = findChoice(coroutine.oldTrace, name);
-  var reuse = ! (prev==undefined | forceSample);
+  var reuse = ! (prev==undefined || forceSample);
   var val = reuse ? prev.val : erp.sample(params);
   var choiceScore = erp.score(params,val);
   coroutine.trace.push({k: cont, name: name, erp: erp, params: params,
                        score: coroutine.currScore, choiceScore: choiceScore,
-                       val: val, reused: reuse});
+                       val: val, reused: reuse, store: util.copyObj(s)});
   coroutine.currScore += choiceScore;
-  cont(val);
-}
+  cont(s, val);
+};
 
 function findChoice(trace, name) {
-  if(trace == undefined){return undefined}
-  for(var i = 0; i < trace.length; i++){
-    if(trace[i].name == name){return trace[i];}
+  if (trace == undefined){
+    return undefined;
+  }
+  for (var i = 0; i < trace.length; i++){
+    if (trace[i].name == name){
+      return trace[i];
+    }
   }
   return undefined;
 }
 
 function MHacceptProb(trace, oldTrace, regenFrom, currScore, oldScore){
-  if(oldTrace == undefined){return 1} //just for init
-  var fw = -Math.log(oldTrace.length)
-  trace.slice(regenFrom).map(function(s){fw += s.reused?0:s.choiceScore})
-  var bw = -Math.log(trace.length)
+  if(oldTrace == undefined){return 1;} //just for init
+  var fw = -Math.log(oldTrace.length);
+  trace.slice(regenFrom).map(function(s){fw += s.reused?0:s.choiceScore;});
+  var bw = -Math.log(trace.length);
   oldTrace.slice(regenFrom).map(function(s){
-                                var nc = findChoice(trace, s.name);
-                                bw += (!nc || !nc.reused) ? s.choiceScore : 0;  });
+    var nc = findChoice(trace, s.name);
+    bw += (!nc || !nc.reused) ? s.choiceScore : 0;  });
   var acceptance = Math.min(1, Math.exp(currScore - oldScore + bw - fw));
   return acceptance;
 }
 
-MH.prototype.exit = function(val) {
-  if( coroutine.iterations > 0 ) {
+MH.prototype.exit = function(s, val) {
+  if (coroutine.iterations > 0) {
     coroutine.iterations -= 1;
 
     //did we like this proposal?
     var acceptance = MHacceptProb(coroutine.trace, coroutine.oldTrace,
-                                  coroutine.regenFrom, coroutine.currScore, coroutine.oldScore)
-    if(!(Math.random()<acceptance)){
-      //if rejected, roll back trace, etc:
+                                  coroutine.regenFrom, coroutine.currScore, coroutine.oldScore);
+    if (!(Math.random()<acceptance)){
+      // if rejected, roll back trace, etc:
       coroutine.trace = coroutine.oldTrace;
       coroutine.currScore = coroutine.oldScore;
       val = coroutine.oldVal;
     }
 
-    //now add val to hist:
+    // now add val to hist:
     var stringifiedVal = JSON.stringify(val);
     if (coroutine.returnHist[stringifiedVal] === undefined){
-        coroutine.returnHist[stringifiedVal] = { prob:0, val:val };
+      coroutine.returnHist[stringifiedVal] = { prob:0, val:val };
     }
     coroutine.returnHist[stringifiedVal].prob += 1;
 
-    //make a new proposal:
+    // make a new proposal:
     coroutine.regenFrom = Math.floor(Math.random() * coroutine.trace.length);
     var regen = coroutine.trace[coroutine.regenFrom];
     coroutine.oldTrace = coroutine.trace;
-    coroutine.trace = coroutine.trace.slice(0,coroutine.regenFrom);
+    coroutine.trace = coroutine.trace.slice(0, coroutine.regenFrom);
     coroutine.oldScore = coroutine.currScore;
     coroutine.currScore = regen.score;
     coroutine.oldVal = val;
 
-    coroutine.sample(regen.k, regen.name, regen.erp, regen.params, true);
+    coroutine.sample(regen.store, regen.k, regen.name, regen.erp, regen.params, true);
   } else {
     var dist = makeMarginalERP(coroutine.returnHist);
 
@@ -861,27 +858,23 @@ MH.prototype.exit = function(val) {
     coroutine = this.oldCoroutine;
 
     // Return by calling original continuation:
-    k(dist);
+    k(this.oldStore, dist);
   }
 };
 
-function mh(cc, a, wpplFn, numParticles) {
-  return new MH(cc, a, wpplFn, numParticles);
+function mh(s, cc, a, wpplFn, numParticles) {
+  return new MH(s, cc, a, wpplFn, numParticles);
 }
-
 
 
 ////////////////////////////////////////////////////////////////////
 // PMCMC
 
-//FIXME: update for store passing
-
-
 function last(xs){
   return xs[xs.length - 1];
 }
 
-function PMCMC(cc, a, wpplFn, numParticles, numSweeps){
+function PMCMC(s, cc, a, wpplFn, numParticles, numSweeps){
 
   // Move old coroutine out of the way and install this as the
   // current handler.
@@ -890,6 +883,8 @@ function PMCMC(cc, a, wpplFn, numParticles, numSweeps){
 
   // Store continuation (will be passed dist at the end)
   this.k = cc;
+
+  this.oldStore = util.copyObj(s);
 
   // Setup inference variables
   this.particleIndex = 0;  // marks the active particle
@@ -903,7 +898,7 @@ function PMCMC(cc, a, wpplFn, numParticles, numSweeps){
   this.returnHist = {};
 
   // Run first particle
-  this.activeContinuation()();
+  this.activeContinuationWithStore()();
 }
 
 PMCMC.prototype.resetParticles = function(){
@@ -912,11 +907,12 @@ PMCMC.prototype.resetParticles = function(){
   // Create initial particles
   for (var i=0; i<this.numParticles; i++) {
     var particle = {
-      continuations: [function(){that.wpplFn(exit, that.address);}],
+      continuations: [function(s){that.wpplFn(s, exit, that.address);}],
+      stores: [that.oldStore],
       weights: [0],
       value: undefined
     };
-    this.particles.push(particle);
+    this.particles.push(util.copyObj(particle));
   }
 };
 
@@ -926,28 +922,36 @@ PMCMC.prototype.activeParticle = function() {
 
 PMCMC.prototype.activeContinuation = function(){
   return last(this.activeParticle().continuations);
-}
+};
+
+PMCMC.prototype.activeContinuationWithStore = function(){
+  var k = last(this.activeParticle().continuations);
+  var s = last(this.activeParticle().stores);
+  return function(){k(s);};
+};
 
 PMCMC.prototype.allParticlesAdvanced = function() {
   return ((this.particleIndex + 1) == this.particles.length);
 };
 
-PMCMC.prototype.sample = function(cc, a, erp, params) {
-  cc(erp.sample(params));
+PMCMC.prototype.sample = function(s, cc, a, erp, params) {
+  cc(s, erp.sample(params));
 };
 
 PMCMC.prototype.particleAtStep = function(particle, step){
   // Returns particle s.t. particle.continuations[step] is the last entry
   return {
     continuations: particle.continuations.slice(0, step + 1),
+    stores: particle.stores.slice(0, step + 1),
     weights: particle.weights.slice(0, step + 1),
     value: particle.value
   };
 };
 
-PMCMC.prototype.updateActiveParticle = function(weight, continuation){
+PMCMC.prototype.updateActiveParticle = function(weight, continuation, store){
   var particle = this.activeParticle();
   particle.continuations = particle.continuations.concat([continuation]);
+  particle.stores = particle.stores.concat([util.copyObj(store)]);
   particle.weights = particle.weights.concat([weight]);
 };
 
@@ -955,7 +959,8 @@ PMCMC.prototype.copyParticle = function(particle){
   return {
     continuations: particle.continuations.slice(0),
     weights: particle.weights.slice(0),
-    value: particle.value
+    value: particle.value,
+    stores: particle.stores.map(util.copyObj)
   };
 };
 
@@ -973,9 +978,9 @@ PMCMC.prototype.resampleParticles = function(particles){
   return newParticles;
 };
 
-PMCMC.prototype.factor = function(cc, a, score) {
+PMCMC.prototype.factor = function(s, cc, a, score) {
 
-  this.updateActiveParticle(score, cc);
+  this.updateActiveParticle(score, cc, s);
 
   if (this.allParticlesAdvanced()){
     if (this.sweep > 0){
@@ -995,10 +1000,10 @@ PMCMC.prototype.factor = function(cc, a, score) {
     this.particleIndex += 1;
   }
 
-  util.withEmptyStack(this.activeContinuation());
+  this.activeContinuationWithStore()();
 };
 
-PMCMC.prototype.exit = function(retval) {
+PMCMC.prototype.exit = function(s, retval) {
 
   this.activeParticle().value = retval;
 
@@ -1006,7 +1011,7 @@ PMCMC.prototype.exit = function(retval) {
 
     // Wait for all particles to reach exit
     this.particleIndex += 1;
-    return this.activeContinuation()();
+    return this.activeContinuationWithStore()();
 
   } else {
 
@@ -1033,7 +1038,7 @@ PMCMC.prototype.exit = function(retval) {
       this.sweep += 1;
       this.particleIndex = 0;
       this.resetParticles();
-      this.activeContinuation()();
+      this.activeContinuationWithStore()();
 
     } else {
       var dist = makeMarginalERP(this.returnHist);
@@ -1042,14 +1047,14 @@ PMCMC.prototype.exit = function(retval) {
       coroutine = this.oldCoroutine;
 
       // Return from particle filter by calling original continuation:
-      this.k(dist);
+      this.k(this.oldStore, dist);
 
     }
   }
 };
 
-function pmc(cc, a, wpplFn, numParticles, numSweeps) {
-  return new PMCMC(cc, a, wpplFn, numParticles, numSweeps);
+function pmc(s, cc, a, wpplFn, numParticles, numSweeps) {
+  return new PMCMC(s, cc, a, wpplFn, numParticles, numSweeps);
 }
 
 
@@ -1064,15 +1069,14 @@ function pmc(cc, a, wpplFn, numParticles, numSweeps) {
 // If numParticles==1 this amounts to MH with an (expensive) annealed init (but only returning one sample),
 // if rejuvSteps==0 this is a plain PF without any MH.
 
-//FIXME: update for store passing
-
-function ParticleFilterRejuv(s,k,a, wpplFn, numParticles,rejuvSteps) {
+function ParticleFilterRejuv(s,k,a, wpplFn, numParticles, rejuvSteps) {
 
   this.particles = [];
   this.particleIndex = 0;  // marks the active particle
   this.rejuvSteps = rejuvSteps;
   this.baseAddress = a;
   this.wpplFn = wpplFn;
+  this.isParticleFilterRejuvCoroutine = true;
 
   // Move old coroutine out of the way and install this as the current
   // handler.
@@ -1123,19 +1127,29 @@ ParticleFilterRejuv.prototype.factor = function(s,cc,a, score) {
     // Resample in proportion to weights
     coroutine.resampleParticles();
     //rejuvenate each particle via MH
-    coroutine.particles.forEach(
-      function(particle,i,particles){
-        new MHP(function(p){particles[i]=p;},
-                particle, coroutine.baseAddress,
-                a, coroutine.wpplFn, coroutine.rejuvSteps);
-      });
-    coroutine.particleIndex = 0;
+    util.cpsForEach(
+      function(particle, i, particles, nextK){
+        // make sure mhp coroutine doesn't escape:
+        assert(coroutine.isParticleFilterRejuvCoroutine);
+        new MHP(
+          function(p){
+            particles[i]=p;
+            nextK();
+          },
+          particle, coroutine.baseAddress,
+          a, coroutine.wpplFn, coroutine.rejuvSteps);
+      },
+      function(){
+        coroutine.particleIndex = 0;
+        coroutine.activeParticle().continuation(coroutine.activeParticle().store);
+      },
+      coroutine.particles
+    );
   } else {
     // Advance to the next particle
     coroutine.particleIndex += 1;
+    coroutine.activeParticle().continuation(coroutine.activeParticle().store);
   }
-
-  util.withEmptyStack(function(){coroutine.activeParticle().continuation(coroutine.activeParticle().store);});
 };
 
 ParticleFilterRejuv.prototype.activeParticle = function() {
@@ -1167,14 +1181,14 @@ ParticleFilterRejuv.prototype.resampleParticles = function() {
   var retainedParticles = [];
   var retainedCounts = [];
   _.each(
-         coroutine.particles,
-         function(particle){
-         var numRetained = Math.floor(Math.exp(Math.log(m) + (particle.weight - W)));
-         for (var i=0; i<numRetained; i++){
-          retainedParticles.push(copyPFRParticle(particle));
-         }
-         retainedCounts.push(numRetained);
-         });
+    coroutine.particles,
+    function(particle){
+      var numRetained = Math.floor(Math.exp(Math.log(m) + (particle.weight - W)));
+      for (var i=0; i<numRetained; i++){
+        retainedParticles.push(copyPFRParticle(particle));
+      }
+      retainedCounts.push(numRetained);
+    });
 
   // Compute new particles
   var numNewParticles = m - retainedParticles.length;
@@ -1197,10 +1211,10 @@ ParticleFilterRejuv.prototype.resampleParticles = function() {
 
   // Reset all weights
   _.each(
-         coroutine.particles,
-         function(particle){
-         particle.weight = W - Math.log(m);
-         });
+    coroutine.particles,
+    function(particle){
+      particle.weight = W - Math.log(m);
+    });
 };
 
 ParticleFilterRejuv.prototype.exit = function(s,retval) {
@@ -1215,36 +1229,45 @@ ParticleFilterRejuv.prototype.exit = function(s,retval) {
   }
 
   //Final rejuvenation:
-  coroutine.particles.forEach(function(particle,i,particles){
-                              new MHP(function(p){particles[i]=p;},
-                                      particle, coroutine.baseAddress,
-                                      undefined, coroutine.wpplFn, coroutine.rejuvSteps);
-                              });
+  var oldStore = this.oldStore;
+  util.cpsForEach(
+    function(particle, i, particles, nextK){
+      // make sure mhp coroutine doesn't escape:
+      assert(coroutine.isParticleFilterRejuvCoroutine);
+      new MHP(
+        function(p){
+          particles[i]=p;
+          nextK();
+        },
+        particle, coroutine.baseAddress,
+        undefined, coroutine.wpplFn, coroutine.rejuvSteps);
+    },
+    function(){
+      // Compute marginal distribution from (unweighted) particles
+      var hist = {};
+      _.each(
+        coroutine.particles,
+        function(particle){
+          var k = JSON.stringify(particle.value);
+          if (hist[k] === undefined){
+            hist[k] = { prob:0, val:particle.value };
+          }
+          hist[k].prob += 1;
+        });
+      var dist = makeMarginalERP(hist);
 
-  // Compute marginal distribution from (unweighted) particles
-  var hist = {};
-  _.each(
-         coroutine.particles,
-         function(particle){
-         var k = JSON.stringify(particle.value);
-         if (hist[k] === undefined){
-         hist[k] = { prob:0, val:particle.value };
-         }
-         hist[k].prob += 1;
-         });
-  var dist = makeMarginalERP(hist);
+      // Reinstate previous coroutine:
+      var k = coroutine.k;
+      coroutine = coroutine.oldCoroutine;
 
-  // Reinstate previous coroutine:
-  var k = coroutine.k;
-  coroutine = coroutine.oldCoroutine;
+      // Return from particle filter by calling original continuation:
+      k(oldStore, dist);
+    },
+    coroutine.particles
+  );
 
-  // Return from particle filter by calling original continuation:
-  k(this.oldStore,dist);
 };
 
-//function pf(cc, a, wpplFn, numParticles) {
-//  return new ParticleFilter(cc,a, wpplFn, numParticles);
-//}
 
 ////// Lightweight MH on a particle
 
@@ -1263,9 +1286,7 @@ function MHP(backToPF, particle, baseAddress, limitAddress , wpplFn, numIteratio
 
   // FIXME: do we need to save the store here?
 
-//  console.log("MH "+numIterations+" steps")
-
-  if(numIterations==0) {
+  if (numIterations==0) {
     backToPF(particle);
   } else {
     // Move PF coroutine out of the way and install this as the current
@@ -1278,7 +1299,7 @@ function MHP(backToPF, particle, baseAddress, limitAddress , wpplFn, numIteratio
 
 MHP.prototype.factor = function(s,k,a,sc) {
   coroutine.currScore += sc;
-  if(a == coroutine.limitAddress) { //we need to exit if we've reached the fathest point of this particle...
+  if (a == coroutine.limitAddress) { //we need to exit if we've reached the fathest point of this particle...
     exit(s);
   } else {
     k(s);
@@ -1287,18 +1308,18 @@ MHP.prototype.factor = function(s,k,a,sc) {
 
 MHP.prototype.sample = function(s,k, name, erp, params, forceSample) {
   var prev = findChoice(coroutine.oldTrace, name);
-  var reuse = ! (prev==undefined | forceSample);
+  var reuse = ! (prev==undefined || forceSample);
   var val = reuse ? prev.val : erp.sample(params);
   var choiceScore = erp.score(params,val);
   coroutine.trace.push({k: k, name: name, erp: erp, params: params,
                        score: coroutine.currScore, choiceScore: choiceScore,
                        val: val, reused: reuse, store:s});
   coroutine.currScore += choiceScore;
-  k(s,val);
+  k(s, val);
 };
 
+
 MHP.prototype.propose = function() {
-//  console.log("MH proposal it: "+coroutine.iterations+"")
   //make a new proposal:
   coroutine.regenFrom = Math.floor(Math.random() * coroutine.trace.length);
   var regen = coroutine.trace[coroutine.regenFrom];
@@ -1310,17 +1331,6 @@ MHP.prototype.propose = function() {
 
   coroutine.sample(regen.store, regen.k, regen.name, regen.erp, regen.params, true);
 };
-
-//function MHacceptProb(trace, oldTrace, regenFrom, currScore, oldScore){
-//  var fw = -Math.log(oldTrace.length);
-//  trace.slice(regenFrom).map(function(s){fw += s.reused?0:s.choiceScore;});
-//  var bw = -Math.log(trace.length);
-//  oldTrace.slice(regenFrom).map(function(s){
-//                                var nc = findChoice(trace, s.name);
-//                                bw += (!nc || !nc.reused) ? s.choiceScore : 0; });
-//  var acceptance = Math.min(1, Math.exp(currScore - oldScore + bw - fw));
-//  return acceptance;
-//}
 
 MHP.prototype.exit = function(s,val) {
 
@@ -1361,86 +1371,223 @@ function pfr(s,cc, a, wpplFn, numParticles, rejuvSteps) {
 }
 
 
+////////////////////////////////////////////////////////////////////
+// Simple Variational inference wrt the (pseudo)mean-field program.
+// We do stochastic gradient descent on the ERP params.
+// On sample statements: sample and accumulate grad-log-score, orig-score, and variational-score
+// On factor statements accumulate into orig-score.
+
+function Variational(s,k,a, wpplFn, estS) {
+
+  this.wpplFn = wpplFn;
+  this.estimateSamples = estS
+  this.numS = 0
+  this.t = 1
+  this.variationalParams = {}
+  //historic gradient squared for each variational param, used for adagrad update:
+  this.runningG2 = {}
+  //gradient estimate per iteration:
+  this.grad = {}
+  //gradient of each sample used to estimate gradient:
+  this.samplegrad = {}
+  //running score accumulation per sample:
+  this.jointScore = 0
+  this.variScore = 0
+
+  // Move old coroutine out of the way and install this as the current
+  // handler.
+  this.k = k;
+  this.oldCoroutine = coroutine;
+  coroutine = this;
+
+  this.initialStore = s; // will be reinstated at the end
+  this.initialAddress = a
+
+  //kick off the estimation:
+  this.takeGradSample()
+}
+
+Variational.prototype.takeGradSample = function() {
+  //reset sample info
+  coroutine.samplegrad = {}
+  coroutine.jointScore = 0
+  coroutine.variScore = 0
+  //get another sample
+  coroutine.numS++
+  coroutine.wpplFn(coroutine.initialStore, exit, coroutine.initialAddress)
+}
+
+Variational.prototype.sample = function(s,k,a, erp, params) {
+  //sample from variational dist
+  if(!coroutine.variationalParams.hasOwnProperty(a)){
+    //initialize at prior (for this sample)...
+    coroutine.variationalParams[a] = params
+    coroutine.runningG2[a]=[0];//fixme: vec size
+  }
+  var vParams = coroutine.variationalParams[a]
+  var val = erp.sample(vParams)
+
+  //compute variational dist grad
+  coroutine.samplegrad[a] = erp.grad(vParams, val)
+
+  //compute target score + variational score
+  coroutine.jointScore += erp.score(params, val)
+  coroutine.variScore += erp.score(vParams, val)
+
+  k(s,val); //TODO: need a?
+};
+
+Variational.prototype.factor = function(s,k,a, score) {
+
+  //update joint score and keep going
+  coroutine.jointScore += score
+
+  k(s) //TODO: need a?
+};
+
+Variational.prototype.exit = function(s,retval) {
+  //FIXME: params are arrays, so need vector arithmetic or something..
+
+  //update gradient estimate
+  for(var a in coroutine.samplegrad) {
+    if(!coroutine.grad.hasOwnProperty(a)){
+      //FIXME: size param vec:
+      coroutine.grad[a]=[0];
+    }
+    coroutine.grad[a] = vecPlus(coroutine.grad[a],
+                          vecScalarMult(coroutine.samplegrad[a],
+                            (coroutine.jointScore - coroutine.variScore)))
+  }
+
+  //do we have as many samples as we need for this gradient estimate?
+  if (coroutine.numS < coroutine.estimateSamples) {
+    return coroutine.takeGradSample()
+  }
+
+
+  //we have all our samples to do a gradient step.
+  //use AdaGrad update rule.
+  //update variational parameters:
+  for(var a in coroutine.variationalParams){
+    for(var i in coroutine.variationalParams[a]) {
+      var grad = coroutine.grad[a][i] / coroutine.numS
+      coroutine.runningG2[a][i] += Math.pow(grad,2)
+      var weight = 1.0/Math.sqrt(coroutine.runningG2[a][i])
+//        console.log(a+" "+i+": weight "+ weight +" grad "+ grad +" vparam "+coroutine.variationalParams[a][i])
+      coroutine.variationalParams[a][i] += weight*grad
+    }
+  }
+  coroutine.t++
+  console.log(coroutine.variationalParams)
+
+  //if we haven't converged then do another gradient estimate and step:
+  //FIXME: converence test instead of fixed number of grad steps?
+  if(coroutine.t<500) {
+    coroutine.grad = {}
+    coroutine.numS = 0
+    return coroutine.takeGradSample()
+  }
+
+  //return variational dist as ERP:
+  //FIXME
+  console.log(coroutine.variationalParams)
+  var dist = null
+
+  // Reinstate previous coroutine:
+  var k = coroutine.k;
+  var s = coroutine.initialStore;
+  coroutine = coroutine.oldCoroutine;
+
+  // Return from particle filter by calling original continuation:
+  k(s,dist);
+};
+
+function vecPlus(a,b) {
+  var c = []
+  for(var i=0;i<a.length;i++) {
+    c[i] = a[i]+b[i]
+  }
+  return c
+}
+
+function vecScalarMult(a,s) {
+  var c = []
+  for(var i=0;i<a.length;i++) {
+    c[i] = a[i]*s
+  }
+  return c
+}
+
+function vari(s,cc, a, wpplFn, estS) {
+  return new Variational(s,cc, a, wpplFn, estS);
+}
+
 
 ////////////////////////////////////////////////////////////////////
 // Some primitive functions to make things simpler
 
 function display(s,k, a, x) {
-  k(s,console.log(x));
+  k(s, console.log(x));
 }
 
 // Caching for a wppl function f. caution: if f isn't deterministic
 // weird stuff can happen, since caching is across all uses of f, even
 // in different execuation paths.
 //FIXME: use global store for caching?
-function cache(s,k, a, f) {
+function cache(s, k, a, f) {
   var c = {};
-  var cf = function(s,k) {
-    var args = Array.prototype.slice.call(arguments, 2);
+  var cf = function(s, k, a) {
+    var args = Array.prototype.slice.call(arguments, 3);
     var stringedArgs = JSON.stringify(args);
     if (stringedArgs in c) {
-      k(s,c[stringedArgs]);
+      k(s, c[stringedArgs]);
     } else {
-      var newk = function(s,r) {
+      var newk = function(s, r) {
         c[stringedArgs] = r;
-        k(s,r);
+        k(s, r);
       };
-      f.apply(this, [s,newk].concat(args));
+      f.apply(this, [s, newk, a].concat(args));
     }
   };
-  k(s,cf);
-}
-
-function withEmptyWebPPLStack(store, k, a, thunk){
-  util.withEmptyStack(function(){
-    return thunk(store, k, a);
-  });
-}
-
-function getAddress(store, k, a){
-  var addressArray = a.split("_").slice(1);
-  for (var i=0; i<addressArray.length; i++){
-    addressArray[i] = parseInt(addressArray[i]);
-  }
-  k(store, addressArray);
+  k(s, cf);
 }
 
 
 ////////////////////////////////////////////////////////////////////
 
 module.exports = {
+  _: _,
   ERP: ERP,
+  Enumerate: enuPriority,
+  EnumerateBreadthFirst: enuFifo,
+  EnumerateDepthFirst: enuFilo,
+  EnumerateLikelyFirst: enuPriority,
+  MH: mh,
+  PMCMC: pmc,
+  ParticleFilter: pf,
+  ParticleFilterRejuv: pfr,
+  Variational: vari,
+  address: address,
   bernoulliERP: bernoulliERP,
-  randomIntegerERP: randomIntegerERP,
-  gaussianERP: gaussianERP,
-  gaussianFactor: gaussianFactor,
-  erpFactor: erpFactor,
-  uniformERP: uniformERP,
-  discreteERP: discreteERP,
-  gammaERP: gammaERP,
   betaERP: betaERP,
   binomialERP: binomialERP,
-  poissonERP: poissonERP,
-  exponentialERP: exponentialERP,
-  dirichletERP: dirichletERP,
-  Enumerate: enuPriority,
-  EnumerateLikelyFirst: enuPriority,
-  EnumerateDepthFirst: enuFilo,
-  EnumerateBreadthFirst: enuFifo,
-  ParticleFilter: pf,
-  MH: mh,
-  coroutine: coroutine,
-  address: address,
-  globalStore: globalStore,
-  sample: sample,
-  factor: factor,
-  sampleWithFactor: sampleWithFactor,
-  display: display,
   cache: cache,
+  coroutine: coroutine,
+  dirichletERP: dirichletERP,
+  discreteERP: discreteERP,
+  display: display,
+  erpFactor: erpFactor,
+  exponentialERP: exponentialERP,
+  factor: factor,
+  gammaERP: gammaERP,
+  gaussianERP: gaussianERP,
+  gaussianFactor: gaussianFactor,
+  globalStore: globalStore,
   multinomialSample: multinomialSample,
-  PMCMC: pmc,
-  ParticleFilterRejuv: pfr,
-  util: util,
-  withEmptyStack: withEmptyWebPPLStack,
-  getAddress: getAddress
+  poissonERP: poissonERP,
+  randomIntegerERP: randomIntegerERP,
+  sample: sample,
+  sampleWithFactor: sampleWithFactor,
+  uniformERP: uniformERP,
+  util: util
 };
