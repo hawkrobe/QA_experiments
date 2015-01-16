@@ -278,7 +278,7 @@ var literalListener = cache(function(question, answer){
 });
 
 
-var literalAnswerer = cache(
+var explicitAnswerer = cache(
   function(question, trueWorld) {
     return Enumerate(
       function(){
@@ -313,7 +313,7 @@ var main = function(){
   var qudNodes = ['dalmatian', 'poodle', 'siamese', 'flower']
   var f_ans = function(question){
     print(question);
-    print(literalAnswerer(question, world));
+    print(explicitAnswerer(question, world));
   };
   map(f_ans, questions)
   return 'done';
@@ -437,7 +437,7 @@ var literalListener = cache(function(question, answer){
 });
 
 
-var literalAnswerer = cache(
+var explicitAnswerer = cache(
   function(question, trueWorld) {
     return Enumerate(
       function(){
@@ -483,7 +483,7 @@ var questioner = cache(function(qud_node) {
         var posterior = Enumerate(function(){
           // If I ask this question, what answer do I expect to get,
           // given what the world is like?
-          var answer = sample(literalAnswerer(question, trueWorld));
+          var answer = sample(explicitAnswerer(question, trueWorld));
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
           // What is the value of the predicate I care about under
@@ -627,7 +627,7 @@ var literalListener = cache(function(question, answer){
 });
 
 
-var literalAnswerer = cache(
+var explicitAnswerer = cache(
   function(question, trueWorld) {
     return Enumerate(
       function(){
@@ -671,7 +671,7 @@ var questioner = cache(function(qud_node) {
         var posterior = Enumerate(function(){
           // If I ask this question, what answer do I expect to get,
           // given what the world is like?
-          var answer = sample(literalAnswerer(question, trueWorld));
+          var answer = sample(explicitAnswerer(question, trueWorld));
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
           // What is the value of the predicate I care about under
