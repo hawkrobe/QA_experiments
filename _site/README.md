@@ -10,7 +10,7 @@ Requirements:
 
 Installation:
 
-    git clone https://github.com/stuhlmueller/coarse-to-fine.git
+    git clone https://github.com/hawkrobe/Q_and_A.git
     cd coarse-to-fine
     git submodule update --init --recursive
     npm install
