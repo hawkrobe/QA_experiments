@@ -117,14 +117,22 @@ Run questioner
 ```{r}
 d_short_q = subset(d_short, trial_type == 'question', 
                    select=c(workerid, qud, response))
-d_short_q$response = factor(d_short_q$response)
-new_labels = sapply(X = d_short_q$qud, 
-                    FUN = function(v) {return(paste("qud:", v))})
-d_short_q$facet_label = new_labels
+# Order responses and facets
+d_short_q$response = ordered(d_short_q$response, 
+                             levels = c("dalmatian", "dog", "mammal", "animal"))
+d_short_q$facet_label = (sapply(X = d_short_q$qud, 
+                                FUN = function(v) {return(paste("qud:", v))}) %>% 
+                         ordered(levels = c("qud: dalmatian", "qud: poodle", 
+                                            "qud: siamese cat", "qud: goldfish")))
+jpeg(filename="../writing/2015/cogsci/exp3_q.jpeg")
 g4<-(ggplot(d_short_q, aes(x=response)) 
+    + theme_bw(base_size = 20)
+    + theme(axis.text.x = element_text(angle=90, vjust=1))
     + geom_histogram(color="black", fill='black')
+    + ggtitle("(a) Questioner responses")
     + facet_wrap(~facet_label))
 g4
+dev.off()
 ```
 
 Answer analysis
@@ -139,14 +147,25 @@ d_short_a$response = as.numeric(d_short_a$response)
 d_short_a$world_state = strsplit(as.character(d_short_a$world_state), split = ',')
 for(i in 1:dim(d_short_a)[1])
   d_short_a$item_response[i] = d_short_a$world_state[[i]][d_short_a$response[i]]
+# Order response
+d_short_a$response = ordered(d_short_a$item_response,
+                             levels=c("dalmatian","poodle","siamese cat","goldfish"))
 # Make nicer labels for facets
-new_labels = sapply(X = d_short_a$utterance, 
-                    FUN = function(v) {return(paste("utterance:", v))})
-d_short_a$facet_label = new_labels
-g4<-(ggplot(d_short_a, aes(x=item_response)) 
+new_labels = as.factor(sapply(X = d_short_a$utterance, 
+                       FUN = function(v) {return(paste("utterance:", v))}))
+# Order facets by level in hierarchy
+d_short_a$facet_label = ordered(new_labels, 
+                                levels = c("utterance: dalmatian", "utterance: dog", 
+                                           "utterance: mammal","utterance: animal"))
+jpeg(filename="../writing/2015/cogsci/exp3_ans.jpeg")
+g4<-(ggplot(d_short_a, aes(x=response)) 
      + geom_histogram(color="black", fill='black')
+     + theme_bw(base_size = 20)
+     + theme(axis.text.x = element_text(angle=90, vjust=1))
+     + ggtitle("(b) Answerer responses")
      + facet_wrap(~facet_label))
 g4
+dev.off()
 ```
 
 Model prediction plots
@@ -155,23 +174,42 @@ Model prediction plots
 Now, plot for dumb model:
 
 ```{r}
-pred_ll = read.csv("analysis/litListenerModelPredictions.csv", sep = '\t')
-new_labels = sapply(X = pred_ll$utterance, FUN = function(v) {return(paste("utterance:", v))})
-pred_ll$facet_label = new_labels
-g4<-ggplot(pred_ll, aes(x=response, y=prob)) + geom_bar(stat='identity', color='black', fill='black')
-g4 + facet_wrap(~facet_label)
+pred_ll = read.csv("analysis/model_prediction/litListenerModelPredictions.csv", sep = '\t')
+pred_ll$response = ordered(pred_ll$response, levels = c("dalmatian", "poodle", "siamese", "goldfish"))
+new_labels = as.factor(sapply(X = pred_ll$utterance, FUN = function(v) {return(paste("utterance:", v))}))
+pred_ll$facet_label = ordered(new_labels, 
+                              levels = c("utterance: dalmatian", "utterance: dog", 
+                                         "utterance: mammal","utterance: animal"))
+jpeg(filename="../writing/2015/cogsci/Exp3ExplicitAnswerPrediction.jpeg")
+g4<-(ggplot(pred_ll, aes(x=response, y = prob)) 
+     + geom_histogram(stat='identity', color="black", fill='black')
+     + theme_bw(base_size = 20)
+     + theme(axis.text.x = element_text(angle=90, vjust=1))
+     + ggtitle("(a) Explicit Answer Model Predictions")
+     + facet_wrap(~facet_label))
+g4
+dev.off()
 ```
 
 Plot for pragmatic model
 
 ```{r}
-pred_prag = read.csv("analysis/pragAnswererModelPredictions.csv", sep = '\t')
+pred_prag = read.csv("analysis/model_prediction/pragAnswererModelPredictions.csv", sep = '\t')
+pred_prag$response = ordered(pred_prag$response, 
+                           levels = c("dalmatian", "poodle", "siamese", "goldfish"))
 new_labels = sapply(X = pred_prag$utterance, FUN = function(v) {return(paste("utterance:", v))})
-pred_prag$facet_label = new_labels
+pred_prag$facet_label = ordered(new_labels, 
+                              levels = c("utterance: dalmatian", "utterance: dog", 
+                                         "utterance: mammal","utterance: animal"))
+jpeg(filename="../writing/2015/cogsci/Exp3PragmaticAnswerPrediction.jpeg")
 g4<-(ggplot(pred_prag, aes(x=response, y=prob)) 
     + geom_bar(stat='identity', color='black', fill='black')
+    + theme_bw(base_size = 20)
+    + theme(axis.text.x = element_text(angle=90, vjust=1))
+    + ggtitle("(b) Pragmatic Answer Model Predictions")
     + facet_wrap(~facet_label))
 g4
+dev.off()
 ```
 
 Plot for question model predictions
