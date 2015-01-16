@@ -114,7 +114,7 @@ Within this computational framework, different theories of question and answer b
 
 In order to test how questioners choose questions when given a decision problem, and how answerers choose answers under uncertainty about this decision problem, we designed a guessing-game task played by two players: a guesser and a helper. In this game, $4$ animals (a dalmatian, a poodle, a siamese cat, and a goldfish) were hidden behind $4$ gates. Note that these animals were arranged in a class hierarchy (see Fig. \ref{fig:taskhierarchy}). The guesser was given a private goal of finding one of the objects, and the helper had privileged information about the exact locations of each object. Before choosing a gate, the guesser could ask the helper a single question, and the helper could respond to this question by revealing the object behind a single gate. 
 
-In terms of our model specification, the world space $\mathcal{W}$ is the set of $4! = 24$ possible assignments of four objects to four gates and the goal space $\mathcal{G}$ is the set of four objects that the guesser could possibly be trying to find, and the answer space $\mathcal{A}$ is the set of four gates that the helper could possibly reveal. The key constraint in the task, however, is that the guesser must choose from a \emph{restricted set of questions}: they may be trying to find the goldfish, but cannot directly ask `where is the goldfish?' Instead, the question space $\mathcal{Q}$ is the set of highlighted nodes in the hierarchy, including higher order nodes that are consistent with multiple answers. 
+In terms of our model specification, the world space $\mathcal{W}$ is the set of $4! = 24$ possible assignments of four objects to four gates and the goal space $\mathcal{G}$ is the set of four objects that the guesser could possibly be trying to find, and the answer space $\mathcal{A}$ is the set of four gates that the helper could possibly reveal. The key constraint in the task, however, is that the guesser must choose from a \emph{restricted set of questions}: they may be trying to find the goldfish, but cannot directly ask `where is the goldfish?' Instead, the question space $\mathcal{Q}$ is the set of highlighted nodes in the hierarchy, including higher order nodes that are consistent with multiple answers. \ref{XXX Robert: Probably need to define the question meaning and answer meaning functions to make the literal listener concrete...}
 \begin{figure*}[t!]
 \begin{center}
 \includegraphics[scale = .5]{exp3_q}
@@ -127,10 +127,10 @@ In terms of our model specification, the world space $\mathcal{W}$ is the set of
 
 We recruited 25 participants from Amazon Mechanical Turk to participate in this task. Each participant provided responses for four trials in the role of the questioner (corresponding to each goal in $\mathcal{G}$), and four trials in the role of the answerer (corresponding to each question in $\mathcal{Q}$). In order to collect responses for all elements of $\mathcal{G}$ and $\mathcal{Q}$, The order of  the questioner and answerer blocks was randomly assigned, and the order of stimuli within these blocks was also randomized\footnote{All materials are available on \href{https://github.com/hawkrobe/Q\_and\_A/tree/master/experiment3/versions/experiment3\_short}{Github}}. Two participants were excluded due to self-reported confusion about the task.
 
-Results for the guesser role are shown in Figure \ref{fig:exp1res}(a). There are two primary trends to note in these data. First, questioners tend to choose the indirect question node closest to their goal when the direct question is unavailable. It is unsurprising that they ask about the `dalmatian` when looking for the dalmatian, but interesting that they strongly prefer asking about a `dog' when looking for the poodle, about a `mammal' when looking for the cat, and so on. \red{XXX Robert: need statistics here. Probably will need more than 25 participants to get enough power...} 
+Results for the guesser role are shown in Figure \ref{fig:exp1res}(a). There are two primary trends to note in these data. First, questioners tend to choose the indirect question node closest to their goal when the direct question is unavailable. It is unsurprising that they ask about the `dalmatian` when looking for the dalmatian, but interesting that they strongly prefer asking about a `dog' when looking for the poodle, about a `mammal' when looking for the cat, and so on. \red{XXX need statistics here. Probably will need more than 25 participants to get enough power... \textbf{Robert}} 
 
 
-Results for the helper role are shown in Figure \ref{fig:exp1res}(b). The most striking feature of these data is how closely match the questioner distribution \red{XXX Robert: Possibly just because people did both... It might be the second-timers driving the effect, so we should separate out the different orders, or run it again between-subjects}. If the helper is asked about a `dog`, the dalmatian and poodle would be equally good literal answers to this question, but they strongly prefer to give the location of the poodle. Similarly, the dalmatian, poodle, and siamese cat are all mammals, but helpers prefer to respond to the `mammal' question by revealing the location of the cat. 
+Results for the helper role are shown in Figure \ref{fig:exp1res}(b). The most striking feature of these data is how closely match the questioner distribution \red{XXX Possibly just because people did both... It might be the second-timers driving the effect, so we should separate out the different orders, or run it again between-subjects \textbf{Robert}}. If the helper is asked about a `dog`, the dalmatian and poodle would be equally good literal answers to this question, but they strongly prefer to give the location of the poodle. Similarly, the dalmatian, poodle, and siamese cat are all mammals, but helpers prefer to respond to the `mammal' question by revealing the location of the cat. 
 
 
 
@@ -141,22 +141,28 @@ To address concerns that the preceding results were due to particular features o
 \section{Experiment 2: }
 \label{sec:expa}
 
+\red{XXX TODO}
 
-
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .33]{Exp3QuestionerPrediction}
+\includegraphics[scale = .33]{Exp3ExplicitAnswerPrediction}
+\includegraphics[scale = .33]{Exp3PragmaticAnswerPrediction}
+\end{center}
+\caption{Experiment 1 model predictions \red{XXX Robert: when we've got the models right and have actually fit the rationality parameter to the data, we should put a scatter plot here, or show the data and predictions side by side. This is hard to compare with the results on the previous page.} }
+\label{fig:exp1pred}
+\end{figure*}
 
 \section{Model evaluation}
 \label{sec:evaluation}
 
+We now present a computational-level analysis of the preceding experiments, comparing several progressively more complex models in the RSA family specified above, eventually determining that a pragmatic answerer is necessary. At the very simplest level, we have an answerer who ignores the question and simply provides an answer that is true, yielding a uniform distribution over the four answers that are the case in the given world. This has important consequences for the questioner: when they reason about which question would generate the most helpful answer, they find no difference, and therefore have no preference over which question to ask. This is clearly not the case and we will not consider it further.
 
+At a slightly higher level of sophistication, we have an answerer that attempts to be informative with respect to the explicit question, without reasoning about the questioner's underlying goals. This answerer up-weights answers that result in a distribution of worlds (under the literal listener) where the leaf nodes picked out by the question are in the correct location. It down-weights answers that would mislead the questioner into the thinking that the leaf nodes mentioned in the question are in the wrong locations. For example, if the questioner asked about the `dalmatian' and the answer replied with the location of the goldfish, the set of worlds in which the goldfish is in the specified location could have the dalmatian in any of the remaining places. Thus, such an answer to this question would be down-weighted. This model produces the answerer predictions depicted in Figure \ref{fig:exp1pred}(b), which successfully down-weights the least relevant alternatives but cannot break the symmetries between the relevant ones, and is still inadequate for reproducing the data. 
 
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .5]{Exp3ExplicitAnswerPrediction}
-\includegraphics[scale = .5]{Exp3PragmaticAnswerPrediction}
-\end{center}
-\caption{Experiment 1 model predictions}
-\label{fig:exp1pred}
-\end{figure*}
+While the answerer data does not match the `explicit answerer' model, it does provide a foundation for a questioner model. When the questioner selects questions that maximize the expected information gain from hearing the explicit answerer's response, it produces the distribution of questions shown in Figure \ref{fig:exp1pred}(a) \dots \red{XXX Will fill in once we have better questioner predictions \textbf{Robert}}
+
+Finally, we examine a pragmatic answerer that begins by estimating the likelihood of the questioner having a goal $g$ given the question being asked. It then applies this distribution of goals as the criterion for whether an answer is useful: it prefers answers for which the distribution of consistent worlds have the item specified by the particular goal is in the right position. The results for this answerer are depicted in Figure \ref{fig:exp1pred}(c).
 
 \red{XXX}
 
@@ -165,9 +171,9 @@ To address concerns that the preceding results were due to particular features o
 \section{General discussion}
 \label{sec:gd}
 
- In this paper we have presented evidence that question and answer behavior, a particular kind of action, also depends critically on participants signaling and inferring intentions. 
+Behind every question lies some goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). Intuitively, these wildly different intentions seem to warrant different kinds of answers, even if the explicit question is expressed using the same words.
 
-Behind every question lies some goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). Intuitively, different intentions seem to warrant different kinds of answers, even if the question is expressed using the same words. Viewing these questions as signals provides a new theoretical framework to analyze particular kinds of questions.
+In this paper we have presented computational-level evidence that answerer behavior is best described by a pragmatic model that reasons about questioner intentions, using the question utterance as a signal. This analysis provides a novel perspective on the role of questions in dialogues: it is well-accepted under the Gricean view that answerers strive to be relevant, but we find that there is also a burden placed on the questioner to provide sufficient information about should be considered relevant in the first place. By artificially restricting the question space in our experiments, we have shown that when necessary, questioners can reliably choose an optimally informative signal.
 
 \red{XXX}
 
