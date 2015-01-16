@@ -480,10 +480,10 @@ var questioner = cache(function(qud_node) {
       function(){
         // What do I expect the world to be like?
         var trueWorld = worldPrior();
+        // If I ask this question, what answer do I expect to get,
+        // given what the world is like?
+        var answer = sample(explicitAnswerer(question, trueWorld));
         var posterior = Enumerate(function(){
-          // If I ask this question, what answer do I expect to get,
-          // given what the world is like?
-          var answer = sample(explicitAnswerer(question, trueWorld));
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
           // What is the value of the predicate I care about under
@@ -668,10 +668,10 @@ var questioner = cache(function(qud_node) {
       function(){
         // What do I expect the world to be like?
         var trueWorld = worldPrior();
+	// If I ask this question, what answer do I expect to get,
+	// given what the world is like?
+	var answer = sample(explicitAnswerer(question, trueWorld));
         var posterior = Enumerate(function(){
-          // If I ask this question, what answer do I expect to get,
-          // given what the world is like?
-          var answer = sample(explicitAnswerer(question, trueWorld));
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
           // What is the value of the predicate I care about under
