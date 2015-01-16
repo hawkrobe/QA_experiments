@@ -1,0 +1,18 @@
+#!/usr/bin/env node --stack-size=65500
+var fs = require('fs');
+var webppl = require('./src/main');
+
+function main(){
+  var programFile = process.argv[2];
+  console.log('Processing', programFile);
+  var code = fs.readFileSync(programFile);
+  webppl_eval(
+    function(s,x){
+      console.log("\n* Program return value:\n");
+      console.log(x);
+    },
+    code,
+    true);
+}
+
+main()

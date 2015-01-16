@@ -1,0 +1,46 @@
+// --------------------------------------------------------------------
+// Original preamble
+
+var makeERP = function(ps, vs){
+  return Enumerate(function(){return vs[discrete(ps)]});
+};
+
+
+// --------------------------------------------------------------------
+// Original defs
+
+var xs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+var erpX = makeERP([.1, .1, .1, .1, .1, .1, .1, .1, .1, .1], xs);
+
+var makeErpY = function(x){
+  var ps = ((x < 8) ? 
+            [.05, .05, .05, .05, .05, .05, .2, .2, .2, .1] :
+            [.05, .05, .2, .2, .2, .1, .05, .05, .05, .05]);
+  return makeERP(ps, xs);
+}
+
+var plus = function(x, y){ return x + y; };
+var times = function(x, y){ return x * y; };
+
+var scoreZ = function(z){
+  return z > 30 ? 0 : -Infinity;
+};
+
+
+// --------------------------------------------------------------------
+// Original model
+
+var foo = function(x, y){
+  return times(plus(x, y), 2);
+}
+
+var model = function(){
+  var x = sample(erpX);
+  var y = sample(makeErpY(x));
+  var z = foo(x, y);
+  factor(scoreZ(z));
+  return x;
+};
+
+Enumerate(model);

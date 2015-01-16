@@ -1,0 +1,3 @@
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd );
+
+webppl $1 --require-js "$DIR/../code/ctfUtils.js" --require-header "$DIR/../code/ctfHeader.js" --require-wppl "$DIR/../code/ctfPreamble.wppl"

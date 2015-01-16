@@ -1,0 +1,406 @@
+"use strict";
+
+var topK; // Top-level continuation
+var activeCodeBox;
+
+
+// Utils
+
+function euclideanDistance(v1, v2){
+  var i;
+  var d = 0;
+  for (i = 0; i < v1.length; i++) {
+    d += (v1[i] - v2[i])*(v1[i] - v2[i]);
+  }
+  return Math.sqrt(d);
+};
+
+function isErp(x){
+  return (x && (x.score != undefined) && (x.sample != undefined));
+}
+
+function isErpWithSupport(x){
+  return (isErp(x) && (x.support != undefined));
+}
+
+function jsPrint(x){
+  var resultDiv = $(activeCodeBox.parent().find(".resultDiv"));
+  if (isErpWithSupport(x)){
+    var params = Array.prototype.slice.call(arguments, 2);
+    var labels = x.support(params);
+    var counts = _.map(labels, function(label){return Math.exp(x.score(params, label));});
+    var resultDivSelector = "#" + resultDiv.attr('id');
+    barChart(resultDivSelector, labels, counts);
+  } else {
+    resultDiv.append(
+      document.createTextNode(
+        JSON.stringify(x) + "\n"));
+  }
+}
+
+function print(store, k, a, x){
+  jsPrint(x);
+  k(store);
+}
+
+
+// Bar plots
+
+function barChart(containerSelector, labels, counts){
+  $(containerSelector).show();
+  var svg = d3.select(containerSelector)
+    .append("svg")
+    .attr("class", "barChart");
+  var data = [];
+  for (var i=0; i<labels.length; i++){
+    data.push({
+                "Label": JSON.stringify(labels[i]),
+                "Count": counts[i]
+              });
+  };
+  var chart = new dimple.chart(svg, data);
+  chart.setBounds(80, 30, 480, 250);
+  var xAxis = chart.addMeasureAxis("x", "Count");
+  xAxis.title = null;
+  xAxis.tickFormat = ",.2f";
+  var yAxis = chart.addCategoryAxis("y", "Label");
+  yAxis.title = null;
+  chart.addSeries("Count", dimple.plot.bar);
+  chart.draw();
+}
+
+
+// Drawing
+
+function DrawObject(width, height, visible){
+  this.canvas = $('<canvas/>', {
+    "class": "drawCanvas",
+    "Width": width + "px",
+    "Height": height + "px"
+  })[0];
+  if (visible==true){
+    $(this.canvas).css({"display": "inline"});
+    $(activeCodeBox).append(this.canvas);
+  };
+  this.paper = new paper.PaperScope();
+  this.paper.setup(this.canvas);
+  this.paper.view.viewSize = new this.paper.Size(width, height);
+  this.redraw();
+}
+
+DrawObject.prototype.newPath = function(strokeWidth, opacity, color){
+  var path = new this.paper.Path();
+  path.strokeColor = color || 'black';
+  path.strokeWidth = strokeWidth || 8;
+  path.opacity = opacity || 0.6;
+  return path;
+};
+
+DrawObject.prototype.newPoint = function(x, y){
+  return new this.paper.Point(x, y);
+};
+
+DrawObject.prototype.circle = function(x, y, fillColor, radius){
+  var point = this.newPoint(x, y);
+  var circle = new this.paper.Path.Circle(point, radius || 50);
+  circle.fillColor = fillColor || 'black';
+  this.redraw();
+};
+
+DrawObject.prototype.line = function(x1, y1, x2, y2, strokeWidth, opacity, color){
+  var path = this.newPath(strokeWidth, opacity, color);
+  path.moveTo(x1, y1);
+  path.lineTo(this.newPoint(x2, y2));
+  this.redraw();
+};
+
+DrawObject.prototype.redraw = function(){
+  this.paper.view.draw();
+};
+
+DrawObject.prototype.toArray = function(){
+  var context = this.canvas.getContext('2d');
+  var imgData = context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+  return imgData.data;
+};
+
+DrawObject.prototype.distance = function(cmpDrawObject){
+  if (!((this.canvas.width == cmpDrawObject.canvas.width) &&
+        (this.canvas.height == cmpDrawObject.canvas.height))){
+    console.log(this.canvas.width, cmpDrawObject.canvas.width,
+                this.canvas.height, cmpDrawObject.canvas.height);
+    throw new Error("Dimensions must match for distance computation!");
+  }
+  var thisImgData = this.toArray();
+  var cmpImgData = cmpDrawObject.toArray();
+  var distance = 0;
+  for (var i=0; i<thisImgData.length; i+=4) {
+    var col1 = [thisImgData[i], thisImgData[i+1], thisImgData[i+2], thisImgData[i+3]];
+    var col2 = [cmpImgData[i], cmpImgData[i+1], cmpImgData[i+2], cmpImgData[i+3]];
+    distance += euclideanDistance(col1, col2);
+  };
+  return distance;
+};
+
+DrawObject.prototype.destroy = function(){
+  this.paper = undefined;
+  $(this.canvas).remove();
+}
+
+function Draw(s, k, a, width, height, visible){
+  return setTimeout(function(){k(s, new DrawObject(width, height, visible));});
+}
+
+function loadImage(s, k, a, drawObject, url){
+  // Synchronous loading - only continue with computation once image is loaded
+  var context = drawObject.canvas.getContext('2d');
+  var imageObj = new Image();
+  imageObj.onload = function() {
+    var raster = new drawObject.paper.Raster(imageObj);
+    raster.position = drawObject.paper.view.center;
+    drawObject.redraw();
+    k(s);
+  };
+  imageObj.src = url;
+}
+
+
+// Code boxes
+
+function webpplObjectToText(x){
+  if (isErp(x)){
+    return "<erp>";
+  } else {
+    return JSON.stringify(x);
+  }
+}
+
+var codeBoxCount = 0;
+
+CodeMirror.keyMap.default["Cmd-/"] = "toggleComment";
+CodeMirror.keyMap.default["Cmd-."] = function(cm){cm.foldCode(cm.getCursor(), myRangeFinder); };
+
+//fold "///fold: ... ///" parts:
+function foldCode(cm){
+  var lastLine = cm.lastLine();
+  for(var i=0;i<=lastLine;i++) {
+    var txt = cm.getLine(i),
+    pos = txt.indexOf("///fold:");
+    if (pos==0) {cm.foldCode(CodeMirror.Pos(i,pos), tripleCommentRangeFinder);}
+  }
+}
+
+function setupCodeBox(element){
+  var $element = $(element);
+  var $code = $element.html();
+  var $unescaped = $('<div/>').html($code).text();
+
+  $element.empty();
+
+  var cm = CodeMirror(
+    element, {
+      value: $unescaped,
+      mode: 'javascript',
+      lineNumbers: false,
+      readOnly: false,
+      extraKeys: {"Tab": "indentAuto"}
+    });
+
+  foldCode(cm);
+
+  var getLanguage = function(){
+    var firstLine = cm.getValue().split("\n")[0];
+    if (firstLine == "// language: javascript") {
+      return "javascript";
+    } else if (firstLine == "// static") {
+      return "static";
+    } else {
+      return "webppl";
+    }
+  };
+
+  var resultDiv = $('<div/>',
+    { "id": "result_" + codeBoxCount,
+      "class": "resultDiv" });
+
+  var showResult = function(store, x){
+    resultDiv.show();
+    if (x !== undefined) {
+      resultDiv.append(document.createTextNode(webpplObjectToText(x)));
+    }
+  };
+
+  var runWebPPL = function(){
+    var oldTopK = topK;
+    var oldActiveCodeBox = activeCodeBox;
+    topK = showResult;
+    activeCodeBox = $element;
+    var activePre = activeCodeBox.parent();
+    activePre.find("canvas").remove();
+    activePre.find(".resultDiv").text("");
+    activePre.find("button").text("compiling...");
+    setTimeout(function(){
+      try {
+        var compiled = webppl.compile(cm.getValue(), true);
+        activePre.find("button").text("running...");
+        setTimeout(function(){
+          try {
+            eval.call(window, compiled);
+          } finally {
+            activePre.find("button").text("run");
+          }
+        }, 10);
+      } finally {
+        activePre.find("button").text("run");
+      }
+    }, 10);
+  };
+
+  var runJS = function(){
+    activeCodeBox = $element;
+    activeCodeBox.parent().find("canvas").remove();
+    activeCodeBox.parent().find(".resultDiv").text("");
+    try {
+      var result = eval.call(window, cm.getValue());
+      showResult(result);
+    } catch (err) {
+      resultDiv.show();
+      resultDiv.append(document.createTextNode((err.stack)));
+      throw err;
+    }
+  };
+
+  var runButton = $(
+    '<button/>', {
+      "text": "run",
+      "id": 'run_' + codeBoxCount,
+      "class": 'runButton',
+      "click": function(){
+        setTimeout(
+          function(){
+            return (getLanguage() == "javascript") ? runJS() : runWebPPL();
+          },
+          0);
+      }
+    });
+
+  $element.parent().append(resultDiv);
+
+  if (getLanguage() == "static"){
+    cm.setValue(cm.getValue().split("\n").slice(1).join("\n").trim());
+  } else {
+    $element.parent().append(runButton);
+  }
+
+  codeBoxCount += 1;
+
+  return cm;
+}
+
+function setupCodeBoxes(){
+  $('pre > code').each(function() {
+    setupCodeBox(this);
+  });
+}
+
+$(setupCodeBoxes);
+
+
+// CPS and addressing forms
+
+function updateTransformForm(inputId, outputId, transformer){
+  try {
+    var cpsCode = transformer($(inputId).val());
+    $(outputId).val(cpsCode);
+  } catch (err) {
+  }
+  $(outputId).trigger('autosize.resize');
+}
+
+function setupTransformForm(inputId, outputId, eventListener){
+  $(inputId).autosize();
+  $(outputId).autosize();
+  $(inputId).bind('input propertychange', eventListener);
+  $(inputId).change();
+  eventListener();
+}
+
+// CPS
+
+var updateCpsForm = function(){
+  updateTransformForm("#cpsInput", "#cpsOutput", webppl.cps);
+};
+var setupCpsForm = function(){
+  setupTransformForm("#cpsInput", "#cpsOutput", updateCpsForm);
+};
+
+$(setupCpsForm);
+
+// Naming
+
+var updateNamingForm = function(){
+  updateTransformForm("#namingInput", "#namingOutput", webppl.naming);
+};
+var setupNamingForm = function(){
+  setupTransformForm("#namingInput", "#namingOutput", updateNamingForm);
+};
+
+$(setupNamingForm);
+
+
+// Google analytics
+
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-54996-12', 'auto');
+ga('send', 'pageview');
+
+
+// Date
+
+function setDate(){
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1; //January is 0!
+  var yyyy = today.getFullYear();
+  $("#date").text(yyyy+'/'+mm+'/'+dd);
+}
+
+$(setDate);
+
+
+// Special functions for webppl code boxes
+
+var invertMap = function (store, k, a, obj) {
+
+  var newObj = {};
+
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      var value = obj[prop];
+      if (newObj.hasOwnProperty(value)) {
+        newObj[value].push(prop);
+      } else {
+        newObj[value] = [prop];
+      }
+    }
+  }
+
+  return k(store, newObj);
+};
+
+
+// 'Edit page' link
+
+var github_repository = "https://github.com/stuhlmueller/coarse-to-fine/";
+
+function markdown_url(page_url) {
+    return page_url.slice(0, -4) + "md";
+}
+
+function github_edit_url(page_url) {
+    return github_repository + "edit/gh-pages" + markdown_url(page_url);
+}

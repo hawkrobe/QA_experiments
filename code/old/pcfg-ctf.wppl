@@ -1,0 +1,460 @@
+var print = function(x){
+  console.log(x);
+};
+
+var printState = function(yieldsofar, symbols, trueyield){
+  if (arrayEq(yieldsofar, trueyield) & (symbols.length == 0)){
+    print([yieldsofar, symbols, '********************************']);
+  } else {
+    print([yieldsofar, symbols]);
+  }
+}
+
+var flatten = function(xs){
+  if (xs.length == 0) {
+    return [];
+  } else {
+    return xs[0].concat(flatten(xs.slice(1)));
+  }
+}
+
+var productOfLists = function(xs){
+  if (xs.length == 0) {
+    return [[]];
+  } else {
+    var xrs = productOfLists(xs.slice(1));
+    return flatten(map(
+      function(x0){
+        map(function(l){return [x0].concat(l);}, xrs);
+      },
+      xs[0]));
+  }
+}
+
+var arrayEq = function(a, b){
+  return (a.length == 0 ?
+          (b.length == 0) :
+          a[0]==b[0] & arrayEq(a.slice(1), b.slice(1)));
+};
+
+var makeERP = function(ps, vs){
+  return Enumerate(function(){return vs[discrete(ps)];});
+};
+
+var removeCommonPrefix = function(xs, ys){
+  if ((xs.length == 0) | (ys.length == 0)) {
+    return [xs, ys];
+  } else if (xs[0] === ys[0]){
+    return removeCommonPrefix(xs.slice(1), ys.slice(1));
+  } else {
+    return [xs, ys];
+  }
+};
+
+var getRelativeAddress = function(baseAddress){
+  // 1. Get address
+  var a = getAddress();
+  // 2. Remove last element (since last element
+  // just points to the getAddress call here, not the
+  // surrounding context that we care about)
+  var addr = a.slice(0, a.length - 1);
+  // 3. Remove common prefix with base address (since prefix
+  // reflects context that we want to ignore)
+  var tmp = removeCommonPrefix(baseAddress, addr);
+  if (tmp[0].length != 1){
+    console.error("getRelativeAddress failed");
+    console.log(baseAddress);
+    console.log(addr);
+    return undefined;
+  } else {
+    var base0 = tmp[0][0];
+    // 4. Subtract last element of base address (to normalize
+    // absolute value of addresses that happen in different
+    // syntactic places)
+    var relativized = map(
+      function(x){return x-base0;},
+      tmp[1]);
+    return relativized;
+  }
+};
+
+var coarsenERP = function(erp, coarsenValue){
+
+  // Get concrete values and probabilities
+
+  var allVs = erp.support([]);
+  var allPs = map(function(v){return Math.exp(erp.score([], v));}, allVs);
+
+  // Group distribution based on equivalence classes
+  // implied by coarsenValue function
+
+  var groups = groupBy(
+    function(vp1, vp2){
+      return coarsenValue(vp1[0]) == coarsenValue(vp2[0]);
+    },
+    zip(allVs, allPs));
+
+  var groupSymbols = map(
+    function(group){
+      // group[0][0]: first value in group
+      return coarsenValue(group[0][0]);},
+    groups);
+
+  var groupedVs = map(
+    function(group){
+      return map(first, group);
+    },
+    groups);
+
+  var groupedPs = map(
+    function(group){
+      return map(second, group);
+    },
+    groups);
+
+  // Construct unconditional (abstract) sampler and
+  // conditional (concrete) sampler
+
+  var abstractPs = map(sum, groupedPs);
+  var abstractSampler = makeERP(abstractPs, groupSymbols);
+  var getAbstractSampler = function(relAddress){
+    return function(){
+      var x = sample(abstractSampler);
+      var name = "erp_" + relAddress.join();
+      globalStore[name] = x;
+//       console.log("setting global store to:", globalStore);
+      return x;
+    };
+  };
+
+  var groupERPs = map2(makeERP, groupedPs, groupedVs);
+  var getConcreteSampler = function(relAddress){
+    var name = "erp_" + relAddress.join();
+//     console.log("global store:", globalStore);
+//     console.log("looking up name:", name);
+    var abstractSymbol = globalStore[name];
+    console.log("looked up abstract symbol: " + abstractSymbol);
+    return function(){
+      var i = indexOf(abstractSymbol, groupSymbols);
+      var fineErp = groupERPs[i];
+      var x = sample(fineErp);
+      return x;
+    };
+  };
+
+  return [getAbstractSampler, getConcreteSampler];
+
+};
+
+var logMeanExp = function(erp){
+  return Math.log(expectation(erp, function(x){return Math.exp(x);}));
+};
+
+var lift1 = function(f, coarsenValue, refineValue, useMean){
+
+  var getOutputSampler = cache(function(coarseArg){
+    var fineArgs = refineValue(coarseArg);
+    return Enumerate(
+      function(){
+        var fineArg = fineArgs[randomInteger(fineArgs.length)];
+        var fineOut = f(fineArg);
+        var coarseOut = coarsenValue(fineOut);
+        return coarseOut;
+      });
+  });
+
+  var samplerToValue = useMean ? logMeanExp : sample;
+
+  return function(coarseArg){
+    var outputSampler = getOutputSampler(coarseArg);
+    return samplerToValue(outputSampler);
+  };
+
+};
+
+var lift2 = function(f, coarsenValue, refineValue, useMean){
+
+  var getOutputSampler = cache(function(coarseArg1, coarseArg2){
+    var fineArgs1 = refineValue(coarseArg1);
+    var fineArgs2 = refineValue(coarseArg2);
+    return Enumerate(
+      function(){
+        var fineArg1 = fineArgs1[randomInteger(fineArgs1.length)];
+        var fineArg2 = fineArgs2[randomInteger(fineArgs2.length)];
+        var fineOut = f(fineArg1, fineArg2);
+        var coarseOut = coarsenValue(fineOut);
+        return coarseOut;
+      });
+  });
+
+  var samplerToValue = useMean ? logMeanExp : sample;
+
+  return function(coarseArg1, coarseArg2){
+    var outputSampler = getOutputSampler(coarseArg1, coarseArg2);
+    return samplerToValue(outputSampler);
+  };
+
+};
+
+
+// =====================================================================
+// Factors
+
+var coarseFactor = function(score, relativeAddress){
+  var name = "factor_" + relativeAddress.join();
+  globalStore[name] = score;
+  factor(score);
+};
+
+var fineFactor = function(score, relativeAddress){
+  var name = "factor_" + relativeAddress.join();
+  var coarseScore = globalStore[name];
+  console.log("fine factor: ", score, " - ", coarseScore);
+  factor(score - coarseScore);
+};
+
+
+// =====================================================================
+// Abstraction
+
+var valueAbstractionMap = {
+  'X': 'X',
+  'Y': 'Y',
+  'X1': 'cX',
+  'X2': 'cX',
+  'X3': 'cX',
+  'A': 'A',
+  'B': 'B',
+  'Y1': 'Y1'
+};
+
+var valueRefinementMap = ctfUtils.invertMap(valueAbstractionMap);
+
+var coarsenValue = function(value){
+  if (value instanceof Array) {
+    return map(coarsenValue, value);
+  } else {
+    if (valueAbstractionMap.hasOwnProperty(value)){
+      return valueAbstractionMap[value];
+    } else {
+      return value;
+    }
+  }
+};
+
+var refineValue = function(abstractValue){
+  if (abstractValue instanceof Array) {
+    return productOfLists(map(refineValue, abstractValue));
+  } else {
+    if (valueRefinementMap.hasOwnProperty(abstractValue)){
+      return valueRefinementMap[abstractValue];
+    } else {
+      return [abstractValue];
+    }
+  }
+};
+
+
+
+// =====================================================================
+// ERPs
+
+var transitionERP = function(symbol){
+///fold: rules
+  var rules = {
+    'S': {
+      rhs: [['X'], ['Y']],
+      probs: [.7, 0.3]
+    },
+    'X': {
+      rhs: [['X1'], ['X2'], ['X3']],
+      probs: [.33, .33, .33]
+    },
+    'X1': {
+      rhs: [['X1', 'X1'], ['A', 'X1'], ['A']],
+      probs: [.33, .33, .33]
+    },
+    'X2': {
+      rhs: [['X2', 'X2'], ['A', 'X2'], ['A']],
+      probs: [.33, .33, .33]
+    },
+    'X3': {
+      rhs: [['X3', 'X3'], ['A', 'X3'], ['A']],
+      probs: [.33, .33, .33]
+    },
+    'Y': {
+      rhs: [['Y1'], ['Y', 'Y1']],
+      probs: [.5, .5]
+    },
+    'Y1': {
+      rhs: [['A'], ['B']],
+      probs: [.1, .9]
+    }
+  };
+///
+ return makeERP(rules[symbol].probs, rules[symbol].rhs);
+}
+
+var uniformTransitionERP = function(){
+  var symbols = ['S', 'X', 'X1', 'X2', 'X3', 'Y', 'Y1'];
+  return Enumerate(
+    function(){
+      var symbol = symbols[randomInteger(symbols.length)];
+      var erp = transitionERP(symbol);
+      return sample(erp);
+    });
+}();
+
+var transitionScore = function(symbol, rhs){
+  var erp = transitionERP(symbol);
+  return erp.score([], rhs);
+}
+
+var tmp = coarsenERP(uniformTransitionERP, coarsenValue);
+var coarseUniformTransitionERP = tmp[0];
+var fineUniformTransitionERP = tmp[1];
+
+
+
+// =====================================================================
+// Deterministic primitives
+
+// - Fine
+
+var arrayEqualScore = function(xs, ys){
+  return arrayEq(xs, ys) ? 0 : -Infinity;
+};
+
+var equalScore = function(x, y){
+  return x==y ? 0 : -Infinity;
+};
+
+var preTerminal = function(symbol){
+  return symbol=='A' | symbol=='B';
+};
+
+var terminal = function(symbol){
+  return {
+    'A' : 'a',
+    'B' : 'b'
+  }[symbol];
+};
+
+// - Coarse (lifted)
+
+var coarseArrayEqualScore = lift2(arrayEqualScore, coarsenValue, refineValue, true);
+var coarseEqualScore = lift2(equalScore, coarsenValue, refineValue, true);
+var coarsePreTerminal = lift1(preTerminal, coarsenValue, refineValue, false);
+var coarseTerminal = lift1(terminal, coarsenValue, refineValue, false);
+var coarseTransitionScore = lift2(transitionScore, coarsenValue, refineValue, true);
+
+
+// =====================================================================
+// Compound (model) functions
+
+
+// ---------------------------------------------------------------------
+// Coarse model
+
+var coarseExpand = function(symbols, yieldsofar, trueyield) {
+  printState(yieldsofar, symbols, trueyield);
+  if (symbols.length==0) {
+    return yieldsofar;
+  } else {
+    return coarseExpand(symbols.slice(1),
+                        coarsePcfg(symbols[0], yieldsofar, trueyield),
+                        trueyield);
+  }
+};
+
+var coarsePcfg = function(symbol, yieldsofar, trueyield) {
+  if (coarsePreTerminal(symbol)){
+    var t = coarseTerminal(symbol);
+    if (yieldsofar.length < trueyield.length){
+      coarseFactor(
+        coarseEqualScore(t, trueyield[yieldsofar.length]),
+        getRelativeAddress(globalStore.baseAddress));
+    }
+    return yieldsofar.concat([t]);
+  } else {
+    var getThunk = coarseUniformTransitionERP; // sampler...
+    var thunk = getThunk(getRelativeAddress(globalStore.baseAddress));
+    var erp = Enumerate(thunk);
+    var symbols = thunk();
+    var uScore = erp.score([], symbols);
+    var tScore = coarseTransitionScore(symbol, symbols);
+    coarseFactor(
+      tScore - uScore,
+      getRelativeAddress(globalStore.baseAddress));
+    return coarseExpand(symbols, yieldsofar, trueyield);
+  };
+};
+
+var coarseModel = function(){
+  globalStore['baseAddress'] = getAddress();
+  var trueyield = ['a', 'a', 'b'];
+  var out = coarsePcfg('S', [], trueyield);
+  coarseFactor(
+    coarseArrayEqualScore(out, trueyield),
+    getRelativeAddress(globalStore['baseAddress']));
+  return out;
+};
+
+
+// ---------------------------------------------------------------------
+// Fine model
+
+var expand = function(symbols, yieldsofar, trueyield) {
+  printState(yieldsofar, symbols, trueyield);
+  if (symbols.length==0) {
+    return yieldsofar;
+  } else {
+    return expand(symbols.slice(1),
+                  pcfg(symbols[0], yieldsofar, trueyield),
+                  trueyield);
+  }
+};
+
+var pcfg = function(symbol, yieldsofar, trueyield) {
+  if (preTerminal(symbol)){
+    var t = terminal(symbol);
+    if (yieldsofar.length < trueyield.length){
+      fineFactor(
+        equalScore(t, trueyield[yieldsofar.length]),
+        getRelativeAddress(globalStore.baseAddress));
+    }
+    return yieldsofar.concat([t]);
+  } else {
+    var getThunk = fineUniformTransitionERP; // sampler...
+    var thunk = getThunk(getRelativeAddress(globalStore.baseAddress));
+    var erp = Enumerate(thunk);
+    var symbols = thunk();
+    var uScore = erp.score([], symbols);
+    var tScore = transitionScore(symbol, symbols);
+    fineFactor(
+      tScore - uScore,
+      getRelativeAddress(globalStore.baseAddress));
+    return expand(symbols, yieldsofar, trueyield);
+  };
+};
+
+var fineModel = function(){
+  globalStore['baseAddress'] = getAddress();
+  var trueyield = ['a', 'a', 'b'];
+  var out = pcfg('S', [], trueyield);
+  fineFactor(
+    arrayEqualScore(out, trueyield),
+    getRelativeAddress(globalStore.baseAddress));
+  return out;
+};
+
+
+// ---------------------------------------------------------------------
+// Coarse-to-fine model
+
+var model = function(){
+  coarseModel();
+  return fineModel();
+};
+
+print(Enumerate(model, 1));

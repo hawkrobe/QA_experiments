@@ -1,0 +1,377 @@
+// --------------------------------------------------------------------
+// Original preamble
+
+var makeERP = function(ps, vs){
+  return Enumerate(function(){return vs[discrete(ps)]});
+};
+
+
+// ---------------------------------------------------------------------
+// CtF preamble
+
+var butLast = function(xs){
+  return xs.slice(0, xs.length-1);
+}
+
+var flatten = function(xs){
+  if (xs.length == 0) {
+    return [];
+  } else {
+    return xs[0].concat(flatten(xs.slice(1)));
+  }
+}
+
+var productOfLists = function(xs){
+  if (xs.length == 0) {
+    return [[]];
+  } else {
+    var xrs = productOfLists(xs.slice(1));
+    return flatten(map(
+      function(x0){
+        map(function(l){return [x0].concat(l);}, xrs);
+      },
+      xs[0]));
+  }
+}
+
+var arrayEq = function(a, b){
+  return (a.length == 0 ?
+          (b.length == 0) :
+          a[0]==b[0] & arrayEq(a.slice(1), b.slice(1)));
+};
+
+var removeCommonPrefix = function(xs, ys){
+  if ((xs.length == 0) | (ys.length == 0)) {
+    return [xs, ys];
+  } else if (xs[0] === ys[0]){
+    return removeCommonPrefix(xs.slice(1), ys.slice(1));
+  } else {
+    return [xs, ys];
+  }
+};
+
+var getRelativeAddress = function(baseAddress){
+  // 1. Get address
+  var a = getAddress();
+  // 2. Remove last element (since last element
+  // just points to the getAddress call here, not the
+  // surrounding context that we care about)
+  var addr = a.slice(0, a.length - 1);
+  // 3. Remove common prefix with base address (since prefix
+  // reflects context that we want to ignore)
+  var tmp = removeCommonPrefix(baseAddress, addr);
+  if (tmp[0].length != 1){
+    console.error("getRelativeAddress failed");
+    console.log(baseAddress);
+    console.log(addr);
+    return undefined;
+  } else {
+    var base0 = tmp[0][0];
+    // 4. Subtract last element of base address (to normalize
+    // absolute value of addresses that happen in different
+    // syntactic places)
+    var relativized = map(
+      function(x){return x-base0;},
+      tmp[1]);
+    return relativized;
+  }
+};
+
+var coarsenERP = function(erp, coarsenValue){
+
+  // Get concrete values and probabilities
+
+  var allVs = erp.support([]);
+  var allPs = map(function(v){return Math.exp(erp.score([], v));}, allVs);
+
+  // Group distribution based on equivalence classes
+  // implied by coarsenValue function
+
+  var groups = groupBy(
+    function(vp1, vp2){
+      return JSON.stringify(coarsenValue(vp1[0])) == JSON.stringify(coarsenValue(vp2[0]));
+    },
+    zip(allVs, allPs));
+
+  var groupSymbols = map(
+    function(group){
+      // group[0][0]: first value in group
+      return coarsenValue(group[0][0]);},
+    groups);
+
+  var groupedVs = map(
+    function(group){
+      return map(first, group);
+    },
+    groups);
+
+  var groupedPs = map(
+    function(group){
+      return map(second, group);
+    },
+    groups);
+
+  // Construct unconditional (abstract) sampler and
+  // conditional (concrete) sampler
+
+  var abstractPs = map(sum, groupedPs);
+  var abstractERP = makeERP(abstractPs, groupSymbols);
+  var sampleCoarse = function(){
+    var relAddress = butLast(getRelativeAddress(globalStore.baseAddress));
+    var x = sample(abstractERP);
+    var name = "erp_" + relAddress.join();
+    globalStore[name] = x;
+    return x;
+  };
+
+  var groupERPs = map2(makeERP, groupedPs, groupedVs);
+  var sampleFine = function(){
+    var relAddress = butLast(getRelativeAddress(globalStore.baseAddress));
+    var name = "erp_" + relAddress.join();
+    var abstractSymbol = globalStore[name];
+    var i = indexOf(abstractSymbol, groupSymbols);
+    var fineErp = groupERPs[i];
+    var x = sample(fineErp);
+    return x;
+  };
+
+  return [sampleCoarse, sampleFine];
+
+};
+
+var logMeanExp = function(erp){
+  return Math.log(expectation(erp, function(x){return Math.exp(x);}));
+};
+
+var lift1 = function(f, coarsenValue, refineValue, useMean){
+
+  var getOutputSampler = cache(function(coarseArg){
+    var fineArgs = refineValue(coarseArg);
+    return Enumerate(
+      function(){
+        var fineArg = fineArgs[randomInteger(fineArgs.length)];
+        var fineOut = f(fineArg);
+        var coarseOut = coarsenValue(fineOut);
+        return coarseOut;
+      });
+  });
+
+  var samplerToValue = useMean ? logMeanExp : sample;
+
+  return function(coarseArg){
+    var outputSampler = getOutputSampler(coarseArg);
+    return samplerToValue(outputSampler);
+  };
+
+};
+
+var lift2 = function(f, coarsenValue, refineValue, useMean){
+
+  var getOutputSampler = cache(function(coarseArg1, coarseArg2){
+    var fineArgs1 = refineValue(coarseArg1);
+    var fineArgs2 = refineValue(coarseArg2);
+    return Enumerate(
+      function(){
+        var fineArg1 = fineArgs1[randomInteger(fineArgs1.length)];
+        var fineArg2 = fineArgs2[randomInteger(fineArgs2.length)];
+        var fineOut = f(fineArg1, fineArg2);
+        var coarseOut = coarsenValue(fineOut);
+        return coarseOut;
+      });
+  });
+
+  var samplerToValue = useMean ? logMeanExp : sample;
+
+  return function(coarseArg1, coarseArg2){
+    var outputSampler = getOutputSampler(coarseArg1, coarseArg2);
+    return samplerToValue(outputSampler);
+  };
+
+};
+
+var coarseFactor = function(score){
+  var relativeAddress = butLast(getRelativeAddress(globalStore.baseAddress));
+  var name = "factor_" + relativeAddress.join();
+  var proxyScore = (score == -Infinity) ? Math.log(0.0001) : score;
+  globalStore[name] = proxyScore;
+  factor(proxyScore);
+};
+
+var fineFactor = function(score, relativeAddress){
+  var relativeAddress = butLast(getRelativeAddress(globalStore.baseAddress));
+  var name = "factor_" + relativeAddress.join();
+  var coarseScore = globalStore[name];
+  // console.log("fine factor: ", score, " - ", coarseScore);
+  if ((coarseScore == -Infinity) & (score == -Infinity)){
+    factor(-Infinity);
+  } else if (coarseScore == -Infinity) {
+    console.error('ERROR: coarse is -Inf, but fine is not!');
+    process.exit();
+  } else {
+    factor(score - coarseScore);
+  }
+};
+
+
+// --------------------------------------------------------------------
+// Original defs
+
+var xs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+var erpX = makeERP([.1, .1, .1, .1, .1, .1, .1, .1, .1, .1], xs);
+
+var makeErpY = function(x){
+  var ps = ((x < 8) ? 
+            [.05, .05, .05, .05, .05, .05, .2, .2, .2, .1] :
+            [.05, .05, .2, .2, .2, .1, .05, .05, .05, .05]);
+  return makeERP(ps, xs);
+}
+
+var plus = function(x, y){ return x + y; };
+var times = function(x, y){ return x * y; };
+
+var scoreZ = function(z){
+  return z > 30 ? 0 : -Infinity;
+};
+
+
+// --------------------------------------------------------------------
+// Independent erp defs
+
+// - for dependent erps, need to know input domain
+//   (and ideally marginal distribution of input)
+
+var makeUniformERP = function(xs){
+  return Enumerate(function(){
+    return xs[randomInteger(xs.length)];
+  });
+};
+
+var uniformErpY = makeUniformERP(xs);
+
+var erpYScore = function(x, y){
+  return makeErpY(x).score([], y);
+}
+
+var uniformErpYScore = function(y){
+  return uniformErpY.score([], y);
+}
+
+
+// --------------------------------------------------------------------
+// Coarsening and refinement functions
+
+var isUpper = function(x0, x1){
+  var size = x1 - x0 + 1;
+  return x1 % (size * 2) == 0;
+};
+
+var coarsenValue = function(x){
+  // console.log('coarsen:', x);
+  if (x instanceof Array){
+    // interval
+    var x0 = x[0];
+    var x1 = x[1];
+    var size = x1 - x0 + 1;
+    if (isUpper(x0, x1)){
+      return [(x0 - size), x1];
+    } else {
+      return [x0, x1 + size];
+    }
+  } else {
+    // number
+    if (x <= 0) {
+      // score
+      return x;
+    } else {
+      if (x % 2 == 0) {
+        return [x-1, x];
+      } else {
+        return [x, x+1];
+      }
+    }
+  }
+};
+
+var refineValue = function(x){
+  // console.log('refine:', x);
+  if (x instanceof Array){
+    // interval
+    var x0 = x[0];
+    var x1 = x[1];
+    var size = (x1 - x0 + 1) / 2;
+    if (size == 1){
+      return [x0, x1];
+    } else {
+      return [[x0, x1-size], [x0 + size, x1]];
+    }
+  } else {
+    if (x <=0){
+      // score
+      return [x];
+    } else {
+      console.error('tried to refine plain number!');
+      return "ERROR";
+    }
+  }
+};
+
+
+// --------------------------------------------------------------------
+// CtF defs
+
+var tmp1 = coarsenERP(erpX, coarsenValue);
+var sampleCoarseX = tmp1[0];
+var sampleFineX = tmp1[1];
+
+var tmp2 = coarsenERP(uniformErpY, coarsenValue);
+var sampleCoarseUniformY = tmp2[0];
+var sampleFineUniformY = tmp2[1];
+
+var coarsePlus = lift2(plus, coarsenValue, refineValue, false);
+var coarseTimes = lift2(times, coarsenValue, refineValue, false);
+
+var coarseScoreZ = lift1(scoreZ, coarsenValue, refineValue, true);
+var coarseErpYScore = lift2(erpYScore, coarsenValue, refineValue, true);
+var coarseUniformErpYScore = lift1(uniformErpYScore, coarsenValue, refineValue, true);
+
+
+// --------------------------------------------------------------------
+// CtF model
+
+var coarseFoo = function(x, y){
+  return coarseTimes(coarsePlus(x, y), coarsenValue(2));
+};
+
+var coarseModel = function(){
+  globalStore['baseAddress'] = getAddress();
+  var x = sampleCoarseX();
+  var y = sampleCoarseUniformY();
+  coarseFactor(coarseErpYScore(x, y) - coarseUniformErpYScore(y));
+  var z = coarseFoo(x, y);
+  coarseFactor(coarseScoreZ(z));
+  return x;
+};
+
+
+var foo = function(x, y){
+  return times(plus(x, y), 2);
+};
+
+var fineModel = function(){
+  globalStore['baseAddress'] = getAddress();
+  var x = sampleFineX();
+  var y = sampleFineUniformY();
+  fineFactor(erpYScore(x, y) - uniformErpYScore(y));
+  var z = foo(x, y);
+  fineFactor(scoreZ(z));
+  return x;
+};
+
+
+var coarseToFineModel = function(){
+  coarseModel();
+  return fineModel();
+}
+
+Enumerate(coarseToFineModel);

@@ -1,0 +1,37 @@
+// Basic erp
+
+var xs = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+var ERP1 = makeERP([.1, .1, .1, .1, .1, .1, .1, .1, .1, .1], xs);
+
+// Lifted erp
+
+var liftedERP1 = liftERP(ERP1);
+
+// Basic model
+
+var model = function(){
+  globalStore['baseAddress'] = getAddress();
+  var bar = function(){
+    return liftedERP1();
+  };
+  var baz = function(){
+    return bar();
+  }
+  return baz();
+};
+
+// Ctf model wrapper
+
+var ctfModel = function(level){
+  globalStore['level'] = level;
+  if (level === 0){
+    return model();
+  } else {
+    model();
+    return ctfModel(level - 1)
+  }
+};
+
+ParticleFilter(
+  function(){return ctfModel(3);},
+  1000);
