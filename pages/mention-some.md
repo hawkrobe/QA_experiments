@@ -8,6 +8,7 @@ We'll set up the mention-some problem below, using the same structure as our oth
 
 ~~~~
 ///fold:
+///fold:
 var KL = function(erpTrue, erpApprox){
   var values = erpTrue.support([]);
   var xs = map(
@@ -110,10 +111,14 @@ var cartesianProductOf = function(listOfLists) {
 
 // Sometimes you just need all possible combination of true and false
 var TFCartesianProd = function(n) {
-  var result = [];
-  map(function(i){
-    result.push(['true', 'false'])
-  }, _.range(n))
+  var inner_fun = function(n, result) {
+    if (n == 0)
+      return result
+    else
+      return inner_fun(n-1, result.concat([['true','false']]))
+  }
+  var result = inner_fun(n, [])
+  console.log(result)
   return cartesianProductOf(result);
 }
 
@@ -200,6 +205,7 @@ var worldPrior = function() {
   return uniformDraw(worldSpace);
 };
 
+print(worldSpace)
 // Questions
 
 // returns a function that maps world to the gate we should pick to find
@@ -456,4 +462,5 @@ printERP(pragmaticAnswerer('whoArePeople?', w, 1, 1, 1, 3))
 // };
 
 // main();
+
 ~~~~
