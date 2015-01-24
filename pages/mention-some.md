@@ -46,7 +46,7 @@ var powerset = function(set) {
     var rest = powerset(set.slice(1));
     return map(
       function(element) {
-        return set[0] + element;
+        return [set[0]].concat(element);
       },
       rest).concat(rest);
   }
