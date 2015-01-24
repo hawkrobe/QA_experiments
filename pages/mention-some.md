@@ -6,7 +6,7 @@ status: current
 
 We'll set up the mention-some problem below, using the same structure as our other models
 
-```
+~~~~
 ///fold:
 var KL = function(erpTrue, erpApprox){
   var values = erpTrue.support([]);
@@ -455,4 +455,4 @@ printERP(pragmaticAnswerer('whoArePeople?', w, 1, 1, 1, 3))
 // };
 
 // main();
-```
+~~~~
