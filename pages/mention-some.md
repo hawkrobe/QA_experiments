@@ -51,6 +51,11 @@ var powerset = function(set) {
   }
 }
 
+var mapReduce1 = function(f,g,ar){
+  // specialized to above reduce
+  return reduce(function(a,b) { return f(g(a),b); }, g(ar[ar.length-1]), ar.slice(0,-1));
+};
+
 var all = function(p,l) { 
   return mapReduce1(function(a,b){ return a && b; }, p, l); };
 
