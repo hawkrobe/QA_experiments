@@ -8,7 +8,6 @@ We'll set up the mention-some problem below, using the same structure as our oth
 
 ~~~~
 ///fold:
-///fold:
 var KL = function(erpTrue, erpApprox){
   var values = erpTrue.support([]);
   var xs = map(
