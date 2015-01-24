@@ -52,6 +52,9 @@ var powerset = function(set) {
   }
 }
 
+var all = function(p,l) { 
+  return mapReduce1(function(a,b){ return a && b; }, p, l); };
+
 var permute = function (input) {
   var input = input.slice();
   var permArr = [];
