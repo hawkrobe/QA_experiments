@@ -1,0 +1,225 @@
+utterance, ansR, response, model_prob
+mammal,1,goldfish,0.16666666666666669
+mammal,1,poodle,0.27777777777777773
+mammal,1,dalmatian,0.27777777777777773
+mammal,1,siamese cat,0.27777777777777773
+dog,1,goldfish,0.16666666666666669
+dog,1,poodle,0.3333333333333333
+dog,1,dalmatian,0.3333333333333333
+dog,1,siamese cat,0.16666666666666669
+dalmatian,1,goldfish,0.1666666666666667
+dalmatian,1,poodle,0.1666666666666667
+dalmatian,1,dalmatian,0.49999999999999983
+dalmatian,1,siamese cat,0.1666666666666667
+animal,1,goldfish,0.25
+animal,1,poodle,0.25
+animal,1,dalmatian,0.25
+animal,1,siamese cat,0.25
+mammal,1.5,goldfish,0.1341386617298121
+mammal,1.5,poodle,0.28862044609006265
+mammal,1.5,dalmatian,0.28862044609006265
+mammal,1.5,siamese cat,0.28862044609006265
+dog,1.5,goldfish,0.1306019374818707
+dog,1.5,poodle,0.3693980625181293
+dog,1.5,dalmatian,0.3693980625181293
+dog,1.5,siamese cat,0.1306019374818707
+dalmatian,1.5,goldfish,0.12200846792814624
+dalmatian,1.5,poodle,0.12200846792814624
+dalmatian,1.5,dalmatian,0.6339745962155613
+dalmatian,1.5,siamese cat,0.12200846792814624
+animal,1.5,goldfish,0.25
+animal,1.5,poodle,0.25
+animal,1.5,dalmatian,0.25
+animal,1.5,siamese cat,0.25
+mammal,2,goldfish,0.10714285714285714
+mammal,2,poodle,0.2976190476190476
+mammal,2,dalmatian,0.2976190476190476
+mammal,2,siamese cat,0.2976190476190476
+dog,2,goldfish,0.09999999999999998
+dog,2,poodle,0.39999999999999997
+dog,2,dalmatian,0.39999999999999997
+dog,2,siamese cat,0.09999999999999998
+dalmatian,2,goldfish,0.08333333333333337
+dalmatian,2,poodle,0.08333333333333337
+dalmatian,2,dalmatian,0.75
+dalmatian,2,siamese cat,0.08333333333333337
+animal,2,goldfish,0.25
+animal,2,poodle,0.25
+animal,2,dalmatian,0.25
+animal,2,siamese cat,0.25
+mammal,2.5,goldfish,0.08504640121547975
+mammal,2.5,poodle,0.3049845329281734
+mammal,2.5,dalmatian,0.3049845329281734
+mammal,2.5,siamese cat,0.3049845329281734
+dog,2.5,goldfish,0.07511055241116742
+dog,2.5,poodle,0.4248894475888326
+dog,2.5,dalmatian,0.4248894475888326
+dog,2.5,siamese cat,0.07511055241116742
+dalmatian,2.5,goldfish,0.053796825932136326
+dalmatian,2.5,poodle,0.053796825932136326
+dalmatian,2.5,dalmatian,0.8386095222035911
+dalmatian,2.5,siamese cat,0.053796825932136326
+animal,2.5,goldfish,0.25
+animal,2.5,poodle,0.25
+animal,2.5,dalmatian,0.25
+animal,2.5,siamese cat,0.25
+mammal,3,goldfish,0.06716417910447758
+mammal,3,poodle,0.31094527363184077
+mammal,3,dalmatian,0.31094527363184077
+mammal,3,siamese cat,0.31094527363184077
+dog,3,goldfish,0.05555555555555554
+dog,3,poodle,0.4444444444444445
+dog,3,dalmatian,0.4444444444444445
+dog,3,siamese cat,0.05555555555555554
+dalmatian,3,goldfish,0.03333333333333333
+dalmatian,3,poodle,0.03333333333333333
+dalmatian,3,dalmatian,0.9
+dalmatian,3,siamese cat,0.03333333333333333
+animal,3,goldfish,0.25
+animal,3,poodle,0.25
+animal,3,dalmatian,0.25
+animal,3,siamese cat,0.25
+mammal,3.5,goldfish,0.05282486665061695
+mammal,3.5,poodle,0.3157250444497943
+mammal,3.5,dalmatian,0.3157250444497943
+mammal,3.5,siamese cat,0.3157250444497943
+dog,3.5,goldfish,0.04060515157080613
+dog,3.5,poodle,0.45939484842919387
+dog,3.5,dalmatian,0.45939484842919387
+dog,3.5,siamese cat,0.04060515157080613
+dalmatian,3.5,goldfish,0.02009429375774092
+dalmatian,3.5,poodle,0.02009429375774092
+dalmatian,3.5,dalmatian,0.9397171187267771
+dalmatian,3.5,siamese cat,0.02009429375774092
+animal,3.5,goldfish,0.25
+animal,3.5,poodle,0.25
+animal,3.5,dalmatian,0.25
+animal,3.5,siamese cat,0.25
+mammal,4,goldfish,0.04141104294478531
+mammal,4,poodle,0.3195296523517382
+mammal,4,dalmatian,0.3195296523517382
+mammal,4,siamese cat,0.3195296523517382
+dog,4,goldfish,0.02941176470588232
+dog,4,poodle,0.47058823529411775
+dog,4,dalmatian,0.47058823529411775
+dog,4,siamese cat,0.02941176470588232
+dalmatian,4,goldfish,0.011904761904761908
+dalmatian,4,poodle,0.011904761904761908
+dalmatian,4,dalmatian,0.9642857142857143
+dalmatian,4,siamese cat,0.011904761904761908
+animal,4,goldfish,0.25
+animal,4,poodle,0.25
+animal,4,dalmatian,0.25
+animal,4,siamese cat,0.25
+mammal,4.5,goldfish,0.032379088401194786
+mammal,4.5,poodle,0.3225403038662684
+mammal,4.5,dalmatian,0.3225403038662684
+mammal,4.5,siamese cat,0.3225403038662684
+dog,4.5,goldfish,0.021161856162396804
+dog,4.5,poodle,0.4788381438376032
+dog,4.5,dalmatian,0.4788381438376032
+dog,4.5,siamese cat,0.021161856162396804
+dalmatian,4.5,goldfish,0.006978556237322307
+dalmatian,4.5,poodle,0.006978556237322307
+dalmatian,4.5,dalmatian,0.9790643312880332
+dalmatian,4.5,siamese cat,0.006978556237322307
+animal,4.5,goldfish,0.25
+animal,4.5,poodle,0.25
+animal,4.5,dalmatian,0.25
+animal,4.5,siamese cat,0.25
+mammal,5,goldfish,0.02526512788521524
+mammal,5,poodle,0.32491162403826157
+mammal,5,dalmatian,0.32491162403826157
+mammal,5,siamese cat,0.32491162403826157
+dog,5,goldfish,0.015151515151515143
+dog,5,poodle,0.48484848484848486
+dog,5,dalmatian,0.48484848484848486
+dog,5,siamese cat,0.015151515151515143
+dalmatian,5,goldfish,0.004065040650406509
+dalmatian,5,poodle,0.004065040650406509
+dalmatian,5,dalmatian,0.9878048780487804
+dalmatian,5,siamese cat,0.004065040650406509
+animal,5,goldfish,0.25
+animal,5,poodle,0.25
+animal,5,dalmatian,0.25
+animal,5,siamese cat,0.25
+mammal,5.5,goldfish,0.019682371945180147
+mammal,5.5,poodle,0.32677254268493994
+mammal,5.5,dalmatian,0.32677254268493994
+mammal,5.5,siamese cat,0.32677254268493994
+dog,5.5,goldfish,0.010809680995588414
+dog,5.5,poodle,0.48919031900441157
+dog,5.5,dalmatian,0.48919031900441157
+dog,5.5,siamese cat,0.010809680995588414
+dalmatian,5.5,goldfish,0.0023591118011902436
+dalmatian,5.5,poodle,0.0023591118011902436
+dalmatian,5.5,dalmatian,0.9929226645964293
+dalmatian,5.5,siamese cat,0.0023591118011902436
+animal,5.5,goldfish,0.25
+animal,5.5,poodle,0.25
+animal,5.5,dalmatian,0.25
+animal,5.5,siamese cat,0.25
+mammal,6,goldfish,0.015313839173178712
+mammal,6,poodle,0.3282287202756071
+mammal,6,dalmatian,0.3282287202756071
+mammal,6,siamese cat,0.3282287202756071
+dog,6,goldfish,0.007692307692307694
+dog,6,poodle,0.4923076923076923
+dog,6,dalmatian,0.4923076923076923
+dog,6,siamese cat,0.007692307692307694
+dalmatian,6,goldfish,0.0013661202185792354
+dalmatian,6,poodle,0.0013661202185792354
+dalmatian,6,dalmatian,0.9959016393442622
+dalmatian,6,siamese cat,0.0013661202185792354
+animal,6,goldfish,0.25
+animal,6,poodle,0.25
+animal,6,dalmatian,0.25
+animal,6,siamese cat,0.25
+mammal,6.5,goldfish,0.011903135946715009
+mammal,6.5,poodle,0.32936562135109504
+mammal,6.5,dalmatian,0.32936562135109504
+mammal,6.5,siamese cat,0.32936562135109504
+dog,6.5,goldfish,0.005463903552183991
+dog,6.5,poodle,0.49453609644781604
+dog,6.5,dalmatian,0.49453609644781604
+dog,6.5,siamese cat,0.005463903552183991
+dalmatian,6.5,goldfish,0.0007900984616065048
+dalmatian,6.5,poodle,0.0007900984616065048
+dalmatian,6.5,dalmatian,0.9976297046151804
+dalmatian,6.5,siamese cat,0.0007900984616065048
+animal,6.5,goldfish,0.25
+animal,6.5,poodle,0.25
+animal,6.5,dalmatian,0.25
+animal,6.5,siamese cat,0.25
+mammal,7,goldfish,0.00924493367489285
+mammal,7,poodle,0.33025168877503575
+mammal,7,dalmatian,0.33025168877503575
+mammal,7,siamese cat,0.33025168877503575
+dog,7,goldfish,0.003875968992248059
+dog,7,poodle,0.4961240310077519
+dog,7,dalmatian,0.4961240310077519
+dog,7,siamese cat,0.003875968992248059
+dalmatian,7,goldfish,0.0004566210045662103
+dalmatian,7,poodle,0.0004566210045662103
+dalmatian,7,dalmatian,0.9986301369863014
+dalmatian,7,siamese cat,0.0004566210045662103
+animal,7,goldfish,0.25
+animal,7,poodle,0.25
+animal,7,dalmatian,0.25
+animal,7,siamese cat,0.25
+mammal,7.5,goldfish,0.007176048560660125
+mammal,7.5,poodle,0.33094131714644665
+mammal,7.5,dalmatian,0.33094131714644665
+mammal,7.5,siamese cat,0.33094131714644665
+dog,7.5,goldfish,0.002746960905541495
+dog,7.5,poodle,0.49725303909445856
+dog,7.5,dalmatian,0.49725303909445856
+dog,7.5,siamese cat,0.002746960905541495
+dalmatian,7.5,goldfish,0.0002637829829268518
+dalmatian,7.5,poodle,0.0002637829829268518
+dalmatian,7.5,dalmatian,0.9992086510512194
+dalmatian,7.5,siamese cat,0.0002637829829268518
+animal,7.5,goldfish,0.25
+animal,7.5,poodle,0.25
+animal,7.5,dalmatian,0.25
+animal,7.5,siamese cat,0.25

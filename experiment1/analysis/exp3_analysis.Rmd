@@ -1,0 +1,476 @@
+---
+title: "exp3_analysis"
+output: html_document
+---
+
+Set wd
+
+```{r}
+setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment3/")
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+```
+
+Experiment3_orig analysis
+----------------------
+
+First, import data
+
+```{r}
+# Restricted answer space (x is at gate y)
+d_orig = read.csv("./versions/experiment3_orig/q_and_a3-trials.tsv", sep = '\t')
+# Free response answer space
+d1 = read.csv("../../experiment3_fr/data/q_and_a3_fr-trials.tsv", sep = '\t')
+```
+
+We begin by analyzing the 'question' part of the experiment. Extract the question items.
+
+```{r}
+d_orig_q = subset(d_orig, trial_type == 'question', select=c(workerid, qud, response))
+d1_q = subset(d1, trial_type == 'question', select=c(workerid, qud, response))
+d1_q$response = factor(d1_q$response)
+pooled_qs = rbind(d_orig_q, d1_q)
+str(pooled_qs)
+```
+
+Now, for a given qud, we want to know the distribution of questions asked (could be pooled with data from other versions, since this was the same in all). This part of the experiment was the same for the two versions, hence we pool them together.
+
+```{r}
+new_labels = sapply(X = pooled_qs$qud, FUN = function(v) {return(paste("qud:", v))})
+pooled_qs$facet_label = new_labels
+g4<-ggplot(pooled_qs, aes(x=response)) + geom_histogram(color="black", fill='black')
+g4 + facet_wrap(~qud)
+```
+
+Next, we evaluate the answers:
+
+Note that participants always tell the truth -- the gate they give always matches the true location of the item they give.
+
+```{r}
+d_orig_a = subset(d_orig, trial_type == 'ans:', 
+              select=c(workerid, utterance, world_state, gate_response, item_response))
+d_orig_a$world_state = strsplit(as.character(d_orig_a$world_state), split = ',')
+for(i in 1:dim(d_orig_a)[1]){
+  d_orig_a$telling_truth = d_orig_a$gate_response[i] == match(tolower(d_orig_a$item_response[i]), 
+                                                      d_orig_a$world_state[i][[1]])
+}
+```
+
+This justifies just looking at the item they give:
+
+```{r}
+new_labels = sapply(X = d_orig_a$utterance, FUN = function(v) {return(paste("utterance:", v))})
+d_orig_a$facet_label = new_labels
+g4<-ggplot(d_orig_a, aes(x=item_response)) + geom_histogram(color="black", fill='black')
+g4 + facet_wrap(~facet_label)
+```
+
+Now, for the harder to parse data:
+
+```{r}
+d1_a = subset(d1, trial_type == 'ans:', 
+              select=c(workerid, utterance, world_state, response))
+d1_a$world_state = strsplit(as.character(d1_a$world_state), split = ',')
+for(i in 1:dim(d1_a)[1]){
+  # 1. Extract numbers from unstructured text
+  raw_response <- as.character(d1_a$response[i])
+  gr <- as.character(gsub("[^0-9]", "", unlist(raw_response)))
+  d1_a$gate_response[i] = gr
+  # 2. Figure out which item was behind this gate 
+  if(nchar(gr) == 1) {
+    item_response <- d1_a$world_state[i][[1]][as.numeric(gr)] 
+  } else {
+    item_response <- paste("mult: ", as.character(d1_a$utterance[i]))
+  } 
+  d1_a$item_response[i] = item_response
+}
+d1_a$item_response
+```
+
+Now plot these answers... Note that we collapsed together a participant giving multiple gates (e.g. "a thing is behind gates 1,2,3,and 4")
+
+```{r}
+new_labels = sapply(X = d1_a$utterance, FUN = function(v) {return(paste("utterance:", v))})
+d1_a$facet_label = new_labels
+g4<-(ggplot(d1_a, aes(x=item_response)) 
+     + geom_histogram(color="black", na.rm = T, fill='black')
+     + facet_wrap(~facet_label) 
+     + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
+g4
+```
+
+Most of the multiple responses appear in 'dog' and 'animal'. 
+
+Otherwise, it's pretty cool that even for vague questions like 'where is a thing?' almost everyone gave the exact location of the flower (without even specifying *what* is behind that gate). Just "which gate has a thing behind it?" -> "gate 3". A bit curious whether 'thing' became a label for the flower, or whether they reasoned it out in full... 
+
+If you take out the multiple gate references, this is the same result as the non-free form version. 
+
+Experiment3_short analysis
+--------------------------
+
+Load and clean data. We remove people who self-identify as 'confused' 
+
+```{r}
+d_short = read.csv("versions/experiment3_short/data/q_and_a3_short-trials.tsv",  sep = '\t')
+# Remove people who were confused...
+ps=read.csv("versions/experiment3_short/data/q_and_a3_short-subject_information.tsv", 
+              sep = '\t')
+nonconfused_ps <- (ps %>% 
+                   mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
+                   filter(asses2 != 1))$workerid
+d_short = filter(d_short, workerid %in% nonconfused_ps)
+```
+
+Run questioner 
+
+```{r}
+d_short_q = subset(d_short, trial_type == 'question', 
+                   select=c(workerid, qud, response))
+# Order responses and facets
+d_short_q$response = ordered(d_short_q$response, 
+                             levels = c("dalmatian", "dog", "mammal", "animal"))
+d_short_q$facet_label = (sapply(X = d_short_q$qud, 
+                                FUN = function(v) {return(paste("qud:", v))}) %>% 
+                         ordered(levels = c("qud: dalmatian", "qud: poodle", 
+                                            "qud: siamese cat", "qud: goldfish")))
+jpeg(filename="../writing/2015/cogsci/exp3_q.jpeg")
+g4<-(ggplot(d_short_q, aes(x=response)) 
+    + theme_bw(base_size = 20)
+    + theme(axis.text.x = element_text(angle=90, vjust=1))
+    + geom_histogram(color="black", fill='black')
+    + ggtitle("(a) Questioner responses")
+    + facet_wrap(~facet_label))
+g4
+dev.off()
+```
+
+Answer analysis
+
+```{r}
+d_short_a = subset(d_short, trial_type == 'ans:', 
+                   select=c(workerid, utterance, world_state, response))
+# Remove one trial where someone forgot to respond and somehow got through...
+d_short_a <- d_short_a[d_short_a$response != "None",]
+d_short_a$response = as.numeric(d_short_a$response)
+# Map gate number responses onto the objects at those gates on the given trial
+d_short_a$world_state = strsplit(as.character(d_short_a$world_state), split = ',')
+for(i in 1:dim(d_short_a)[1])
+  d_short_a$item_response[i] = d_short_a$world_state[[i]][d_short_a$response[i]]
+# Order response
+d_short_a$response = ordered(d_short_a$item_response,
+                             levels=c("dalmatian","poodle","siamese cat","goldfish"))
+# Make nicer labels for facets
+new_labels = as.factor(sapply(X = d_short_a$utterance, 
+                       FUN = function(v) {return(paste("utterance:", v))}))
+# Order facets by level in hierarchy
+d_short_a$facet_label = ordered(new_labels, 
+                                levels = c("utterance: dalmatian", "utterance: dog", 
+                                           "utterance: mammal","utterance: animal"))
+jpeg(filename="../writing/2015/cogsci/exp3_ans.jpeg")
+g4<-(ggplot(d_short_a, aes(x=response)) 
+     + geom_histogram(color="black", fill='black')
+     + theme_bw(base_size = 20)
+     + theme(axis.text.x = element_text(angle=90, vjust=1))
+     + ggtitle("(b) Answerer responses")
+     + facet_wrap(~facet_label))
+g4
+dev.off()
+```
+
+Fitting rationality parameters
+------------------------------
+
+Fit (very dumb) literal answerer parameters
+
+```{r}
+d_lit_a <- tbl_df(d_short_a) %>%  # start with empirical data
+       select(workerid, utterance, response) %>%
+       group_by(utterance, response) %>% # collapse over participants
+       summarise(emp_prob = n() / 23) %>% # compute empirical probabilities
+       right_join(expand.grid(response  = levels(d_short_a$response),
+                              utterance = levels(d_short_a$utterance))) %>%
+       join(read.csv("analysis/model_prediction/litAnswererRationalityFitting.csv", 
+                     sep =','))
+d_lit_a[is.na(d_lit_a)] <- 0
+
+# Note that it technically doesn't make sense to compute correlations b/c 
+# the variance is 0... We add some jitter just to make it work.
+lit_a_correlation <- d_lit_a %>% 
+  group_by(ansR) %>% 
+  filter(ansR > 1) %>% # corr < 0 for ansR <= 1, which throws off scale
+  summarise(correlation = cor(jitter(model_prob), jitter(emp_prob)))
+
+max_val_lit_a = lit_a_correlation[which.max(lit_a_correlation$correlation),]
+best_pred_lit_a = subset(d_lit_a, ansR == max_val_lit_a$ansR)
+
+# Plot best model
+jpeg(filename="../writing/2015/cogsci/bestLitAnswerer.jpeg")
+g_bestA <- (ggplot(best_pred_lit_a, aes(x = model_prob, y = emp_prob))
+            + theme(text = element_text(size=20))
+            + geom_point() 
+            + ggtitle("Literal Answerer Fit")
+            + geom_abline(intercept = 0, slope = 1, linetype="dotted")
+            + xlim(0:1))
+g_bestA
+dev.off()
+```
+
+Fit (very dumb) literal questioner parameters 
+
+```{r}
+d_lit_q <- tbl_df(d_short_q) %>%  # start with empirical data
+       group_by(qud, response) %>% # collapse over participants
+       summarise(emp_prob = n() / 23) %>% # compute empirical probabilities
+       right_join(expand.grid(response=levels(d_short_q$response), # append back on
+                             qud = levels(d_short_q$qud))) %>%
+       join(read.csv("analysis/model_prediction/litQuestionerRationalityFitting.csv",
+                           sep = ',')) # join with model predictions
+       
+d_lit_q[is.na(d_lit_q)] <- 0
+
+d_lit_q_correlation <- d_lit_q %>% 
+  group_by(ansR, KLR) %>% 
+  filter(ansR > 1) %>% # corr < 0 for ansR <= 1, which throws off scale
+  summarise(correlation = cor(jitter(model_prob), jitter(emp_prob)))
+
+max_val_lit_q = d_lit_q_correlation[which.max(d_lit_q_correlation$correlation),]
+best_pred_lit_q = subset(d_lit_q, ansR == max_val_lit_q$ansR & KLR == max_val_lit_q$KLR)
+
+# Plot best model
+jpeg(filename="../writing/2015/cogsci/bestLitQuestioner.jpeg")
+g_bestlit_q <- (ggplot(best_pred_lit_q, aes(x = model_prob, y = emp_prob))
+            + theme(text = element_text(size=20))              
+            + geom_point() 
+            + ggtitle("Literal Questioner Fit")
+            + geom_abline(intercept = 0, slope = 1, linetype="dotted")
+            + xlim(0:1)
+            + geom_smooth(method = "lm"))
+g_bestlit_q
+dev.off()
+```
+
+Fit explicit answerer parameters
+
+```{r}
+d_exp_a <- tbl_df(d_short_a) %>%  # start with empirical data
+       select(workerid, utterance, response) %>%
+       group_by(utterance, response) %>% # collapse over participants
+       summarise(emp_prob = n() / 23) %>% # compute empirical probabilities
+       right_join(expand.grid(response  = levels(d_short_a$response),
+                              utterance = levels(d_short_a$utterance))) %>%
+       join(read.csv("analysis/model_prediction/expAnswererRationalityFitting.csv", 
+                     sep =','))
+d_exp_a[is.na(d_exp_a)] <- 0
+
+exp_a_correlation <- d_exp_a %>% 
+  group_by(ansR) %>% 
+  filter(ansR > 1) %>% # corr < 0 for ansR <= 1, which throws off scale
+  summarise(correlation = cor(model_prob, emp_prob))
+
+max_val_exp_a = exp_a_correlation[which.max(exp_a_correlation$correlation),]
+best_pred_exp_a = subset(d_exp_a, ansR == max_val_exp_a$ansR)
+
+# Plot best model
+jpeg(filename="../writing/2015/cogsci/bestExpAnswerer.jpeg")
+g_bestA <- (ggplot(best_pred_exp_a, aes(x = model_prob, y = emp_prob))
+            + theme(text = element_text(size=20))      
+            + geom_point() 
+            + ggtitle("Explicit Answerer Fit")
+            + geom_abline(intercept = 0, slope = 1, linetype="dotted")
+            + annotate("text", x = .25, y = .75, size = 10,
+                       label = paste("r = ", round(max_val_exp_a$correlation,2)))
+            + geom_smooth(method = "lm")
+            + xlim(0:1))
+g_bestA
+dev.off()
+```
+
+Fit explicit questioner parameters 
+
+```{r}
+d_exp_q <- tbl_df(d_short_q) %>%  # start with empirical data
+       group_by(qud, response) %>% # collapse over participants
+       summarise(emp_prob = n() / 23) %>% # compute empirical probabilities
+       right_join(expand.grid(response=levels(d_short_q$response), # append back on
+                             qud = levels(d_short_q$qud))) %>%
+       join(read.csv("analysis/model_prediction/expQuestionerRationalityFitting.csv",
+                           sep = ',')) # join with model predictions
+       
+d_exp_q[is.na(d_exp_q)] <- 0
+
+d_exp_q_correlation <- d_exp_q %>% 
+  group_by(ansR, KLR) %>% 
+  filter(ansR > 1) %>% # corr < 0 for ansR <= 1, which throws off scale
+  summarise(correlation = cor(model_prob, emp_prob))
+
+max_val_exp_q = d_exp_q_correlation[which.max(d_exp_q_correlation$correlation),]
+best_pred_exp_q = subset(d_exp_q, ansR == max_val_exp_q$ansR & KLR == max_val_exp_q$KLR)
+
+# Plot param space
+g_exp_qParams <- (ggplot(d_exp_q_correlation, aes(x = ansR, y =KLR))
+       + geom_tile(aes(fill = correlation))
+       + geom_point(x = max_val_exp_q$ansR, y = max_val_exp_q$KLR, 
+                    color = 'white', size = 5)
+       + scale_fill_gradient(low = "white", high = "black"))
+g_exp_qParams
+
+# Plot best model
+jpeg(filename="../writing/2015/cogsci/bestExpQuestioner.jpeg")
+g_bestexp_q <- (ggplot(best_pred_exp_q, aes(x = model_prob, y = emp_prob))
+            + theme(text = element_text(size=20))                
+            + geom_point() 
+            + ggtitle("Explicit Questioner Fit")
+            + geom_abline(intercept = 0, slope = 1, linetype="dotted")
+            + xlim(0:1)
+            + annotate("text", x = .25, y = .75, size = 10,
+                       label = paste("r = ", round(max_val_exp_q$correlation,2)))
+            + geom_smooth(method = "lm"))
+g_bestexp_q
+dev.off()
+```
+
+Fit pragmatic answerer parameters
+
+```{r}
+d_prag_a <- tbl_df(d_short_a) %>%  # start with empirical data
+       select(workerid, utterance, response) %>%
+       group_by(utterance, response) %>% # collapse over participants
+       summarise(emp_prob = n() / 23) %>% # compute empirical probabilities
+       right_join(expand.grid(response  = levels(d_short_a$response),
+                              utterance = levels(d_short_a$utterance))) %>%
+       join(read.csv("analysis/model_prediction/pragAnswererRationalityFitting.csv", 
+                     sep =','))
+d_prag_a[is.na(d_prag_a)] <- 0
+
+
+prag_a_correlation <- d_prag_a %>% 
+  group_by(ansR, KLR, qudR, pragR) %>% 
+  filter(ansR > 1) %>% # corr < 0 for ansR <= 1, which throws off scale
+  summarise(correlation = cor(model_prob, emp_prob))
+
+max_val_prag_a = prag_a_correlation[which.max(prag_a_correlation$correlation),]
+best_pred_prag_a = subset(d_prag_a, ansR == max_val_prag_a$ansR 
+                          & KLR == max_val_prag_a$KLR 
+                          & qudR == max_val_prag_a$qudR 
+                          & pragR == max_val_prag_a$pragR)
+
+# Plot param space
+g_aParams <- (ggplot(prag_a_correlation, aes(x = ansR, y =KLR))
+       + geom_tile(aes(fill = correlation))
+       + geom_point(x = max_val_prag_a$ansR, y = max_val_prag_a$KLR, 
+                    color = 'white', size = 5)
+       + scale_fill_gradient(low = "white", high = "black"))
+g_aParams
+
+# Plot best model
+jpeg(filename="../writing/2015/cogsci/bestPragAnswerer.jpeg")
+g_bestA <- (ggplot(best_pred_prag_a, aes(x = model_prob, y = emp_prob))
+            + theme(text = element_text(size=20))
+            + geom_point() 
+            + ggtitle("Pragmatic Answerer Fit")
+            + geom_abline(intercept = 0, slope = 1, linetype="dotted")
+            + xlim(0:1)
+            + annotate("text", x = .25, y = .75, size = 10,
+                       label = paste("r = ", round(max_val_prag_a$correlation,2)))
+            + geom_smooth(method = "lm"))
+g_bestA
+dev.off()
+```
+
+Fit pragmatic questioner (reasoning about pragmatic answerer)
+
+```{r}
+d_prag_q <- tbl_df(d_short_q) %>%  # start with empirical data
+       group_by(qud, response) %>% # collapse over participants
+       summarise(emp_prob = n() / 23) %>% # compute empirical probabilities
+       right_join(expand.grid(response=levels(d_short_q$response), # append back on
+                             qud = levels(d_short_q$qud))) %>%
+       join(read.csv("analysis/model_prediction/pragQuestionerRationalityFitting.csv",
+                           sep = ',')) # join with model predictions
+       
+d_prag_q[is.na(d_prag_q)] <- 0
+
+d_prag_q_correlation <- d_prag_q %>% 
+  group_by(rPragKL) %>% 
+  filter(rPragKL > 1) %>% # corr < 0 for ansR <= 1, which throws off scale
+  summarise(correlation = cor(model_prob, emp_prob))
+
+max_val_prag_q = d_prag_q_correlation[which.max(d_prag_q_correlation$correlation),]
+best_pred_prag_q = subset(d_prag_q, rPragKL == max_val_prag_q$rPragKL)
+
+# Plot best model
+jpeg(filename="../writing/2015/cogsci/bestPragQuestioner.jpeg")
+g_bestprag_q <- (ggplot(best_pred_prag_q, aes(x = model_prob, y = emp_prob))
+            + theme(text = element_text(size=20))        
+            + geom_point() 
+            + ggtitle("Pragmatic Questioner Fit")
+            + geom_abline(intercept = 0, slope = 1, linetype="dotted")
+            + xlim(0:1)
+            + annotate("text", x = .25, y = .75, size = 10,
+                       label = paste("r = ", round(max_val_prag_q$correlation,2)))
+            + geom_smooth(method = "lm"))
+g_bestprag_q
+dev.off()
+```
+
+Model + data bar plots
+----------------------
+
+Plot for pragmatic questioner. These bar graphs will help show what our model is getting right and what it's getting wrong.
+
+```{r}
+best_pred_prag_q = subset(d_prag_q, rPragKL == max_val_prag_q$rPragKL)
+best_pred_prag_q$response = ordered(best_pred_prag_q$response, 
+                          levels = c("dalmatian", "dog","mammal", "animal"))
+new_labels = sapply(X = best_pred_prag_q$qud, FUN = function(v) {return(paste("qud:", v))})
+best_pred_prag_q$facet_label = ordered(new_labels,
+                             levels = c("qud: dalmatian", "qud: poodle", 
+                                        "qud: siamese cat", "qud: goldfish"))
+q_comparison <- best_pred_prag_q %>% 
+  select(qud, response, emp_prob, model_prob, facet_label) %>%
+  rename(empirical = emp_prob, model = model_prob) %>%
+  gather(src, prob, empirical, model) 
+
+jpeg(filename="../writing/2015/cogsci/questionerDataComparison.jpeg")
+g4<-(ggplot(q_comparison, aes(x=response, y=prob, fill=src)) 
+    #+ scale_y_continuous(limits = c(0,.3))
+    + geom_bar(stat='identity', position=position_dodge())
+    + theme_bw(base_size = 20)
+    + theme(axis.text.x = element_text(angle=90, vjust=1))
+    + ggtitle("(a) Best Questioner Model Predictions")
+    + facet_wrap(~facet_label))
+g4
+dev.off()
+```
+
+Now, plot for dumb model:
+
+```{r}
+best_pred_prag_a = subset(d_prag_a, ansR == max_val_prag_a$ansR 
+                          & KLR == max_val_prag_a$KLR 
+                          & qudR == max_val_prag_a$qudR 
+                          & pragR == max_val_prag_a$pragR)
+best_pred_prag_a$response = ordered(best_pred_prag_a$response, 
+                                    levels = c("dalmatian", "poodle", 
+                                               "siamese cat", "goldfish"))
+new_labels = as.factor(sapply(X = best_pred_prag_a$utterance, FUN = function(v) {return(paste("utterance:", v))}))
+best_pred_prag_a$facet_label = ordered(new_labels, 
+                              levels = c("utterance: dalmatian", "utterance: dog", 
+                                         "utterance: mammal","utterance: animal"))
+a_comparison <- best_pred_prag_a %>% 
+  select(utterance, response, emp_prob, model_prob, facet_label) %>%
+  rename(empirical = emp_prob, model = model_prob) %>%
+  gather(src, prob, empirical, model) 
+
+jpeg(filename="../writing/2015/cogsci/answererDataComparison.jpeg")
+g4<-(ggplot(a_comparison, aes(x=response, y = prob, fill=src)) 
+     + geom_bar(stat='identity', position=position_dodge())
+     + theme_bw(base_size = 20)
+     + theme(axis.text.x = element_text(angle=90, vjust=1))
+     + ggtitle("(b) Best Answerer Model Predictions")
+     + facet_wrap(~facet_label))
+g4
+dev.off()
+```
