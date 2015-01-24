@@ -1,5 +1,5 @@
 ---
 layout: page
-title: Basic approach
+title: Mention-some Questions
 status: current
 ---
