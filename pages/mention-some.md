@@ -154,7 +154,8 @@ var isNodeInTree = function(node, tree){
 
 var butLast = function(xs){
   return xs.slice(0, xs.length-1);
-};q
+};
+
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
 };
@@ -176,7 +177,7 @@ var identity = function(x){
 var condition = function(x){
  factor(x ? 0 : -Infinity);
 };
-
+///
 
 // World knowledge
 
