@@ -57,7 +57,7 @@ var mapReduce1 = function(f,g,ar){
 };
 
 var all = function(p,l) { 
-  return mapReduce1(function(a,b){ return a && b; }, p, l); };
+  return mapReduce1(function(a,b){ return a & b; }, p, l); };
 
 var permute = function (input) {
   var input = input.slice();
