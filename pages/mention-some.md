@@ -212,7 +212,6 @@ var worldPrior = function() {
   return uniformDraw(worldSpace);
 };
 
-print(worldSpace)
 // Questions
 
 // returns a function that maps world to the gate we should pick to find
@@ -279,6 +278,10 @@ var isTaxonomyAnswer = function(x){
   }, person_pairs)
 //  return (last(x) === '.') & (isNodeInTree(butLast(x).split(",")[0], taxonomy));
 };
+
+var answerLength = function(a) {
+  return butLast(a).split(',').length
+}
 
 var taxonomyAnswerMeaning = cache(function(utterance){
   return function(pred){
@@ -349,7 +352,8 @@ var explicitAnswerer = cache(
             var truePosition = trueWorld[leafOfInterest];
             return (truePosition == inferredPosition) ? 1 : 0;
           });
-        factor(Math.log(score) * ansRationality);
+        factor((Math.log(score) * ansRationality)
+        	- answerLength(answer) * .25);
         return answer;
       });
   });
@@ -403,14 +407,16 @@ var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR, qudR, pra
         var truePosition = qud(trueWorld)
         return (truePosition[0] == inferredPosition[0]) ? 1 : 0;
       });
-    factor(Math.log(score) * pragR);
+    factor((Math.log(score) * pragR)
+    	   - answerLength(answer) * .25);
     return answer;
   });
 })
 
 var w = worldSpace[0]
 console.log(w)
-printERP(pragmaticAnswerer('whoArePeople?', w, 1, 1, 1, 3))
+print(explicitAnswerer('whoArePeople?', w, 1))
+print(pragmaticAnswerer('whoArePeople?', w, 1, 1, 1, 1))
 
 // var pragmaticQuestioner = cache(function(qud_node) {
 //   var qud = (makeQUD(qud_node))
