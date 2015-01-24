@@ -632,9 +632,7 @@ var explicitAnswerer = cache(
     return Enumerate(
       function(){
         var answer = fullAnswerPrior();
-        // 1. Restrict to truthful answers. May not be necessary.
-        factor(literalListener(question, answer).score([], trueWorld));
-        // 2. Score answer based on expected probability of communicating question predicate value
+        // Score answer based on expected probability of communicating question predicate value
         var score = mean(
           function(){
             // We may be uncertain about which leaf node the question
