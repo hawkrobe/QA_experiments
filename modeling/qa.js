@@ -48,9 +48,18 @@ function powerset(set) {
     var rest = powerset(set.slice(1));
     return rest.map(
       function(element) {
-        return set[0] + element;
+        return [set[0]].concat(element);
       }).concat(rest);
   }
+}
+
+// Sometimes you just need all possible combination of true and false
+var TFCartesianProd = function(n) {
+  var result = [];
+  _.map(_.range(n), function(i){
+    result.push(['true', 'false'])
+  })
+  return cartesianProductOf(result);
 }
 
 var permute = function (input) {
@@ -72,6 +81,16 @@ var permute = function (input) {
   };
   doPerm();
   return permArr;
+};
+
+var cartesianProductOf = function(listOfLists) {
+    return _.reduce(listOfLists, function(a, b) {
+        return _.flatten(_.map(a, function(x) {
+            return _.map(b, function(y) {
+                return x.concat([y]);
+            });
+        }), true);
+    }, [ [] ]);
 };
 
 // recursively traverse object; return all keys
@@ -150,6 +169,8 @@ module.exports = {
   flatten: flatten,
   permute: permute,
   KL: KL,
+  cartesianProductOf: cartesianProductOf,
+  TFCartesianProd : TFCartesianProd,
   isNodeInTree: isNodeInTree,
   findSubtree: findSubtree,
   leaves: leaves,
