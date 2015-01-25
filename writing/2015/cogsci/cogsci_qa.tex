@@ -121,7 +121,13 @@ This concludes our specification of the model space, giving a set of three answe
 
 \section{Simulations}
 
-Before presenting 
+Before presenting our experimental paradigm, we present two computational simulations demonstrating the way our model captures some classic psycholinguistic phenomena. Because the most well-studied phenomena are primarily about the \emph{answerer}'s sensitivity to goals, these simulations cannot demonstrate the full contribution our model makes toward understanding questioner behavior, but we include them with the intention of providing some context to our later results.
+
+\subsection{`Mention-some' questions}
+
+Many \emph{wh}-questions admit two interpretations: `mention-all' and `mention-some.' If a doctor walks into a clinic and asks `who is sick?' this likely means that they want to know, of \emph{each} person in the clinic, whether or not they are sick. If they ask `where can I buy a newspaper?', however, this likely means they only want to know one or two particularly good places. There is a long tradition of refinements and solutions to the problem of which questions admit which kind of answers in theoretical linguistics \cite<see>{George11_Dissertation}. We present a highly simplified account of answers to the question ``Who was at the party?'' 
+
+Suppose there are four people in the universe, and each person was either at the party or not. The world space $\mathcal{W}$ contains all $2^4 = 16$ possible assignments of the four people to booleans. There is only one question: $\mathcal{Q} = ``who was at the party?''$, but four possible goals
 
 \begin{figure}
 \begin{center}
@@ -135,7 +141,7 @@ Before presenting
 
 In order to test how questioners choose questions when given a decision problem, and how answerers choose answers under uncertainty about this decision problem, we designed a guessing-game task played by two players: a guesser (the questioner) and a helper (the answerer). In this game, $4$ animals (a dalmatian, a poodle, a siamese cat, and a goldfish) were hidden behind $4$ gates. Note that these animals were arranged in a class hierarchy (see Fig. \ref{fig:taskhierarchy}). The guesser was given a private goal of finding one of the objects, and the helper had privileged information about the exact locations of each object. Before choosing a gate, the guesser could ask the helper a single question, and the helper could respond to this question by revealing the object behind a single gate. 
 
-In terms of our model specification, the world space $\mathcal{W}$ is the set of $4! = 24$ possible assignments of four objects to four gates and the goal space $\mathcal{G}$ is the set of four objects that the guesser could possibly be trying to find, and the answer space $\mathcal{A}$ is the set of four gates that the helper could possibly reveal. The key constraint in the task, however, is that the guesser must choose from a \emph{restricted set of questions}: they may be trying to find the goldfish, but cannot directly ask `where is the goldfish?' Instead, the question space $\mathcal{Q}$ is the set of highlighted nodes in the hierarchy, including higher order nodes that are consistent with multiple answers. \todo[inline]{RDH: Need to define meaning functions for the interpreter, and actually highlight the nodes in the tree...}
+In terms of our model specification, the world space $\mathcal{W}$ is the set of $4! = 24$ possible assignments of four objects to four gates and the goal space $\mathcal{G}$ is the set of four objects that the guesser could possibly be trying to find, and the answer space $\mathcal{A}$ is the set of four gates that the helper could possibly reveal. The key constraint in the task, however, is that the guesser must choose from a \emph{restricted set of questions}: they may be trying to find the goldfish, but cannot directly ask `where is the goldfish?' Instead, the question space $\mathcal{Q}$ is the set of highlighted nodes in the hierarchy, including higher order nodes that are consistent with multiple answers. 
 \begin{figure*}[t!]
 \begin{center}
 \includegraphics[scale = .52]{questionerDataComparison.jpeg}
