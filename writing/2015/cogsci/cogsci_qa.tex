@@ -1,3 +1,7 @@
+% arara: pdflatex
+% arara: bibtex
+% arara: pdflatex
+% arara: pdflatex
 % 
 % Annual Cognitive Science Conference
 % Sample LaTeX Paper -- Proceedings Format
@@ -19,7 +23,7 @@
 %% Change "letterpaper" in the following line to "a4paper" if you must.
 
 \documentclass[10pt,letterpaper]{article}
-
+ 
 \usepackage{hyperref}
 \usepackage{cogsci}
 \usepackage{pslatex}
@@ -28,6 +32,7 @@
 \usepackage{apacite}
 \usepackage{color}
 \usepackage{todonotes}
+\usepackage{dsfont}
 
 \definecolor{Red}{RGB}{255,0,0}
 \newcommand{\red}[1]{\textcolor{Red}{#1}}
@@ -44,7 +49,7 @@
 \title{Why do you ask? To be informative.}
  
 \author{{\large \bf Robert X.~D.~Hawkins, Andreas Stuhlm\"uller, Judith Degen, Noah D.~Goodman}\\
-  \{rxdh,ast,jdegen,ngoodman\}@stanford.edu\\
+  \{rxdh,astu,jdegen,ngoodman\}@stanford.edu\\
   Department of Psychology, 450 Serra Mall \\
   Stanford, CA 94305 USA}
 
@@ -135,42 +140,68 @@ We close with a brief discussion of related models and future directions.
 \section{A Rational Speech Act model of question and answer behavior}
 \label{sec:model}
 
-[note: use qRSA as part of motivation for A?]
+How should a questioner choose between questions?
+%
+We start by assuming that the questioner aims to \emph{learn information about a private goal}, sometimes called a QUD (question under discussion) \cite{Roberts96_InformationStructureDiscourse}.
+%
+In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond given different possible states of the world, and selects a question that results in an informative answer on average.
+%
 
-Suppose there is a set of distinct world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$. These sets are all taken to be in common ground between two participants in a dialogue, whom we call the questioner and the answerer. We begin by thinking about how an optimal questioner should choose a question. Critically, instead of trying to impart information about the state of the world, a questioner attempts to \emph{learn information about a private goal}, sometimes called a QUD (or question under discussion) \cite{Roberts96_InformationStructureDiscourse}. A goal $g \in \mathcal{G}$ is a projection function that maps a complete world state to a particular feature or set of features that the questioner cares about. Each of these projections corresponds to a different utility function, in a decision-theoretic formulation. In order to learn information about their private goal $g$, the questioner reasons about how an internal model of an answerer would respond given some true world. 
+% This is a divergence from previous RSA models, where agents choose utterances with the goal of imparting information about the state of the world.
 
-\begin{itemize}
+More formally, suppose there is a set of world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$.
+These sets are taken to be in common ground between the questioner and the answerer.
+A goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about.
+% Each of these projections corresponds to a different utility function, in a decision-theoretic formulation.
+%In order to learn information about their private goal $g$, the questioner reasons about how an internal model of an answerer would respond given some true world.
 
-\item The \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a distribution over questions $\mathcal{Q}$. To do this, it first computes a prior $P_g(w)$ over the features of the world relevant to its goal. For each question $q \in \mathcal{Q}$, it computes the expected information gain, averaged over all possible true worlds, and all possible responses the answerer could give. Information gain is measured as the  Kullback-Leibler divergence between the prior distribution and the posterior distribution over world states after hearing the answerer's (hypothetical) response: $$P(q | g) \propto \sum_{a \in \mathcal{A}} \sum_{w^* \in \mathcal{W}} P(w^*) P(a | q, w^*) D_{KL}(P_g(w)\, \| \, P_g(w | q, a))$$ 
+\newcommand{\KL}[2]{\ensuremath{D_{KL}({#1}\, \| \, {#2})}}
+\newcommand{\E}[2]{\ensuremath{\mathbb{E}_{#1}\left [#2 \right]}}
 
-\end{itemize}
+The \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a distribution over questions $\mathcal{Q}$:
+%
+$$ P(q|g) \propto P(q) e^{\E{P(w)}{\KL{P_g(w^*|q, w)}{P_g(w^*)}}} $$
+%
+It trades off the prior probability of a question and expected information gain. The prior probability may, among other factors, depend on question length. Information gain is measured as the Kullback-Leibler divergence between the prior distribution on the goal value, $P_g(w^*)$, and the posterior distribution one would expect after asking a question $q$ in true world state $w$:
+%
+$$ P_g(w^*|q, w) = \sum_{a \in \mathcal{A}} P(a| q, w)P_g(w|q, a) $$
+%
+This conditional distribution reflects the fact that the communication channel from answerer (who knows the true world state $w$) to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. This distribution has two components: First, it depends on $P_g(w | q, a)$, an `interpreter' that gives the likelihood of different worlds (projected onto the goal) given question and answer pairs. We will specify this function later. Second, it depends on $P(a | q, w^*)$, the answerer.
 
-First, note that the questioner depends on $P_g(w | q, a)$, an `interpreter' function that gives the likelihood of different worlds given question and answer pairs. We will specify this function later. Second, and more critically, the questioner depends critically on the answer distribution $P(a | q, w^*)$, which it uses to upweight questions $q$ that elicit useful answers across different world $w^*$ and downweight questions that elicit vague or irrelevant answers. We now propose three different answerer agents that embody different assumptions that the questioner could make.
+We now describe three answerer implementations that embody different assumptions that the questioner could make. All answerers take a question $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and return a distribution over answers $\mathcal{A}$.
 
-\begin{itemize}
+The \textbf{literal answerer} ignores the question and simply chooses answers by trading off prior answer probability and how well a question-answer pair conveys the true state of the world to an interpreter:
+%
+$$P(a | q,w^*) \propto P(a) P(w^* | q, a) $$
+%
+This is equivalent to the speaker in previous RSA models.
 
-\item The \textbf{literal answerer} takes a question utterance $q \in \mathcal{Q}$ and a true world state $w \in \mathcal{W}$ as input and returns a distribution over the answer space $\mathcal{A}$. It samples an answer  $a$ from $\mathcal{A}$ with prior probability $P(a)$ and conditions on the likelihood of the questioner inferring the true world $w$ from this answer, using only the interpreter function as a cue. Note that this agent ignores the question; its only concern is to convey the true state of the world. This makes it equivalent to the speaker in previous RSA models.
-$$P(a | q,w^*) \propto P(w = w^* | q, a) P(a) $$
-\item The \textbf{explicit answerer} samples an answer $a$ from $\mathcal{A}$ with prior probability $P(a)$, then uses the explicit utterance $q$ as a QUD when evaluating the likelihood of a world under an interpreter. 
-$$P(a | q, w^*) \propto P_q(w= w^* | q, a) P(a)$$
-The only difference here is the projection $q$ it applies to the interpreter output. 
-\item The \textbf{pragmatic answerer} uses an internal model of the explicit questioner (i.e. the questioner who reasons about an explicit answerer) as a generative model of questions given goals in order to estimate the likelihood of different goals given the question $q$. It samples an answer $a$ from $\mathcal{A}$ with prior probability $P(a)$, uses the internal questioner model to estimate the likelihood of different goals $g \in \mathcal{G}$ given their question $q$, and attempts to be informative with respect to this goal:
-$$\begin{array}{rcl}
-P(a | q, w^*) & \propto & P(g | q)  \times P_g(w = w^* | q, a) \times P(a)\\
-                    & \propto & P(q | g)P(g) \times P_g(w = w^* | q, a)  \times P(a)\\
-\end{array}$$
-\end{itemize}
+The \textbf{explicit answerer} acts like the literal answerer, but evaluates answers with respect to how well they convey the goal (projection of world) that corresponds to the explicit question $q$:
+%% FIXME: restrict to truthful answers
+%
+$$P(a | q, w^*) \propto P(a) P_q(w^* | q, a) $$
 
-Finally, we must define the interpreter function that all of these agents are using to compute the likelihood of a world given a question and an answer. This is where we specify semantic assumptions about the meaning of a question and answer. For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
+The \textbf{pragmatic answerer} also evaluates answers with respect to how well they convey the goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which goals $g$ are likely given that a question $q$ was asked, and chooses answers that are good on average:
+%% FIXME: restrict to truthful answers
+%
+$$
+P(a | q, w^*) \propto p(a) \sum_{g \in \mathcal{G}} P(g|q) P_g(w^*|q, a)
+$$
+Reasoning backwards from questions to goals is a simple Bayesian inversion of the questioner using a prior on goals:
+$$
+P(g|q) \propto P(q|g)P(g)
+$$
 
-\begin{itemize}
-\item The \textbf{interpreter} takes a question $q$ and an answer $a$ and returns a distribution of worlds that are consistent with this pair:
+Finally, we must define the interpreter function that these agents use to compute the likelihood of a world given a question and an answer.
+For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
 
-$$P(w | q, a) = P(w) \mathbb{I}_{\mathcal{P}_q(a)}(w)$$
+The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair:
+%
+$$P(w | q, a) = P(w) \mathds{1}_{\mathcal{P}_q(a)}(w)$$
+%
+Here, $\mathds{1}_A(w)$ is the indicator function returning 1 if $w \in A$ and 0 otherwise.
 
-where $\mathbb{I}_A(w)$ is the indicator function returning 1 if $w \in A$ and 0 otherwise.
-\end{itemize}
-This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. Because these are probabilistic models, we can succinctly write them down and evaluate their predictions in a probabilistic programming language \cite{Goodman13_POPL}. The model predictions shown throughout the rest of the paper were computed using WebPPL \cite{GoodmanStuhlmuller14_DIPPL}. Note that this specification diverges from previous work in the RSA framework in a few key ways: (1) for the questioner, we replace the goal of imparting information with the goal of learning information about the specified QUD and (2) \dots \todo[inline]{RDH: any other major differences?}
+This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. The model predictions shown throughout the rest of the paper are computed using this implementation.
 
 \section{Simulations}
 
