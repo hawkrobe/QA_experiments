@@ -162,9 +162,12 @@ var explicitAnswerer = cache(
     // Pick answer conditioned on communicating question predicate value
     return Enumerate(
       function(){
-	var answer = fullAnswerPrior();
-	factor(literalListener(question, answer).score([], trueWorld));
-        //var answer = sample(truthfulAnswerPrior);
+        var truthfulAnswerPrior = Enumerate(function(){
+          var answer = fullAnswerPrior();
+          factor(literalListener(question, answer).score([], trueWorld));
+          return answer
+        })
+        var answer = sample(truthfulAnswerPrior);
         var score = mean(
           function(){
             // We may be uncertain about which leaf node the question
@@ -276,18 +279,22 @@ var main = function(){
   var world = {poodle: 1, dalmatian: 2, siamese: 3, goldfish: 4};
   var questions = questionSpace
   var qudNodes = qudSpace
-  var ansRationality = _.range(1, 8, .5)
-
-  map(function(rAns) {
-    map(function(question) {
-      var erp = explicitAnswerer(question, world, rAns)
-      var label = [question, rAns]
-      console.log(label)
-      qa.printERP(erp)
-      qa.writeERP(erp, label,
-		  "expAnswererRationalityFitting.csv")
-    }, questions)
-  }, ansRationality)
+  var ansRationality = _.range(1, 10, .5)
+  var ansKLR = _.range(1, 10, .5)
+  var fileName = "expAnswererRationalityFitting.csv"
+  qa.writeCSV([["utterance", "answerR", "questionR", "response", "model_prob"]], fileName)
+  map(function(rKL) {
+    map(function(rAns) {
+      map(function(question) {
+        var erp = explicitAnswerer(question, world, rAns)
+        var label = [qa.butLast(question).split("Is")[1].toLowerCase(), rAns, rKL]
+        console.log(label)
+        // Write header
+        qa.printERP(erp)
+        qa.writeERP(erp, label, fileName)
+      }, questions)
+    }, ansRationality)
+  }, ansKLR)
 
   return 'done';
 };

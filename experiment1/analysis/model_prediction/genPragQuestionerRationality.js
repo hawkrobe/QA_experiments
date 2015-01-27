@@ -150,8 +150,24 @@ var literalAnswerer = cache(
     // Pick answer conditioned on communicating question predicate value
     return Enumerate(
       function(){
-	var answer = fullAnswerPrior();
-        //var answer = sample(truthfulAnswerPrior);
+  var answer = fullAnswerPrior();
+        factor(literalListener(question, answer).score([], trueWorld) * ansRationality);
+        return answer;
+      });
+  });
+
+
+var explicitAnswerer = cache(
+  function(question, trueWorld, ansRationality) {
+    // Pick answer conditioned on communicating question predicate value
+    return Enumerate(
+      function(){
+        var truthfulAnswerPrior = Enumerate(function(){
+          var answer = fullAnswerPrior();
+          factor(literalListener(question, answer).score([], trueWorld));
+          return answer
+        })
+        var answer = sample(truthfulAnswerPrior);
         var score = mean(
           function(){
             // We may be uncertain about which leaf node the question
@@ -190,7 +206,7 @@ var questioner = cache(function(qud_node, ansRationality, KLRationality) {
         var trueWorld = worldPrior();
         // If I ask this question, what answer do I expect to get,
         // given what the world is like?
-        var answer = sample(literalAnswerer(question, trueWorld, ansRationality));
+        var answer = sample(explicitAnswerer(question, trueWorld, ansRationality));
         var posterior = Enumerate(function(){
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
@@ -206,17 +222,22 @@ var questioner = cache(function(qud_node, ansRationality, KLRationality) {
   });
 });
 
-var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR, qudR, pragR){
+var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR){
   var qudNodePosterior = Enumerate(function(){
     var qudNode = qudNodePrior();
     var q_erp = questioner(qudNode, ansR, KLR);
-    factor(q_erp.score([], question) * qudR);
+    factor(q_erp.score([], question));
     return qudNode;
   });
   return Enumerate(function(){
     var qud = makeQUD(sample(qudNodePosterior));
     // Pick answer conditioned on communicating question predicate value
-    var answer = fullAnswerPrior()
+    var truthfulAnswerPrior = Enumerate(function(){
+      var answer = fullAnswerPrior();
+      factor(literalListener(question, answer).score([], trueWorld));
+      return answer
+    })
+    var answer = sample(truthfulAnswerPrior)
     var score = mean(
       function(){
         var inferredWorld = sample(literalListener(question, answer));
@@ -224,13 +245,12 @@ var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR, qudR, pra
         var truePosition = qud(trueWorld)
         return (truePosition[0] == inferredPosition[0]) ? 1 : 0;
       });
-    factor(Math.log(score) * pragR);
+    factor(Math.log(score) * ansR);
     return answer;
   });
 })
 
-
-var pragmaticQuestioner = cache(function(qud_node, ansR, KLR, qudR, pragR, pragKLR) {
+var pragmaticQuestioner = cache(function(qud_node, rAns, rKL) {
   var qud = (makeQUD(qud_node))
   Enumerate(function(){
     var question = questionPrior();
@@ -242,10 +262,9 @@ var pragmaticQuestioner = cache(function(qud_node, ansR, KLR, qudR, pragR, pragK
       function(){
         // What do I expect the world to be like?
         var trueWorld = worldPrior();
-	      // If I ask this question, what answer do I expect to get,
+        // If I ask this question, what answer do I expect to get,
         // given what the world is like?
-        var answer = sample(pragmaticAnswerer(question, trueWorld,
-					      ansR, KLR, qudR, pragR));
+        var answer = sample(pragmaticAnswerer(question, trueWorld, rAns, rKL));
         var posterior = Enumerate(function(){
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
@@ -255,7 +274,7 @@ var pragmaticQuestioner = cache(function(qud_node, ansR, KLR, qudR, pragR, pragK
         });
         return qa.KL(posterior, prior);
       });
-    factor(expectedKL * pragKLR);
+    factor(expectedKL * rKL);
     return question;
   });
 });
@@ -264,17 +283,20 @@ var main = function(){
   var world = {poodle: 1, dalmatian: 2, siamese: 3, goldfish: 4};
   var questions = questionSpace
   var qudNodes = qudSpace
-  var ratRange = _.range(1,8, .5)
-  map(function(rPragKL) {
-    map(function(qudNode) {
-      var erp = pragmaticQuestioner(qudNode, 1.5, 6, 7.5, 4.5, rPragKL)
-      var label = [qudNode, 1.5, 6, 7.5, 4.5, rPragKL]
-      console.log(label)
-      qa.writeERP(erp, label,
-		  "pragQuestionerRationalityFitting.csv")
-    }, qudNodes)
-  }, ratRange)
-
+  var ansRationality = _.range(1, 10, .5)
+  var ansKLR = _.range(1, 10, .5)
+  var fileName = "pragQuestionerRationalityFitting.csv"
+  qa.writeCSV([["qud", "answerR", "questionR", "response", "model_prob"]], fileName)
+  map(function(rKL) {
+    map(function(rAns) {
+      map(function(qudNode) {
+        var erp = pragmaticQuestioner(qudNode, rAns, rKL)
+        var label = [qudNode, rAns, rKL]
+        console.log(label)
+        qa.writeERP(erp, label, fileName)
+      }, qudNodes)
+    }, ansRationality)
+  }, ansKLR)
   return 'done';
 };
 

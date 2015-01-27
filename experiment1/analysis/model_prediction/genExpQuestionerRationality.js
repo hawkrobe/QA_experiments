@@ -150,8 +150,24 @@ var literalAnswerer = cache(
     // Pick answer conditioned on communicating question predicate value
     return Enumerate(
       function(){
-	var answer = fullAnswerPrior();
-        //var answer = sample(truthfulAnswerPrior);
+  var answer = fullAnswerPrior();
+        factor(literalListener(question, answer).score([], trueWorld) * ansRationality);
+        return answer;
+      });
+  });
+
+
+var explicitAnswerer = cache(
+  function(question, trueWorld, ansRationality) {
+    // Pick answer conditioned on communicating question predicate value
+    return Enumerate(
+      function(){
+        var truthfulAnswerPrior = Enumerate(function(){
+          var answer = fullAnswerPrior();
+          factor(literalListener(question, answer).score([], trueWorld));
+          return answer
+        })
+        var answer = sample(truthfulAnswerPrior);
         var score = mean(
           function(){
             // We may be uncertain about which leaf node the question
@@ -190,7 +206,7 @@ var questioner = cache(function(qud_node, ansRationality, KLRationality) {
         var trueWorld = worldPrior();
         // If I ask this question, what answer do I expect to get,
         // given what the world is like?
-        var answer = sample(literalAnswerer(question, trueWorld, ansRationality));
+        var answer = sample(explicitAnswerer(question, trueWorld, ansRationality));
         var posterior = Enumerate(function(){
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
@@ -242,7 +258,7 @@ var pragmaticQuestioner = cache(function(qud_node) {
       function(){
         // What do I expect the world to be like?
         var trueWorld = worldPrior();
-	      // If I ask this question, what answer do I expect to get,
+        // If I ask this question, what answer do I expect to get,
         // given what the world is like?
         var answer = sample(pragmaticAnswerer(question, trueWorld));
         var posterior = Enumerate(function(){
@@ -263,27 +279,20 @@ var main = function(){
   var world = {poodle: 1, dalmatian: 2, siamese: 3, goldfish: 4};
   var questions = questionSpace
   var qudNodes = qudSpace
-  var ansRationality = _.range(.5, 8, .5)
-  var KLRationality = _.range(.5, 8, .15)
-  var qudRationality = _.range(.5, 8, .5)
-  var pragRationality = _.range(.5, 8, .5)
-
+  var ansRationality = _.range(1, 10, .5)
+  var ansKLR = _.range(1, 10, .5)
+  var fileName = "expQuestionerRationalityFitting.csv"
+  qa.writeCSV([["qud", "answerR", "questionR", "response", "model_prob"]], fileName)
   map(function(rKL) {
     map(function(rAns) {
-      map(function(rqud) {
-	map(function(rPrag) {
-	  map(function(qudNode) {
-	    var erp = questioner(qudNode, rAns, rKL)
-	    var label = [qudNode, rAns, rKL]
-	    console.log(label)
-	    qa.writeERP(erp, label,
-			"pragAnswererRationalityFitting.csv")
-	  }, qudNodes)
-	}, pragRationality)
-      }, qudRationality)
+      map(function(qudNode) {
+        var erp = questioner(qudNode, rAns, rKL)
+        var label = [qudNode, rAns, rKL]
+        console.log(label)
+        qa.writeERP(erp, label, fileName)
+      }, qudNodes)
     }, ansRationality)
-  }, KLRationality)
-
+  }, ansKLR)
   return 'done';
 };
 
