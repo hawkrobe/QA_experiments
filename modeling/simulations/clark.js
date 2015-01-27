@@ -171,9 +171,9 @@ console.log(spendFiveDollarsContext, uniqueQuestion);
 qa.printERP(pragmaticAnswerer(spendFiveDollarsContext, uniqueQuestion, 4));
 
 // I'd like to buy some whiskey. Does Jim Beam cost more than $5?
-// { val: 4, prob: 0.4999999999999999 }
-// { val: 'yes', prob: 0.5000000000000002 }
+// { val: 4, prob: 0.8333333333333334 }
+// { val: 'yes', prob: 0.16666666666666669 }
 
 // I only have $5 to spend. Does Jim Beam cost more than $5?
-// { val: 4, prob: 0.1666666666666666 }
-// { val: 'yes', prob: 0.8333333333333334 }
+// { val: 4, prob: 0.5 }
+// { val: 'yes', prob: 0.5 }
