@@ -146,7 +146,7 @@ var pragmaticAnswerer = cache(function(context, question, trueWorld){
   // need to restrict to truthful answers
   var truthfulAnswerPrior = Enumerate(function(){
     var answer = answerPrior();
-    factor((literalListener(question, answer).score([], trueWorld) === -Infinity) ? -Infinity : 0); // this is a little weird
+    factor(literalListener(question, answer).score([], trueWorld));
     return answer;
   });
   return Enumerate(function(){
