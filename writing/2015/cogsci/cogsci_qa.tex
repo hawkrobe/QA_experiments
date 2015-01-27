@@ -201,6 +201,11 @@ $$P(w | q, a) = P(w) \mathds{1}_{\mathcal{P}_q(a)}(w)$$
 %
 Here, $\mathds{1}_A(w)$ is the indicator function returning 1 if $w \in A$ and 0 otherwise.
 
+For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution $P$, we introduce an optimality parameter $\alpha$ and transform it as follows:
+%
+$$ P'(x) \propto e^{\alpha \log(P(x)) } $$
+%
+
 This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. The model predictions shown throughout the rest of the paper are computed using this implementation.
 
 \section{Simulations}
