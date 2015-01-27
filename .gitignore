@@ -4,3 +4,9 @@
 *.blg
 *.log
 *.synctex.gz
+*.pdf
+*.ipynb
+*.sublime-project
+*.sublime-workspace
+*.key
+*.out
