@@ -186,9 +186,8 @@ var explicitAnswerer = cache(
   });
 
 
-var questioner = cache(function(qud_node, ansRationality, KLRationality) {
+var questioner = cache(function(qud_node, ansR, KLR) {
   var qud = (makeQUD(qud_node))
-  
   Enumerate(function(){
     console.log("evaluating question for qud " + qud_node)
     var question = questionPrior();
@@ -202,7 +201,7 @@ var questioner = cache(function(qud_node, ansRationality, KLRationality) {
         var trueWorld = worldPrior();
         // If I ask this question, what answer do I expect to get,
         // given what the world is like?
-        var answer = sample(explicitAnswerer(question, trueWorld, ansRationality));
+        var answer = sample(explicitAnswerer(question, trueWorld, ansR));
         var posterior = Enumerate(function(){
           // Given this answer, how would I update my distribution on worlds?
           var world = sample(literalListener(question, answer));
@@ -212,17 +211,17 @@ var questioner = cache(function(qud_node, ansRationality, KLRationality) {
         });
         return qa.KL(posterior, prior);
       });
-    factor(expectedKL * KLRationality);
+    factor(expectedKL * KLR);
     console.log(question)
     return question;
   });
 });
 
-var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR, qudR, pragR){
+var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR){
   var qudNodePosterior = Enumerate(function(){
     var qudNode = qudNodePrior();
     var q_erp = questioner(qudNode, ansR, KLR);
-    factor(q_erp.score([], question) * qudR);
+    factor(q_erp.score([], question));
     return qudNode;
   });
   return Enumerate(function(){
@@ -236,7 +235,7 @@ var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR, qudR, pra
         var truePosition = qud(trueWorld)
         return (truePosition[0] == inferredPosition[0]) ? 1 : 0;
       });
-    factor(Math.log(score) * pragR);
+    factor(Math.log(score) * KLR);
     return answer;
   });
 })
