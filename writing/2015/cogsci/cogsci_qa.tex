@@ -220,29 +220,33 @@ $$ P'(x) \propto e^{\alpha \log(P(x)) } $$
 
 This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. The model predictions shown throughout the rest of the paper are computed using this implementation.
 
-\section{Simulations}
+\section{Whiskey pricing: a case study}
 
-In the following, we present computational simulations to illustrate how our modeling framework can accomodate two classic psycholinguistic phenomena. Both phenomena are about answerer-behavior---specifically, under- and overinformative answers---which is more well-studied than questioner behavior. Since both occur in a setting with only a single fixed question, our simulations are a pure study of how the answerer behaves when the questioner's utterance is fixed.
+The same question can evoke different answers, depending on context, and these answers are often over- or under-informative relative to the explicit question. The answerer in these cases is not ignoring the question: the answer is relevant in some way to the question.
+Clark \citeyear{Clark79_IndirectSpeechActs}, demonstrated that context providing indirect evidence for a questioner goal can shift answerer behavior in this way. The question ``Does Jim Beam cost more than \$5?'' was asked prefaced with one of two context sentences, either ``I'd like to buy some whiskey.'' or ``I only have \$5 to spend.'' In the latter case, merchants gave the (over-informative) exact price of liquor more frequently.
+In the following, illustrate how our modeling framework can accommodate this answerer behavior.
+%Since both occur in a setting with only a single fixed question, our simulations are a pure study of how the answerer behaves when the questioner's utterance is fixed.
 
-\subsection{`Mention-some' questions}
+%\subsection{`Mention-some' questions}
+%
+%\emph{wh}-questions admit two interpretations: `mention-all' and `mention-some.' If a doctor walks into a clinic and asks `who is sick?' this likely means that they want to know, of \emph{each} person in the clinic, whether or not they are sick. If they ask `where can I buy a newspaper?', however, this likely means they only want to know one or two particularly good places. There is a long tradition in theoretical linguistics of refinements and solutions to the problem of which questions admit which kind of answers \cite<see>{George11_Dissertation}. We present a simplified account of answers to the question ``Who was at the party?''.
+%
+%Suppose there are four people in the universe, and each person was either at the party or not. The world space $\mathcal{W}$ contains all $2^4 = 16$ possible assignments of the four people to booleans. There is only one question: $\mathcal{Q} =$ ``who was at the party?'', \red{[add orthogonal question]} but $15$ possible underlying goals in $\mathcal{G}$: they might be interested in knowing about any combination of one or more people; the answer space $\mathcal{A}$ is the same set of subsets. Our agents are set up as specified in the previous section, with an answer prior that prefers shorter utterances and that assigns probability $0$ to utterances that are literally false.
+%
+%To test whether a `mention-some' interpretation can arise from sensitivity to a questioner's goals, we gave the questioner agent a goal prior $P(g)$ with higher probability assigned to some people than others. Due to the utterance length prior, the explicit answerer prefers mentioning some rather than all people but has no sensitivity to which individuals the questioner cares about more. By contrast, the pragmatic answerer can rely on the goal prior to choose a response that matches the questioner's preferences.
+%
+%To test a `mention-all' interpretation, we shifted the questioner's goal prior to place priority on the maximal set. The explicit answerer's behavior remains unchanged, whereas the pragmatic answerer overcomes the bias towards short utterances and prefers to be informative with respect to the full group of people the questioner was interested in.
+%
+%\subsection{Whiskey pricing}
 
-\emph{wh}-questions admit two interpretations: `mention-all' and `mention-some.' If a doctor walks into a clinic and asks `who is sick?' this likely means that they want to know, of \emph{each} person in the clinic, whether or not they are sick. If they ask `where can I buy a newspaper?', however, this likely means they only want to know one or two particularly good places. There is a long tradition of refinements and solutions to the problem of which questions admit which kind of answers in theoretical linguistics \cite<see>{George11_Dissertation}. We present a simplified account of answers to the question ``Who was at the party?''
 
-Suppose there are four people in the universe, and each person was either at the party or not. The world space $\mathcal{W}$ contains all $2^4 = 16$ possible assignments of the four people to booleans. There is only one question: $\mathcal{Q} =$ ``who was at the party?'', but $15$ underlying goals in $\mathcal{G}$: they might be interested in knowing about any combination of one or more people. We take the answer space $\mathcal{A}$ to be the same set of subsets. Our agents are set up as specified in the previous section, with an answer prior that prefers shorter utterances and that assigns probability $0$ to utterances that are literally false.
-
-To test whether a `mention-some' interpretation can arise from sensitivity to a questioner's goals, we gave the questioner agent a goal prior $P(g)$ with higher probability assigned to some people than others. Due to the utterance length prior, the explicit answerer prefers mentioning some rather than all people but has no sensitivity to which individuals the questioner cares about more. By contrast, the pragmatic answerer can rely on the goal prior to choose a response that matches the questioner's preferences.
-
-To test a `mention-all' interpretation, we shifted the questioner's goal prior to place priority on the maximal set. The explicit answerer's behavior remains unchanged, whereas the pragmatic answerer overcomes the bias towards short utterances and prefers to be informative with respect to the full group of people the questioner was interested in.
-
-\subsection{Whiskey pricing}
-
-Next, we show that our framework can accomodate the behavior found by Clark \citeyear{Clark79_IndirectSpeechActs}, who demonstrated that context providing indirect evidence for a questioner goal can shift answerer behavior. The question ``Does Jim Beam cost more than \$5?'' was asked prefaced with one of two context sentences, either ``I'd like to buy some whiskey.'' or ``I only have \$5 to spend.'' In the latter case, merchants gave the (over-informative) exact price of liquor more frequently.
 
 Our world state is one of $10$ prices (\$1, \$2, \dots, \$10). There are two possible goals: learning the exact price, and learning whether the price is greater than \$5.
 The set of answers includes exact prices as well as ``yes'' and ``no'', with an answer prior that prefers ``yes''and ``no'' to the numeric answers. As above, we assign probability $0$ to literally false utterances.
 
-We model the context sentence as affecting the answerer's goal prior. When the context is ``I'd like to buy some whiskey.'', we assume that the prior is uniform between the two possible goals. In that situation, the pragmatic answerer prefers to name the exact price (with probability $.83$). When the context is ``I only have \$5 to spend.'', we assume that the prior favors (at p=.9) the goal of learning whether the price is greater than \$5. Now, the pragmatic answerer is indifferent between naming the exact price and giving the Boolean answer. By contrast, the explicit answerer (which has no natural way to account for context) does not make differential predictions in the two situations.
+We model the context sentence as affecting the answerer's goal prior. When the context is ``I'd like to buy some whiskey.'', we assume that the prior is uniform between the two possible goals. In that situation, the pragmatic answerer prefers to name the exact price (with probability $.83$). When the context is ``I only have \$5 to spend.'', we assume that the prior favors (at p=.9) the goal of learning whether the price is greater than \$5. Now, the pragmatic answerer is indifferent between naming the exact price and giving the Boolean answer. \red{if 'yes'/'no' is cheaper shouldn't it be preferred?} By contrast, the explicit answerer (which has no natural way to account for context) does not make differential predictions in the two situations.
 
+This suggests that our pragmatic answerer is consistent with human behavior in psychologically interesting situations; it does little to examine the behavior of the questioner. Indeed, questioner has been largely neglected in studies of answering, even though, as our opening example illustrates, the choice of question is complex as well as important for understanding answers. In the next section we introduce an experimental paradigm that allows us to explore quantitative behavior of both questioners and answerers.
 
 \begin{figure}
 \begin{center}
@@ -252,7 +256,7 @@ We model the context sentence as affecting the answerer's goal prior. When the c
 \label{fig:taskhierarchy}
 \end{figure}
 
-\section{Experiment 1: \\ Questions and answers in a hierarchical world}
+\section{Questions and answers in a hierarchical world}
 
 	\begin{figure*}[t!]
 \begin{center}
@@ -263,7 +267,7 @@ We model the context sentence as affecting the answerer's goal prior. When the c
 \label{fig:exp1res}
 \end{figure*}
 
-	While there is extensive evidence that answerers are sensitive to questioner goals and context, the novel prediction of our model is about \emph{questioner behavior}. If the pragmatic answerer uses the question itself as a signal about which underlying goal is currently at play, the questioner should choose questions that make their underlying intentions most clear.  In order to test how questioners choose questions when faced with a decision problem, and how answerers choose answers under uncertainty about this decision problem, we designed a guessing-game task played by two players: a questioner and an answerer. In this game, $4$ animals (a dalmatian, a poodle, a siamese cat, and a goldfish) were hidden behind $4$ gates. Note that these animals correspond to different levels in a class hierarchy (see Fig. \ref{fig:taskhierarchy}). The questioner was given a private goal of finding one of the objects (e.g. `find the poodle'), and the answerer had privileged information about the exact locations of each object. Before choosing a gate, the questioner could ask the answerer a single question, chosen from a restricted set of options, and the answerer could respond to this question by revealing the object behind a single gate. 
+	While there is extensive evidence that answerers are sensitive to questioner goals and context, a novel prediction of our model is about \emph{questioner behavior}. If the pragmatic answerer uses the question itself as a signal about which underlying goal is currently at play, the questioner should choose questions that make their underlying intentions most clear.  In order to test how questioners choose questions when faced with a decision problem, and how answerers choose answers under uncertainty about this decision problem, we designed a guessing-game task played by two players: a questioner and an answerer. In this game, $4$ animals (a dalmatian, a poodle, a siamese cat, and a goldfish) were hidden behind $4$ gates. Note that these animals correspond to different levels in a class hierarchy (see Fig. \ref{fig:taskhierarchy}). The questioner was given a private goal of finding one of the objects (e.g. `find the poodle'), and the answerer had privileged information about the exact locations of each object. Before choosing a gate, the questioner could ask the answerer a single question, chosen from a restricted set of options, and the answerer could respond to this question by revealing the object behind a single gate. 
 	
 
 
