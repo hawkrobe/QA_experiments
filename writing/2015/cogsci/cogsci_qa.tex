@@ -33,6 +33,7 @@
 \usepackage{color}
 \usepackage{todonotes}
 \usepackage{dsfont}
+\usepackage{textcomp}
 
 \definecolor{Red}{RGB}{255,0,0}
 \newcommand{\red}[1]{\textcolor{Red}{#1}}
@@ -232,13 +233,6 @@ The set of answers includes exact prices as well as ``yes'' and ``no'', with an 
 We model the context sentence as affecting the answerer's goal prior. When the context is ``I'd like to buy some whiskey.'', we assume that the prior is uniform between the two possible goals. In that situation, the pragmatic answerer prefers to name the exact price (with probability $.83$). When the context is ``I only have \$5 to spend.'', we assume that the prior favors (at p=.9) the goal of learning whether the price is greater than \$5. Now, the pragmatic answerer is indifferent between naming the exact price and giving the Boolean answer. By contrast, the explicit answerer (which has no natural way to account for context) does not make differential predictions in the two situations.
 
 
-\section{Experiment 1: \\ Questions and answers in a hierarchical world}
-
-\todo[inline]{RDH: Pivot here}
-	While there is extensive evidence that answerers are sensitive to questioner goals and context, the novel prediction of our model is about \emph{questioner behavior}. If the pragmatic answerer uses the question itself as a signal about which underlying goal is currently at play, the questioner should choose questions that make their underlying intentions most clear.  In order to test how questioners choose questions when given a decision problem, and how answerers choose answers under uncertainty about this decision problem, we designed a guessing-game task played by two players: a guesser (the questioner) and a helper (the answerer). In this game, $4$ animals (a dalmatian, a poodle, a siamese cat, and a goldfish) were hidden behind $4$ gates. Note that these animals correspond to different levels in a class hierarchy (see Fig. \ref{fig:taskhierarchy}). The guesser was given a private goal of finding one of the objects (e.g. `find the poodle'), and the helper had privileged information about the exact locations of each object. Before choosing a gate, the guesser could ask the helper a single question, chosen from a restricted set of options, and the helper could respond to this question by revealing the object behind a single gate. 
-
-In terms of our model specification, the world space $\mathcal{W}$ is the set of $4! = 24$ possible assignments of four objects to four gates and the goal space $\mathcal{G}$ is the set of four objects that the guesser could possibly be trying to find, and the answer space $\mathcal{A}$ is the set of four gates that the helper could possibly reveal. The key constraint in the task, however, is that the guesser must choose from a \emph{restricted set of questions}: they may be trying to find the goldfish, but cannot directly ask `where is the goldfish?' Instead, the question space $\mathcal{Q}$ is the set of highlighted nodes in the hierarchy, including higher order nodes that are consistent with multiple answers. 
-
 \begin{figure}
 \begin{center}
 \includegraphics[scale = .4]{taskhierarchy}
@@ -247,45 +241,54 @@ In terms of our model specification, the world space $\mathcal{W}$ is the set of
 \label{fig:taskhierarchy}
 \end{figure}
 
+\section{Experiment 1: \\ Questions and answers in a hierarchical world}
 
-We recruited 25 participants from Amazon Mechanical Turk to participate in this task. Each participant provided responses for four trials in the role of the questioner (corresponding to each goal in $\mathcal{G}$), and four trials in the role of the answerer (corresponding to each question in $\mathcal{Q}$). In order to collect responses for all elements of $\mathcal{G}$ and $\mathcal{Q}$, the order of  the questioner and answerer blocks was randomly assigned, and the order of stimuli within these blocks was also randomized\footnote{All materials are available at \url{https://github.com/hawkrobe/Q\_and\_A/tree/master/experiment1/versions/experiment1\_short}}. Two participants were excluded due to self-reported confusion about the task.
-
-Results for the guesser role are shown with our model predictions in Figure \ref{fig:exp1res}(a). There are two primary trends to note in these data. First, questioners do prefer to ask different questions given different goals, even as those questions become less explicitly informative. \todo[inline]{stats} We observe that participants prefer indirect question node closest to their goal when the direct question is unavailable. It is unsurprising that they ask about the `dalmatian` when looking for the dalmatian, but interesting that they strongly prefer asking about a `dog' when looking for the poodle, about a `mammal' when looking for the cat, and so on. Second, the strength with which questioners prefer one question over another decreases as they become more indirect \todo[inline]{stats/explain this better}
-
-\begin{figure*}[t!]
+	\begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale = .52]{questionerDataComparison.jpeg}
-\includegraphics[scale = .52]{answererDataComparison.jpeg}
+\includegraphics[scale = .52]{explicit_questioner.jpeg}
+\includegraphics[scale = .52]{pragmatic_answerer.jpeg}
 \end{center}
-\caption{These plots show our results from experiment 1, compared with the predictions of our best-performing models for both questioner and answerer behavior. In both cases, the pragmatic agent performed the best. \todo[inline]{RDH: Although, I bet if we actually did a model comparison, the extra .04 correlation you get from going to the pragmatic questioner doesn't justify its complexity\dots which would be a pretty interesting conclusion, actually}}
+\caption{These plots show our results from experiment 1, compared with the predictions of our best-performing models for both questioner and answerer behavior. We find that there is no significant difference between the explicit questioner and pragmatic questioner in this task, but that the pragmatic answerer accounts for the qualitative patterns in the response data much better than the explicit answerer.}
 \label{fig:exp1res}
 \end{figure*}
-%\label{sec:expq}
 
-Results for the helper role are shown in Figure \ref{fig:exp1res}(b). The most striking feature of these data is how closely the answerer distribution matches the questioner distribution \todo[inline]{RDH: Possibly just because people did both... It might be the second-timers driving the effect, so we should separate out the different orders, or run it again between-subjects} If the helper is asked about a `dog`, the dalmatian and poodle would be equally good literal answers to this question, but they strongly prefer to give the location of the poodle. Similarly, the dalmatian, poodle, and siamese cat are all mammals, but helpers prefer to respond to the `mammal' question by revealing the location of the cat. \todo[inline]{Do a regression here to make this point more rigorously?}
+	While there is extensive evidence that answerers are sensitive to questioner goals and context, the novel prediction of our model is about \emph{questioner behavior}. If the pragmatic answerer uses the question itself as a signal about which underlying goal is currently at play, the questioner should choose questions that make their underlying intentions most clear.  In order to test how questioners choose questions when faced with a decision problem, and how answerers choose answers under uncertainty about this decision problem, we designed a guessing-game task played by two players: a questioner and an answerer. In this game, $4$ animals (a dalmatian, a poodle, a siamese cat, and a goldfish) were hidden behind $4$ gates. Note that these animals correspond to different levels in a class hierarchy (see Fig. \ref{fig:taskhierarchy}). The questioner was given a private goal of finding one of the objects (e.g. `find the poodle'), and the answerer had privileged information about the exact locations of each object. Before choosing a gate, the questioner could ask the answerer a single question, chosen from a restricted set of options, and the answerer could respond to this question by revealing the object behind a single gate. 
+	
 
 
-\begin{figure*}[t!]
+\subsubsection{Participants} We recruited 125 participants between the ages of 20 and 75 from Amazon Mechanical Turk to participate in this task. Each participant provided responses for four trials in the role of the questioner (corresponding to the four goals), and four trials in the role of the answerer (corresponding to the four possible questions). They were compensated 50\textcent \, for their work, and the median completion time was 4.06 minutes. Twelve participants were excluded due to self-reported confusion about the task instructions.
+
+\subsubsection{Stimuli \& Procedure} In terms of our model specification, the world space $\mathcal{W}$ was the set of $4! = 24$ possible assignments of four objects to four gates. The goal space $\mathcal{G}$ was the set of four objects that the questioner could be trying to find (the leaves of the tree in Fig. \ref{fig:taskhierarchy}). The answer space $\mathcal{A}$ was the set of four gates that the answerer could possibly reveal. The key constraint in the task, however, was that the questioner must choose from a \emph{restricted set of questions}: they may be trying to find the goldfish, but cannot directly ask `where is the goldfish?' The question space $\mathcal{Q}$ contained the set of highlighted nodes in the hierarchy: `dalmatian?', `dog?', `mammal?', and `animal?'.
+
+
+
+In the questioner block, players were presented with a private goal from $\mathcal{G}$, like ``find the poodle!'' and prompted to select a question from a drop-down menu containing elements of $\mathcal{Q}$ that would best help them find it. In the answerer block, players were shown which item was behind which gate and were told that the other player had asked a question from $\mathcal{Q}$. They were prompted to select a gate from a drop-down menu that would be most helpful for the questioner, keeping in mind their constraints. In order to collect responses for all elements of $\mathcal{G}$ and $\mathcal{Q}$, the order of  the questioner and answerer blocks was randomly assigned within participants, and the order of stimuli within these blocks was also randomized\footnote{All materials are available at \url{https://github.com/hawkrobe/Q\_and\_A/tree/master/experiment1/versions/experiment1\_short}}. 
+
+\subsubsection{Results}
+
+Results for the questioner role are shown with our model predictions in Figure \ref{fig:exp1res}(a). We find that questioners systematically prefer different questions given different goals, even as those questions become less explicitly informative. Chi-squared tests over the four response distributions each show a significant divergence from uniform. Questioners ask about the `dalmatian' given the  dalmatian goal, $\chi^2(3) = 161, p < .001$, about the `dog' given the poodle goal, $\chi^2(3) = 250, p <.001$, about the `mammal' given the cat goal, $\chi^2(3) = 25, p <.001$, and equally about the `mammal' and `animal' when given the goldfish goal, $\chi^2(3) = 44, p <.001$. This pattern broadly shows that questioners pick the lowest node in the question hierarchy that contains their goal item. 
+
+Results for the answerer role are shown in Figure \ref{fig:exp1res}(b). Here, we find that answerers are highly sensitive to the constraints of the questioner, giving information about the dalmatian when asked about a `dalmatian', $\chi^2(3) = 258, p <.001$, about the poodle when asked about a `dog', $\chi^2(3) = 110, p <.001$, about the cat when asked about a `mammal', $\chi^2(3) = 40, p<.001$, and equally about the cat and the goldfish when asked about an `animal'. Under an explicit interpretation of the question, revealing the dalmatian and the poodle would both be perfectly acceptable answers to a question about a `dog', but answerers strongly prefer to give the location of the poodle.  
+
+\begin{figure}[t!]
 \begin{center}
-\includegraphics[scale = .33]{bestLitAnswerer.jpeg}
-\includegraphics[scale = .33]{bestExpAnswerer.jpeg}
-\includegraphics[scale = .33]{bestPragAnswerer.jpeg}
-
-\includegraphics[scale = .33]{bestLitQuestioner.jpeg}
-\includegraphics[scale = .33]{bestExpQuestioner.jpeg}
-\includegraphics[scale = .33]{bestPragQuestioner.jpeg}
+\includegraphics[scale=.5]{model_fits_grid.jpeg}
 \end{center}
 \caption{Full space of models, and their correlations with the data from Experiment 1. The questioner models in the second row reason about the answerers directly above them in the top row, and the pragmatic answerer reasons about the explicit questioner. Note that the explicit answerer model was fit using one rationality parameter, the explicit questioner was fit using two optimality parameters, the pragmatic answerer was fit using four parameters, and these parameters were fixed in the pragmatic questioner \todo[inline]{RDH: There needs to be more discussion of parameter fitting in the body -- the fact that the better models just have more parameters is too easy a target! Maybe if we propagate up the best vals, so that each model only has to fit one or two to its own data?}}
 \label{fig:model_space}
-\end{figure*}
+\end{figure}
 
-\subsection{Model comparison}
+\subsubsection{Model comparison}
 
-We now compare these results to the predictions of our family of models (Fig. \ref{fig:model_space}). At the very simplest level, our \emph{literal answerer} yields a uniform distribution over the four answers that are the case in the given world. This has important consequences for the corresponding \emph{literal questioner} model: when this questioner reasons about which question would generate the most helpful answer from the literal answerer, they find no differences, and therefore have no preference over which question to ask. Based on the results presented above, this is clearly not how questioners and answerers behave and we will not consider the literal models further.
+We now compare these results to the predictions of our family of models (Fig. \ref{fig:model_space}). At the very simplest level, our \emph{literal answerer} yields a uniform distribution over the four answers that are the case in the given world. This has important consequences for the corresponding \emph{literal questioner} model: when this questioner reasons about which question would generate the most helpful answer from the literal answerer, they find no differences, and therefore have no preference over which question to ask. The predictions of this model, plotted against our empirical results, are shown in the left-hand column of Fig. \ref{fig:model_space}. Based on the results presented above, this is clearly not how questioners and answerers behave and we will not consider the literal models further.
 
+We now turn to our two remaining questioner models. Since the explicit questioner is nested two levels inside the pragmatic questioner, and each agent could in principle be associated with a free rationality parameter, we must consider model complexity when making comparisons. To put them on equal ground, we reduce the pragmatic questioner's rationality parameters to two: one used by all levels of questioners, and one for all levels of answerers. For each model, we tuned the two parameters to maximize the correlation between model and data. This yielded a model-data correlation of $r = 0.86$ for the explicit questioner and correlation of $r = 0.89$ for the pragmatic questioner. Although the pragmatic model has a slightly higher fit, the two models do not qualitatively differ in their predictions, so we limit our further discussion to the theoretically simpler explicit questioner. 
+
+This model's predictions for each response distribution are shown in Fig. \ref{fig:exp1res}(a). Although the magnitude of its predictions are not in perfect alignment with the magnitude of the data, we see that it captures most of the interesting qualitative patterns of the data. In particular, it captures the modal response for each qud, and roughly tracks the ranking in each quadrant. We also note some interesting discrepancies. For instance, our model assigns highly different response probabilities for `animal' and `mammal' in the goldfish qud, when our participants preferred them equally. We will discuss some accounts for this discrepancy in the general discussion below.
+
+Finally, we turn to our two answerer models. 
 At a slightly higher level of sophistication, we have an \emph{explicit answerer}, which is equally likely to give the location of all nodes under the explicit class mentioned in the question (e.g. \emph{dog} or \emph{animal}). This model produces the answerer predictions depicted in Figure \ref{fig:model_space}(b), which successfully down-weights the least relevant alternatives, giving a model-data correlation of $r = 0.85$ \todo[inline]{stats}, with only one free (optimality) parameter, but cannot reproduce some important qualitative symmetries between the explicitly relevant alternatives. For example, it is equally likely to respond `dalmatian' and `poodle' when asked about the `dog', whereas participants significantly preferred `poodle.' The \emph{pragmatic answerer} model, which uses the question utterance to infer the questioner's underlying goal, is able to break this symmetry, for an overall fit of $r = 0.95$ \dots \todo[inline]{depends on how we reuse parameters}
 
-The \emph{explicit questioner}, which reasons about an internal model of an explicit answerer, yields a model-data correlation of $r = 0.86$. If it instead reasons about an internal model of a pragmatic questioner, the fit increases to $r = 0.90$, but the increased model complexity does not justify the improvement in fit  
 
 \section{Related work}
 
