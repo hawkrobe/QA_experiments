@@ -126,54 +126,49 @@ var qudPrice = function(world){return world;};
 var qudPriceGreaterThan5 = function(world){return world > 5;};
 
 var qudPrior = function(context){
-  if (context === buyWhiskeyContext){
-    return (flip(0.5) ? qudPriceGreaterThan5 : qudPrice);
-  } else if (context === spendFiveDollarsContext){
-    return (flip(0.9) ? qudPriceGreaterThan5 : qudPrice);
-  } else {
-    console.error('unknown context');
-  }
+  var p = ((context === buyWhiskeyContext) ? 0.5 :
+           (context === spendFiveDollarsContext) ? 0.9 :
+           console.error('unknown context'));
+  return flip(p) ? "qudPriceGreaterThan5" : "qudPrice";
 };
 
-var pragmaticAnswerer = cache(function(context, question, trueWorld){
+var nameToQUD = function(qudName){
+  return qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 : qudPrice;
+}
+
+var pragmaticAnswerer = function(context, question, trueWorld){
   // qud posterior is same as qud prior, since questioner has only a single question
   var qudPosterior = Enumerate(function(){
-    var qud = qudPrior(context);
+    var qudName = qudPrior(context);
+    var qud = nameToQUD(qudName);
     var q_erp = questioner(qud);
     factor(q_erp.score([], question));
-    return qud;
+    return qudName;
   });
   // need to restrict to truthful answers
   var truthfulAnswerPrior = Enumerate(function(){
     var answer = answerPrior();
-    factor(literalListener(question, answer).score([], trueWorld));
+    // factor(literalListener(question, answer).score([], trueWorld));
+    factor(literalListener(question, answer).score([], trueWorld) === -Infinity ? -Infinity : 0); // why do we need this?
     return answer;
   });
   return Enumerate(function(){
-    var qud = sample(qudPosterior);
+    var qudName = sample(qudPosterior);
+    var qud = nameToQUD(qudName);
     // Pick answer conditioned on communicating question predicate value
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
         var inferredWorld = sample(literalListener(question, answer));
-        return (qud(trueWorld) == qud(inferredWorld)) ? 1 : 0;
+        return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
       });
     factor(Math.log(score));
     return answer;
   });
-});
-
+};
 
 console.log(buyWhiskeyContext, uniqueQuestion);
 qa.printERP(pragmaticAnswerer(buyWhiskeyContext, uniqueQuestion, 4));
 
 console.log(spendFiveDollarsContext, uniqueQuestion);
 qa.printERP(pragmaticAnswerer(spendFiveDollarsContext, uniqueQuestion, 4));
-
-// I'd like to buy some whiskey. Does Jim Beam cost more than $5?
-// { val: 4, prob: 0.8333333333333334 }
-// { val: 'yes', prob: 0.16666666666666669 }
-
-// I only have $5 to spend. Does Jim Beam cost more than $5?
-// { val: 4, prob: 0.5 }
-// { val: 'yes', prob: 0.5 }
