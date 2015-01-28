@@ -132,7 +132,8 @@ The rest of this paper is structured as follows. First, we specify the questione
 We then individuate three particular models in this family, representing progressively more sophisticated hypotheses about how questioners and answerers reason about their task. 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
 We show that models in this family can explain several classic puzzles about good answers.
-We then develop a novel communication game paradigm that allows us to manipulate the goals, potential questions, and potential answers, testing the predictions of the different models. We find that the most sophisticated, pragmatic models best account for human performance.
+We then develop a novel communication game paradigm that allows us to manipulate the goals, potential questions, and potential answers, testing the predictions of the different models. 
+%We find that the most sophisticated, pragmatic models best account for human performance.
 %derive predictions for a  of experiments using a novel guessing-game task, and compare these predictions to human performance. 
 %In one phase of the task, we require participants to ask a question (from a fixed set of possible questions), given a decision problem. In the second phase, we require participants to give an answer (from a fixed set of possible answers) to a question (from a fixed set of possible questions). 
 We close with a brief discussion of related models and future directions.
@@ -143,16 +144,18 @@ We close with a brief discussion of related models and future directions.
 
 How should a questioner choose between questions?
 %
-We start by assuming that the questioner aims to \emph{learn information about a private goal}, sometimes called a QUD (question under discussion) \cite{Roberts96_InformationStructureDiscourse}.
+We start by assuming that the questioner aims to \emph{learn information relevant to a private goal}.
 %
-In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond given different possible states of the world, and selects a question that results in an informative answer on average.
+In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond given different possible states of the world, and selects a question that results in an answer that tends to provide goal-relevant information.
 %
 
 % This is a divergence from previous RSA models, where agents choose utterances with the goal of imparting information about the state of the world.
 
 More formally, suppose there is a set of world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$.
 These sets are taken to be in common ground between the questioner and the answerer.
-A goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about.
+An informational goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about; this is similar to the notion of a QUD (question under discussion) \cite{Roberts96_InformationStructureDiscourse}.
+We will use the notation $P_{g}(w)$ to indicate the probability $\hat{P}(g(w))$ of the $g$-relevant aspect of $w$ under the projected distribution 
+$\hat{P}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$.
 % Each of these projections corresponds to a different utility function, in a decision-theoretic formulation.
 %In order to learn information about their private goal $g$, the questioner reasons about how an internal model of an answerer would respond given some true world.
 
@@ -161,15 +164,32 @@ A goal $g \in \mathcal{G}$ is a projection function that maps a world state to a
 
 The \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a distribution over questions $\mathcal{Q}$:
 %
-$$ P(q|g) \propto P(q) e^{\E{P(w)}{\KL{P_g(w^*|q, w)}{P_g(w^*)}}} $$
+$$ 
+P(q|g) \propto e^{\E{P(w)}{\KL{P_g(w^*|q, w)}{P_g(w^*)}} - C(q)} 
+$$
 %
-It trades off the prior probability of a question and expected information gain. The prior probability may, among other factors, depend on question length. Information gain is measured as the Kullback-Leibler divergence between the prior distribution on the goal value, $P_g(w^*)$, and the posterior distribution one would expect after asking a question $q$ in true world state $w$:
+It trades off the cost of asking a question, $C(q)$, and expected information gain. The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the prior distribution on the goal value, $P_g(w^*)$, and the posterior distribution one would expect after asking a question $q$ in true world state $w$:
 %
-$$ P_g(w^*|q, w) = \sum_{a \in \mathcal{A}} P(a| q, w)P_g(w|q, a) $$
+$$ P_g(w^*|q, w) = \sum_{a \in \mathcal{A}} P(a| q, w)P_g(w^{*}|q, a) $$
 %
-This conditional distribution reflects the fact that the communication channel from answerer (who knows the true world state $w$) to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. This distribution has two components: First, it depends on $P_g(w | q, a)$, an `interpreter' that gives the likelihood of different worlds (projected onto the goal) given question and answer pairs. We will specify this function later. Second, it depends on $P(a | q, w^*)$, the answerer.
+%This conditional distribution reflects the fact that the answerer (who knows the true world state $w$) may behave noisily, have a limited set of possible answers, or other limitations.
+%to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. 
+This distribution has two components: 
+First, it depends on $P(a | q, w^*)$, a model of the answerer which we will explore shortly.
+Second, it depends on (the goal projection of) $P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs.
 
-We now describe three answerer implementations that embody different assumptions that the questioner could make. All answerers take a question $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and return a distribution over answers $\mathcal{A}$.
+To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign a semantic meaning to a question.
+We assume that a question is an informational goal: a projection from worlds to some aspect of interest. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions} as can be seen by considering the pre-image of such a projection. An answer is then a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
+%The explicit question can be assigned a literal meaning which is a projection from worlds to answer values (this is equivalent to the common partition semantics of questions \cite{gronendijk}).
+% likelihood of a world given a question and an answer.
+%For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
+The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair:
+%
+$$P(w | q, a) \propto P(w) \delta_{q(w)=a}$$
+
+
+
+We next describe three answerer models that embody different assumptions that the questioner could make. All answerers take a question $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
 
 The \textbf{literal answerer} ignores the question and simply chooses answers by trading off prior answer probability and how well a question-answer pair conveys the true state of the world to an interpreter:
 %
@@ -177,7 +197,7 @@ $$P(a | q,w^*) \propto P(a) P(w^* | q, a) $$
 %
 This is equivalent to the speaker in previous RSA models.
 
-The \textbf{explicit answerer} acts like the literal answerer, but evaluates answers with respect to how well they convey the goal (projection of world) that corresponds to the explicit question $q$:
+The \textbf{explicit answerer} acts like the literal answerer, but evaluates answers with respect to how well they address the explicit question $q$:
 %% FIXME: restrict to truthful answers
 %
 $$P(a | q, w^*) \propto P(a) P_q(w^* | q, a) $$
@@ -192,15 +212,6 @@ Reasoning backwards from questions to goals is a simple Bayesian inversion of th
 $$
 P(g|q) \propto P(q|g)P(g)
 $$
-
-Finally, we must define the interpreter function that these agents use to compute the likelihood of a world given a question and an answer.
-For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
-
-The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair:
-%
-$$P(w | q, a) \propto P(w) \mathds{1}_{\mathcal{P}_q(a)}(w)$$
-%
-Here, $\mathds{1}_A(w)$ is the indicator function returning 1 if $w \in A$ and 0 otherwise.
 
 For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution $P$, we introduce an optimality parameter $\alpha$ and transform it as follows:
 %
