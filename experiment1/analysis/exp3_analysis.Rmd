@@ -13,6 +13,7 @@ library(tidyr)
 library(plyr)
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 library(MultinomialCI)
 ```
 
@@ -38,8 +39,21 @@ nonconfused_ps2 <- (ps2 %>%
                    mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
                    filter(asses2 != 1))$workerid
 d2 = filter(d2, workerid %in% nonconfused_ps2)
-
 d = rbind(d1, d2)
+```
+
+Compute the median time people took, to justify compensation
+```{r}
+times1 = unique(read.csv("versions/experiment1_replication_v2/data/q_and_a3_short.tsv", sep = '\t')$Answer.time_in_minutes)
+times2 = unique(read.csv("versions/experiment1_short/data/q_and_a3_short.tsv", sep = '\t')$Answer.time_in_minutes)
+print(median(c(times1,times2)))
+```
+
+Compute the median time people took, to justify compensation
+```{r}
+max(c(ps1$age, ps2$age), na.rm = T)
+min(c(ps1$age, ps2$age), na.rm = T)
+print(median(c(times1,times2)))
 ```
 
 Tidy up questioner data...
@@ -104,6 +118,32 @@ cis = rbind(multinomialCI(subset(d_a, utterance == utterance_levels[1])$count, .
             multinomialCI(subset(d_a, utterance == utterance_levels[4])$count, .05))
 colnames(cis) <- c("lower_ci", "upper_ci")
 d_a = cbind(d_a, cis)
+```
+
+Some chi-squared tests
+----------------------
+
+For each distribution, we run a chi-squared test:
+
+```{r}
+overall_distribution = (d %>% filter(trial_type == "question") %>% group_by(response) %>% tally)$n
+test_dal_q = chisq.test(subset(d_q, qud == "dalmatian")$count) #p = overall_distribution/sum(overall_distribution))
+test_dal_q
+test_poodle_q = chisq.test(subset(d_q, qud == "poodle")$count)
+test_poodle_q
+test_cat_q = chisq.test(subset(d_q, qud == "siamese cat")$count)
+test_cat_q
+test_fish_q = chisq.test(subset(d_q, qud == "goldfish")$count)
+test_fish_q
+
+test_dal_a = chisq.test(subset(d_a, qud == "dalmatian")$count) 
+test_dal_a
+test_poodle_a = chisq.test(subset(d_a, qud == "poodle")$count)
+test_poodle_a
+test_cat_a = chisq.test(subset(d_a, qud == "siamese cat")$count)
+test_cat_a
+test_fish_a = chisq.test(subset(d_a, qud == "goldfish")$count)
+test_fish_a
 ```
 
 Fitting rationality parameters
@@ -181,10 +221,11 @@ all_ans = d_a %>%
 
 # Since they won't let us annotate nicely...
   
-jpeg(filename="../writing/2015/cogsci/answererFits.jpeg")
 answer_plots = (ggplot(all_ans, aes(x = model_prob, y = emp_prob))
   + theme(text = element_text(size = 20),
-          axis.text.x = element_text(angle=90, vjust=1))
+          axis.text.x = element_blank(),
+          plot.margin=unit(c(1,1,-1,1), "cm"))
+  + xlab("")
   + geom_point()
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + scale_x_continuous(lim = c(0,1), breaks=seq(0, 1.1, 0.5))
@@ -198,7 +239,6 @@ answer_plots = (ggplot(all_ans, aes(x = model_prob, y = emp_prob))
                                     summarise(correlation = paste("r =",
                                                                   round(cor(emp_prob, model_prob, method = 'pearson'), 2))))$correlation)))
 answer_plots               
-dev.off()
 ```
 
 Now we import the literal questioner fits and tidy them up to eventually be joined
@@ -268,8 +308,16 @@ question_plots = (ggplot(all_qs, aes(x = model_prob, y = emp_prob))
                               model_level = levels(all_qs$model_level),
                               lab = (all_qs %>% 
                                        group_by(model_level) %>% 
-                                       summarise(correlation = paste("r =",  round(cor(emp_prob, model_prob, method='kendall'), 2))))$correlation)))
+                                       summarise(correlation = paste("r =",  round(cor(emp_prob, model_prob), 2))))$correlation)))
 question_plots               
+dev.off()
+```
+
+Put these next to each other
+```{r}
+jpeg(filename="../writing/2015/cogsci/model_fits_grid.jpeg")
+grid.newpage()
+grid.draw(rbind(ggplotGrob(answer_plots), ggplotGrob(question_plots), size="last"))
 dev.off()
 ```
 
@@ -305,39 +353,45 @@ g4<-(ggplot(q_comparison, aes(x=response, y=prob, fill=src))
     + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci), 
                     position=dodge, width = .25)
     + ylim(-.1, 1.1)
+    + scale_fill_grey()
     + theme_bw(base_size = 20)
     + theme(axis.text.x = element_text(angle=90, vjust=1))
     + ggtitle(plot_title)
     + facet_wrap(~facet_label))
 g4
 dev.off()
-
 ```
 
-Now, plot for dumb model:
+Now, plot for answerer model:
 
 ```{r}
-new_labels = as.factor(sapply(X = prag_ans_fits$utterance, FUN = function(v) {return(paste("utterance:", v))}))
-prag_ans_fits$facet_label = ordered(new_labels, 
+fitted_data = (prag_ans_fits %>% rename(model_prob = pragmatic_prob)) 
+plot_title = "Pragmatic_Answerer"
+# fitted_data = (exp_ans_fits %>% rename(model_prob = explicit_prob)) 
+# plot_title = "Explicit_Answerer"
+
+new_labels = as.factor(sapply(X = fitted_data$utterance, FUN = function(v) {return(paste("utterance:", v))}))
+fitted_data$facet_label = ordered(new_labels, 
                               levels = c("utterance: dalmatian", "utterance: dog", 
                                          "utterance: mammal","utterance: animal"))
-a_comparison <- prag_ans_fits %>% 
-  select(utterance, response, emp_prob, upper_ci, lower_ci, pragmatic_prob, facet_label) %>%
-  rename(empirical = emp_prob, model = pragmatic_prob) %>%
+a_comparison <- fitted_data %>% 
+  select(utterance, response, emp_prob, upper_ci, lower_ci, model_prob, facet_label) %>%
+  rename(empirical = emp_prob, model = model_prob) %>%
   gather(src, prob, empirical, model) 
 
 a_comparison[a_comparison$src == "model",]$upper_ci = a_comparison[a_comparison$src == "model",]$prob
 a_comparison[a_comparison$src == "model",]$lower_ci = a_comparison[a_comparison$src == "model",]$prob
-jpeg(filename="../writing/2015/cogsci/answererDataComparison.jpeg")
-
+name = paste("../writing/2015/cogsci/", plot_title, ".jpeg", sep = '')
+jpeg(filename = name)
 dodge <- position_dodge(width=0.9)
 g4<-(ggplot(a_comparison, aes(x=response, y = prob, fill=src)) 
      + geom_bar(stat='identity', position=position_dodge())
      + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci), 
                     position=dodge, width = .25)
+     + scale_fill_grey()
      + theme_bw(base_size = 20)
+     + ggtitle(plot_title)
      + theme(axis.text.x = element_text(angle=90, vjust=1))
-     + ggtitle("(b) Best Answerer Model Predictions")
      + facet_wrap(~facet_label))
 g4
 dev.off()
