@@ -37,18 +37,32 @@ var isNumeric = function(x){
   return _.contains(prices, x);
 };
 
-var worldPrior = function(){  
-  return uniformDraw(prices);
+var worldPrior = function(){
+  return [flip(0.5), uniformDraw(prices)];
 };
 
-var uniqueQuestion = "Does Jim Beam cost more than $5?";
-
-var uniqueQuestionMeaning = function(world){
-  return world <= 5;
+var credit = function(world){
+  return world[0];
 };
+
+var price = function(world){
+  return world[1];
+};
+
+var isMoreThanFiveQuestion = "Does Jim Beam cost more than $5?";
+var isMoreThanFiveQuestionMeaning = function(world){
+  return price(world) <= 5;
+};
+
+var doYouTakeCreditQuestion = "Do you take credit cards?";
+var doYouTakeCreditQuestionMeaning = function(world){
+  return credit(world);
+};
+
+var questions = [isMoreThanFiveQuestion, doYouTakeCreditQuestion];
 
 var questionPrior = function(){
-  return uniqueQuestion;
+  return uniformDraw(questions);
 };
 
 var answerPrior = function(){
@@ -57,18 +71,35 @@ var answerPrior = function(){
 };
 
 var numericAnswerMeaning = function(number){
-  return function(question){
+  return function(questionMeaning){
     return function(world){
-      return world == number;
+      if (questionMeaning == isMoreThanFiveQuestionMeaning){
+        return price(world) == number;
+      } else {
+        return true; // vacuous
+      }
     };
   };
 };
 
+var booleanAnswerMeaning = function(bool){
+  return function(questionMeaning){
+    return function(world){
+      if (questionMeaning == isMoreThanFiveQuestionMeaning){
+        return (price(world) > 5) == bool;
+      } else {
+        return credit(world) == bool;
+      }
+    }
+  }
+}
+
 var meaning = function(utterance){
-  return ((utterance === "yes") ? identity :
-          (utterance === "no") ? negate :
-          isNumeric(utterance) ? numericAnswerMeaning(utterance) :           
-          (utterance === uniqueQuestion) ? uniqueQuestionMeaning :
+  return ((utterance === "yes") ? booleanAnswerMeaning(true) :
+          (utterance === "no") ? booleanAnswerMeaning(false) :
+          isNumeric(utterance) ? numericAnswerMeaning(utterance) :
+          (utterance === isMoreThanFiveQuestion) ? isMoreThanFiveQuestionMeaning :
+          (utterance === doYouTakeCreditQuestion) ? doYouTakeCreditQuestionMeaning :
           console.error('unknown utterance!', utterance));
 };
 
@@ -86,17 +117,36 @@ var literalAnswerer = cache(function(question, trueWorld){
   return Enumerate(
     function(){
       var answer = answerPrior();
-      factor(literalListener(question, answer).score([], trueWorld));
+      factor(literalListener(question, answer).score([], trueWorld) * 3);
       return answer;
     }
   );
 });
 
-var questioner = function(qud) {
+var qudPrice = function(world){return price(world);};
+var qudPriceGreaterThan5 = function(world){return price(world) > 5;};
+var qudTakeCredit = function(world){return credit(world);};
+
+var qudPrior = function(context){
+  var p = ((context === buyWhiskeyContext) ? 0.5 :
+           (context === spendFiveDollarsContext) ? 0.9 :
+           console.error('unknown context'));
+  return (flip(0.4) ? "qudTakeCredit" :
+          flip(p) ? "qudPriceGreaterThan5" :
+          "qudPrice");
+};
+
+var nameToQUD = function(qudName){
+  return (qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 :
+          qudName == "qudPrice" ? qudPrice :
+          qudName == "qudTakeCredit" ? qudTakeCredit :
+          console.error('unknown qud name', qudName));
+};
+
+var questioner = function(qudName) {
+  var qud = nameToQUD(qudName);
   return Enumerate(function(){
     var question = questionPrior();
-
-    // There's only a single question, so all of the following doesn't matter:
     var prior = Enumerate(function(){
       return qud(worldPrior());
     });
@@ -116,59 +166,47 @@ var questioner = function(qud) {
         });
         return qa.KL(posterior, prior);
       });
-    factor(expectedKL);
+    factor(expectedKL * 3);
     
     return question;
   });
 };
 
-var qudPrice = function(world){return world;};
-var qudPriceGreaterThan5 = function(world){return world > 5;};
-
-var qudPrior = function(context){
-  var p = ((context === buyWhiskeyContext) ? 0.5 :
-           (context === spendFiveDollarsContext) ? 0.9 :
-           console.error('unknown context'));
-  return flip(p) ? "qudPriceGreaterThan5" : "qudPrice";
-};
-
-var nameToQUD = function(qudName){
-  return qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 : qudPrice;
-}
 
 var pragmaticAnswerer = function(context, question, trueWorld){
-  // qud posterior is same as qud prior, since questioner has only a single question
   var qudPosterior = Enumerate(function(){
     var qudName = qudPrior(context);
     var qud = nameToQUD(qudName);
-    var q_erp = questioner(qud);
+    var q_erp = questioner(qudName);
     factor(q_erp.score([], question));
     return qudName;
-  });
-  // need to restrict to truthful answers
-  var truthfulAnswerPrior = Enumerate(function(){
-    var answer = answerPrior();
-    // factor(literalListener(question, answer).score([], trueWorld));
-    factor(literalListener(question, answer).score([], trueWorld) === -Infinity ? -Infinity : 0); // why do we need this?
-    return answer;
   });
   return Enumerate(function(){
     var qudName = sample(qudPosterior);
     var qud = nameToQUD(qudName);
     // Pick answer conditioned on communicating question predicate value
-    var answer = sample(truthfulAnswerPrior);
+    var answer = answerPrior();
     var score = mean(
       function(){
         var inferredWorld = sample(literalListener(question, answer));
         return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
       });
-    factor(Math.log(score));
+    factor(Math.log(score) * 3);
     return answer;
   });
 };
 
-console.log(buyWhiskeyContext, uniqueQuestion);
-qa.printERP(pragmaticAnswerer(buyWhiskeyContext, uniqueQuestion, 4));
+var world = [true, 4];
+console.log("world", world);
 
-console.log(spendFiveDollarsContext, uniqueQuestion);
-qa.printERP(pragmaticAnswerer(spendFiveDollarsContext, uniqueQuestion, 4));
+console.log(buyWhiskeyContext, doYouTakeCreditQuestion);
+qa.printERP(pragmaticAnswerer(buyWhiskeyContext, doYouTakeCreditQuestion, world));
+
+console.log(spendFiveDollarsContext, doYouTakeCreditQuestion);
+qa.printERP(pragmaticAnswerer(spendFiveDollarsContext, doYouTakeCreditQuestion, world));
+
+console.log(buyWhiskeyContext, isMoreThanFiveQuestion);
+qa.printERP(pragmaticAnswerer(buyWhiskeyContext, isMoreThanFiveQuestion, world));
+
+console.log(spendFiveDollarsContext, isMoreThanFiveQuestion);
+qa.printERP(pragmaticAnswerer(spendFiveDollarsContext, isMoreThanFiveQuestion, world));

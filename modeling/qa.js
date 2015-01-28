@@ -41,6 +41,10 @@ function setsEqual(a1, a2){
   return JSON.stringify(s1) === JSON.stringify(s2);
 }
 
+function arraysEqual(a1, a2){
+  return JSON.stringify(a1) === JSON.stringify(a2);
+}
+
 function powerset(set) {
   if (set.length == 0)
     return [[]];
@@ -164,6 +168,7 @@ var printERP = function(erp) {
 };
 
 module.exports = {
+  arraysEqual: arraysEqual,
   setsEqual: setsEqual,
   powerset: powerset,
   flatten: flatten,
