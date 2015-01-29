@@ -116,13 +116,13 @@ Context and questioner goals have also been implicated in accounts of answers to
 
 % Want to motivate RSA a bit more?
 
-In addition to these psycholinguistic developments, recent work on Rational Speech Act (RSA) models \cite{frank2012, GoodmanStuhlmuller13_KnowledgeImplicature} has mathematically formalized verbal pragmatic reasoning as a form of rational recursive Bayesian inference, where speakers choose utterances that maximize a particular utility function (dependent on the listeners expected information gain). In this paper we extend the RSA framework to address asking questions and giving answerers. The first challenge is that the speaker utility in this framework is usually identified with information provided---since questions don't provide direct information, we must say what utility they do have. 
+In addition to these psycholinguistic developments, recent work on Rational Speech Act (RSA) models \cite{frank2012, GoodmanStuhlmuller13_KnowledgeImplicature} has mathematically formalized verbal pragmatic reasoning as a form of rational recursive Bayesian inference, where speakers choose utterances that maximize a particular utility function (dependent on the listener's expected information gain). In this paper we extend the RSA framework to address asking questions and giving answerers. The first challenge is that the speaker utility in this framework is usually identified with information provided---since questions don't provide direct information, we must say what utility they do have. 
 
-We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems}, that the value of a question is the extent to which it can be expected to provoke information relevant to the questioner \emph{later} in the dialogue. 
-More specifically, for the questioner, the value of a question is the expected information she gains about her interests, given the set of likely answers that may be provided by the answer. 
+We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems}, that the value of a question is the extent to which it can be expected to elicit information relevant to the questioner later in the dialogue. 
+More specifically, for the questioner, the value of a question is the expected information she gains about her interests, given the set of likely answers that may be provided by the answerer. 
 This requires us to specify a model of the answerer---which can serve as both the model assumed by a questioner, and as a model of answer behavior itself. We explore three, increasingly sophisticated, answerer models. The simplest answerer provides a literal answer to the question (without attempting to be informative);   
 the explicit answerer attempts to be informative with respect to the explicit question asked (without inferring the questioner's underlying interests);  
-the pragmatic answerer infers the most likely true interests of the questioner, and then informatively addresses this topic.
+the pragmatic answerer infers the most likely true interests of the questioner, and then informatively addresses those interests.
 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
 
@@ -150,7 +150,7 @@ How should a questioner choose between questions?
 %
 We start by assuming that the questioner aims to \emph{learn information relevant to a private goal}.
 %
-In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond given different possible states of the world, and selects a question that results in an answer that tends to provide goal-relevant information.
+In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond, given different possible states of the world, and selects a question that results in an answer that tends to provide goal-relevant information.
 %
 
 % This is a divergence from previous RSA models, where agents choose utterances with the goal of imparting information about the state of the world.
@@ -183,7 +183,7 @@ First, it depends on $P(a | q, w^*)$, a model of the answerer which we will expl
 Second, it depends on (the goal projection of) $P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs.
 
 To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign a semantic meaning to a question.
-We assume that a question is an informational goal: a projection from worlds to some aspect of interest. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions} as can be seen by considering the pre-image of such a projection. An answer is then a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
+We assume that a question is an informational goal: a projection from worlds to some aspect of interest. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection \red{JD: how can we see this, exactly?}. An answer is then a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
 %The explicit question can be assigned a literal meaning which is a projection from worlds to answer values (this is equivalent to the common partition semantics of questions \cite{gronendijk}).
 % likelihood of a world given a question and an answer.
 %For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
@@ -195,11 +195,11 @@ $$P(w | q, a) \propto P(w) \delta_{q(w)=a}$$
 
 We next describe three answerer models that embody different assumptions that the questioner could make. All answerers take a question $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
 
-The \textbf{literal answerer} ignores the question and simply chooses answers by trading off prior answer probability and how well a question-answer pair conveys the true state of the world to an interpreter:
+The \textbf{literal answerer} ignores the question and simply chooses answers by trading off prior answer probability  and how well a question-answer pair conveys the true state of the world to an interpreter \red{JD: I thought the point was the question is just ignored? why, then, does it figure in the formula?}:
 %
 $$P(a | q,w^*) \propto P(a) P(w^* | q, a) $$
 %
-This is equivalent to the speaker in previous RSA models.
+This is equivalent to the speaker in previous RSA models \red{JD: only if q is ignored, no?}.
 
 The \textbf{explicit answerer} acts like the literal answerer, but evaluates answers with respect to how well they address the explicit question $q$:
 %% FIXME: restrict to truthful answers
