@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var assert = require('assert');
 
 var sum = function(xs){
   if (xs.length == 0) {
@@ -167,6 +168,33 @@ var printERP = function(erp) {
   );
 };
 
+var sortWithIndices = function(toSort) {
+  for (var i = 0; i < toSort.length; i++) {
+    toSort[i] = [toSort[i], i];
+  }
+  toSort.sort(function(left, right) {
+    return left[0] < right[0] ? -1 : 1;
+  });
+  toSort.sortIndices = [];
+  for (var j = 0; j < toSort.length; j++) {
+    toSort.sortIndices.push(toSort[j][1]);
+    toSort[j] = toSort[j][0];
+  }
+  return toSort;
+};
+
+var erpOrder = function(erp){
+  var scores = erp.support([]).map(function(v){
+    return erp.score([], v);
+  });
+  return sortWithIndices(scores).sortIndices;
+};
+
+var orderIsEqual = function(erp1, erp2){
+  assert.ok(arraysEqual(erp1.support([]), erp2.support([])));
+  return arraysEqual(erpOrder(erp1), erpOrder(erp2));
+};
+
 module.exports = {
   arraysEqual: arraysEqual,
   setsEqual: setsEqual,
@@ -181,5 +209,6 @@ module.exports = {
   leaves: leaves,
   nodes: nodes,
   butLast: butLast,
-  printERP: printERP
+  printERP: printERP,
+  orderIsEqual: orderIsEqual
 };
