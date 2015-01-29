@@ -34,8 +34,7 @@ var taxonomy = {
     dog: {
       poodle: null,
       dalmatian: null
-    },    
-    goldfish: null
+    }
   }
 };
 
@@ -63,13 +62,13 @@ var makeQUD = function(node){
   };
 };
 
-var qudSpace = ['dalmatian', 'poodle', 'goldfish', 'siamese'];
+var qudSpace = ['dalmatian', 'poodle'];
 
 var qudNodePrior = function() {
   return uniformDraw(qudSpace)
 };
 
-var questionSpace = ['whereIsDog?', 'whereIsDalmatian?', 'whereIsCat?'];
+var questionSpace = ['whereIsDalmatian?', 'whereIsCat?'];
 
 var questionPrior = function() {
   return uniformDraw(questionSpace);
@@ -150,7 +149,7 @@ var literalAnswerer = cache(
     // Pick answer conditioned on communicating question predicate value
     return Enumerate(
       function(){
-  var answer = fullAnswerPrior();
+        var answer = fullAnswerPrior();
         factor(literalListener(question, answer).score([], trueWorld) * ansRationality);
         return answer;
       });
@@ -191,7 +190,7 @@ var explicitAnswerer = cache(
 
 
 var questioner = cache(function(qud_node, ansRationality, KLRationality) {
-  var qud = (makeQUD(qud_node))
+  var qud = (makeQUD(qud_node));
   
   Enumerate(function(){
     // console.log("evaluating question for qud " + qud_node)
@@ -235,23 +234,23 @@ var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR){
     var truthfulAnswerPrior = Enumerate(function(){
       var answer = fullAnswerPrior();
       factor(literalListener(question, answer).score([], trueWorld));
-      return answer
+      return answer;
     })
-    var answer = sample(truthfulAnswerPrior)
+    var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
         var inferredWorld = sample(literalListener(question, answer));
         var inferredPosition = qud(inferredWorld);
-        var truePosition = qud(trueWorld)
+        var truePosition = qud(trueWorld);
         return (truePosition[0] == inferredPosition[0]) ? 1 : 0;
       });
     factor(Math.log(score) * ansR);
     return answer;
   });
-})
+});
 
 var pragmaticQuestioner = cache(function(qud_node, rAns, rKL) {
-  var qud = (makeQUD(qud_node))
+  var qud = (makeQUD(qud_node));
   Enumerate(function(){
     var question = questionPrior();
     // What is the gate value I'd guess under my prior?
@@ -279,12 +278,6 @@ var pragmaticQuestioner = cache(function(qud_node, rAns, rKL) {
   });
 });
 
-/*
-  We'd like to distinguish the pragmatic questioner from the base-level questioner.
-  The key difference is that the pragmatic questioner knows that the answerer reasons about the qud.
-  
- */
-
 var main = function(){
   var world = {poodle: 1, dalmatian: 2, siamese: 3, goldfish: 4};
   var questions = questionSpace;
@@ -296,24 +289,39 @@ var main = function(){
 
     var erp1 = questioner(qudNode, ansRationality, ansKLR);      
     var erp2 = pragmaticQuestioner(qudNode, ansRationality, ansKLR);
-    var orderIsEqual = qa.orderIsEqual(erp1, erp2);
-    // console.log('explicit and pragmatic questioner match:', orderIsEqual);
-    // if (!orderIsEqual){
 
     console.log(qudNode);
-    console.log('order equal:', orderIsEqual);
     console.log('Explicit questioner:');
     qa.printERP(erp1);
     console.log();
     console.log('Pragmatic questioner:');    
     qa.printERP(erp2);
     console.log('\n');
-    
-    // }
-    
+        
   }, qudNodes);
   
   return 'done';
 };
 
 main();
+
+// dalmatian
+// order equal: true
+// Explicit questioner:
+// { val: 'whereIsCat?', prob: 0.04950598825492339 }
+// { val: 'whereIsDalmatian?', prob: 0.9504940117450764 }
+
+// Pragmatic questioner:
+// { val: 'whereIsCat?', prob: 0.1584112393856473 }
+// { val: 'whereIsDalmatian?', prob: 0.8415887606143527 }
+
+
+// poodle
+// order equal: true
+// Explicit questioner:
+// { val: 'whereIsCat?', prob: 0.5 }
+// { val: 'whereIsDalmatian?', prob: 0.5 }
+
+// Pragmatic questioner:
+// { val: 'whereIsCat?', prob: 0.8415887606143527 }
+// { val: 'whereIsDalmatian?', prob: 0.15841123938564727 }
