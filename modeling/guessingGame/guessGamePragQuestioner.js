@@ -34,8 +34,7 @@ var taxonomy = {
     dog: {
       poodle: null,
       dalmatian: null
-    },    
-    goldfish: null
+    }
   }
 };
 
@@ -63,13 +62,13 @@ var makeQUD = function(node){
   };
 };
 
-var qudSpace = ['dalmatian', 'poodle', 'goldfish', 'siamese'];
+var qudSpace = ['dalmatian', 'poodle'];
 
 var qudNodePrior = function() {
   return uniformDraw(qudSpace)
 };
 
-var questionSpace = ['whereIsDog?', 'whereIsDalmatian?', 'whereIsCat?'];
+var questionSpace = ['whereIsDalmatian?', 'whereIsCat?'];
 
 var questionPrior = function() {
   return uniformDraw(questionSpace);
@@ -316,4 +315,25 @@ var main = function(){
   return 'done';
 };
 
-main();
+// main();
+
+// dalmatian
+// order equal: true
+// Explicit questioner:
+// { val: 'whereIsCat?', prob: 0.04950598825492339 }
+// { val: 'whereIsDalmatian?', prob: 0.9504940117450764 }
+
+// Pragmatic questioner:
+// { val: 'whereIsCat?', prob: 0.1584112393856473 }
+// { val: 'whereIsDalmatian?', prob: 0.8415887606143527 }
+
+
+// poodle
+// order equal: true
+// Explicit questioner:
+// { val: 'whereIsCat?', prob: 0.5 }
+// { val: 'whereIsDalmatian?', prob: 0.5 }
+
+// Pragmatic questioner:
+// { val: 'whereIsCat?', prob: 0.8415887606143527 }
+// { val: 'whereIsDalmatian?', prob: 0.15841123938564727 }
