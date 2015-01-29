@@ -4,7 +4,7 @@
 *.blg
 *.log
 *.synctex.gz
-*.pdf
+cogsci_qa.pdf
 *.ipynb
 *.sublime-project
 *.sublime-workspace
