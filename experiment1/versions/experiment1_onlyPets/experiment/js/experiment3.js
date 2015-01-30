@@ -17,7 +17,7 @@ function make_slides(f) {
   
   slides.q_exp = slide({
     name: "q_exp",
-    present : _.shuffle(["dalmatian", "poodle"]),
+    present : _.sample(["dalmatian", "poodle"]),
     present_handle : function(qud) {
       var list_items = [["dalmatian", "dalmatian?"],
           ["cat", "cat?"]]
