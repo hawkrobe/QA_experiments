@@ -40,20 +40,21 @@ nonconfused_ps2 <- (ps2 %>%
                    filter(asses2 != 1))$workerid
 d2 = filter(d2, workerid %in% nonconfused_ps2)
 d = rbind(d1, d2)
+cat("there were", 125 - (length(nonconfused_ps1) + length(nonconfused_ps2)), 
+    "confused participants")
 ```
 
 Compute the median time people took, to justify compensation
 ```{r}
-#times1 = unique(read.csv("versions/experiment1_replication_v2/data/q_and_a3_short.tsv", sep = '\t')$Answer.time_in_minutes)
-#times2 = unique(read.csv("versions/experiment1_short/data/q_and_a3_short.tsv", sep = '\t')$Answer.time_in_minutes)
-#print(median(c(times1,times2)))
+times1 = unique(read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal1.tsv", sep = '\t')$Answer.time_in_minutes)
+times2 = unique(read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal2.tsv", sep = '\t')$Answer.time_in_minutes)
+cat("median time spent is...", median(c(times1,times2)))
 ```
 
 Compute ages
 ```{r}
-#max(c(ps1$age, ps2$age), na.rm = T)
-#min(c(ps1$age, ps2$age), na.rm = T)
-#print(median(c(times1,times2)))
+cat("max age is", max(c(ps1$age, ps2$age), na.rm = T))
+cat("min age is", min(c(ps1$age, ps2$age), na.rm = T))
 ```
 
 Tidy up questioner data...
@@ -401,80 +402,4 @@ g4<-(ggplot(a_comparison, aes(x=response, y = prob, fill=src))
      + facet_wrap(~facet_label))
 g4
 dev.off()
-```
-
-
-Whale Experiment
-----------------
-
-```{r}
-d_whale = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal-trials.tsv",  sep = '\t')
-# Remove people who were confused...
-ps_whale = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal-subject_information.tsv", sep = '\t')
-# we only want to exclude people who specifically recorded that they were confused,
-# keeping people who just left the response box blank.
-nonconfused_ps_whale <- (ps_whale %>% 
-                   mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
-                   filter(asses2 != 1))$workerid
-d_whale = filter(d_whale, workerid %in% nonconfused_ps1)
-
-d_q_whale = d_whale %>% 
-      filter(trial_type == 'question') %>%
-      mutate(response = ordered(response, levels = c("dalmatian", "dog", 
-                                                     "pet", "animal"))) %>%
-      mutate(utterance = ordered(qud, levels = c("dalmatian", "poodle", 
-                                                 "siamese cat", "whale"))) %>%
-      group_by(qud) %>%
-      mutate(group_size = n()) %>%
-      group_by(qud, response) %>% # collapse over participants
-      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
-      select(qud, response, count, emp_prob)
-
-# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
-d_q_whale = d_q_whale %>%
-      right_join(expand.grid(response  = levels(d_q_whale$response),
-                             qud = levels(d_q_whale$qud))) %>%
-      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
-
-# get confidence intervals in the stupidest way possible...
-# qud_levels = unique(d_q$qud)
-# cis = rbind(multinomialCI(subset(d_q, qud == qud_levels[1])$count, .05),
-#             multinomialCI(subset(d_q, qud == qud_levels[2])$count, .05),
-#             multinomialCI(subset(d_q, qud == qud_levels[3])$count, .05),
-#             multinomialCI(subset(d_q, qud == qud_levels[4])$count, .05))
-# colnames(cis) <- c("lower_ci", "upper_ci")
-#d_q = cbind(d_q, cis)
-```
-
-Tidy up answerer data...
-
-```{r}
-d_a_whale = d_whale %>% 
-      filter(trial_type == 'ans:') %>%
-      filter(response != "None", response != "") %>% 
-      mutate(response = as.numeric(factor(response))) %>%
-      mutate(response = as.character(mapply(function(str, num) strsplit(str,",")[[1]][num], 
-                                    as.character(world_state), response))) %>%
-      mutate(response = ordered(response,
-                                levels=c("dalmatian","poodle","siamese cat","whale"))) %>%
-      mutate(utterance = ordered(utterance,
-                                 levels = c("dalmatian", "dog", "pet", "animal"))) %>%
-      group_by(utterance) %>%
-      mutate(group_size = n()) %>%
-      group_by(utterance, response) %>% # collapse over participants
-      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
-      select(utterance, response, emp_prob, count)
-
-# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
-d_a = d_a %>% 
-      right_join(expand.grid(response  = levels(d_a$response),
-                             utterance = levels(d_a$utterance))) %>%
-      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
-# utterance_levels = unique(d_a$utterance)
-# cis = rbind(multinomialCI(subset(d_a, utterance == utterance_levels[1])$count, .05),
-#             multinomialCI(subset(d_a, utterance == utterance_levels[2])$count, .05),
-#             multinomialCI(subset(d_a, utterance == utterance_levels[3])$count, .05),
-#             multinomialCI(subset(d_a, utterance == utterance_levels[4])$count, .05))
-# colnames(cis) <- c("lower_ci", "upper_ci")
-# d_a = cbind(d_a, cis)
 ```
