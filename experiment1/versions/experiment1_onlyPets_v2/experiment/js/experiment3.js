@@ -37,7 +37,7 @@ function make_slides(f) {
         }));
       });  
       $('#select_box').val(0);
-      $("#" + qud.split(" ")[0]).addClass('border')
+      //$("#" + qud.split(" ")[0]).addClass('border')
       $('#instruct_button').show()
             // Highlight the utterance
       $('#' + this.qud + "_g").addClass('highlight')
