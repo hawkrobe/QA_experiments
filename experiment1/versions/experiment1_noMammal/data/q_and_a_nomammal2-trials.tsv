@@ -1,0 +1,801 @@
+workerid	trial_type	qud	utterance	world_state	response
+0	ans:	NA	pet	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	3
+0	ans:	NA	dog	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	1
+0	ans:	NA	dalmatian	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	1
+0	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	2
+0	question	poodle	NA	NA	dog
+0	question	whale	NA	NA	animal
+0	question	dalmatian	NA	NA	dalmatian
+0	question	siamese cat	NA	NA	pet
+1	ans:	NA	animal	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	2
+1	ans:	NA	pet	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	3
+1	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	4
+1	ans:	NA	dog	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	3
+1	question	siamese cat	NA	NA	pet
+1	question	poodle	NA	NA	dog
+1	question	dalmatian	NA	NA	dalmatian
+1	question	whale	NA	NA	animal
+2	ans:	NA	pet	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	3
+2	ans:	NA	dog	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	4
+2	ans:	NA	animal	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	1
+2	ans:	NA	dalmatian	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	1
+2	question	poodle	NA	NA	pet
+2	question	dalmatian	NA	NA	pet
+2	question	whale	NA	NA	animal
+2	question	siamese cat	NA	NA	pet
+3	ans:	NA	dog	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+3	ans:	NA	pet	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	3
+3	ans:	NA	dalmatian	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+3	ans:	NA	animal	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	1
+3	question	siamese cat	NA	NA	pet
+3	question	poodle	NA	NA	dog
+3	question	whale	NA	NA	animal
+3	question	dalmatian	NA	NA	dalmatian
+4	question	poodle	NA	NA	dog
+4	question	dalmatian	NA	NA	dalmatian
+4	question	whale	NA	NA	animal
+4	question	siamese cat	NA	NA	pet
+4	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	4
+4	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+4	ans:	NA	animal	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	4
+4	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	3
+5	ans:	NA	dog	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	1
+5	ans:	NA	animal	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	4
+5	ans:	NA	dalmatian	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	3
+5	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	1
+5	question	siamese cat	NA	NA	pet
+5	question	poodle	NA	NA	dog
+5	question	dalmatian	NA	NA	dalmatian
+5	question	whale	NA	NA	animal
+6	question	poodle	NA	NA	dalmatian
+6	question	dalmatian	NA	NA	pet
+6	question	whale	NA	NA	dog
+6	question	siamese cat	NA	NA	dog
+6	ans:	NA	dog	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	1
+6	ans:	NA	animal	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+6	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	2
+6	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+7	ans:	NA	dalmatian	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+7	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	3
+7	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	3
+7	ans:	NA	pet	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	1
+7	question	whale	NA	NA	animal
+7	question	siamese cat	NA	NA	pet
+7	question	poodle	NA	NA	dog
+7	question	dalmatian	NA	NA	dalmatian
+8	ans:	NA	dalmatian	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	3
+8	ans:	NA	pet	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	3
+8	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	2
+8	ans:	NA	dog	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+8	question	dalmatian	NA	NA	dalmatian
+8	question	siamese cat	NA	NA	pet
+8	question	poodle	NA	NA	dog
+8	question	whale	NA	NA	animal
+9	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	2
+9	ans:	NA	animal	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	2
+9	ans:	NA	dalmatian	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+9	ans:	NA	dog	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	3
+9	question	whale	NA	NA	pet
+9	question	poodle	NA	NA	dog
+9	question	siamese cat	NA	NA	pet
+9	question	dalmatian	NA	NA	dalmatian
+10	ans:	NA	animal	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+10	ans:	NA	dog	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+10	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+10	ans:	NA	pet	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	4
+10	question	poodle	NA	NA	dog
+10	question	dalmatian	NA	NA	dalmatian
+10	question	whale	NA	NA	animal
+10	question	siamese cat	NA	NA	pet
+11	question	dalmatian	NA	NA	dog
+11	question	siamese cat	NA	NA	dog
+11	question	whale	NA	NA	dog
+11	question	poodle	NA	NA	pet
+11	ans:	NA	animal	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	2
+11	ans:	NA	pet	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	1
+11	ans:	NA	dalmatian	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+11	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+12	ans:	NA	pet	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	1
+12	ans:	NA	animal	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	1
+12	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	2
+12	ans:	NA	dog	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	3
+12	question	dalmatian	NA	NA	dalmatian
+12	question	whale	NA	NA	animal
+12	question	poodle	NA	NA	dog
+12	question	siamese cat	NA	NA	pet
+13	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	1
+13	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	3
+13	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	4
+13	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	4
+13	question	poodle	NA	NA	dog
+13	question	whale	NA	NA	pet
+13	question	siamese cat	NA	NA	dalmatian
+13	question	dalmatian	NA	NA	pet
+14	question	siamese cat	NA	NA	dalmatian
+14	question	dalmatian	NA	NA	dog
+14	question	whale	NA	NA	animal
+14	question	poodle	NA	NA	dog
+14	ans:	NA	dog	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	4
+14	ans:	NA	pet	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	1
+14	ans:	NA	animal	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	1
+14	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	2
+15	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	3
+15	ans:	NA	animal	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	1
+15	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	3
+15	ans:	NA	dalmatian	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	1
+15	question	siamese cat	NA	NA	animal
+15	question	dalmatian	NA	NA	dalmatian
+15	question	poodle	NA	NA	dog
+15	question	whale	NA	NA	animal
+16	question	dalmatian	NA	NA	dalmatian
+16	question	poodle	NA	NA	dog
+16	question	whale	NA	NA	pet
+16	question	siamese cat	NA	NA	dog
+16	ans:	NA	animal	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	1
+16	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	3
+16	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	2
+16	ans:	NA	dog	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	4
+17	question	poodle	NA	NA	dalmatian
+17	question	dalmatian	NA	NA	dog
+17	question	whale	NA	NA	animal
+17	question	siamese cat	NA	NA	pet
+17	ans:	NA	animal	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	1
+17	ans:	NA	dog	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	1
+17	ans:	NA	dalmatian	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	3
+17	ans:	NA	pet	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	3
+18	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	1
+18	ans:	NA	animal	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+18	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+18	ans:	NA	dog	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+18	question	siamese cat	NA	NA	dalmatian
+18	question	poodle	NA	NA	dog
+18	question	whale	NA	NA	animal
+18	question	dalmatian	NA	NA	pet
+19	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	4
+19	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	2
+19	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	2
+19	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+19	question	siamese cat	NA	NA	pet
+19	question	dalmatian	NA	NA	dalmatian
+19	question	poodle	NA	NA	dog
+19	question	whale	NA	NA	animal
+20	question	siamese cat	NA	NA	animal
+20	question	dalmatian	NA	NA	dalmatian
+20	question	whale	NA	NA	animal
+20	question	poodle	NA	NA	dog
+20	ans:	NA	pet	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	3
+20	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	2
+20	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	4
+20	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	2
+21	ans:	NA	dog	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	4
+21	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	4
+21	ans:	NA	pet	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+21	ans:	NA	animal	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+21	question	dalmatian	NA	NA	dalmatian
+21	question	siamese cat	NA	NA	dog
+21	question	poodle	NA	NA	pet
+21	question	whale	NA	NA	animal
+22	question	whale	NA	NA	dalmatian
+22	question	dalmatian	NA	NA	dalmatian
+22	question	poodle	NA	NA	dog
+22	question	siamese cat	NA	NA	animal
+22	ans:	NA	dog	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	3
+22	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	4
+22	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	1
+22	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+23	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	2
+23	ans:	NA	pet	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	2
+23	ans:	NA	animal	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+23	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	2
+23	question	poodle	NA	NA	pet
+23	question	siamese cat	NA	NA	pet
+23	question	whale	NA	NA	animal
+23	question	dalmatian	NA	NA	dog
+24	question	whale	NA	NA	dalmatian
+24	question	siamese cat	NA	NA	dalmatian
+24	question	poodle	NA	NA	dalmatian
+24	question	dalmatian	NA	NA	dog
+24	ans:	NA	animal	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+24	ans:	NA	dog	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	1
+24	ans:	NA	pet	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	4
+24	ans:	NA	dalmatian	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	1
+25	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	4
+25	ans:	NA	dalmatian	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	1
+25	ans:	NA	animal	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	2
+25	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	2
+25	question	poodle	NA	NA	dog
+25	question	siamese cat	NA	NA	pet
+25	question	whale	NA	NA	animal
+25	question	dalmatian	NA	NA	dalmatian
+26	ans:	NA	dalmatian	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	1
+26	ans:	NA	animal	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	4
+26	ans:	NA	pet	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+26	ans:	NA	dog	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	2
+26	question	dalmatian	NA	NA	dalmatian
+26	question	siamese cat	NA	NA	animal
+26	question	poodle	NA	NA	dog
+26	question	whale	NA	NA	animal
+27	ans:	NA	pet	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	3
+27	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	4
+27	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	3
+27	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+27	question	siamese cat	NA	NA	pet
+27	question	dalmatian	NA	NA	dalmatian
+27	question	poodle	NA	NA	dog
+27	question	whale	NA	NA	animal
+28	question	poodle	NA	NA	dog
+28	question	dalmatian	NA	NA	animal
+28	question	whale	NA	NA	dalmatian
+28	question	siamese cat	NA	NA	pet
+28	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+28	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	3
+28	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	4
+28	ans:	NA	pet	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	2
+29	ans:	NA	animal	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	3
+29	ans:	NA	dog	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	3
+29	ans:	NA	pet	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	2
+29	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	2
+29	question	poodle	NA	NA	dog
+29	question	siamese cat	NA	NA	pet
+29	question	whale	NA	NA	animal
+29	question	dalmatian	NA	NA	dalmatian
+30	question	poodle	NA	NA	dog
+30	question	siamese cat	NA	NA	pet
+30	question	whale	NA	NA	animal
+30	question	dalmatian	NA	NA	dog
+30	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	2
+30	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	3
+30	ans:	NA	pet	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	4
+30	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	2
+31	question	dalmatian	NA	NA	dog
+31	question	poodle	NA	NA	pet
+31	question	siamese cat	NA	NA	animal
+31	question	whale	NA	NA	animal
+31	ans:	NA	pet	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+31	ans:	NA	dog	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+31	ans:	NA	dalmatian	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	1
+31	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	3
+32	question	siamese cat	NA	NA	pet
+32	question	whale	NA	NA	animal
+32	question	poodle	NA	NA	pet
+32	question	dalmatian	NA	NA	dog
+32	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	2
+32	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	2
+32	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+32	ans:	NA	pet	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	3
+33	ans:	NA	animal	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	1
+33	ans:	NA	pet	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	4
+33	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	2
+33	ans:	NA	dog	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	2
+33	question	siamese cat	NA	NA	pet
+33	question	whale	NA	NA	animal
+33	question	dalmatian	NA	NA	dalmatian
+33	question	poodle	NA	NA	dog
+34	question	poodle	NA	NA	dog
+34	question	dalmatian	NA	NA	dalmatian
+34	question	siamese cat	NA	NA	pet
+34	question	whale	NA	NA	animal
+34	ans:	NA	dog	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	1
+34	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	2
+34	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	2
+34	ans:	NA	animal	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	3
+35	question	whale	NA	NA	pet
+35	question	dalmatian	NA	NA	dalmatian
+35	question	poodle	NA	NA	dog
+35	question	siamese cat	NA	NA	pet
+35	ans:	NA	pet	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	1
+35	ans:	NA	animal	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+35	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	1
+35	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+36	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	4
+36	ans:	NA	animal	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	4
+36	ans:	NA	dalmatian	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	4
+36	ans:	NA	dog	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	4
+36	question	whale	NA	NA	dalmatian
+36	question	dalmatian	NA	NA	pet
+36	question	siamese cat	NA	NA	dog
+36	question	poodle	NA	NA	pet
+37	question	siamese cat	NA	NA	dog
+37	question	dalmatian	NA	NA	dalmatian
+37	question	poodle	NA	NA	dog
+37	question	whale	NA	NA	pet
+37	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	4
+37	ans:	NA	dog	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	2
+37	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	1
+37	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+38	ans:	NA	animal	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+38	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	3
+38	ans:	NA	dog	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	3
+38	ans:	NA	dalmatian	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	4
+38	question	poodle	NA	NA	pet
+38	question	dalmatian	NA	NA	dalmatian
+38	question	siamese cat	NA	NA	pet
+38	question	whale	NA	NA	animal
+39	question	siamese cat	NA	NA	dog
+39	question	whale	NA	NA	pet
+39	question	poodle	NA	NA	dog
+39	question	dalmatian	NA	NA	dog
+39	ans:	NA	animal	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	1
+39	ans:	NA	pet	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	1
+39	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	1
+39	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	2
+40	question	dalmatian	NA	NA	pet
+40	question	whale	NA	NA	animal
+40	question	poodle	NA	NA	dog
+40	question	siamese cat	NA	NA	animal
+40	ans:	NA	dalmatian	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	3
+40	ans:	NA	pet	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+40	ans:	NA	dog	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	3
+40	ans:	NA	animal	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	2
+41	question	siamese cat	NA	NA	pet
+41	question	poodle	NA	NA	pet
+41	question	dalmatian	NA	NA	pet
+41	question	whale	NA	NA	pet
+41	ans:	NA	pet	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	4
+41	ans:	NA	dog	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	2
+41	ans:	NA	animal	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	2
+41	ans:	NA	dalmatian	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	4
+42	ans:	NA	animal	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	2
+42	ans:	NA	pet	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	1
+42	ans:	NA	dog	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+42	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+42	question	whale	NA	NA	animal
+42	question	poodle	NA	NA	dog
+42	question	siamese cat	NA	NA	pet
+42	question	dalmatian	NA	NA	dalmatian
+43	ans:	NA	animal	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	1
+43	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	2
+43	ans:	NA	pet	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	3
+43	ans:	NA	dog	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	3
+43	question	whale	NA	NA	pet
+43	question	dalmatian	NA	NA	dalmatian
+43	question	siamese cat	NA	NA	pet
+43	question	poodle	NA	NA	dog
+44	ans:	NA	dalmatian	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	1
+44	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+44	ans:	NA	animal	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	1
+44	ans:	NA	pet	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	3
+44	question	poodle	NA	NA	dog
+44	question	whale	NA	NA	animal
+44	question	dalmatian	NA	NA	dalmatian
+44	question	siamese cat	NA	NA	pet
+45	ans:	NA	animal	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	1
+45	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	1
+45	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	3
+45	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+45	question	dalmatian	NA	NA	dalmatian
+45	question	poodle	NA	NA	dog
+45	question	siamese cat	NA	NA	pet
+45	question	whale	NA	NA	animal
+46	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+46	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	1
+46	ans:	NA	pet	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	2
+46	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	2
+46	question	whale	NA	NA	animal
+46	question	poodle	NA	NA	dog
+46	question	dalmatian	NA	NA	dalmatian
+46	question	siamese cat	NA	NA	pet
+47	question	whale	NA	NA	animal
+47	question	poodle	NA	NA	dog
+47	question	dalmatian	NA	NA	dalmatian
+47	question	siamese cat	NA	NA	pet
+47	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+47	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	2
+47	ans:	NA	animal	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	1
+47	ans:	NA	pet	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	3
+48	ans:	NA	dalmatian	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+48	ans:	NA	pet	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	2
+48	ans:	NA	animal	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	1
+48	ans:	NA	dog	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	1
+48	question	siamese cat	NA	NA	pet
+48	question	whale	NA	NA	animal
+48	question	poodle	NA	NA	dog
+48	question	dalmatian	NA	NA	dalmatian
+49	question	siamese cat	NA	NA	pet
+49	question	poodle	NA	NA	animal
+49	question	dalmatian	NA	NA	dalmatian
+49	question	whale	NA	NA	animal
+49	ans:	NA	dog	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	2
+49	ans:	NA	pet	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	1
+49	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	4
+49	ans:	NA	animal	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	4
+50	question	poodle	NA	NA	dog
+50	question	dalmatian	NA	NA	dalmatian
+50	question	whale	NA	NA	animal
+50	question	siamese cat	NA	NA	pet
+50	ans:	NA	pet	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	2
+50	ans:	NA	animal	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	4
+50	ans:	NA	dog	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	4
+50	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+51	ans:	NA	pet	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+51	ans:	NA	animal	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+51	ans:	NA	dalmatian	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	3
+51	ans:	NA	dog	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	4
+51	question	whale	NA	NA	dalmatian
+51	question	dalmatian	NA	NA	dog
+51	question	poodle	NA	NA	animal
+51	question	siamese cat	NA	NA	pet
+52	question	dalmatian	NA	NA	dalmatian
+52	question	siamese cat	NA	NA	dalmatian
+52	question	whale	NA	NA	dalmatian
+52	question	poodle	NA	NA	dalmatian
+52	ans:	NA	pet	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	1
+52	ans:	NA	dalmatian	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	2
+52	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	3
+52	ans:	NA	dog	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+53	question	siamese cat	NA	NA	pet
+53	question	whale	NA	NA	animal
+53	question	poodle	NA	NA	dog
+53	question	dalmatian	NA	NA	dalmatian
+53	ans:	NA	animal	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	4
+53	ans:	NA	dalmatian	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+53	ans:	NA	dog	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	4
+53	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	2
+54	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+54	ans:	NA	dog	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+54	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	2
+54	ans:	NA	animal	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	4
+54	question	whale	NA	NA	animal
+54	question	dalmatian	NA	NA	dalmatian
+54	question	poodle	NA	NA	dog
+54	question	siamese cat	NA	NA	animal
+55	ans:	NA	dalmatian	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	3
+55	ans:	NA	dog	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	2
+55	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	4
+55	ans:	NA	pet	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	2
+55	question	poodle	NA	NA	dog
+55	question	whale	NA	NA	pet
+55	question	siamese cat	NA	NA	dog
+55	question	dalmatian	NA	NA	dalmatian
+56	ans:	NA	animal	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	1
+56	ans:	NA	pet	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	3
+56	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	3
+56	ans:	NA	dalmatian	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	1
+56	question	whale	NA	NA	animal
+56	question	siamese cat	NA	NA	pet
+56	question	dalmatian	NA	NA	dalmatian
+56	question	poodle	NA	NA	dog
+57	question	siamese cat	NA	NA	pet
+57	question	dalmatian	NA	NA	dog
+57	question	whale	NA	NA	animal
+57	question	poodle	NA	NA	dog
+57	ans:	NA	dalmatian	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	1
+57	ans:	NA	pet	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	3
+57	ans:	NA	dog	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	2
+57	ans:	NA	animal	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	2
+58	question	dalmatian	NA	NA	dalmatian
+58	question	poodle	NA	NA	dog
+58	question	siamese cat	NA	NA	pet
+58	question	whale	NA	NA	animal
+58	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	3
+58	ans:	NA	dog	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	2
+58	ans:	NA	dalmatian	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	3
+58	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	3
+59	ans:	NA	animal	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	3
+59	ans:	NA	dog	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	3
+59	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	1
+59	ans:	NA	dalmatian	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+59	question	dalmatian	NA	NA	dalmatian
+59	question	whale	NA	NA	animal
+59	question	siamese cat	NA	NA	pet
+59	question	poodle	NA	NA	dog
+60	question	siamese cat	NA	NA	dalmatian
+60	question	poodle	NA	NA	dalmatian
+60	question	whale	NA	NA	pet
+60	question	dalmatian	NA	NA	dog
+60	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	3
+60	ans:	NA	pet	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	1
+60	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	3
+60	ans:	NA	animal	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	4
+61	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	2
+61	ans:	NA	dog	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+61	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	2
+61	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+61	question	poodle	NA	NA	dog
+61	question	whale	NA	NA	animal
+61	question	dalmatian	NA	NA	dalmatian
+61	question	siamese cat	NA	NA	pet
+62	ans:	NA	animal	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	4
+62	ans:	NA	dog	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	2
+62	ans:	NA	pet	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	2
+62	ans:	NA	dalmatian	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+62	question	dalmatian	NA	NA	dog
+62	question	siamese cat	NA	NA	pet
+62	question	poodle	NA	NA	dog
+62	question	whale	NA	NA	animal
+63	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	2
+63	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	3
+63	ans:	NA	dog	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	3
+63	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	1
+63	question	dalmatian	NA	NA	dog
+63	question	whale	NA	NA	dalmatian
+63	question	siamese cat	NA	NA	dog
+63	question	poodle	NA	NA	pet
+64	question	whale	NA	NA	animal
+64	question	dalmatian	NA	NA	dalmatian
+64	question	siamese cat	NA	NA	pet
+64	question	poodle	NA	NA	dog
+64	ans:	NA	pet	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	4
+64	ans:	NA	dalmatian	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	3
+64	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+64	ans:	NA	animal	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	2
+65	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	3
+65	ans:	NA	dog	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	3
+65	ans:	NA	animal	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	3
+65	ans:	NA	pet	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	1
+65	question	whale	NA	NA	pet
+65	question	siamese cat	NA	NA	animal
+65	question	poodle	NA	NA	dog
+65	question	dalmatian	NA	NA	pet
+66	ans:	NA	pet	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	4
+66	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	2
+66	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	4
+66	ans:	NA	animal	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	3
+66	question	dalmatian	NA	NA	dalmatian
+66	question	whale	NA	NA	animal
+66	question	poodle	NA	NA	dog
+66	question	siamese cat	NA	NA	pet
+67	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+67	ans:	NA	pet	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	4
+67	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+67	ans:	NA	animal	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	4
+67	question	siamese cat	NA	NA	pet
+67	question	dalmatian	NA	NA	dog
+67	question	whale	NA	NA	animal
+67	question	poodle	NA	NA	pet
+68	ans:	NA	dog	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	3
+68	ans:	NA	dalmatian	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	3
+68	ans:	NA	animal	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	4
+68	ans:	NA	pet	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	4
+68	question	siamese cat	NA	NA	pet
+68	question	poodle	NA	NA	dog
+68	question	dalmatian	NA	NA	dalmatian
+68	question	whale	NA	NA	animal
+69	ans:	NA	animal	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	3
+69	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+69	ans:	NA	dog	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+69	ans:	NA	pet	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	4
+69	question	whale	NA	NA	animal
+69	question	dalmatian	NA	NA	dalmatian
+69	question	poodle	NA	NA	dog
+69	question	siamese cat	NA	NA	pet
+70	question	whale	NA	NA	animal
+70	question	dalmatian	NA	NA	dalmatian
+70	question	poodle	NA	NA	dog
+70	question	siamese cat	NA	NA	pet
+70	ans:	NA	pet	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	3
+70	ans:	NA	animal	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	3
+70	ans:	NA	dog	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	4
+70	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+71	ans:	NA	dalmatian	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	4
+71	ans:	NA	dog	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	2
+71	ans:	NA	pet	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	3
+71	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'poodle', u'whale']	4
+71	question	dalmatian	NA	NA	dalmatian
+71	question	siamese cat	NA	NA	pet
+71	question	poodle	NA	NA	dog
+71	question	whale	NA	NA	animal
+72	ans:	NA	dog	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	1
+72	ans:	NA	pet	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	4
+72	ans:	NA	animal	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	1
+72	ans:	NA	dalmatian	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	4
+72	question	siamese cat	NA	NA	pet
+72	question	poodle	NA	NA	dog
+72	question	dalmatian	NA	NA	dalmatian
+72	question	whale	NA	NA	animal
+73	ans:	NA	pet	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	3
+73	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	1
+73	ans:	NA	dog	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	4
+73	ans:	NA	dalmatian	[u'whale', u'siamese cat', u'dalmatian', u'poodle']	3
+73	question	whale	NA	NA	animal
+73	question	poodle	NA	NA	dog
+73	question	siamese cat	NA	NA	pet
+73	question	dalmatian	NA	NA	dalmatian
+74	question	siamese cat	NA	NA	pet
+74	question	dalmatian	NA	NA	dalmatian
+74	question	poodle	NA	NA	pet
+74	question	whale	NA	NA	dog
+74	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+74	ans:	NA	animal	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	3
+74	ans:	NA	pet	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	2
+74	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	4
+75	ans:	NA	dog	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+75	ans:	NA	animal	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+75	ans:	NA	dalmatian	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	4
+75	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	2
+75	question	whale	NA	NA	animal
+75	question	poodle	NA	NA	dog
+75	question	dalmatian	NA	NA	dalmatian
+75	question	siamese cat	NA	NA	pet
+76	ans:	NA	dalmatian	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+76	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	3
+76	ans:	NA	dog	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	1
+76	ans:	NA	pet	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	1
+76	question	siamese cat	NA	NA	pet
+76	question	dalmatian	NA	NA	pet
+76	question	whale	NA	NA	animal
+76	question	poodle	NA	NA	pet
+77	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+77	ans:	NA	dog	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	1
+77	ans:	NA	animal	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	1
+77	ans:	NA	pet	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+77	question	poodle	NA	NA	dalmatian
+77	question	siamese cat	NA	NA	pet
+77	question	dalmatian	NA	NA	animal
+77	question	whale	NA	NA	dog
+78	question	whale	NA	NA	dog
+78	question	poodle	NA	NA	dalmatian
+78	question	siamese cat	NA	NA	animal
+78	question	dalmatian	NA	NA	pet
+78	ans:	NA	animal	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	2
+78	ans:	NA	pet	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	2
+78	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	2
+78	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	3
+79	question	whale	NA	NA	animal
+79	question	poodle	NA	NA	dog
+79	question	dalmatian	NA	NA	dog
+79	question	siamese cat	NA	NA	pet
+79	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	2
+79	ans:	NA	animal	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	2
+79	ans:	NA	pet	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	3
+79	ans:	NA	dog	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	1
+80	question	poodle	NA	NA	dalmatian
+80	question	whale	NA	NA	animal
+80	question	siamese cat	NA	NA	pet
+80	question	dalmatian	NA	NA	dalmatian
+80	ans:	NA	pet	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	3
+80	ans:	NA	dalmatian	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	3
+80	ans:	NA	animal	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	1
+80	ans:	NA	dog	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	2
+81	question	poodle	NA	NA	pet
+81	question	whale	NA	NA	dog
+81	question	dalmatian	NA	NA	dalmatian
+81	question	siamese cat	NA	NA	pet
+81	ans:	NA	animal	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+81	ans:	NA	dog	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	2
+81	ans:	NA	pet	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	1
+81	ans:	NA	dalmatian	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	3
+82	question	whale	NA	NA	animal
+82	question	dalmatian	NA	NA	dog
+82	question	siamese cat	NA	NA	pet
+82	question	poodle	NA	NA	dog
+82	ans:	NA	animal	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	2
+82	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	4
+82	ans:	NA	pet	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	2
+82	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	2
+83	ans:	NA	dog	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+83	ans:	NA	animal	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	4
+83	ans:	NA	pet	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	3
+83	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+83	question	dalmatian	NA	NA	dalmatian
+83	question	siamese cat	NA	NA	pet
+83	question	poodle	NA	NA	dog
+83	question	whale	NA	NA	animal
+84	question	dalmatian	NA	NA	dalmatian
+84	question	siamese cat	NA	NA	dog
+84	question	whale	NA	NA	pet
+84	question	poodle	NA	NA	dog
+84	ans:	NA	animal	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	3
+84	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	2
+84	ans:	NA	pet	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	2
+84	ans:	NA	dog	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	4
+85	question	dalmatian	NA	NA	dalmatian
+85	question	siamese cat	NA	NA	pet
+85	question	whale	NA	NA	animal
+85	question	poodle	NA	NA	dog
+85	ans:	NA	dalmatian	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	2
+85	ans:	NA	dog	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	1
+85	ans:	NA	pet	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	4
+85	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	3
+86	ans:	NA	pet	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	3
+86	ans:	NA	dalmatian	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+86	ans:	NA	dog	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	2
+86	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	3
+86	question	siamese cat	NA	NA	pet
+86	question	whale	NA	NA	animal
+86	question	poodle	NA	NA	dog
+86	question	dalmatian	NA	NA	dalmatian
+87	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	2
+87	ans:	NA	animal	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+87	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+87	ans:	NA	pet	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	1
+87	question	poodle	NA	NA	dog
+87	question	siamese cat	NA	NA	animal
+87	question	dalmatian	NA	NA	dalmatian
+87	question	whale	NA	NA	animal
+88	question	dalmatian	NA	NA	dalmatian
+88	question	siamese cat	NA	NA	pet
+88	question	whale	NA	NA	animal
+88	question	poodle	NA	NA	dog
+88	ans:	NA	pet	[u'poodle', u'dalmatian', u'siamese cat', u'whale']	3
+88	ans:	NA	animal	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	4
+88	ans:	NA	dalmatian	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	3
+88	ans:	NA	dog	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	2
+89	question	siamese cat	NA	NA	dog
+89	question	poodle	NA	NA	pet
+89	question	dalmatian	NA	NA	dalmatian
+89	question	whale	NA	NA	animal
+89	ans:	NA	dalmatian	[u'dalmatian', u'whale', u'poodle', u'siamese cat']	1
+89	ans:	NA	pet	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	2
+89	ans:	NA	animal	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	3
+89	ans:	NA	dog	[u'dalmatian', u'siamese cat', u'whale', u'poodle']	4
+90	ans:	NA	dalmatian	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+90	ans:	NA	pet	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	1
+90	ans:	NA	animal	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	1
+90	ans:	NA	dog	[u'poodle', u'dalmatian', u'whale', u'siamese cat']	4
+90	question	whale	NA	NA	animal
+90	question	siamese cat	NA	NA	animal
+90	question	dalmatian	NA	NA	dog
+90	question	poodle	NA	NA	dalmatian
+91	question	dalmatian	NA	NA	dog
+91	question	siamese cat	NA	NA	dog
+91	question	whale	NA	NA	dog
+91	question	poodle	NA	NA	dog
+91	ans:	NA	animal	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	1
+91	ans:	NA	dalmatian	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	4
+91	ans:	NA	pet	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	2
+91	ans:	NA	dog	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	3
+92	question	siamese cat	NA	NA	dalmatian
+92	question	poodle	NA	NA	animal
+92	question	dalmatian	NA	NA	pet
+92	question	whale	NA	NA	dog
+92	ans:	NA	pet	[u'whale', u'poodle', u'dalmatian', u'siamese cat']	2
+92	ans:	NA	animal	[u'poodle', u'whale', u'dalmatian', u'siamese cat']	3
+92	ans:	NA	dalmatian	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	4
+92	ans:	NA	dog	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	2
+93	question	poodle	NA	NA	dog
+93	question	whale	NA	NA	dog
+93	question	siamese cat	NA	NA	pet
+93	question	dalmatian	NA	NA	dalmatian
+93	ans:	NA	pet	[u'siamese cat', u'dalmatian', u'whale', u'poodle']	1
+93	ans:	NA	dog	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	2
+93	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	2
+93	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	4
+94	ans:	NA	animal	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	1
+94	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	3
+94	ans:	NA	dog	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	2
+94	ans:	NA	pet	[u'whale', u'dalmatian', u'poodle', u'siamese cat']	4
+94	question	whale	NA	NA	animal
+94	question	siamese cat	NA	NA	pet
+94	question	poodle	NA	NA	pet
+94	question	dalmatian	NA	NA	dog
+95	question	poodle	NA	NA	pet
+95	question	whale	NA	NA	pet
+95	question	dalmatian	NA	NA	dog
+95	question	siamese cat	NA	NA	dog
+95	ans:	NA	animal	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	4
+95	ans:	NA	dalmatian	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	1
+95	ans:	NA	dog	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	2
+95	ans:	NA	pet	[u'siamese cat', u'poodle', u'dalmatian', u'whale']	1
+96	question	whale	NA	NA	pet
+96	question	siamese cat	NA	NA	dog
+96	question	dalmatian	NA	NA	dalmatian
+96	question	poodle	NA	NA	dog
+96	ans:	NA	dog	[u'whale', u'poodle', u'siamese cat', u'dalmatian']	2
+96	ans:	NA	pet	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	3
+96	ans:	NA	animal	[u'siamese cat', u'whale', u'poodle', u'dalmatian']	1
+96	ans:	NA	dalmatian	[u'whale', u'dalmatian', u'siamese cat', u'poodle']	2
+97	ans:	NA	pet	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	4
+97	ans:	NA	animal	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	2
+97	ans:	NA	dog	[u'siamese cat', u'dalmatian', u'poodle', u'whale']	2
+97	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'siamese cat', u'whale']	1
+97	question	poodle	NA	NA	dog
+97	question	siamese cat	NA	NA	pet
+97	question	dalmatian	NA	NA	dalmatian
+97	question	whale	NA	NA	animal
+98	question	poodle	NA	NA	dalmatian
+98	question	siamese cat	NA	NA	pet
+98	question	whale	NA	NA	animal
+98	question	dalmatian	NA	NA	dalmatian
+98	ans:	NA	dog	[u'poodle', u'whale', u'siamese cat', u'dalmatian']	4
+98	ans:	NA	pet	[u'poodle', u'siamese cat', u'whale', u'dalmatian']	1
+98	ans:	NA	dalmatian	[u'poodle', u'siamese cat', u'dalmatian', u'whale']	3
+98	ans:	NA	animal	[u'siamese cat', u'whale', u'dalmatian', u'poodle']	2
+99	ans:	NA	dog	[u'whale', u'siamese cat', u'poodle', u'dalmatian']	4
+99	ans:	NA	dalmatian	[u'dalmatian', u'poodle', u'whale', u'siamese cat']	1
+99	ans:	NA	pet	[u'dalmatian', u'whale', u'siamese cat', u'poodle']	1
+99	ans:	NA	animal	[u'siamese cat', u'poodle', u'whale', u'dalmatian']	3
+99	question	siamese cat	NA	NA	dalmatian
+99	question	poodle	NA	NA	dalmatian
+99	question	whale	NA	NA	pet
+99	question	dalmatian	NA	NA	dalmatian
