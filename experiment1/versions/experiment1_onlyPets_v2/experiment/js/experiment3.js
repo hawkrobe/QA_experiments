@@ -17,7 +17,7 @@ function make_slides(f) {
   
   slides.q_exp = slide({
     name: "q_exp",
-    present : [_.sample(["dalmatian", "poodle"])],
+    present : _.shuffle(["dalmatian", "poodle"]),
     present_handle : function(qud) {
       var list_items = [["dalmatian", "dalmatian?"],
           ["cat", "cat?"]]
@@ -37,14 +37,14 @@ function make_slides(f) {
         }));
       });  
       $('#select_box').val(0);
-      //$("#" + qud.split(" ")[0]).addClass('border')
+	//$("#" + qud.split(" ")[0]).addClass('border')
       $('#instruct_button').show()
             // Highlight the utterance
       $('#' + this.qud + "_g").addClass('highlight')
       $('#qud').text("Find the " + qud + "!")
       $('#instructs').text("Before you try to guess which gate the " + qud + " is behind, " 
         + "you have the opportunity to ask one question!")
-      $('#instructs').append(" Remember: <ul> <li> The helper can tell you <b>the location of exactly one object</b>.</li>"
+      $('#instructs').append(" Remember: <ul> <li> The helper can tell you the location of exactly one object.</li>"
         + "<li> The helper knows the set of questions you have to pick from.</li> "
         + "<li> The helper doesn't know whether you're interested in the dalmatian or poodle!</ul>") 
       $('#instructs').append("<p>Please select which question you would ask in order to make the best decision.</p>") 
@@ -54,6 +54,7 @@ function make_slides(f) {
       if ($('#select_box').val() == null) {
         $(".err1").show();
       } else {
+	$("#" + this.qud + "_g").removeClass('highlight')
         $("#" + this.qud.split(" ")[0]).removeClass('border')
         this.log_responses();
         _stream.apply(this); //use _stream.apply(this); if and only if there is "present" data.
