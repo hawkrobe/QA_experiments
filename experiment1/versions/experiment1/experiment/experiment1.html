@@ -66,11 +66,11 @@
 
   <div class="slide" id="q_instructions">
     <h3 id='q_title'></h3>
-    <p align='left'> There are four items in this game: a dalmatian, a poodle, a siamese cat, and a goldfish.</p>
+    <p align='left'> There are four items in this game: a poodle, a dalmatian, a whale, and a siamese cat.</p>
     <div id="images" style="height:175px; width=650px"> 
       <img src="poodle.jpg" style="height:150px; width:150px;"> 
       <img src="dalmatian.jpg" style="height:150px; width:150px;">
-      <img src="goldfish.jpg" style="height:150px; width:150px;">
+      <img src="whale.jpg" style="height:150px; width:150px;">
       <img src="siamese.jpg" style="height:150px; width:150px;">
     </div>
     <p align='left'> These four items are hidden behind four gates, but you don't know the order.</p>
@@ -95,7 +95,7 @@
     <div id="images" style="height:175px; width=650px"> 
       <img id="poodle" src="poodle.jpg" style="height:150px; width:150px;"> 
       <img id="dalmatian" src="dalmatian.jpg" style="height:150px; width:150px;">
-      <img id="goldfish" src="goldfish.jpg" style="height:150px; width:150px;">
+      <img id="whale" src="whale.jpg" style="height:150px; width:150px;">
       <img id="siamese" src="siamese.jpg" style="height:150px; width:150px;">
     </div>
     <hr>    
@@ -114,7 +114,7 @@
     <div id="images" style="height:175px; width=650px"> 
       <img src="poodle.jpg" style="height:150px; width:150px;"> 
       <img src="dalmatian.jpg" style="height:150px; width:150px;">
-      <img src="goldfish.jpg" style="height:150px; width:150px;">
+      <img src="whale.jpg" style="height:150px; width:150px;">
       <img src="siamese.jpg" style="height:150px; width:150px;">
     </div>
     <div id="images" style="height:175px; width=650px"> 
@@ -126,7 +126,7 @@
     <p align='left'> In this part of the game, you will play the role of the 'helper.' The other player is trying to find one of these four items, but only you know where they are! Before selecting a location, the guesser is allowed to ask you one question. In each round of the following game, you will be asked to give a helpful answer to different possible questions. </p>
     <p align='left'> All of your answers will take the same form: you will tell them the location of a single item. For example, if the other player asks, "dalmatian?" you may respond "the dalmatian is behind gate 1" or "the siamese cat is behind gate 4", but not "the dogs are behind gates 1 and 3".</p>
 
-    <p align='left'> This seems easy, but the catch is that the other player is not always allowed to ask explicitly about the object they're trying to find: <b>they must choose a question from a limited set</b>. For example, they might be trying to find the poodle, but cannot ask "poodle?" Instead, they may ask something like "dog?" or "animal?" </p>
+    <p align='left'> This seems easy, but the catch is that the other player is not always allowed to ask explicitly about the object they're trying to find: <b>they must choose a question from a limited set</b>. For example, they might be trying to find the poodle, but cannot ask "poodle?" Instead, they may only ask one of the following: "dalmatian?", dog?", "pet?", or "animal?" </p>
 
     <p align='left'> It is your job to try to be as helpful and understanding as possible, keeping this constraint in mind. To succeed, you must consider why the other player chose the question they did, and what object they might be trying to find.</p>
 
@@ -141,7 +141,7 @@
     <div id="questions" style="border-collapse:collapse;margin-left:100px;display:table,height:150px,width:400px"> 
       <div id = "dalmatian_q" class="boxed"> Dalmatian? </div>
       <div id = "dog_q" class="boxed"> Dog? </div>
-      <div id = "mammal_q" class="boxed"> Mammal? </div>
+      <div id = "pet_q" class="boxed"> Pet? </div>
       <div id = "animal_q" class="boxed"> Animal? </div>
     </div>
     <h2 id= 'question' style="font-weight: normal;"></h2> 
@@ -149,7 +149,7 @@
     <h3 style="font-weight: normal;"> Given that objects are hidden in the following locations... </h3>
     <div id="gates"> </div>
     <h3 style="font-weight: normal;" id='instructs'> Please select which gate you would show the player: </h3><select id="ans_select_box">
-      <label><option value=""/></label>
+      <label><option selected disabled value: ""/></label>
       <label><option value="1"/>Gate 1</label>
       <label><option value="2"/>Gate 2</label>
       <label><option value="3"/>Gate 3</label>

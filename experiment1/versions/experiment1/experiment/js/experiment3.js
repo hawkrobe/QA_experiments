@@ -17,10 +17,10 @@ function make_slides(f) {
   
   slides.q_exp = slide({
     name: "q_exp",
-    present : _.shuffle(["dalmatian", "poodle", "siamese cat", "goldfish"]),
+    present : _.shuffle(["dalmatian", "poodle", "siamese cat", "whale"]),
     present_handle : function(qud) {
       var list_items = [["dalmatian", "dalmatian?"],
-          ["mammal", "mammal?"],
+          ["pet", "pet?"],
           ["dog", "dog?"],
           ["animal", "animal?"]]
 
@@ -31,6 +31,7 @@ function make_slides(f) {
       //  shuffle drop down list order, and set to null
       $('#select_box').empty()
       console.log(list_items)
+      $('#select_box').append($('<option/>', {selected: true, disabled: true, value: "", text: ""}))
       $.each(_.shuffle(list_items), function (index, value) {
         $('#select_box').append($('<option/>', { 
           value: value[0],
@@ -81,7 +82,7 @@ function make_slides(f) {
     present : _.shuffle([["dalmatian", "Dalmatian?"],
                          ["animal", "Animal?"],
                          ["dog","Dog?"],
-                         ["mammal", "Mammal?"]]
+                         ["pet", "Pet?"]]
                          ),
     present_handle : function(utt) {
       // Reset things
@@ -97,7 +98,7 @@ function make_slides(f) {
       $('#' + this.utt + "_q").addClass('highlight')
 
       // Present random world state
-      this.gate_order = _.shuffle(["dalmatian", "poodle", "siamese cat", "goldfish"])
+      this.gate_order = _.shuffle(["dalmatian", "poodle", "siamese cat", "whale"])
       $('#gates').empty()
       $.each(this.gate_order, function (index, value) {
         $('#gates').append('<div class="figure">'
@@ -109,7 +110,7 @@ function make_slides(f) {
     },
 
     button : function() {
-      if($("#textbox").val() == "") {
+      if ($('#ans_select_box').val() == null) {
         $(".err1").show();
       } else {
         $('#' + this.utt + "_q").removeClass('highlight')
