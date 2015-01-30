@@ -300,20 +300,11 @@ Only the pragmatic answerer can account for essential qualitative features of th
 
 These data provide strong evidence for a pragmatic answerer, but are much more equivocal with respect the explicit and pragmatic questioner. Because the two models did not make significantly different predictions for the experiment (and both work quite well), we ran a follow-up study on a special case of our guessing-game paradigm in which the explicit and pragmatic questioners make different predictions.
 
-\section{Exp.~2: }
+\section{Exp.~2: A Critical Test of Questioner Models}
 
 \subsubsection{Participants} We recruited 50 participants to participate only in the questioner scenario of the guessing game presented above. Ten participants were excluded on the basis of having a non-English native language, or reporting confusion about the instructions.
 
 \subsubsection{Stimuli \& Procedure} The procedure was the same as before with some changes to the stimuli. The world space $\mathcal{W}$ consisted of possible assignments of the three pets (the dalmatian, the poodle, and the siamese cat) to three gates. The possible goals $\mathcal{G}$ were the dalmatian and poodle (not the cat). The possible questions $\mathcal{G}$ were `dalmatian?' or `cat?'.  The possible answers $\mathcal{A}$ were the three gates. Each participant was given the two goals in a random order. 
-
-\begin{figure}[t!]
-\begin{center}
-\includegraphics[scale=.25]{onlyPets_all.pdf}
-\includegraphics[scale=.25]{onlyPets_first.pdf}
-\end{center}
-\caption{Full space of models, and their correlations with the data from Experiment 1. The questioner models in the first row reason about the answerers directly below them in the top row, and the pragmatic answerer reasons about the explicit questioner. Note that the explicit answerer model was fit using one rationality parameter and all others were fit with two parameters: one for the answerer agent and one for the questioner.}
-\label{fig:exp2res}
-\end{figure}
 
 \subsubsection{Results}
 
@@ -336,15 +327,22 @@ Again, our data are equivocal. Overall, the response distribution matches the pr
 
 \red{this discussion is good -- we should make sure in final edits that it touches on key points form the intro. e.g. mention how this takes a step toward extending RSA to dialogs...?}
 
-Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_ApparentBehavior}. Experiments in psycholinguistics have shown that this expertise extends to speech acts as well.  Behind every question lies some goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). These wildly different intentions seem to warrant different kinds of answers, even if the explicit question is expressed using the same words.
+Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_ApparentBehavior}. Experiments in psycholinguistics have shown that this expertise extends to speech acts as well.  Behind every question lies some goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). These wildly different intentions seem to warrant different kinds of answers, even if the explicit question is expressed using the same words. By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity. 
 
-In this paper we have presented computational-level evidence that answerer behavior is best described by a pragmatic model that reasons about questioner intentions, using the question utterance as a signal. The superiority of the pragmatic answerer behavior was robust across all conditions. Questioner behavior, however, seemed to be much more dependent on experience and instructions. For example, in another version of the experiment, we did not focus the questioner's attention on particular aspects of the game such as the fact that the answerer knows about the restricted answer set and the fact that it might be helpful to think about what someone might think when hearing your question (prompting perspective-taking). These instructions reflect essential informational assumptions about the model. Without these instructions, questioner behavior shifted more toward that predicted by the explicit model. This, in addition to other 
+In particular, we have presented computational-level evidence that answerer behavior is best described by a pragmatic model that reasons about questioner intentions, using the question utterance as a signal. The superiority of the pragmatic answerer behavior was robust across all conditions. Questioner behavior, however, seemed to be much more dependent on experience and instructions. For example, in another version of the experiment, we did not focus the questioner's attention on particular aspects of the game such as the fact that the answerer knows about the restricted answer set and the fact that it might be helpful to think about what someone might think when hearing your question (prompting perspective-taking). These instructions reflect essential informational assumptions about the model and without these instructions, questioner behavior shifted more toward that predicted by the explicit model. Indeed, we suggest that our sample contained a mixture of explicit and pragmatic questioners. This may be a product of our artificial game paradigm, or it may be reflective of real tendencies in language use.
 
-This analysis provides a novel perspective on the role of questions in dialogues: it is well-accepted under the Gricean view that answerers strive to be relevant, but we find that there is also a burden placed on the questioner to provide sufficient information about what should be considered relevant in the first place. By providing an inference Our model provides a unifying way to accommodate the diversity of different motivations for asking questions.
 
-Note, for instance, that in our answerer data, the `dalmatian' response is more likely than predicted by our pragmatic model in all four quadrants. \footnote{Indeed, in another experiment, we found that behavior shifted toward the `explicit' end of the spectrum when we did not provide sufficient instruction about the task structure to participants.}.
+\begin{figure}[t!]
+\begin{center}
+\includegraphics[scale=.235]{onlyPets_all.pdf}
+\includegraphics[scale=.235]{onlyPets_split.pdf}
+\end{center}
+\caption{Results for experiment 2. The critical test of our models is whether or not questioners prefer to ask about the `cat' or the `dalmatian' when looking for the `poodle'.  In the left panel, we have the overall response distribution, where participants significantly prefer `cat.' In the right panel, we split out this distribution into participants who saw the given goal on the first trial vs. the second trial, showing that there is no significant preference for the two on the first trial.}
+\label{fig:exp2res}
+\end{figure}
 
-There are some pros and cons to the artificially restricted question space in our experiment design. On one hand, this seems to distance the behavior of participants from the types of questions and answers they would make using natural language. On the other hand, this restriction was crucial in allowing us to compare the informativeness of different questions, serving as a minimal test: when necessary, questioners can choose an optimally informative signal. Moreover, it is worth observing that many conversational scenarios in everyday usage feature natural restrictions on the set of things one can ask about, due to politeness, salience, time cost, and other factors. In future work, we will explore the extent to which the proposed model can scale up to more naturalistic language settings.
+
+While the artificiality of our experiment design seems to distance the behavior of participants from the types of questions and answers they would make using natural language, there are some benefits to this design as well. Most importantly, it is worth observing that many conversational scenarios in everyday usage feature natural restrictions on the set of things one can ask about, due to politeness, salience, time cost, and other factors. In future work, we will explore the extent to which the proposed model can scale up to more naturalistic language settings.
 %We must choose our questions carefully. 
 \red{JD: if you leave my inserted sentence, this last sentence needs to go. i think the inserted sentence is useful especially for people who are very skeptical of this sort of work that pretty obviously has fairly low ecological validity.}
 \red{RDH: agreed!}
