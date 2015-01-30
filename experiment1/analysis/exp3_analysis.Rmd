@@ -161,7 +161,7 @@ optimalFit <- function(data, equal = FALSE) {
   prob_correlation <- data %>%
     group_by(answerR, questionR) %>%
     filter(answerR > 1) %>%
-    filter(ifelse(equal, answerR == questionR, T))
+    filter(ifelse(equal, answerR == questionR, T)) %>%
     summarise(correlation = cor(model_prob, emp_prob))
   print.data.frame(prob_correlation)
   max_val_data = prob_correlation[which.max(prob_correlation$correlation),]
@@ -196,8 +196,7 @@ exp_ans_fits = optimalFit(join(d_a,
 Finally, we import the pragmatic answer fits and tidy them up
 
 ```{r}
-prag_ans_fits = join(d_a, read.csv("analysis/model_prediction/pragAnswererRationalityFitting.csv", sep =','))# %>% 
-  
+prag_ans_fits = optimalFit(join(d_a, read.csv("analysis/model_prediction/pragAnswererRationalityFitting.csv", sep =',')), equal = T) %>% 
   mutate(pragmatic_cor = cor(emp_prob, model_prob)) %>%
   rename(pragmatic_ansR = answerR, pragmatic_qR = questionR, pragmatic_prob = model_prob) 
 ```
@@ -224,9 +223,12 @@ all_ans = d_a %>%
 answer_plots = (ggplot(all_ans, aes(x = model_prob, y = emp_prob))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
+  + xlab("Model predicted probability")
+  + ylim(0,1)
+  + ylab("")
   + geom_point()
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-  + scale_x_continuous(lim = c(0,1), breaks=seq(0, 1.1, 0.5))
+  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Answerers")
   + geom_smooth(method = "lm")
   + facet_wrap(~ model_level)
@@ -294,13 +296,14 @@ all_qs = d_q %>%
 #jpeg(filename="../writing/2015/cogsci/questionerFits.jpeg")
 question_plots = (ggplot(all_qs, aes(x = model_prob, y = emp_prob))
   + theme(text = element_text(size = 20),
-          axis.text.x = element_blank(),
+          axis.text.x = element_blank(), axis.ticks = element_blank(),
           plot.margin=unit(c(1,1,-1,1), "cm"))
+  + ylim(0,1)
   + xlab("")
+  + ylab("")
   + geom_point()
   + ggtitle("Questioners")
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-  + scale_x_continuous(lim = c(0,1), breaks=seq(0, 1.1, 0.5))
   + geom_smooth(method = "lm")
   + facet_wrap(~ model_level)
   + geom_text(aes(x,y,label=lab),
@@ -318,6 +321,9 @@ Put these next to each other
 pdf("../writing/2015/cogsci/model_fits_grid.jpeg")
 grid.newpage()
 grid.draw(rbind(ggplotGrob(question_plots), ggplotGrob(answer_plots), size="last"))
+grid.draw(textGrob("Empirical probability", rot = 90, vjust = 1, 
+                   x = unit(0.01, "npc"), y = unit(0.5, "npc"),
+                   gp=gpar(fontsize=20)))
 dev.off()
 ```
 
@@ -395,4 +401,80 @@ g4<-(ggplot(a_comparison, aes(x=response, y = prob, fill=src))
      + facet_wrap(~facet_label))
 g4
 dev.off()
+```
+
+
+Whale Experiment
+----------------
+
+```{r}
+d_whale = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal-trials.tsv",  sep = '\t')
+# Remove people who were confused...
+ps_whale = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal-subject_information.tsv", sep = '\t')
+# we only want to exclude people who specifically recorded that they were confused,
+# keeping people who just left the response box blank.
+nonconfused_ps_whale <- (ps_whale %>% 
+                   mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
+                   filter(asses2 != 1))$workerid
+d_whale = filter(d_whale, workerid %in% nonconfused_ps1)
+
+d_q_whale = d_whale %>% 
+      filter(trial_type == 'question') %>%
+      mutate(response = ordered(response, levels = c("dalmatian", "dog", 
+                                                     "pet", "animal"))) %>%
+      mutate(utterance = ordered(qud, levels = c("dalmatian", "poodle", 
+                                                 "siamese cat", "whale"))) %>%
+      group_by(qud) %>%
+      mutate(group_size = n()) %>%
+      group_by(qud, response) %>% # collapse over participants
+      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
+      select(qud, response, count, emp_prob)
+
+# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
+d_q_whale = d_q_whale %>%
+      right_join(expand.grid(response  = levels(d_q_whale$response),
+                             qud = levels(d_q_whale$qud))) %>%
+      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
+
+# get confidence intervals in the stupidest way possible...
+# qud_levels = unique(d_q$qud)
+# cis = rbind(multinomialCI(subset(d_q, qud == qud_levels[1])$count, .05),
+#             multinomialCI(subset(d_q, qud == qud_levels[2])$count, .05),
+#             multinomialCI(subset(d_q, qud == qud_levels[3])$count, .05),
+#             multinomialCI(subset(d_q, qud == qud_levels[4])$count, .05))
+# colnames(cis) <- c("lower_ci", "upper_ci")
+#d_q = cbind(d_q, cis)
+```
+
+Tidy up answerer data...
+
+```{r}
+d_a_whale = d_whale %>% 
+      filter(trial_type == 'ans:') %>%
+      filter(response != "None", response != "") %>% 
+      mutate(response = as.numeric(factor(response))) %>%
+      mutate(response = as.character(mapply(function(str, num) strsplit(str,",")[[1]][num], 
+                                    as.character(world_state), response))) %>%
+      mutate(response = ordered(response,
+                                levels=c("dalmatian","poodle","siamese cat","whale"))) %>%
+      mutate(utterance = ordered(utterance,
+                                 levels = c("dalmatian", "dog", "pet", "animal"))) %>%
+      group_by(utterance) %>%
+      mutate(group_size = n()) %>%
+      group_by(utterance, response) %>% # collapse over participants
+      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
+      select(utterance, response, emp_prob, count)
+
+# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
+d_a = d_a %>% 
+      right_join(expand.grid(response  = levels(d_a$response),
+                             utterance = levels(d_a$utterance))) %>%
+      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
+# utterance_levels = unique(d_a$utterance)
+# cis = rbind(multinomialCI(subset(d_a, utterance == utterance_levels[1])$count, .05),
+#             multinomialCI(subset(d_a, utterance == utterance_levels[2])$count, .05),
+#             multinomialCI(subset(d_a, utterance == utterance_levels[3])$count, .05),
+#             multinomialCI(subset(d_a, utterance == utterance_levels[4])$count, .05))
+# colnames(cis) <- c("lower_ci", "upper_ci")
+# d_a = cbind(d_a, cis)
 ```
