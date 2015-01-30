@@ -134,14 +134,14 @@ test_poodle_q = chisq.test(subset(d_q, qud == "poodle")$count)
 test_poodle_q
 test_cat_q = chisq.test(subset(d_q, qud == "siamese cat")$count)
 test_cat_q
-test_fish_q = chisq.test(subset(d_q, qud == "goldfish")$count)
+test_fish_q = chisq.test(subset(d_q, qud == "whale")$count)
 test_fish_q
 
 test_dal_a = chisq.test(subset(d_a, utterance == "dalmatian")$count) 
 test_dal_a
 test_dog_a = chisq.test(subset(d_a, utterance == "dog")$count)
 test_dog_a
-test_mammal_a = chisq.test(subset(d_a, utterance == "mammal")$count)
+test_mammal_a = chisq.test(subset(d_a, utterance == "pet")$count)
 test_mammal_a
 test_animal_a = chisq.test(subset(d_a, utterance == "animal")$count)
 test_animal_a
@@ -319,7 +319,7 @@ question_plots
 
 Put these next to each other
 ```{r}
-pdf("../writing/2015/cogsci/model_fits_grid.jpeg")
+pdf("../writing/2015/cogsci/model_fits_grid.pdf")
 grid.newpage()
 grid.draw(rbind(ggplotGrob(question_plots), ggplotGrob(answer_plots), size="last"))
 grid.draw(textGrob("Empirical probability", rot = 90, vjust = 1, 
