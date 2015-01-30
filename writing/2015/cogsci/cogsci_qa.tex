@@ -178,7 +178,9 @@ First, it depends on $P(a | q, w^*)$, a model of the answerer which we will expl
 Second, it depends on (the goal projection of) $P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs.
 
 To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign a semantic meaning to a question.
-We assume that a question is an informational goal: a projection from worlds to some aspect of interest. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection \red{JD: how can we see this, exactly?} \red{RDH: we say this in the next sentence, right? $q^{-1}(a)$ gives the cell of the partition corresponding to the given aspect of interest\dots}). An answer is then a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
+We assume that a question is an informational goal: a projection from worlds to some aspect of interest. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection
+% \red{JD: how can we see this, exactly?} \red{RDH: we say this in the next sentence, right? $q^{-1}(a)$ gives the cell of the partition corresponding to the given aspect of interest\dots}
+). An answer is then a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
 %The explicit question can be assigned a literal meaning which is a projection from worlds to answer values (this is equivalent to the common partition semantics of questions \cite{gronendijk}).
 % likelihood of a world given a question and an answer.
 %For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
@@ -190,7 +192,7 @@ $$P(w | q, a) \propto P(w) \delta_{q(w)=a}$$
 
 We next describe three answerer models that embody different assumptions that the questioner could make. All answerers take a question $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
 
-The \textbf{literal answerer} ignores the question and simply chooses answers by trading off prior answer probability  and how well a question-answer pair conveys the true state of the world to an interpreter \red{JD: I thought the point was the question is just ignored? why, then, does it figure in the formula?}:
+The \textbf{literal answerer} simply chooses answers by trading off prior answer probability  and how well a question-answer pair conveys the true state of the world to an interpreter:
 %
 $$P(a | q,w^*) \propto P(a) P(w^* | q, a) $$
 %
