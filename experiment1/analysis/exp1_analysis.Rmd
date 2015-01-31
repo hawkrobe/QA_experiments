@@ -112,6 +112,7 @@ d_a = d_a %>%
       right_join(expand.grid(response  = levels(d_a$response),
                              utterance = levels(d_a$utterance))) %>%
       mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
+# And compute confidence intervals
 utterance_levels = unique(d_a$utterance)
 cis = rbind(multinomialCI(subset(d_a, utterance == utterance_levels[1])$count, .05),
             multinomialCI(subset(d_a, utterance == utterance_levels[2])$count, .05),
@@ -124,7 +125,7 @@ d_a = cbind(d_a, cis)
 Some chi-squared tests
 ----------------------
 
-For each distribution, we run a chi-squared test:
+For each distribution, we run a chi-squared test, as planned
 
 ```{r}
 overall_distribution = (d %>% filter(trial_type == "question") %>% group_by(response) %>% tally)$n

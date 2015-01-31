@@ -60,7 +60,7 @@
 \maketitle
 
 \begin{abstract}
-What makes a question useful? What makes an answer appropriate? In this paper, we formulate a family of increasingly  sophisticated models of question-answer behavior within the Rational Speech Act framework. We compare these models based on three different pieces of evidence: first, we demonstrate how the answerer models handle a classic study in psycholinguistics showing that an answerer's level of informativeness varies with the inferred questioner goal, while keeping the question constant. Second, we jointly test the question and answer components based on empirical evidence from  a question-answer reasoning game. Third, we examine a special case of this game to further distinguish among the questioner models. Ultimately, we find that the most pragmatically sophisticated agents are needed to account for these data, although questioner behavior is more sensitive to informational assumptions (\red{fix me}). These models provide a basis for understanding the rich interplay of questioner signaling and answerer inference in dialogue.
+What makes a question useful? What makes an answer appropriate? In this paper, we formulate a family of increasingly  sophisticated models of question-answer behavior within the Rational Speech Act framework. We compare these models based on three different pieces of evidence: first, we demonstrate how the answerer models handle a classic study in psycholinguistics showing that an answerer's level of informativeness varies with the inferred questioner goal, while keeping the question constant. Second, we jointly test the question and answer components based on empirical evidence from  a question-answer reasoning game. Third, we examine a special case of this game to further distinguish among the questioner models. Ultimately, we find that sophisticated pragmatic reasoning is needed to account for some of the data. This suggests that people are able to engage in such reasoning when it is beneficial: they can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests. These models provide a basis for understanding the subtle interplay of questioner signaling and answerer inference in dialogue.
 
 \textbf{Keywords:} 
 language understanding; pragmatics; Bayesian models; questions; answers
@@ -79,10 +79,11 @@ A:``Go ahead.''
 In this (real life) example, Q strategically chooses a question that differs from his true interest, avoiding an impolite question, yet manages to signal to A what his interests are; A in turn reasons beyond the overt question and provides an answer that addresses Q's interests.
 This subtle interplay raises two questions for formal models of language:
 What makes a question useful? What makes an answer appropriate? 
-In this paper, we present three progressively more sophisticated computational models of question-answer behavior.
+\red{RDH: I commented out a bunch here that was restating the abstract... Might put back in if we have enough space}
+%In this paper, we present three progressively more sophisticated computational models of question-answer behavior.
 %, which formalize and probe the way answerers infer intentions and the way questioners signal them. 
-We compare these models on the basis of a simulation of a classic question-answer phenomenon and two experiments in which participants must ask and answer questions in a communication game where we can experimentally manipulate the available questions and answers.
-We find that sophisticated pragmatic reasoning is needed to account for some of the data. This suggests that people are able to engage in such reasoning when it is beneficial: they can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests.
+%We compare these models on the basis of a simulation of a classic question-answer phenomenon and two experiments in which participants must ask and answer questions in a communication game where we can experimentally manipulate the available questions and answers.
+%We find that sophisticated pragmatic reasoning is needed to account for some of the data. This suggests that people are able to engage in such reasoning when it is beneficial: they can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests.
 
 %A:"can you pass he salt?"
 %B:"yes (i am able)."
@@ -266,7 +267,7 @@ Eleven participants were excluded due to self-reported confusion about the task 
 Each participant provided responses for four trials in the role of the questioner (corresponding to the four goals), and four trials in the role of the answerer (corresponding to the four possible questions). In the questioner block, players were presented with a private goal from $\mathcal{G}$, like ``find the poodle!'' and prompted to select a question from a drop-down menu containing elements of $\mathcal{Q}$ that would best help them find it. In the answerer block, players were shown which items were behind which gates and were told that the other player had asked a question from $\mathcal{Q}$. They were prompted to select a gate from a drop-down menu that would be most helpful for the questioner, keeping in mind their constraints. 
 (To minimize learning effects, questioners did not receive answers and neither role saw the outcome of the game.%; this may have affected motivation.
 )
-In order to collect responses for all elements of $\mathcal{G}$ and $\mathcal{Q}$, the order of  the questioner and answerer blocks was randomly assigned for each participant, and the order of stimuli within these blocks was also randomized\footnote{The experiment is online at \url{http://web.stanford.edu/~rxdh/Q_and_A/experiment1/versions/experiment1/experiment/experiment1.html}}. 
+In order to collect responses for all elements of $\mathcal{G}$ and $\mathcal{Q}$, the order of  the questioner and answerer blocks was randomly assigned for each participant, and the order of stimuli within these blocks was also randomized\footnote{The experiment is online at \url{http://cocolab.stanford.edu/cogsci2015/Q_and_A/experiment1/experiment1.html}}. 
 
 \subsubsection{Results}
 %\red{check for effect of Q/A block order.}
@@ -309,7 +310,7 @@ These data provide strong evidence for a pragmatic answerer, but are more equivo
 
 \subsubsection{Participants} We recruited 50 participants to participate only in the questioner scenario of the guessing game presented above. Ten participants were excluded on the basis of having a non-English native language, or reporting confusion about the instructions.
 
-\subsubsection{Stimuli \& Procedure} The procedure was the same as before with some changes to the stimuli. The world space $\mathcal{W}$ consisted of possible assignments of the three pets to three gates. The possible goals $\mathcal{G}$ were the dalmatian and poodle (not the cat). The possible questions $\mathcal{G}$ were `dalmatian?' or `cat?'.  The possible answers $\mathcal{A}$ were the three gates. Each participant was given the two goals in a random order. 
+\subsubsection{Stimuli \& Procedure} The procedure was the same as before with some changes to the stimuli. The world space $\mathcal{W}$ consisted of possible assignments of the three pets to three gates. The possible goals $\mathcal{G}$ were the dalmatian and poodle (not the cat). The possible questions $\mathcal{G}$ were `dalmatian?' or `cat?'.  The possible answers $\mathcal{A}$ were the three gates. Each participant was given the two goals in a random order\footnote{The experiment is online at \url{http://cocolab.stanford.edu/cogsci2015/Q_and_A/experiment2/experiment2.html}}. 
 
 \subsubsection{Results}
 
