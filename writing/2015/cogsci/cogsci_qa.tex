@@ -245,8 +245,8 @@ The question space, however, was restricted to the highlighted nodes, proceeding
 
 	\begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale = .45]{pragmatic_questioner.pdf}
-\includegraphics[scale = .45]{pragmatic_answerer.pdf}
+\includegraphics[scale = .4]{pragmatic_questioner.pdf}
+\includegraphics[scale = .4]{pragmatic_answerer.pdf}
 \end{center}
 \vspace{-.75cm}
 \caption{Exp.~1 results, compared with the predictions of the best-performing model  for questioner (left) and answerer (right).  The explicit and pragmatic questioner do not differ in this task, but the pragmatic answerer better accounts for the qualitative patterns in the response data than the explicit answerer.}
@@ -274,15 +274,6 @@ Results for the questioner role are shown alongside model predictions in Fig.~\r
 
 Results for the answerer role are shown in Fig.~\ref{fig:exp1res} (right). Answerers are highly sensitive to the constraints of the questioner, giving information about the dalmatian when asked about a `dalmatian', ${\chi^2(3) = 281}, {p <.001}$, about the poodle when asked about a `dog', ${\chi^2(3) = 137}, {p <.001}$, about the cat when asked about a `pet', ${\chi^2(3) = 57}, {p<.001}$, and about the whale when asked about an `animal', ${\chi^2(3) = 121}, {p < .001}$. Note that, under an explicit interpretation of the question, revealing the dalmatian and the poodle would both be perfectly acceptable answers to a question about a `dog', but answerers strongly prefer to give the location of the poodle.  In the next section, we compare these results to the predictions of our family of models (Fig. \ref{fig:model_space}). 
 
-\begin{figure}[t!]
-\begin{center}
-\includegraphics[scale=.5]{model_fits_grid.pdf}
-\end{center}
-\vspace{-.65cm}
-\caption{Full space of models, and their correlations with the data from Exp.~1. Questioner models in the first row reason about the answerers directly below them, and the pragmatic answerer reasons about the explicit questioner.}
-\label{fig:model_space}
-\end{figure}
-
 \subsubsection{Model comparison}
 %\red{check model section to make sure we clearly lay out the agent terminology used here.}
 
@@ -293,6 +284,15 @@ The two remaining questioner models make roughly the same predictions for this t
 %Since the explicit questioner is nested two levels inside the pragmatic questioner, and each agent in the pragmatic questioner's recursion could in principle be associated with a free rationality parameter, we must consider model complexity when making comparisons. 
 To ensure equal footing for the different models, we use just two rationality parameters: one shared by questioners at all levels of recursion, and one shared by answerers at all levels of recursion. 
 For each model, we tune these parameters to maximize the correlation between model and data. This yielded a model-data correlation of $r = 0.96$ for the explicit questioner and correlation of $r = 0.99$ for the pragmatic questioner. Although the pragmatic model has a slightly better fit, the two models only differ slightly in the magnitude of predictions, not in qualitatively important ways such as the rank ordering of response.
+
+\begin{figure}[t!]
+\begin{center}
+\includegraphics[scale=.45]{model_fits_grid.pdf}
+\end{center}
+\vspace{-.65cm}
+\caption{Full space of models, and their correlations with the data from Exp.~1. Questioner models in the first row reason about the answerers directly below them, and the pragmatic answerer reasons about the explicit questioner.}
+\label{fig:model_space}
+\end{figure}
 
 The best-fitting pragmatic questioner model's predictions for each response distribution are shown in Fig.~\ref{fig:exp1res} (left). Although the magnitude of its predictions are not in perfect alignment with the magnitude of the data (because it is strongly optimizing), it captures most of the interesting qualitative patterns of the data, particularly the modal responses. 
 
