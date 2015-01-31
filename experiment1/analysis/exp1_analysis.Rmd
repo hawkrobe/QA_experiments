@@ -1,5 +1,5 @@
 ---
-title: "exp3_analysis"
+title: "exp1_analysis"
 output: html_document
 ---
 
@@ -23,9 +23,9 @@ Experiment data analysis
 Load and clean data. We remove people who self-identify as 'confused' 
 
 ```{r}
-d1 = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal1-trials.tsv",  sep = '\t')
+d1 = read.csv("versions/experiment1/data/q_and_a_nomammal1-trials.tsv",  sep = '\t')
 # Remove people who were confused...
-ps1 = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal1-subject_information.tsv", sep = '\t')
+ps1 = read.csv("versions/experiment1/data/q_and_a_nomammal1-subject_information.tsv", sep = '\t')
 # we only want to exclude people who specifically recorded that they were confused,
 # keeping people who just left the response box blank.
 nonconfused_ps1 <- (ps1 %>% 
@@ -33,8 +33,8 @@ nonconfused_ps1 <- (ps1 %>%
                    filter(asses2 != 1))$workerid
 d1 = filter(d1, workerid %in% nonconfused_ps1)
 
-d2 = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal2-trials.tsv",  sep = '\t')
-ps2 = read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal2-subject_information.tsv", quote = "", sep = '\t')
+d2 = read.csv("versions/experiment1/data/q_and_a_nomammal2-trials.tsv",  sep = '\t')
+ps2 = read.csv("versions/experiment1/data/q_and_a_nomammal2-subject_information.tsv", quote = "", sep = '\t')
 nonconfused_ps2 <- (ps2 %>% 
                    mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
                    filter(asses2 != 1))$workerid
@@ -46,8 +46,8 @@ cat("there were", 125 - (length(nonconfused_ps1) + length(nonconfused_ps2)),
 
 Compute the median time people took, to justify compensation
 ```{r}
-times1 = unique(read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal1.tsv", sep = '\t')$Answer.time_in_minutes)
-times2 = unique(read.csv("versions/experiment1_noMammal/data/q_and_a_nomammal2.tsv", sep = '\t')$Answer.time_in_minutes)
+times1 = unique(read.csv("versions/experiment1/data/q_and_a_nomammal1.tsv", sep = '\t')$Answer.time_in_minutes)
+times2 = unique(read.csv("versions/experiment1/data/q_and_a_nomammal2.tsv", sep = '\t')$Answer.time_in_minutes)
 cat("median time spent is...", median(c(times1,times2)))
 ```
 
