@@ -61,7 +61,7 @@
 
 
 \begin{abstract}
-\red{edit} What makes a question useful? What makes an answer appropriate? In this paper we propose a question-answer model within the Rational Speech Act framework that models rational answerers as choosing an answer to an explicit question such that the informativeness of that answer to an inferred underlying speaker goal is maximized. Conversely, questioners are modeled as having a particular goal, and wanting to ask an explicit question that maximizes the informativeness (about that goal) of the answers they are likely to receive, given a model of the answerer. We test this model on two different case studies: first, a classic study in psycholinguistics showing that answerers' level of informativeness varies with the inferred questioner goal, while keeping the question constant; second, we provide evidence from a question-answer reasoning game. For both cases, the model makes the qualitatively correct predictions about the questions and answers that speakers produce.
+\red{edit} What makes a question useful? What makes an answer appropriate? In this paper we propose a model of question-answer behavior within the Rational Speech Act framework. We formulate rational answerers as choosing an answer to an explicit question such that the informativeness of that answer to an inferred underlying speaker goal is maximized. Conversely, questioners are modeled as having a particular goal, and wanting to ask an explicit question that maximizes the informativeness (about that goal) of the answers they are likely to receive, given a model of the answerer. We test this model on two different case studies: first, a classic study in psycholinguistics showing that answerers' level of informativeness varies with the inferred questioner goal, while keeping the question constant; second, we provide evidence from a novel question-answer reasoning game. For both cases, the model makes the qualitatively correct predictions about the questions and answers that speakers produce.
 
 \textbf{Keywords:} 
 language understanding; pragmatics; Bayesian models; questions; answers
@@ -71,13 +71,6 @@ language understanding; pragmatics; Bayesian models; questions; answers
 \label{sec:intro}
 
 % TODO:
-% * write abstract
-% * design evocative cartoon for first page?
-% * compress presentation of computational experiments; massage transition into behavioral experiment
-% * incorporate discussion of paramter fitting 
-% * include rigorous model comparison tests in results 
-% *** (can we rule our the pragmatic questioner on the basis of model complexity?)
-% * figure out whether related work section is worth the space, or if we want to factor into intro
 % * think of other good discussion points
 
 \begin{quote}
@@ -241,8 +234,9 @@ This suggests that our pragmatic \emph{answerer} is consistent with human behavi
 \begin{center}
 \includegraphics[scale = .4]{taskhierarchy.pdf}
 \end{center}
+\vspace{-.5cm}
 \caption{Stimulus hierarchy used in Exp.~1. The goal space and answer space contained the four leaves. %hidden behind gates (the nodes of the tree). 
-The question space, however, was restricted to the highlighted nodes, proceeding up the hierarchy. This allowed us to test the extent to which the answerer infers questioner goals. For example, both the dalmatian and poodle would be truthful responses to the explicit question `dog?' but only one is the true goal.}
+The question space, however, was restricted to the highlighted nodes, proceeding up the hierarchy.}
 \label{fig:taskhierarchy}
 \end{figure}
 
@@ -335,15 +329,12 @@ Again, our data are equivocal. Overall, the response distribution matches the pr
 \section{General discussion}
 \label{sec:gd}
 
-\red{we should make sure in final edits that it touches on key points form the intro.}
-
 Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_ApparentBehavior}. Experiments in psycholinguistics have shown that this expertise extends to speech acts as well.  Behind every question lies some goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). These wildly different intentions seem to warrant different kinds of answers, even if the explicit question is expressed using the same words. By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity. 
 
 Perhaps the most important formal advance of the models considered here is to move the Rational Speech Act framework beyond interpretation of single utterances (in context), to consider the dynamics of simple dialogs (albeit consisting of a single question and its answer). 
-Doing so require replacing the immediate motive to convey true information with the more distant motive to provoke useful information from one's interlocutor. On the answerer side, sophisticated reasoning was required to account for the implicit interests of the questioner.
-\red{a sentence about previous work, e.g. van rooij?}
+Doing so requires replacing the immediate motive to convey true information with the more distant motive to provoke useful information from one's interlocutor. On the answerer side, sophisticated inference was required to account for the implicit interests of the questioner. This provides a useful connection to current game-theoretic and decision-theoretic models \cite{VogelBodoiaPottsJurafsky13_EmergenceGricean, VanRooy03_QuestioningDecisionProblems}, which also emphasize the importance of goals and speaker beliefs in communication but do not address the complex interplay of inference between questioner and answerer.
 
-We have presented evidence that answerer behavior is best described by a pragmatic model that does reason about questioner intentions, using the question utterance as a signal. The superiority of the pragmatic answerer behavior was robust across all conditions. Questioner behavior, however, seemed to be much more dependent on experience and instructions. For example, in another version of the experiment, we did not focus the questioner's attention on particular aspects of the game such as the fact that the answerer knows about the restricted answer set and the fact that it might be helpful to think about what someone might think when hearing your question (prompting perspective-taking). These instructions reflect essential informational assumptions about the model and without these instructions, questioner behavior shifted more toward that predicted by the explicit model. Indeed, it appears that our sample contained a mixture of explicit and pragmatic questioners. This may be a product of our artificial game paradigm, or it may be reflective of real tendencies in language use.
+We have presented evidence that answerer behavior is best described by a pragmatic model that \emph{does} reason about questioner intentions, using the question utterance as a signal. The superiority of the pragmatic answerer behavior was robust across all conditions. Questioner behavior, however, seemed to be much more dependent on experience and instructions. For example, in another version of the experiment, we did not emphasize certain aspects of the game, such as the fact that the answerer knows about the restricted answer set and the fact that it might be helpful to think about what someone might think when hearing your question (prompting perspective-taking). These instructions reflect essential informational assumptions about the model and without these instructions, questioner behavior shifted more toward that predicted by the explicit model. Indeed, it appears that our sample contained a mixture of explicit and pragmatic questioners. This may be a product of our artificial game paradigm, or it may be reflective of real tendencies in language use.
 
 
 \begin{figure}[t!]
@@ -356,12 +347,9 @@ We have presented evidence that answerer behavior is best described by a pragmat
 \end{figure}
 
 
-While the artificiality of our experiment design seems to distance the behavior of participants from the types of questions and answers they would make using natural language, there are some benefits to this design as well. Most importantly, it is worth observing that many conversational scenarios in everyday usage feature natural restrictions on the set of things one can ask about, due to politeness, salience, time cost, and other factors. In future work, we will explore the extent to which the proposed model can scale up to more naturalistic language settings.
-%%We must choose our questions carefully. 
+While the artificiality of our experiment design seems to distance the behavior of participants from the types of questions and answers they would make using natural language, there are also some benefits to this design. First, it is easy to control the exact space of questions, goals, and answers, which is necessary for a first study of these phenomena. Moreover, while the restrictions on question space may seem peculiar, it is worth observing that many conversational scenarios in everyday usage also feature restrictions on the set of things one can ask about, due to politeness, salience, time cost, and other factors. In future work, we will explore the extent to which the proposed model can scale up to real-time, multiplayer games, extended dialogues, and other more naturalistic language settings. If questions themselves are informative, we must ask them carefully.
 %\red{JD: if you leave my inserted sentence, this last sentence needs to go. i think the inserted sentence is useful especially for people who are very skeptical of this sort of work that pretty obviously has fairly low ecological validity.}
 %\red{RDH: agreed!}
-
-\red{finish with a big-picture sentence or two.}
 
 \bibliographystyle{apacite}
 
