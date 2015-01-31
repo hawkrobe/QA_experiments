@@ -73,8 +73,7 @@ language understanding; pragmatics; Bayesian models; questions; answers
 % * think of other good discussion points
 
 \begin{quote}
-Q:``Are you gonna eat that?''
-A:``Go ahead.''
+Q:``Are you gonna eat that?''\ \ A:``Go ahead.''
 \end{quote}
 In this (real life) example, Q strategically chooses a question that differs from her true interest, avoiding an impolite question, yet manages to signal to A what her interests are; A in turn reasons beyond the overt question and provides an answer that addresses Q's interests.
 This subtle interplay raises two questions for formal models of language:
@@ -89,7 +88,7 @@ What makes a question useful? What makes an answer appropriate?
 %B:"yes (i am able)."
 
 A number of studies in psycholinguistics have provided evidence that answerers are both sensitive to a questioner's goals and attempt to be informative with respect to those goals.
-For instance, in the classic study of \citeA{Clark79_IndirectSpeechActs}, researchers called liquor merchants and opened the conversation with one of two sentences to set context: ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{literal} condition). They then asked, ``Does a fifth of Jim Beam cost more than \$5?'' Merchants gave a (literal) yes/no answer significantly more often in the literal context than the uninformative context, where an exact price was more common. In the former case, the merchant inferred that the questioner's goal was to find out whether or not they could afford the whiskey, hence a simple `yes'  sufficed. In the latter case, the merchant inferred that the questioner's goal was just to buy whiskey, so the exact price was the maximally relevant response \cite{Clark79_IndirectSpeechActs}. 
+For instance, in the classic study of \citeA{Clark79_IndirectSpeechActs}, researchers called liquor merchants and opened the conversation with one of two sentences to set context: ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{literal} condition). They then asked, ``Does a fifth of Jim Beam cost more than \$5?'' Merchants gave a (literal) yes/no answer significantly more often in the literal context than the uninformative context, where an exact price was more common. In the former case, the merchant inferred that the questioner's goal was to find out whether or not they could afford the whiskey, hence a simple `yes'  sufficed. In the latter case, the merchant inferred that the questioner's goal was just to buy whiskey, so the exact price was the most relevant response \cite{Clark79_IndirectSpeechActs}. 
 Context and questioner goals have also been implicated in accounts of answers to identification questions like ``who is X?'' \cite{BoerLycan75_KnowingWho}, and to questions like ``where are you?'' that permit answers at many levels of abstraction \cite{Potts12_CardsDialogueCorpus}. While most of this work has focused on \emph{answerer} behavior, it suggests that the question itself is important in prompting a relevant answer.
 
 
@@ -102,13 +101,20 @@ Context and questioner goals have also been implicated in accounts of answers to
 %Similar evidence comes from a classic study where researchers called liquor merchants and opened the conversation with one of two sentences: "I want to buy some bourbon'' (the `uninformative' condition) or ``I've got \$5 to spend'' (the `literal' condition) They then asked, ``Does a fifth of Jim Beam cost more than \$5?'' Merchants gave an exact price significantly more often in the `uninformative' context than the `literal' context, where a `yes' or `no' answer was more common. In the former case, the merchant inferred that the questioner's goal was just to buy whiskey, so the exact price was the maximally relevant response. In the latter case, the merchant inferred that the questioner's goal was literally to find out whether or not they could afford the whiskey, hence a simple `yes'  sufficed \cite{Clark79_IndirectSpeechActs}. Context and questioner goals have also been implicated in accounts of identification questions like ``who is X?'' \cite{BoerLycan75_KnowingWho}, and to questions like ``where are you?'' that permit answers at many levels of abstraction \cite{Potts12_CardsDialogueCorpus}. While most of this work has focused on \emph{answerer} behavior, it suggests that the question itself can signal the questioner's goals.
 
 %\red{RDH: Want to motivate RSA a bit more? We've got some space!}
-In addition to these psycholinguistic developments, recent work on Rational Speech Act (RSA) models \cite{frank2012, GoodmanStuhlmuller13_KnowledgeImplicature} has mathematically formalized verbal pragmatic reasoning as a form of rational recursive Bayesian inference, where speakers choose utterances that maximize a particular utility function (dependent on the listener's expected information gain). In this paper we extend the RSA framework to address asking questions and giving answerers. The first challenge is that the speaker utility in this framework is usually identified with information provided---since questions don't provide direct information, we must say what utility they do have. 
+Recent work on Rational Speech Act (RSA) models \cite{frank2012, GoodmanStuhlmuller13_KnowledgeImplicature} has mathematically formalized pragmatic language understanding as a form of recursive Bayesian inference, where listeners reason about speakers who choose utterances that maximize information gained by an imagined listener.
+%a particular utility function (dependent on the listener's expected information gain). 
+In this paper we extend the RSA framework to address simple question-answer dialogs.
+%asking questions and giving answerers. 
+The immediate challenge to do so is that the speaker utility in RSA is based on direct information provided by an utterance---since questions don't provide direct information, we must say what utility they do have. 
 
 We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems}, that the value of a question is the extent to which it can be expected to elicit information relevant to the questioner later in the dialogue. 
 More specifically, for the questioner, the value of a question is the expected information she gains about her interests, given the set of likely answers that may be provided by the answerer. 
-This requires us to specify a model of the answerer---which can serve as both the model assumed by a questioner, and as a model of answer behavior itself. We explore three, increasingly sophisticated, answerer models. The simplest answerer provides a literal answer to the question (without attempting to be informative);   
+This diverges from regular RSA in that the value of a question depends on information gained by the speaker (rather than listener), and that this information will come later in the (very short) conversation.
+
+To fully specify this questioner we need a model of the answerer---which can serve as both the model assumed by a questioner, and as a model of answer behavior itself. We explore three, increasingly sophisticated, answerer models. The simplest answerer provides a literal answer to the question (without attempting to be informative);   
 the explicit answerer attempts to be informative with respect to the explicit question asked (without inferring the questioner's underlying interests);  
 the pragmatic answerer infers the most likely true interests of the questioner, and then informatively addresses those interests.
+The latter model extends RSA to reason about the topic of conversation, as proposed by \citeA{kao2014nonliteral} to explain hyperbole; it goes beyond previous work by using the explicit question as a (potentially indirect) cue to this topic.
 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
 
@@ -118,11 +124,13 @@ the pragmatic answerer infers the most likely true interests of the questioner, 
 %
 %We claim that the questioner must reason about answerer behavior, in order to determine what question will produce the most useful answers. This raises a further issue: what kind of answerer does the questioner reason about, and is this internal model accurate? 
 
-The rest of this paper is structured as follows. First, we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
-We then formally individuate literal, explicit, and pragmatic models in this family, which represent different hypotheses about how questioners and answerers reason about their task. 
+The rest of this paper is structured as follows. First, we lay our the details of our question-answer models.
+%we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
+%We then formally individuate literal, explicit, and pragmatic models in this family, which represent different hypotheses about how questioners and answerers reason about their task. 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
-We show that models in this family can accommodate some classic psycholinguistic phenomena related to answerer behavior.
-We then use a communication game paradigm that allows us to manipulate the goals, potential questions, and potential answers, testing the predictions of the different models. 
+We show that the pragmatic answerer model can select different answers to a question depending on context, as in \citeA{Clark79_IndirectSpeechActs}, described above.
+%accommodate  some classic psycholinguistic phenomena .
+We then use a communication game paradigm that allows us to manipulate goals, potential questions, and potential answers, testing the predictions of the different models. 
 %We find that the most sophisticated, pragmatic models best account for human performance.
 %derive predictions for a  of experiments using a novel guessing-game task, and compare these predictions to human performance. 
 %In one phase of the task, we require participants to ask a question (from a fixed set of possible questions), given a decision problem. In the second phase, we require participants to give an answer (from a fixed set of possible answers) to a question (from a fixed set of possible questions). 
@@ -136,14 +144,14 @@ How should a questioner choose between questions?
 %
 We start by assuming that the questioner aims to \emph{learn information relevant to a private goal}.
 %
-In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond, given different possible states of the world, and selects a question that results in an answer that tends to provide goal-relevant information.
+In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond, given different possible states of the world; she selects a question that results in an answer that tends to provide goal-relevant information.
 %
 
 % This is a divergence from previous RSA models, where agents choose utterances with the goal of imparting information about the state of the world.
 
 More formally, suppose there is a set of world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$.
 These sets are taken to be in common ground between the questioner and the answerer.
-An informational goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about; this is similar to the notion of a QUD (Question Under Discussion) \cite{Roberts96_InformationStructureDiscourse}.
+An informational goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about; this is similar to the notion of a question-under-discussion \cite{Roberts96_InformationStructureDiscourse}.
 We will use the notation $P_{g}(w)$ to indicate the probability $\hat{P}(g(w))$ of the $g$-relevant aspect of $w$ under the projected distribution 
 $\hat{P}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$.
 % Each of these projections corresponds to a different utility function, in a decision-theoretic formulation.
@@ -158,9 +166,9 @@ $$
 P(q|g) \propto e^{\E{P(w)}{\KL{P_g(w^*|q, w)}{P_g(w^*)}} - C(q)} 
 $$
 %
-It trades off the cost of asking a question, $C(q)$, and expected information gain. The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the prior distribution over worlds relevant to the goal value, $P_g(w^*)$, and the posterior distribution one would expect after asking a question $q$ in true world state $w$:
+It trades off the cost of asking a question, $C(q)$, and expected information gain. The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the prior distribution goal values, $P_g(w^*)$, and the posterior distribution one would expect after asking a question $q$ whose answer reflected true world state $w$:
 %
-$$ P_g(w^*|q, w) = \sum_{a \in \mathcal{A}} P(a| q, w)P_g(w^{*}|q, a) $$
+$$ P_g(w^*|q, w) = \sum_{a \in \mathcal{A}} P_g(w^{*}|q, a) P(a| q, w)$$
 %
 %This conditional distribution reflects the fact that the answerer (who knows the true world state $w$) may behave noisily, have a limited set of possible answers, or other limitations.
 %to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. 
@@ -168,65 +176,67 @@ This distribution has two components:
 First, it depends on $P(a | q, w^*)$, a model of the answerer which we will explore shortly.
 Second, it depends on (the goal projection of) $P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs.
 
-To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign a semantic meaning to a question.
-We assume that a question is an informational goal: a projection from worlds to some aspect of interest. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection.
+To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign questions a semantic meaning.
+We assume that a question is an informational goal that projects from worlds to the answer set $\mathcal{A}$.
+This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection; an answer picks out an element of the partition via $q^{-1}(a)$.
 % \red{JD: how can we see this, exactly?} \red{RDH: we say this in the next sentence, right? $q^{-1}(a)$ gives the cell of the partition corresponding to the given aspect of interest\dots}
-An answer is then a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
+%An answer-value (as opposed to the answer utterance) is a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
 %The explicit question can be assigned a literal meaning which is a projection from worlds to answer values (this is equivalent to the common partition semantics of questions \cite{gronendijk}).
 % likelihood of a world given a question and an answer.
 %For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
-The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair:
+The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair\footnote{We should also have a semantic evaluation function that maps an answer utterance to its value in $\mathcal{A}$. For clarity we assume this is a trivial maping and suppress it.}:
 %
 $$P(w | q, a) \propto P(w) \delta_{q(w)=a}$$
 
 
 
-We next describe three answerer models that embody different assumptions that the questioner could make. All answerers take a question $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
-
+We next describe three different answerer models; the questioner could assume any one, leading to three versions of the questioner model.
+All answerers take a question $q \in \mathcal{Q}$ and a world state $w \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
+%
 The \textbf{literal answerer} simply chooses answers by trading off prior answer probability  and how well a question-answer pair conveys the true state of the world to an interpreter:
 %
-$$P(a | q,w^*) \propto P(a) P(w^* | q, a) $$
+$$P(a | q,w) \propto P(a) P(w | q, a) $$
 %
-For a fixed question, this is equivalent to the speaker in previous RSA models.
-
-The \textbf{explicit answerer} acts like the literal answerer, but evaluates answers with respect to how well they address the explicit question $q$, which can also serve as a projection:
+For a fixed question, this is equivalent to the speaker in previous RSA models. The question enters only in specifying the literal meaning of an answer.
+%
+The \textbf{explicit answerer} additionally evaluates answers with respect to how well they address the explicit question $q$:
 %% FIXME: restrict to truthful answers
 %
-$$P(a | q, w^*) \propto P(a) P_q(w^* | q, a) $$
+$$P(a | q, w) \propto P(a) P_q(w | q, a) $$
 
-The \textbf{pragmatic answerer} also evaluates answers with respect to how well they convey the goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which goals $g$ are likely given that a question $q$ was asked, and chooses answers that are good on average:
+The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the informational goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which goals $g$ are likely given that a question $q$ was asked, and chooses answers that are good on average:
 %% FIXME: restrict to truthful answers
 %
 $$
-P(a | q, w^*) \propto p(a) \sum_{g \in \mathcal{G}} P(g|q) P_g(w^*|q, a)
+P(a | q, w) \propto p(a) \sum_{g \in \mathcal{G}} P(g|q) P_g(w|q, a)
 $$
 Reasoning backwards from questions to goals is a simple Bayesian inversion of the (explicit) questioner using a prior on goals:
 $$
 P(g|q) \propto P(q|g)P(g)
 $$
 
-For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution $P$, we introduce an optimality parameter $\alpha$ and transform it as follows:
-%
-$$ P'(x) \propto e^{\alpha \log(P(x)) } $$
+For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $.
 %
 
 This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. The model predictions shown throughout the rest of the paper are computed using this implementation.
 
 \section{Whiskey pricing: a case study}
 
-In order to establish that the proposed model can in principle produce answers that are either over- or under-informative with respect to an explicitly asked question via inference about an underlying questioner goal, we apply the model to Clark's \citeyear{Clark79_IndirectSpeechActs} whiskey study. Recall that in this study, liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' given an \emph{uninformative} context (``I want to buy some bourbon'')  than given a \emph{literal} context (``I've got \$5 to spend''). %The purpose of this application is to examine whether the model can produce answers to the same question that vary in informativeness--not because the question does not matter, but because the inferred questioner goal differs across contexts.
+Our model can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context.
+To illustrate, we model Clark's \citeyear{Clark79_IndirectSpeechActs} whiskey study.
+Recall that, liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in an \emph{uninformative} context (``I want to buy some bourbon'')  than in a \emph{literal} context (``I've got \$5 to spend''). %The purpose of this application is to examine whether the model can produce answers to the same question that vary in informativeness--not because the question does not matter, but because the inferred questioner goal differs across contexts.
 
 %The same question can evoke different answers, depending on context, and these answers are often over- or under-informative relative to the explicit question. The answerer in these cases is not ignoring the question: the answer is relevant in some way to the question.
 %Clark \citeyear{Clark79_IndirectSpeechActs}, demonstrated that context providing indirect evidence for a questioner goal can shift answerer behavior in this way. The question ``Does Jim Beam cost more than \$5?'' was asked prefaced with one of two context sentences, either ``I'd like to buy some whiskey.'' or ``I only have \$5 to spend.'' In the latter case, merchants gave the (over-informative) exact price of liquor more frequently.
 %In the following, we illustrate how our modeling framework can accommodate this answerer behavior.
 
-Our world state is a pair of one of $10$ prices (\$1, \$2, \dots, \$10), and a Boolean indicating whether the merchant takes credit cards. There are three possible goals: learning the price of whiskey, learning whether the price is greater than \$5, and learning whether they take credit cards. Note that the credit card question was not in the part of the original study that we're simulating, but reflects the important fact that there exist reasons for calling a liquor store that are not . The set of answers includes exact prices as well as ``yes'' and ``no'', with an answer prior that prefers ``yes''and ``no'' to the exact price answers.
+Our world state is a pair of the whiskey's price (\$1, \$2, \dots, \$10) and a Boolean indicating whether the merchant takes credit cards. There are three possible goals: learning the price of whiskey, learning whether the price is greater than \$5, and learning whether they take credit cards. Note that the credit card question was not in the part of the original study, but reflects the important fact that there exist other reasons for calling a liquor store. The set of answers includes exact prices as well as ``yes'' and ``no'', with lower cost for ``yes'' and ``no'' than the price statements.
 
-We model the context sentence as affecting the answerer's goal prior. We assume that there is a fixed 40\% probability of the credit card goal, with the remaining 60\% split between the two price-related goals. When the context is ``I'd like to buy some whiskey.'', we assume that the split is even. When it is ``I only have \$5 to spend.'', we assume that it is 9:1 in favor of learning whether the price is greater than \$5.
+We model the context sentence as affecting the answerer's goal prior. We assume that there is a fixed 40\% probability of the credit card goal, with the remaining 60\% split between the two price-related goals. When the context is ``I'd like to buy some whiskey,'' we assume that the split is even. When it is ``I only have \$5 to spend,'' we assume that it is 9:1 in favor of learning whether the price is greater than \$5.
 
-\subsubsection{Results} When the question is ``Do you take credit cards?'', the pragmatic answerer prefers to give the accurate Boolean answer (with probability $.76$ to $.78$, weakly depending on context), with no preferential treatment for any of the numeric answers. When the question is ``Does Jim Beam cost more than \$5?'', the correct Boolean answer is still the most probable choice, but more weakly (at probability $.44$ to $.49$). Critically, there is a context-dependence for answers to this question: when prefaced with ``I'd like to buy some whiskey.'', the correct exact price answer is favored more strongly (at probability $.18$) than when the context is ``I only have \$5 to spend.'' (probability $.11$). By contrast, the explicit answerer (which has no natural way to account for context) does not make differential predictions in the two situations. %\red{JD: how much depends on the actual chosen values? Can we put in a footnote that convinces us that the numbers  are reasonable or in which way the results vary, if they do?}
+\subsubsection{Results} When the question is ``Do you take credit cards?'', the pragmatic answerer prefers to give the accurate Boolean answer (with probability $.76$ and $.78$, weakly depending on context), with no preferential treatment for any of the numeric answers. When the question is ``Does Jim Beam cost more than \$5?'', the correct Boolean answer is still the most probable choice, but more weakly (at probability $.44$ and $.49$). Critically, there is a context-dependence for answers to this question: when prefaced with ``I'd like to buy some whiskey.'', the correct exact price answer is favored more strongly (at probability $.18$) than when the context is ``I only have \$5 to spend.'' (probability $.11$). By contrast, the explicit answerer (which has no natural way to account for context) does not make differential predictions in the two situations. %\red{JD: how much depends on the actual chosen values? Can we put in a footnote that convinces us that the numbers  are reasonable or in which way the results vary, if they do?}
 
-This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations; that is, the pragmatic answerer component of the model passes the first, qualitative, test. However, we have not yet shown that the \emph{questioner} behavior matches that of humans. Indeed, the questioner has been largely neglected in studies of answering \cite<but see, e.g.,>{Potts12_CardsDialogueCorpus}, even though, as our opening example illustrates, the choice of question is important for understanding answers. In the next section we introduce an experimental paradigm that allows us to explore quantitative behavior of both questioners and answerers.
+This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. However, we have not yet shown that the \emph{questioner} behavior matches that of humans. Indeed, the questioner has been largely neglected in studies of answering \cite<but see, e.g.,>{Potts12_CardsDialogueCorpus}, even though, as our opening example illustrates, the choice of question is important for understanding answers. In the next section we introduce an experimental paradigm that allows us to explore quantitative behavior of both questioners and answerers.
 
 \begin{figure}
 \begin{center}
