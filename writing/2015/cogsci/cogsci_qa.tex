@@ -61,7 +61,7 @@
 
 
 \begin{abstract}
-What makes a question useful? What makes an answer appropriate? In this paper we propose a question-answer model within the Rational Speech Act framework that models rational answerers as choosing an answer to an explicit question such that the informativeness of that answer to an inferred underlying speaker goal is maximized. Conversely, questioners are modeled as having a particular goal, and wanting to ask an explicit question that maximizes the informativeness (about that goal) of the answers they are likely to receive, given a model of the answerer. We test this model on two different case studies: first, a classic study in psycholinguistics showing that answerers' level of informativeness varies with the inferred questioner goal, while keeping the question constant; second, we provide evidence from a question-answer reasoning game. For both cases, the model makes the qualitatively correct predictions about the questions and answers that speakers produce.
+\red{edit} What makes a question useful? What makes an answer appropriate? In this paper we propose a question-answer model within the Rational Speech Act framework that models rational answerers as choosing an answer to an explicit question such that the informativeness of that answer to an inferred underlying speaker goal is maximized. Conversely, questioners are modeled as having a particular goal, and wanting to ask an explicit question that maximizes the informativeness (about that goal) of the answers they are likely to receive, given a model of the answerer. We test this model on two different case studies: first, a classic study in psycholinguistics showing that answerers' level of informativeness varies with the inferred questioner goal, while keeping the question constant; second, we provide evidence from a question-answer reasoning game. For both cases, the model makes the qualitatively correct predictions about the questions and answers that speakers produce.
 
 \textbf{Keywords:} 
 language understanding; pragmatics; Bayesian models; questions; answers
@@ -89,14 +89,14 @@ This subtle interplay raises two questions for formal models of language:
 What makes a question useful? What makes an answer appropriate? 
 In this paper, we present three progressively more sophisticated computational models of question-answer behavior.
 %, which formalize and probe the way answerers infer intentions and the way questioners signal them. 
-We compare these models on the basis of two simulations of classic question-answer phenomena and one experiment in which participants must ask and answer questions in a communication game where we can experimentally manipulate the available questions and answers.
+We compare these models on the basis of a simulation of a classic question-answer phenomenon and two experiments in which participants must ask and answer questions in a communication game where we can experimentally manipulate the available questions and answers.
 We find that sophisticated pragmatic reasoning is needed to account for some of the data. This suggests that people are able to engage in such reasoning when it is beneficial: they can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests.
 
 %A:"can you pass he salt?"
 %B:"yes (i am able)."
 
 A number of studies in psycholinguistics have provided evidence that answerers are both sensitive to a questioner's goals and attempt to be informative with respect to those goals.
-For instance, in the classic study of \citeA{Clark79_IndirectSpeechActs} researchers called liquor merchants and opened the conversation with one of two sentences to set context: ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{literal} condition). They then asked, ``Does a fifth of Jim Beam cost more than \$5?'' Merchants gave an exact price significantly more often in the uninformative context than the literal context, where a `yes' or `no' answer was more common. 
+For instance, in the classic study of \citeA{Clark79_IndirectSpeechActs}, researchers called liquor merchants and opened the conversation with one of two sentences to set context: ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{literal} condition). They then asked, ``Does a fifth of Jim Beam cost more than \$5?'' Merchants gave an exact price significantly more often in the uninformative context than the literal context, where a `yes' or `no' answer was more common. 
 In the former case, the merchant inferred that the questioner's goal was just to buy whiskey, so the exact price was the maximally relevant response. In the latter case, the merchant inferred that the questioner's goal was to find out whether or not they could afford the whiskey, hence a simple `yes'  sufficed \cite{Clark79_IndirectSpeechActs}. 
 Context and questioner goals have also been implicated in accounts of answers to identification questions like ``who is X?'' \cite{BoerLycan75_KnowingWho}, and to questions like ``where are you?'' that permit answers at many levels of abstraction \cite{Potts12_CardsDialogueCorpus}. While most of this work has focused on \emph{answerer} behavior, it suggests that the question itself is important in prompting a relevant answer.
 
@@ -152,7 +152,7 @@ In order to choose a question that results in useful information, the questioner
 
 More formally, suppose there is a set of world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$.
 These sets are taken to be in common ground between the questioner and the answerer.
-An informational goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about; this is similar to the notion of a QUD (question under discussion) \cite{Roberts96_InformationStructureDiscourse}.
+An informational goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about; this is similar to the notion of a QUD (Question Under Discussion) \cite{Roberts96_InformationStructureDiscourse}.
 We will use the notation $P_{g}(w)$ to indicate the probability $\hat{P}(g(w))$ of the $g$-relevant aspect of $w$ under the projected distribution 
 $\hat{P}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$.
 % Each of these projections corresponds to a different utility function, in a decision-theoretic formulation.
