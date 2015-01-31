@@ -340,10 +340,10 @@ plot_title = "Pragmatic_Questioner"
 # fitted_data = (exp_quest_fits %>% rename(model_prob = explicit_prob)) 
 # plot_title = "Explicit_Questioner"
 
-new_labels = as.factor(sapply(X = fitted_data$qud, FUN = function(v) {return(paste("qud:", v))}))
+new_labels = as.factor(sapply(X = fitted_data$qud, FUN = function(v) {return(paste("goal:", v))}))
 fitted_data$facet_label = ordered(new_labels,
-                             levels = c("qud: dalmatian", "qud: poodle", 
-                                        "qud: siamese cat", "qud: whale"))
+                             levels = c("goal: dalmatian", "goal: poodle", 
+                                        "goal: siamese cat", "goal: whale"))
 q_comparison <- fitted_data %>% 
   select(qud, response, emp_prob, upper_ci, lower_ci, model_prob, facet_label) %>%
   rename(empirical = emp_prob, model = model_prob) %>%
