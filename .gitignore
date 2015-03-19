@@ -1,4 +1,9 @@
 .DS_Store
+.RData
+.Rhistory
+stanford-corenlp-python
+auth.json
+node_modules
 *.aux
 *.bbl
 *.blg
@@ -10,3 +15,4 @@ cogsci_qa.pdf
 *.sublime-workspace
 *.key
 *.out
+reimbursement/
