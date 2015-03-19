@@ -99,7 +99,7 @@ client_onserverupdate_received = function(data){
     })
 
     initializeWords(
-        game, game.get_player(my_id), game.questionBox.tlX,
+        game, game.get_player(my_id), game.questionBox.tlX + 5,
         game.questionBox.tlY + game.questionBox.height - 25,
         game.questionBox.width, 30);
 

@@ -16,7 +16,7 @@ var drawScreen = function(game, player) {
     } else {
       drawQuestionBox(game, player)
       drawGoals(game, player);   
-      console.log(game.words)
+      drawAnswerLine(game,player) 
       drawWords(game, player)
     }
 }
@@ -28,12 +28,14 @@ var drawWords = function(game, player) {
   game.ctx.textBaseline="top"; 
   game.ctx.lineWidth=2;
   game.ctx.strokeStyle = "#000000"
+  game.ctx.fillStyle = "#000000"
 
   _.map(game.words, function(word) { 
     game.ctx.strokeRect(word.trueX, word.trueY - word.height/5, word.width, word.height*1.1)
     game.ctx.fillText(word.content, word.trueX, word.trueY)
   })
 }
+
 
 var initializeWords = function(game, player, x, y, maxWidth, lineHeight) {
   game.ctx.font = "12pt Helvetica";
@@ -76,8 +78,19 @@ var drawQuestionBox = function(game, player) {
   game.ctx.font = "18pt Futura";
   game.ctx.fillStyle = "black"
   game.ctx.fillText("Question Box", x + game.questionBox.width / 2, y + 25);
-
 }
+
+var drawAnswerLine = function(game, player) {
+  game.ctx.strokeStyle = "#696969"
+  game.ctx.fillStyle = "#696969"
+
+  game.ctx.beginPath();
+  game.ctx.lineWidth = 3;
+  game.ctx.moveTo(game.answerLine.startX + player.questionBoxAdjustment, game.answerLine.y);
+  game.ctx.lineTo(game.answerLine.endX + player.questionBoxAdjustment, game.answerLine.y);
+  game.ctx.stroke();
+}
+
 
 var drawGoals = function(game, player) {
   console.log("drawing goals")
@@ -87,9 +100,6 @@ var drawGoals = function(game, player) {
     } else {
       game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
     }
-    game.ctx.lineWidth = 7;
-    game.ctx.strokeStyle = 'red';
-    game.ctx.stroke();
   })
 }
 

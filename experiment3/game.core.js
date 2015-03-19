@@ -37,7 +37,13 @@ var game_core = function(game_instance){
 
     //Dimensions of world -- Used in collision detection, etc.
     this.world = {width : 600, height : 600};  // 160cm * 3
-    this.questionBox = {tlX : 125, tlY: 300, height: 250, width: 350}
+    this.questionBox = {
+        tlX : 125, tlY: 300, 
+        height: 250, width: 350}
+    this.answerLine = {
+        startX : this.questionBox.tlX + 50, 
+        endX   : this.questionBox.tlX + this.questionBox.width - 50,
+        y      : this.questionBox.tlY + 150}
 
     this.roundNum = -1;
     this.goalNum = -1;
