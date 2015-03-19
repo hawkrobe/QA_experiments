@@ -56,6 +56,7 @@ game_server.server_onMessage = function(client,message) {
     var others = gc.get_others(client.userid);
     switch(message_type) {
         case 'objMove' :    // Client is changing angle
+            console.log("dropped obj")
             moveObject(client, message_parts[1], message_parts[2], message_parts[3])
             break;
 

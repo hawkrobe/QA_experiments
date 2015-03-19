@@ -330,15 +330,14 @@ function mouseUpListener(evt) {
         // console.log([obj.gridX, obj.gridY])
         
         // If you were dragging the correct object... And dragged it to the correct location...
-        // if (_.isEqual(obj.name, game.instructions[game.instructionNum].split(' ')[0])
+        if (dropY < game.answerLine.y) {
+            console.log("dropped above")
         //     && _.isEqual(cell, game.currentDestination)) {
             // center it
             // word.gridX = cell[0]
             // word.gridY = cell[1]
-            // word.trueX = game.getPixelFromCell(cell[0], cell[1]).centerX - word.width/2
-            // word.trueY = game.getPixelFromCell(cell[0], cell[1]).centerY - word.height/2
-            game.socket.send("correctDrop." + dragIndex + "." + Math.round(word.trueX) + "." + Math.round(word.trueY))
-        
+            word.trueY = game.answerLine.y - word.height
+            word.onLine = true;
         // If you didn't drag it beyond cell bounds, snap it back w/o comment
         // } else if (word.gridX == cell[0] && word.gridY == cell[1]) {
         //     console.log("here!")
@@ -355,6 +354,14 @@ function mouseUpListener(evt) {
         //         + "." + cell[0] + "." + cell[1] + "." + Date.now())
         // }
         // Tell server where you dropped it
+        } else {
+            word.trueY = word.origY;
+            word.trueX = word.origX;
+        }
+        game.socket.send("objMove." + dragIndex 
+            + "." + Math.round(word.trueX - game.get_player(my_id).questionBoxAdjustment) 
+            + "." + Math.round(word.trueY))
+
         drawScreen(game, game.get_player(my_id))
         dragging = false;
         window.removeEventListener("mousemove", mouseMoveListener, false);

@@ -57,6 +57,8 @@ var initializeWords = function(game, player, x, y, maxWidth, lineHeight) {
       currX = x;
     } 
     // Set X & Y so we can grab onto 'em later
+    words[n].origX = currX + player.questionBoxAdjustment
+    words[n].origY = currY
     words[n].trueX = currX + player.questionBoxAdjustment
     words[n].trueY = currY
 
