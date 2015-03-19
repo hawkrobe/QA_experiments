@@ -1,16 +1,28 @@
 [x] remove chat box, keep messages panel
-[] create question box
-	[x] draw box in lower-right corner
-	[x] draw words inside box (from bottom)
-	    [] center them?
-	[] possible bug when screen is resized?
-	[] fix alignment problems (i.e. use questionBoxAdjustment)
-	[] create submit button
-    [x] create word objects that are draggable
-    [] assign text on word objects based on condition
+[] draw question box
+    [x] draw lighter-colored background in different places for guesser and helper
+    [] create submit button
     [] read and send sentence that is made
+[x] create word objects that are draggable
+    [x] draw words inside box (from bottom)
+    [] put boxes around them
+    [] assign text on word objects based on condition
+    [] create cell that participants must drag the words into
+    [] snap to this cell, in order of dragging (but allow them to return to original position?)
 [] draw gates 
-	[] create gates object mapping gate numbers to words
-	[] connect those words to pictures
+    [x] create gates object mapping gate numbers to words
+    [x] connect those words to pictures
+    [] do the 'shuffle' thing with a border to make it look random
+    [] highlight the one that's the current goal
+    [] print message like "your goal is..."
 [] draw message
-	[] translate answerer selection to a sentence that gets posted
+    [] translate answerer selection to a sentence that gets posted
+[] transition to "pick a gate" screen
+[] show true location of objects
+
+BUGS:
+[] fix alignment problems (i.e. use questionBoxAdjustment)
+[] possible bug when screen is resized?
+
+OPTIONAL:
+[] center words in box?
