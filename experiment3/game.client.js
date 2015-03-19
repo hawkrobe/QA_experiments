@@ -100,7 +100,7 @@ client_onserverupdate_received = function(data){
 
     initializeWords(
         game, game.get_player(my_id), game.questionBox.tlX + 5,
-        game.questionBox.tlY + game.questionBox.height - 25,
+        game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2,
         game.questionBox.width, 30);
 
 
@@ -325,35 +325,12 @@ function mouseUpListener(evt) {
         dropX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
         dropY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
         var word = game.words[dragIndex]
-        // var cell = game.getCellFromPixel(dropX, dropY)
-        // console.log(cell)
-        // console.log([obj.gridX, obj.gridY])
         
         // If you were dragging the correct object... And dragged it to the correct location...
         if (dropY < game.answerLine.y) {
             console.log("dropped above")
-        //     && _.isEqual(cell, game.currentDestination)) {
-            // center it
-            // word.gridX = cell[0]
-            // word.gridY = cell[1]
             word.trueY = game.answerLine.y - word.height
             word.onLine = true;
-        // If you didn't drag it beyond cell bounds, snap it back w/o comment
-        // } else if (word.gridX == cell[0] && word.gridY == cell[1]) {
-        //     console.log("here!")
-        //     word.trueX = game.getPixelFromCell(word.gridX, word.gridY).centerX - word.width/2
-        //     word.trueY = game.getPixelFromCell(word.gridX, word.gridY).centerY - word.height/2
-        //     game.socket.send("wordMove." + dragIndex + "." + Math.round(word.trueX) + "." + Math.round(word.trueY))
-        
-        // If you moved the incorrect wordect or went to the incorrect location, pause game to readjust mouse
-        // } else {
-        //     word.trueX = game.getPixelFromCell(word.gridX, word.gridY).centerX - word.width/2
-        //     word.trueY = game.getPixelFromCell(word.gridX, word.gridY).centerY - word.height/2
-        //     game.get_player(my_id).message = "Error!"
-        //     game.socket.send("incorrectDrop." + dragIndex + "." + Math.round(word.trueX) + "." + Math.round(word.trueY) 
-        //         + "." + cell[0] + "." + cell[1] + "." + Date.now())
-        // }
-        // Tell server where you dropped it
         } else {
             word.trueY = word.origY;
             word.trueX = word.origX;

@@ -18,7 +18,21 @@ var drawScreen = function(game, player) {
       drawGoals(game, player);   
       drawAnswerLine(game,player) 
       drawWords(game, player)
+      drawSendButton(game, player)
     }
+}
+
+var drawSendButton = function(game, player) {
+  var but = game.sendQuestionButton;
+  game.ctx.fillStyle = '#61e6ff'
+  game.ctx.fillRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
+  game.ctx.strokeStyle = "#000000"
+  game.ctx.lineWidth=4;
+  game.ctx.strokeRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
+  game.ctx.textAlign = 'center';
+  game.ctx.textBaseline="middle"; 
+  game.ctx.fillStyle = '#000000'
+  game.ctx.fillText("Send", but.tlX + but.width/2 + player.questionBoxAdjustment, but.tlY + but.height/2)
 }
 
 var drawWords = function(game, player) {

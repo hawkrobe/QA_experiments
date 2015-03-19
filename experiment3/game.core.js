@@ -39,11 +39,17 @@ var game_core = function(game_instance){
     this.world = {width : 600, height : 600};  // 160cm * 3
     this.questionBox = {
         tlX : 125, tlY: 300, 
-        height: 250, width: 350}
+        height: 275, width: 350}
     this.answerLine = {
         startX : this.questionBox.tlX + 50, 
         endX   : this.questionBox.tlX + this.questionBox.width - 50,
         y      : this.questionBox.tlY + 150}
+    this.sendQuestionButton = {
+        width: this.questionBox.width/4,
+        height: this.questionBox.height*1/8,
+        tlX: this.questionBox.tlX + this.questionBox.width*3/8,
+        tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 5,
+    }
 
     this.roundNum = -1;
     this.goalNum = -1;
