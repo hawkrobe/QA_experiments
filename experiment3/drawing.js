@@ -16,13 +16,46 @@ var drawScreen = function(game, player) {
     } else {
       drawQuestionBox(game, player)
       drawGoals(game, player);   
+      console.log("passed in x: ", game.questionBox.tlX + player.questionBoxAdjustment + game.questionBox.width/2)
+      drawWords(
+        game, game.questionBox.tlX + player.questionBoxAdjustment,
+        game.questionBox.tlY + game.questionBox.height - 25,
+        game.questionBox.width, 30);
     }
+}
+
+var drawWords = function(game, x, y, maxWidth, lineHeight) {
+  game.ctx.fillStyle = 'red'
+  game.ctx.textAlign = 'left';
+
+  var line = "";
+  var words = game.words;
+  accumulatedWidth = 0;
+  currX = x;
+  currY = y;
+  for (var n = 0; n < words.length; n++) {
+    var testWord = words[n].content
+    var testWidth = accumulatedWidth + words[n].width
+    // Bump up to next line if it doesn't fit...
+    if (testWidth > maxWidth) {
+      accumulatedWidth = 0;
+      currY -= lineHeight;
+      currX = x;
+    } 
+    // Draw & get ready for next word
+    game.ctx.fillText(testWord, currX, currY);
+    accumulatedWidth += words[n].width;
+    currX += words[n].width      
+
+    // Set X & Y so we can grab onto 'em later
+    words[n].trueX = currX
+    words[n].trueY = currY
+  }
 }
 
 var drawQuestionBox = function(game, player) {
   game.ctx.fillStyle = "#F2E7DE"
-  var playerAdjust = player.role === "guesser" ? 75 : 0;
-  var x = game.questionBox.tlX + playerAdjust
+  var x = game.questionBox.tlX + player.questionBoxAdjustment
   var y = game.questionBox.tlY;
   game.ctx.fillRect(x, y, game.questionBox.width, game.questionBox.height)
 

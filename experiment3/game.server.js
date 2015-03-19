@@ -75,61 +75,61 @@ game_server.server_onMessage = function(client,message) {
         }
 };
 
-var writeData = function(client, type, message_parts) {
-    var gc = client.game.gamecore
-    var attemptNum = gc.attemptNum;
-    var condition = gc.item.condition
-    var objectSet = gc.item.objectSet
-    var instructionNum = gc.instructionNum
-    var object_name = gc.instructions[gc.instructionNum].split(' ')[0]
-    var object = _.find(gc.objects, function(obj) { return obj.name == object_name })
-    var critical = object.critical === "filler" ? 0 : 1
-    var id = gc.instance.id.slice(0,6)
-    switch(type) {
-        case "mouse" :
-            var date = message_parts[1]
-            var x = message_parts[2]
-            var y = message_parts[3]
-            if(object.critical === "filler") {
-                var distractorX = "none"
-                var distractorY = "none"
-            } else {
-                var distractor = _.find(gc.objects, function(obj) { return obj.critical == "distractor" })
-                var distractorX = distractor.trueX + distractor.width/2
-                var distractorY = distractor.trueY + distractor.height/2
-            }
+// var writeData = function(client, type, message_parts) {
+//     var gc = client.game.gamecore
+//     var attemptNum = gc.attemptNum;
+//     var condition = gc.item.condition
+//     var objectSet = gc.item.objectSet
+//     var instructionNum = gc.instructionNum
+//     var object_name = gc.instructions[gc.instructionNum].split(' ')[0]
+//     var object = _.find(gc.objects, function(obj) { return obj.name == object_name })
+//     var critical = object.critical === "filler" ? 0 : 1
+//     var id = gc.instance.id.slice(0,6)
+//     switch(type) {
+//         case "mouse" :
+//             var date = message_parts[1]
+//             var x = message_parts[2]
+//             var y = message_parts[3]
+//             if(object.critical === "filler") {
+//                 var distractorX = "none"
+//                 var distractorY = "none"
+//             } else {
+//                 var distractor = _.find(gc.objects, function(obj) { return obj.critical == "distractor" })
+//                 var distractorX = distractor.trueX + distractor.width/2
+//                 var distractorY = distractor.trueY + distractor.height/2
+//             }
 
-            var objX = object.trueX + object.width/2
-            var objY = object.trueY + object.height/2
+//             var objX = object.trueX + object.width/2
+//             var objY = object.trueY + object.height/2
 
-            var line = String(id + ',' + date + ',' + condition + ',' + critical + ',' + 
-                objectSet + ',' + instructionNum + ',' + attemptNum + ',' + objX + ',' + objY + ',' +
-                distractorX + ',' + distractorY + ',' + x + ',' + y ) + "\n"
-            console.log("mouse:" + line)
-            gc.mouseDataStream.write(line, function (err) {if(err) throw err;}); 
-            break;
-        case "message" :
-            var date = message_parts[1]
-            var msg = message_parts[2].replace(/-/g,'.')
-            var line = (id + ',' + date + ',' + condition + ',' + critical + ',' +
-                objectSet + ',' + instructionNum + ',' + attemptNum + ',' + client.role + ',"' + msg + '"\n')
-            console.log("message:" + line)
-            gc.messageStream.write(line);
-            break;
-        case "error" :
-            var trueItem = gc.instructions[gc.instructionNum].split(' ')[0]
-            var line = (id + ',' + String(message_parts[6]) + ',' + condition + ',' 
-                        + critical + ',' + objectSet + ',' + instructionNum + ',' 
-                        + attemptNum + ',' +trueItem + ',' 
-                        + gc.objects[message_parts[1]].name + ','
-                        + parseInt(gc.currentDestination[0]) + ',' 
-                        + parseInt(gc.currentDestination[1]) + ','
-                        + parseInt(message_parts[4]) + ',' + parseInt(message_parts[5]) + '\n')
-            console.log("incorrect: ", line);
-            gc.errorStream.write(line)
-            break;
-    }
-}
+//             var line = String(id + ',' + date + ',' + condition + ',' + critical + ',' + 
+//                 objectSet + ',' + instructionNum + ',' + attemptNum + ',' + objX + ',' + objY + ',' +
+//                 distractorX + ',' + distractorY + ',' + x + ',' + y ) + "\n"
+//             console.log("mouse:" + line)
+//             gc.mouseDataStream.write(line, function (err) {if(err) throw err;}); 
+//             break;
+//         case "message" :
+//             var date = message_parts[1]
+//             var msg = message_parts[2].replace(/-/g,'.')
+//             var line = (id + ',' + date + ',' + condition + ',' + critical + ',' +
+//                 objectSet + ',' + instructionNum + ',' + attemptNum + ',' + client.role + ',"' + msg + '"\n')
+//             console.log("message:" + line)
+//             gc.messageStream.write(line);
+//             break;
+//         case "error" :
+//             var trueItem = gc.instructions[gc.instructionNum].split(' ')[0]
+//             var line = (id + ',' + String(message_parts[6]) + ',' + condition + ',' 
+//                         + critical + ',' + objectSet + ',' + instructionNum + ',' 
+//                         + attemptNum + ',' +trueItem + ',' 
+//                         + gc.objects[message_parts[1]].name + ','
+//                         + parseInt(gc.currentDestination[0]) + ',' 
+//                         + parseInt(gc.currentDestination[1]) + ','
+//                         + parseInt(message_parts[4]) + ',' + parseInt(message_parts[5]) + '\n')
+//             console.log("incorrect: ", line);
+//             gc.errorStream.write(line)
+//             break;
+//     }
+// }
 
 /* 
    The following functions should not need to be modified for most purposes

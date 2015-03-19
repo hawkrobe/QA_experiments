@@ -44,9 +44,6 @@ var game_core = function(game_instance){
     this.numRounds = 8;
     this.attemptNum = 0; // Increments whenever someone makes a mistake
 
-    this.objects = [];
-    this.instructions = []
-    this.currentDestination = [];
     if(this.server) {
         this.item = this.makeItem()
         this.players = [{
@@ -68,6 +65,7 @@ var game_player = function( game_instance, player_instance) {
     this.game = game_instance;
     this.role = ''
     //Set up initial values for our state information
+    this.questionBoxAdjustment = 0; // so we don't have magic numbers!
     this.message = '';
     this.id = '';
 }; 
@@ -118,6 +116,10 @@ game_core.prototype.newRound = function() {
         this.roundNum += 1;
         this.goals = this.item.goals
         this.questions = this.item.questions
+        wordList = _.shuffle([' where ', ' is ', ' the ', ' that '].concat(this.questions))
+        this.words = _.map(wordList, function(content) {
+            return new word(content)
+        })
         this.goalNum = -1;
         this.newGoal()
     }
@@ -187,6 +189,7 @@ game_core.prototype.server_send_update = function(){
 
     _.extend(state, {players: player_packet})
     _.extend(state, {questions: this.questions})
+    _.extend(state, {words: this.words})
 
     if(player_packet.length == 2) {
         _.extend(state, {goals: this.goals})

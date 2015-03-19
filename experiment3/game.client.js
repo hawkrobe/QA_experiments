@@ -88,14 +88,19 @@ client_onserverupdate_received = function(data){
     if(data.players.length > 1) 
         game.get_player(my_id).message = ""
 
-    game.questions = game.questions;
+    // Get widths of words
+    game.words = _.map(data.words, function (word) {
+        var newWord = _.clone(word)
+        word.width = game.ctx.measureText(word.content).width;
+        return word
+    })
     game.goalNum = data.goalNum;
     game.game_started = data.gs;
     game.players_threshold = data.pt;
     game.player_count = data.pc;
 
     // Draw all this new stuff
-    console.log(game.get_player(my_id))
+    console.log(game.words)
     drawScreen(game, game.get_player(my_id))
 }; 
 
@@ -241,6 +246,7 @@ client_onjoingame = function(num_players, role) {
     // set role locally
     my_role = role;
     game.get_player(my_id).role = my_role;
+    game.get_player(my_id).questionBoxAdjustment = my_role === "guesser" ? 75 : 0;
 
     // show waiting message for first player
     if(num_players == 1)

@@ -17,7 +17,7 @@ var whale = {
 var items = [
 	{
 		goals: [dalmatian, poodle, siamese, whale],
-		questions: ["dog", "dalmatian", "pet", "animal"],
+		questions: [" dog ", " dalmatian ", " pet ", " animal "],
 		objectSet: 1,
 	}]
 
