@@ -28,12 +28,11 @@ var drawWords = function(game, player) {
   game.ctx.textBaseline="top"; 
 
   _.map(game.words, function(word) { 
-    game.ctx.fillText(word.content, word.trueX + player.questionBoxAdjustment, 
-      word.trueY)
+    game.ctx.fillText(word.content, word.trueX, word.trueY)
   })
 }
 
-var initializeWords = function(game, x, y, maxWidth, lineHeight) {
+var initializeWords = function(game, player, x, y, maxWidth, lineHeight) {
   game.ctx.font = "12pt Helvetica";
   game.ctx.fillStyle = 'red'
   game.ctx.textAlign = 'left';
@@ -53,7 +52,7 @@ var initializeWords = function(game, x, y, maxWidth, lineHeight) {
       currX = x;
     } 
     // Set X & Y so we can grab onto 'em later
-    words[n].trueX = currX
+    words[n].trueX = currX + player.questionBoxAdjustment
     words[n].trueY = currY
 
     // Draw & get ready for next word

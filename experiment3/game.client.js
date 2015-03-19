@@ -86,17 +86,26 @@ client_onserverupdate_received = function(data){
     if(data.players.length > 1) 
         game.get_player(my_id).message = ""
 
+    console.log("old words")
+    console.log(data.words)
     // Get widths of words
+
     game.words = _.map(data.words, function (word) {
+        game.ctx.font = "12pt Helvetica";
         var newWord = _.clone(word)
-        word.width = game.ctx.measureText(word.content).width;
-        word.height = 20
-        return word
+        newWord.width = game.ctx.measureText(word.content).width;
+        newWord.height = 20
+        return newWord
     })
+
     initializeWords(
-        game, game.questionBox.tlX,
+        game, game.get_player(my_id), game.questionBox.tlX,
         game.questionBox.tlY + game.questionBox.height - 25,
         game.questionBox.width, 30);
+
+
+    console.log("new words")
+    console.log(game.words)
 
     game.goalNum = data.goalNum;
     game.game_started = data.gs;
@@ -376,7 +385,9 @@ function mouseMoveListener(evt) {
     word.trueY = Math.round(posY);
 
     // Tell server about it
-    game.socket.send("objMove." + dragIndex + "." + Math.round(posX) + "." + Math.round(posY))
+    game.socket.send("objMove." + dragIndex 
+        + "." + Math.round(posX - game.get_player(my_id).questionBoxAdjustment) 
+        + "." + Math.round(posY))
     drawScreen(game, game.get_player(my_id));
 }
 
