@@ -16,18 +16,28 @@ var drawScreen = function(game, player) {
     } else {
       drawQuestionBox(game, player)
       drawGoals(game, player);   
-      console.log("passed in x: ", game.questionBox.tlX + player.questionBoxAdjustment + game.questionBox.width/2)
-      drawWords(
-        game, game.questionBox.tlX + player.questionBoxAdjustment,
-        game.questionBox.tlY + game.questionBox.height - 25,
-        game.questionBox.width, 30);
+      console.log(game.words)
+      drawWords(game, player)
     }
 }
 
-var drawWords = function(game, x, y, maxWidth, lineHeight) {
+var drawWords = function(game, player) {
+  game.ctx.font = "12pt Helvetica";
   game.ctx.fillStyle = 'red'
   game.ctx.textAlign = 'left';
+  game.ctx.textBaseline="top"; 
 
+  _.map(game.words, function(word) { 
+    game.ctx.fillText(word.content, word.trueX + player.questionBoxAdjustment, 
+      word.trueY)
+  })
+}
+
+var initializeWords = function(game, x, y, maxWidth, lineHeight) {
+  game.ctx.font = "12pt Helvetica";
+  game.ctx.fillStyle = 'red'
+  game.ctx.textAlign = 'left';
+  game.ctx.textBaseline="top"; 
   var line = "";
   var words = game.words;
   accumulatedWidth = 0;
@@ -42,14 +52,15 @@ var drawWords = function(game, x, y, maxWidth, lineHeight) {
       currY -= lineHeight;
       currX = x;
     } 
+    // Set X & Y so we can grab onto 'em later
+    words[n].trueX = currX
+    words[n].trueY = currY
+
     // Draw & get ready for next word
     game.ctx.fillText(testWord, currX, currY);
     accumulatedWidth += words[n].width;
     currX += words[n].width      
 
-    // Set X & Y so we can grab onto 'em later
-    words[n].trueX = currX
-    words[n].trueY = currY
   }
 }
 

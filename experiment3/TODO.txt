@@ -1,0 +1,16 @@
+[x] remove chat box, keep messages panel
+[] create question box
+	[x] draw box in lower-right corner
+	[x] draw words inside box (from bottom)
+	    [] center them?
+	[] possible bug when screen is resized?
+	[] fix alignment problems (i.e. use questionBoxAdjustment)
+	[] create submit button
+    [x] create word objects that are draggable
+    [] assign text on word objects based on condition
+    [] read and send sentence that is made
+[] draw gates 
+	[] create gates object mapping gate numbers to words
+	[] connect those words to pictures
+[] draw message
+	[] translate answerer selection to a sentence that gets posted

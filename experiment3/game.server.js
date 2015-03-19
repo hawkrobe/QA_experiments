@@ -25,7 +25,7 @@ require('./game.core.js');
 utils = require('./utils.js');
 
 var moveObject = function(client, i, x, y) {
-    var obj = client.game.gamecore.objects[i]
+    var obj = client.game.gamecore.words[i]
     var others = client.game.gamecore.get_others(client.userid);
     obj.trueX = parseInt(x)
     obj.trueY = parseInt(y)
