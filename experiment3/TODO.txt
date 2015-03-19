@@ -5,7 +5,7 @@
     [] read and send sentence that is made
 [x] create word objects that are draggable
     [x] draw words inside box (from bottom)
-    [] put boxes around them
+    [x] put boxes around them
     [] assign text on word objects based on condition
     [] create cell that participants must drag the words into
     [] snap to this cell, in order of dragging (but allow them to return to original position?)

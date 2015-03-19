@@ -26,8 +26,11 @@ var drawWords = function(game, player) {
   game.ctx.fillStyle = 'red'
   game.ctx.textAlign = 'left';
   game.ctx.textBaseline="top"; 
+  game.ctx.lineWidth=2;
+  game.ctx.strokeStyle = "#000000"
 
   _.map(game.words, function(word) { 
+    game.ctx.strokeRect(word.trueX, word.trueY - word.height/5, word.width, word.height*1.1)
     game.ctx.fillText(word.content, word.trueX, word.trueY)
   })
 }

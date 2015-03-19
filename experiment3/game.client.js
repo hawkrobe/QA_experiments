@@ -363,8 +363,8 @@ function mouseUpListener(evt) {
 
 function mouseMoveListener(evt) {
     // prevent from dragging offscreen
-    var minX = game.questionBox.tlX;
-    var maxX = game.questionBox.tlX + game.questionBox.width - game.words[dragIndex].width;
+    var minX = game.questionBox.tlX + game.get_player(my_id).questionBoxAdjustment;
+    var maxX = game.questionBox.tlX + game.questionBox.width - game.words[dragIndex].width + game.get_player(my_id).questionBoxAdjustment;
     var minY = game.questionBox.tlY;
     var maxY = game.questionBox.tlY + game.questionBox.height - game.words[dragIndex].height;
 
