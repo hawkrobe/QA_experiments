@@ -37,18 +37,19 @@ var game_core = function(game_instance){
 
     //Dimensions of world -- Used in collision detection, etc.
     this.world = {width : 600, height : 600};  // 160cm * 3
+    this.ratio = 2;
     this.questionBox = {
-        tlX : 125, tlY: 300, 
-        height: 275, width: 350}
+        tlX : 125*this.ratio, tlY: 300*this.ratio, 
+        height: 275*this.ratio, width: 350*this.ratio}
     this.answerLine = {
-        startX : this.questionBox.tlX + 50, 
-        endX   : this.questionBox.tlX + this.questionBox.width - 50,
-        y      : this.questionBox.tlY + 150}
+        startX : this.questionBox.tlX + 50*this.ratio, 
+        endX   : this.questionBox.tlX + this.questionBox.width - 50*this.ratio,
+        y      : this.questionBox.tlY + 150*this.ratio}
     this.sendQuestionButton = {
         width: this.questionBox.width/4,
         height: this.questionBox.height*1/8,
         tlX: this.questionBox.tlX + this.questionBox.width*3/8,
-        tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 5,
+        tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 5*this.ratio,
     }
 
     this.roundNum = -1;
@@ -139,7 +140,7 @@ game_core.prototype.newRound = function() {
 
 game_core.prototype.newGoal = function() {
     this.goalNum += 1;
-    var goal = this.goals[this.goalNum]
+    this.goal = this.goals[this.goalNum]
     this.server_send_update()
 }
 
@@ -152,11 +153,18 @@ game_core.prototype.makeItem = function () {
     var item = _.sample(JSON.parse(JSON.stringify(objectSet.items)))
 
     // 3. assign random initial locations (probably won't want to do this in the real exp.)
-    var xLocs = _.range(100, 600, 125)
-    _.map(_.zip(_.shuffle(item.goals), xLocs), function(pair) {
+    var xLocs = _.range(100 * this.ratio, 600 * this.ratio , 125 * this.ratio)
+    item.goals = _.shuffle(item.goals)
+    _.map(_.zip(item.goals, xLocs), function(pair) {
         obj = pair[0]
         obj.trueX = pair[1] - obj.width/2
-        obj.trueY = 100 - obj.height/2
+        obj.trueY = local_this.ratio * 100 - obj.height/2
+    })
+
+    _.map(_.zip(_.range(4), _.shuffle(_.range(4))),  function(pair) {
+        var i = pair[0]
+        var presentationNum = pair[1]
+        item.goals[i].presentationNum = presentationNum;
     })
 
     console.log(item)
@@ -197,6 +205,7 @@ game_core.prototype.server_send_update = function(){
             pt : this.players_threshold,
             pc : this.player_count,
             goalNum : this.goalNum,
+            goal : this.goal
         };
 
     _.extend(state, {players: player_packet})

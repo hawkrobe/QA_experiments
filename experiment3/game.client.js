@@ -13,7 +13,7 @@
    THE FOLLOWING FUNCTIONS MAY NEED TO BE CHANGED
 */
 
-// A window global for our game root variable.
+// A window global for our game root variable.                        
 var game = {};
 // A window global for our id, which we can use to look ourselves up
 var my_id = null;
@@ -67,54 +67,59 @@ client_onserverupdate_received = function(data){
             var imgObj = new Image()
             imgObj.src = obj.url
             // Set it up to load properly
+            var x = my_role === "guesser" ? parseInt(obj.trueY) : parseInt(obj.trueX)
+            var y = my_role === "guesser" ? parseInt(obj.trueX) : parseInt(obj.trueY)
+
             imgObj.onload = function(){
-                game.ctx.drawImage(imgObj, parseInt(obj.trueX), parseInt(obj.trueY), obj.width, obj.height)
+                game.ctx.drawImage(imgObj, x, y, obj.width, obj.height)
                 drawScreen(game, game.get_player(my_id))
             }
             return _.extend(_.omit(obj, ['trueX', 'trueY']),
-                {img: imgObj, trueX : obj.trueX, trueY : obj.trueY})
+                {img: imgObj, trueX : x, trueY : y})
         })
     }
 
     // Update local object positions
-    _.map(game.goals, function(obj) {
-        data_obj = _.find(data.goals, function(o) {return o.name == obj.name})
-        obj.trueX = data_obj.trueX;
-        obj.trueY = data_obj.trueY;
-    })
-
-    if(data.players.length > 1) 
-        game.get_player(my_id).message = ""
-
-    console.log("old words")
-    console.log(data.words)
-    // Get widths of words
+    // _.map(game.goals, function(obj) {
+    //     data_obj = _.find(data.goals, function(o) {return o.name == obj.name})
+    //     obj.trueX = data_obj.trueX;
+    //     obj.trueY = data_obj.trueY;
+    // })
 
     game.words = _.map(data.words, function (word) {
-        game.ctx.font = "12pt Helvetica";
+        game.ctx.font = "24pt Helvetica";
         var newWord = _.clone(word)
         newWord.width = game.ctx.measureText(word.content).width;
-        newWord.height = 20
+        newWord.height = game.ratio * 20
         return newWord
     })
 
     initializeWords(
-        game, game.get_player(my_id), game.questionBox.tlX + 5,
+        game, game.get_player(my_id), game.questionBox.tlX + game.ratio * 5,
         game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2,
-        game.questionBox.width, 30);
-
-
-    console.log("new words")
-    console.log(game.words)
+        game.questionBox.width, game.ratio * 30);
 
     game.goalNum = data.goalNum;
     game.game_started = data.gs;
     game.players_threshold = data.pt;
     game.player_count = data.pc;
+    game.goal = data.goal
 
     // Draw all this new stuff
-    console.log(game.words)
+    game.ctx.fillStyle = "#212121";
+    game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
+
     drawScreen(game, game.get_player(my_id))
+
+    if(data.players.length > 1) {
+        game.get_player(my_id).message = ""
+        setTimeout(function() {
+            if(my_role == "guesser") {
+                itemToPresent = _.indexOf( _.pluck(game.goals, 'presentationNum'), game.goalNum)
+                animateBorder(game, game.get_player(my_id), 0, 4*4 + itemToPresent)
+            } 
+        }, 500)
+    }
 }; 
 
 // This is where clients parse socket.io messages from the server. If
@@ -187,14 +192,14 @@ window.onload = function(){
     game.viewport = document.getElementById('viewport');
     
     //Adjust its size
-    game.viewport.width = game.world.width;
-    game.viewport.height = game.world.height;
+    game.viewport.width = game.world.width * game.ratio;
+    game.viewport.height = game.world.height * game.ratio;
 
     //Fetch the rendering contexts
     game.ctx = game.viewport.getContext('2d');
 
     //Set the draw style for the font
-    game.ctx.font = '11px "Helvetica"';
+    game.ctx.font = '11pt "Helvetica"';
 
 //    document.getElementById('chatbox').focus();
 
@@ -271,7 +276,7 @@ client_onjoingame = function(num_players, role) {
     // set role locally
     my_role = role;
     game.get_player(my_id).role = my_role;
-    game.get_player(my_id).questionBoxAdjustment = my_role === "guesser" ? 75 : 0;
+    game.get_player(my_id).questionBoxAdjustment = my_role === "guesser" ? game.ratio * 75 : 0;
 
     // show waiting message for first player
     if(num_players == 1)
@@ -313,7 +318,7 @@ function mouseDownListener(evt) {
         if(buttonHitTest(mouseX, mouseY)) {
             var question = readQuestion();
             console.log(question)
-            game.socket.send("questionSubmit." + question) 
+            game.socket.send("questionSubmit." + question + "?") 
         }           
     }
 

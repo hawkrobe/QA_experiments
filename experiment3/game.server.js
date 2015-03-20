@@ -60,15 +60,6 @@ game_server.server_onMessage = function(client,message) {
             moveObject(client, message_parts[1], message_parts[2], message_parts[3])
             break;
 
-        case 'chatMessage' :
-            //write data to file
-            // if(client.game.player_count == 2 && !gc.paused) 
-            //     writeData(client, "message", message_parts)
-            // Update others
-            var msg = message_parts[2].replace(/-/g,'.')
-            _.map(all, function(p){
-                p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})})
-            break;
         case 'questionSubmit' :
             var msg = message_parts[1]
             console.log("send " + msg)
@@ -80,7 +71,7 @@ game_server.server_onMessage = function(client,message) {
             target.visible = message_parts[1];
             break;
         }
-};
+    };
 
 // var writeData = function(client, type, message_parts) {
 //     var gc = client.game.gamecore

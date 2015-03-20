@@ -1,23 +1,25 @@
-
-
 var drawScreen = function(game, player) {
     //clear background
     game.ctx.fillStyle = "#212121";
-    game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
+    game.ctx.fillRect(
+      game.questionBox.tlX + player.questionBoxAdjustment,game.questionBox.tlY,
+      game.questionBox.width,game.questionBox.height);
+
     if (player.message) {
         // Draw message in center (for countdown, e.g.)
-        game.ctx.font = "bold 23pt Helvetica";
-        game.ctx.fillStyle = 'red';
-        game.ctx.textAlign = 'center';
+        game.ctx.fillStyle = 'white'
+        game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
+
+        setBlankScreenTextStyle();
         wrapText(game, player.message, 
-          game.world.width/2, game.world.height/4,
-          game.world.width*4/5,
-          25);
+          game.viewport.width/2, game.viewport.height/4,
+          game.viewport.width*4/5,
+          25*game.ratio);
     } else {
       drawQuestionBox(game, player)
-      drawGoals(game, player);   
       drawAnswerLine(game,player) 
       drawWords(game, player)
+      drawGoals(game, player)
       drawSendButton(game, player)
     }
 }
@@ -36,26 +38,85 @@ var drawSendButton = function(game, player) {
 }
 
 var drawWords = function(game, player) {
-  game.ctx.font = "12pt Helvetica";
-  game.ctx.fillStyle = 'red'
-  game.ctx.textAlign = 'left';
-  game.ctx.textBaseline="top"; 
-  game.ctx.lineWidth=2;
-  game.ctx.strokeStyle = "#000000"
-  game.ctx.fillStyle = "#000000"
-
+  setQuestionWordStyle();
   _.map(game.words, function(word) { 
     game.ctx.strokeRect(word.trueX, word.trueY - word.height/5, word.width, word.height*1.1)
     game.ctx.fillText(word.content, word.trueX, word.trueY)
   })
 }
 
+var drawQuestionBox = function(game, player) {
+  game.ctx.fillStyle = "#F2E7DE"
+  var x = game.questionBox.tlX + player.questionBoxAdjustment
+  var y = game.questionBox.tlY;
+  game.ctx.fillRect(x, y, game.questionBox.width, game.questionBox.height)
+
+  setQuestionBoxStyle()
+  game.ctx.fillText("Question Box", x + game.questionBox.width / 2, y + game.ratio * 25);
+}
+
+var drawAnswerLine = function(game, player) {
+  game.ctx.strokeStyle = "#696969"
+  game.ctx.fillStyle = "#696969"
+
+  game.ctx.beginPath();
+  game.ctx.lineWidth = 3;
+  game.ctx.moveTo(game.answerLine.startX + player.questionBoxAdjustment, game.answerLine.y);
+  game.ctx.lineTo(game.answerLine.endX + player.questionBoxAdjustment, game.answerLine.y);
+  game.ctx.stroke();
+
+  game.ctx.fillText("?", game.answerLine.endX + player.questionBoxAdjustment + 10 * game.ratio, 
+    game.answerLine.y - 10 * game.ratio)
+}
+
+var drawGoals = function(game, player) {
+  console.log("drawing goals")
+  _.map(game.goals, function(obj) { 
+    if(player.role == "guesser") {
+      game.ctx.textAlign = "left"
+      game.ctx.fillStyle = "white"
+      game.ctx.font = "36pt Helvetica";
+      game.ctx.fillText("Your goal is to find the...", 
+        game.questionBox.tlX + player.questionBoxAdjustment, game.ratio * 100)
+    }
+    game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
+  })
+}
+
+function animateBorder(game, player, totalRotations, endNumber) {
+  var currGoal = game.goals[totalRotations % 4]
+  game.ctx.strokeStyle = "red"
+  game.ctx.lineWidth = 8
+  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
+    currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+  console.log(totalRotations)
+  if(totalRotations < endNumber) {
+    setTimeout(function(){
+      game.ctx.strokeStyle = "#212121"
+      game.ctx.lineWidth = 8
+      game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
+        currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+      animateBorder(game, player, totalRotations + 1, endNumber)
+    }, 250)
+  } else {
+    setTimeout(function(){
+      game.ctx.font = "36pt Helvetica";
+      game.ctx.textAlign = "left"
+      game.ctx.fillStyle = "red"
+      game.ctx.fillText(currGoal.name + "!", 
+        game.questionBox.tlX + player.questionBoxAdjustment + game.ratio*100, game.ratio*150)
+      setTimeout(function() {
+        game.ctx.fillStyle = "white"
+        wrapText(game, "Drag the words onto the line to ask the helper one question.",
+          game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*200,
+          game.questionBox.width, game.ratio*30)
+      }, 1000)
+    }, 1000)
+  }
+}
 
 var initializeWords = function(game, player, x, y, maxWidth, lineHeight) {
-  game.ctx.font = "12pt Helvetica";
-  game.ctx.fillStyle = 'red'
-  game.ctx.textAlign = 'left';
-  game.ctx.textBaseline="top"; 
+  setQuestionWordStyle();
   var line = "";
   var words = game.words;
   accumulatedWidth = 0;
@@ -84,46 +145,8 @@ var initializeWords = function(game, player, x, y, maxWidth, lineHeight) {
   }
 }
 
-var drawQuestionBox = function(game, player) {
-  game.ctx.fillStyle = "#F2E7DE"
-  var x = game.questionBox.tlX + player.questionBoxAdjustment
-  var y = game.questionBox.tlY;
-  game.ctx.fillRect(x, y, game.questionBox.width, game.questionBox.height)
-
-  game.ctx.textAlign="center";
-  game.ctx.font = "18pt Futura";
-  game.ctx.fillStyle = "black"
-  game.ctx.fillText("Question Box", x + game.questionBox.width / 2, y + 25);
-}
-
-var drawAnswerLine = function(game, player) {
-  game.ctx.strokeStyle = "#696969"
-  game.ctx.fillStyle = "#696969"
-
-  game.ctx.beginPath();
-  game.ctx.lineWidth = 3;
-  game.ctx.moveTo(game.answerLine.startX + player.questionBoxAdjustment, game.answerLine.y);
-  game.ctx.lineTo(game.answerLine.endX + player.questionBoxAdjustment, game.answerLine.y);
-  game.ctx.stroke();
-}
-
-
-var drawGoals = function(game, player) {
-  console.log("drawing goals")
-  _.map(game.goals, function(obj) { 
-    if(player.role == "guesser") {
-      game.ctx.drawImage(obj.img, obj.trueY, obj.trueX, obj.width, obj.height)
-    } else {
-      game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
-    }
-  })
-}
-
 function wrapText(game, text, x, y, maxWidth, lineHeight) {
   var cars = text.split("\n");
-  game.ctx.fillStyle = 'white'
-  game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
-  game.ctx.fillStyle = 'red'
 
   for (var ii = 0; ii < cars.length; ii++) {
 
@@ -147,4 +170,26 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
     game.ctx.fillText(line, x, y);
     y += lineHeight;
   }
+}
+
+function setQuestionBoxStyle() {
+  game.ctx.textAlign="center";
+  game.ctx.font = "36pt Futura";
+  game.ctx.fillStyle = "black"
+};
+
+function setQuestionWordStyle() {
+  game.ctx.font = "24pt Helvetica";
+  game.ctx.textAlign = 'left';
+  game.ctx.textBaseline="top"; 
+  game.ctx.strokeStyle = "#000000"
+  game.ctx.fillStyle = "#000000"
+  game.ctx.lineWidth=4;
+
+}
+
+function setBlankScreenTextStyle() {
+  game.ctx.font = "bold 46pt Helvetica";
+  game.ctx.fillStyle = 'red';
+  game.ctx.textAlign = 'center';  
 }
