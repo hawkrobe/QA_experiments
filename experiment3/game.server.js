@@ -69,7 +69,13 @@ game_server.server_onMessage = function(client,message) {
             _.map(all, function(p){
                 p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})})
             break;
-
+        case 'questionSubmit' :
+            var msg = message_parts[1]
+            console.log("send " + msg)
+            _.map(all, function(p) {
+                p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
+            }) 
+            break;
         case 'h' : // Receive message when browser focus shifts
             target.visible = message_parts[1];
             break;

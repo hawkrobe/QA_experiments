@@ -163,6 +163,17 @@ client_onMessage = function(data) {
     } 
 }; 
 
+var readQuestion = function(){
+    qsOnLine = []
+    for(var i = 0; i < game.words.length; i++) {
+        var word = game.words[i];
+        if(word.onLine) {
+            qsOnLine = qsOnLine.concat([{content: word.content, xVal : word.trueX}])
+        }
+    }
+    return _.pluck(_.sortBy(qsOnLine, 'xVal'), 'content').join(" ")
+}
+
 // When loading the page, we store references to our
 // drawing canvases, and initiate a game instance.
 window.onload = function(){
@@ -287,7 +298,7 @@ function mouseDownListener(evt) {
     //find which shape was clicked
     if(my_role === "guesser") {
         for (i=0; i < game.words.length; i++) {
-            if  (hitTest(game.words[i], mouseX, mouseY)) {
+            if  (wordHitTest(game.words[i], mouseX, mouseY)) {
                 console.log("hit!")
                 dragging = true;
                 if (i > highestIndex) {
@@ -299,7 +310,13 @@ function mouseDownListener(evt) {
                 }
             }
         }
+        if(buttonHitTest(mouseX, mouseY)) {
+            var question = readQuestion();
+            console.log(question)
+            game.socket.send("questionSubmit." + question) 
+        }           
     }
+
     if (dragging) {
         window.addEventListener("mousemove", mouseMoveListener, false);
     }
@@ -375,13 +392,23 @@ function mouseMoveListener(evt) {
     drawScreen(game, game.get_player(my_id));
 }
 
-function hitTest(shape,mx,my) {
+function wordHitTest(shape,mx,my) {
     var dx = mx - shape.trueX;
     var dy = my - shape.trueY;
-    console.log([dx, dy])
-    console.log("width & height: ", shape.width, shape.height)
     return (0 < dx) && (dx < shape.width) && (0 < dy) && (dy < shape.height)
 }
+
+function buttonHitTest(mx,my) {
+    console.log("hit button")
+
+    var dx = mx - game.sendQuestionButton.tlX - game.get_player(my_id).questionBoxAdjustment;
+    var dy = my - game.sendQuestionButton.tlY;
+    console.log([dx, dy])
+    console.log("width & height: ", game.sendQuestionButton.width, game.sendQuestionButton.height)
+
+    return (0 < dx) && (dx < game.sendQuestionButton.width) && (0 < dy) && (dy < game.sendQuestionButton.height)
+}
+
 
 // Automatically registers whether user has switched tabs...
 (function() {

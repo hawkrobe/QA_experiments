@@ -22,7 +22,7 @@ if( typeof _ === 'undefined' ) {
         _ = require('underscore')
     }
     else throw new ('mymodule requires underscore, see http://underscorejs.org');
-}
+}                        
 
 var game_core = function(game_instance){
 
