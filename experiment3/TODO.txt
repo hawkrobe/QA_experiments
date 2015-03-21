@@ -1,9 +1,13 @@
-CORE TASKS:
+[] switch to random sampling of conditions w/o replacement instead of going through full set of goals
+   (worried that there will be stronger order effect if we keep the same alternatives and questions, 
+    e.g. people might be reticent to ask the same question twice for different goals, even if it's the best one
+
+PHASE 1:
 [x] remove chat box, keep messages panel
-[] draw question box
+[x] draw question box
     [x] draw lighter-colored background in different places for guesser and helper
-    [] create submit button
-    [] read and send sentence that is made
+    [x] create submit button
+    [x] read and send sentence that is made
 [x] create word objects that are draggable
     [x] draw words inside box (from bottom)
     [x] put boxes around them
@@ -11,20 +15,29 @@ CORE TASKS:
     [x] snap to this line
     [x] allow them to return to original position
 	[x] assign text on word objects based on condition
-[] draw gates 
+    [] show "waiting for guesser to ask a question..." message to helper during this phase
+[x] draw gates 
     [x] create gates object mapping gate numbers to words
     [x] connect those words to pictures
-    [] do the 'shuffle' thing with a border to make it look random
-    [] highlight the one that's the current goal
-    [] print message like "your goal is..."
-[] draw message
-    [] translate answerer selection to a sentence that gets posted
-[] transition to "pick a gate" screen
-[] show true location of objects
+    [x] do the 'shuffle' thing with a border to make it look random
+    [x] highlight the one that's the current goal
+    [x] print message like "your goal is..."
+    [] change helper display to show "guesser view" vs. "your view" with ?s in guesser view
+PHASE 2:
+[] display message to answerer like "click a gate to show to the guesser"
+[] allow answerer to click on an animal to pick a gate to show
+[] translate answerer selection to a sentence that gets posted
+PHASE 3:
+[] transition question screen to "pick a gate" afterwards
+PHASE 4:
+[] show true location of objects after they pick
 
 BUGS:
 [x] fix alignment problems (i.e. use questionBoxAdjustment)
 [] possible bug when screen is resized?
+[x] unset boolean when dragged off line
+[] weird stuff happens when people try to move the words before the shuffle thing is done
 
 OPTIONAL:
 [] center words in box?
+[] push out to sides
