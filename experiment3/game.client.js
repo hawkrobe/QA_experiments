@@ -99,19 +99,20 @@ client_onserverupdate_received = function(data){
     game.goal = data.goal
 
     // Draw all this new stuff
-    game.ctx.fillStyle = "#212121";
-    game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
+    console.log("painting it dark")
 
     drawScreen(game, game.get_player(my_id))
 
     if(data.players.length > 1) {
         game.get_player(my_id).message = ""
-        setTimeout(function() {
-            if(my_role == "guesser") {
+        game.ctx.fillStyle = "#212121";
+        game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
+        if(my_role == "guesser") {
+            setTimeout(function() {
                 itemToPresent = _.indexOf( _.pluck(game.goals, 'presentationNum'), game.goalNum)
                 animateBorder(game, game.get_player(my_id), 0, 4*4 + itemToPresent)
-            } 
-        }, 500)
+            }, 500)
+        }
     }
 }; 
 
@@ -147,10 +148,11 @@ client_onMessage = function(data) {
             var num_players = commanddata;
             client_onjoingame(num_players, commands[3]); break;
 
-        case 'stopWaiting' :
-            console.log("received stop waiting message")
-            game.get_player(my_id).waiting = false; 
-            drawScreen(game, game.get_player(my_id)); break;
+        case 'newPhase' :
+            game.phase += 1
+            console.log("phase is now...")
+            drawScreen(game, game.get_player(my_id)); 
+            break;
 
         case 'add_player' : // New player joined... Need to add them to our list.
             console.log("adding player" + commanddata)
@@ -268,8 +270,8 @@ client_onjoingame = function(num_players, role) {
     if(role === "guesser") {
         $('#instructs').append("Type instructions for the matcher to move the object in the direction of the arrow!")
     } else {
-      drawMysteryGates(game, game.get_player(my_id));
-      $('#instructs').append("Click and drag objects to follow the guesser's instructions.")
+        drawMysteryGates(game, game.get_player(my_id));
+        $('#instructs').append("Click and drag objects to follow the guesser's instructions.")
     }
 
     // set role locally
@@ -317,13 +319,13 @@ function mouseDownListener(evt) {
         if(buttonHitTest(mouseX, mouseY)) {
             var question = readQuestion();
             console.log(question)
-            game.socket.send("questionSubmit." + question + "?") 
+            game.socket.send("advance." + question + "?") 
         }           
     } else {
         for (i=0; i < game.goals.length; i++) {
             if(gateHitTest(i, mouseX, mouseY)) {
                 console.log("passed gateHitTest!")
-                game.socket.send("answerSubmit." + "The " + game.goals[i].name + " is behind gate " + (i + 1))
+                game.socket.send("advance." + "The " + game.goals[i].name + " is behind gate " + (i + 1))
             }
         }
     }

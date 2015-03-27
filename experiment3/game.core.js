@@ -57,7 +57,7 @@ var game_core = function(game_instance){
     this.roundNum = -1;
     this.goalNum = -1;
     this.numRounds = 8;
-    this.attemptNum = 0; // Increments whenever someone makes a mistake
+    this.phase = 0;
 
     if(this.server) {
         this.item = this.makeItem()
@@ -79,7 +79,6 @@ var game_player = function( game_instance, player_instance) {
     this.instance = player_instance;
     this.game = game_instance;
     this.role = ''
-    this.waiting = true;
     //Set up initial values for our state information
     this.questionBoxAdjustment = 0; // so we don't have magic numbers!
     this.message = '';
@@ -144,6 +143,7 @@ game_core.prototype.newRound = function() {
 game_core.prototype.newGoal = function() {
     this.goalNum += 1;
     this.goal = this.goals[this.goalNum]
+    console.log("sending update")
     this.server_send_update()
 }
 

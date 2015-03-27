@@ -72,36 +72,58 @@ var drawAnswerLine = function(game, player) {
 
 var drawGoals = function(game, player) {
   setWhiteMessageTextStyle()
+  console.log(player.role, game.phase)
+  var text = getText(player.role, game.phase)
   _.map(game.goals, function(obj) { 
-    if(player.role == "guesser") {
-      setWhiteMessageTextStyle()
-      game.ctx.fillText("Your goal is to find the...", 
+    game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
+  })    
+  if(player.role == "guesser") {
+    // Permenent message...
+    game.ctx.fillText("Your goal is to find the...", 
         game.questionBox.tlX + player.questionBoxAdjustment, game.ratio * 100)
-    } else {
+    // Temp message... 
+    game.ctx.fillStyle = "#212121";
+    game.ctx.fillRect(
+      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*325,
+      game.viewport.width, game.ratio * 30 * 2);
+    wrapText(game, text,
+      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*325,
+      game.viewport.width, game.ratio*30)
+  } else {
+      // Permenent messages
       game.ctx.textAlign = "center"
       game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 25)
       game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 175)
-      game.ctx.fillStyle = "#212121";
-      game.ctx.fillRect(
-        0, game.ratio*325,
-        game.viewport.width, game.ratio * 30 * 2);
-      if(player.waiting) {
-        setWhiteMessageTextStyle()
-        game.ctx.textAlign = "center"
-        wrapText(game, "Waiting for other player to ask a question \n Watch the box below.",
-          game.viewport.width/2, game.ratio*325,
-          game.viewport.width, game.ratio*30)
-      } else {
-        setWhiteMessageTextStyle()
-        game.ctx.textAlign = "center"
-        wrapText(game, "Now pick a gate to reveal and click on it!",
-          game.viewport.width/2, game.ratio*325,
-          game.viewport.width, game.ratio*30)
-
-      }
+      // Temp message:
+        game.ctx.fillStyle = "#212121";
+        game.ctx.fillRect(
+          0, game.ratio*325,
+          game.viewport.width, game.ratio * 30 * 2);
+      setWhiteMessageTextStyle()
+      game.ctx.textAlign = "center"
+      wrapText(game, text,
+        game.viewport.width/2, game.ratio*325,
+        game.viewport.width, game.ratio*30)
     }
-    game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
-  })
+}
+
+// Phase 0 is waiting for goal to display...
+// Phase 1 is guesser selecting question
+// Phase 2 is helper selecting answer
+// Phase 3 is guesser picking gate
+// Phase 4 is both players seeing result
+var getText = function(role, phase) {
+  if(role == "guesser" && phase == 2) {
+    return "Waiting for other player to respond..."
+  } else if (role == "guesser" && phase == 3) {
+    return "Now guess which gate it's behind!"
+  } else if (role == "helper" && phase < 2) {
+    return "Waiting for other player to ask a question \n Watch the box below."
+  } else if (role == "helper" && phase == 2) {
+    return "Click the gate you want to reveal!"
+  } else {
+    return ""
+  }
 }
 
 var drawMysteryGates = function(game, player) {
@@ -147,6 +169,7 @@ function animateBorder(game, player, totalRotations, endNumber) {
         wrapText(game, "Drag the words onto the line to ask the helper one question.",
           game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*200,
           game.questionBox.width, game.ratio*30)
+        game.socket.send("advance")
       }, 1000)
     }, 1000)
   }

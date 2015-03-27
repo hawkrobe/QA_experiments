@@ -60,25 +60,13 @@ game_server.server_onMessage = function(client,message) {
             moveObject(client, message_parts[1], message_parts[2], message_parts[3])
             break;
 
-        case 'questionSubmit' :
+        case 'advance' :
             var msg = message_parts[1]
-            console.log("send " + msg)
-            _.map(others, function(p) {
-                p.player.instance.send( 's.stopWaiting')
-            })
+            console.log("advancing phases!")
             _.map(all, function(p) {
-                p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
-            }) 
-            break;
-
-        case 'answerSubmit' :
-            var msg = message_parts[1]
-            console.log(msg)
-            _.map(others, function(p) {
-                p.player.instance.send( 's.startPhase3')
-            })
-            _.map(all, function(p) {
-                p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
+                p.player.instance.send( 's.newPhase')
+                if(msg) 
+                    p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
             }) 
             break;
 
@@ -186,11 +174,11 @@ game_server.findGame = function(player) {
                 // notify existing players that someone new is joining
                 _.map(gamecore.get_others(player.userid), 
                     function(p){p.player.instance.send( 's.add_player.' + player.userid)})
-                gamecore.newRound()
-
-                gamecore.server_send_update()
+    //                gamecore.server_send_update()
 
                 gamecore.player_count = game.player_count;
+                gamecore.newRound()
+
             }
         }
         if(!joined_a_game) { // if we didn't join a game, we must create one
