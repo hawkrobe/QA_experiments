@@ -15,18 +15,18 @@ PHASE 1:
     [x] snap to this line
     [x] allow them to return to original position
 	[x] assign text on word objects based on condition
-    [] show "waiting for guesser to ask a question..." message to helper during this phase
+    [x] show "waiting for guesser to ask a question..." message to helper during this phase
 [x] draw gates 
     [x] create gates object mapping gate numbers to words
     [x] connect those words to pictures
     [x] do the 'shuffle' thing with a border to make it look random
     [x] highlight the one that's the current goal
     [x] print message like "your goal is..."
-    [] change helper display to show "guesser view" vs. "your view" with ?s in guesser view
+    [x] change helper display to show "guesser view" vs. "your view" with ?s in guesser view
 PHASE 2:
-[] display message to answerer like "click a gate to show to the guesser"
-[] allow answerer to click on an animal to pick a gate to show
-[] translate answerer selection to a sentence that gets posted
+[x] display message to answerer like "click a gate to show to the guesser"
+[x] allow answerer to click on an animal to pick a gate to show
+[x] translate answerer selection to a sentence that gets posted
 PHASE 3:
 [] transition question screen to "pick a gate" afterwards
 PHASE 4:
@@ -36,7 +36,7 @@ BUGS:
 [x] fix alignment problems (i.e. use questionBoxAdjustment)
 [] possible bug when screen is resized?
 [x] unset boolean when dragged off line
-[] weird stuff happens when people try to move the words before the shuffle thing is done
+[x] weird stuff happens when people try to move the words before the shuffle thing is done
 
 OPTIONAL:
 [] center words in box?

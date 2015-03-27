@@ -79,13 +79,6 @@ client_onserverupdate_received = function(data){
         })
     }
 
-    // Update local object positions
-    // _.map(game.goals, function(obj) {
-    //     data_obj = _.find(data.goals, function(o) {return o.name == obj.name})
-    //     obj.trueX = data_obj.trueX;
-    //     obj.trueY = data_obj.trueY;
-    // })
-
     game.words = _.map(data.words, function (word) {
         game.ctx.font = "24pt Helvetica";
         var newWord = _.clone(word)
@@ -96,7 +89,7 @@ client_onserverupdate_received = function(data){
 
     initializeWords(
         game, game.get_player(my_id), game.questionBox.tlX + game.ratio * 5,
-        game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2,
+        game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2.5,
         game.questionBox.width, game.ratio * 30);
 
     game.goalNum = data.goalNum;
@@ -153,6 +146,11 @@ client_onMessage = function(data) {
         case 'join' : //join a game requested
             var num_players = commanddata;
             client_onjoingame(num_players, commands[3]); break;
+
+        case 'stopWaiting' :
+            console.log("received stop waiting message")
+            game.get_player(my_id).waiting = false; 
+            drawScreen(game, game.get_player(my_id)); break;
 
         case 'add_player' : // New player joined... Need to add them to our list.
             console.log("adding player" + commanddata)
@@ -270,7 +268,8 @@ client_onjoingame = function(num_players, role) {
     if(role === "guesser") {
         $('#instructs').append("Type instructions for the matcher to move the object in the direction of the arrow!")
     } else {
-        $('#instructs').append("Click and drag objects to follow the guesser's instructions.")
+      drawMysteryGates(game, game.get_player(my_id));
+      $('#instructs').append("Click and drag objects to follow the guesser's instructions.")
     }
 
     // set role locally
@@ -320,6 +319,13 @@ function mouseDownListener(evt) {
             console.log(question)
             game.socket.send("questionSubmit." + question + "?") 
         }           
+    } else {
+        for (i=0; i < game.goals.length; i++) {
+            if(gateHitTest(i, mouseX, mouseY)) {
+                console.log("passed gateHitTest!")
+                game.socket.send("answerSubmit." + "The " + game.goals[i].name + " is behind gate " + (i + 1))
+            }
+        }
     }
 
     if (dragging) {
@@ -350,12 +356,12 @@ function mouseUpListener(evt) {
         
         // If you were dragging the correct object... And dragged it to the correct location...
         if (dropY < game.answerLine.y) {
-            console.log("dropped above")
             word.trueY = game.answerLine.y - word.height
             word.onLine = true;
         } else {
             word.trueY = word.origY;
             word.trueX = word.origX;
+            word.onLine = false;
         }
         game.socket.send("objMove." + dragIndex 
             + "." + Math.round(word.trueX - game.get_player(my_id).questionBoxAdjustment) 
@@ -404,16 +410,19 @@ function wordHitTest(shape,mx,my) {
 }
 
 function buttonHitTest(mx,my) {
-    console.log("hit button")
-
     var dx = mx - game.sendQuestionButton.tlX - game.get_player(my_id).questionBoxAdjustment;
     var dy = my - game.sendQuestionButton.tlY;
-    console.log([dx, dy])
-    console.log("width & height: ", game.sendQuestionButton.width, game.sendQuestionButton.height)
-
     return (0 < dx) && (dx < game.sendQuestionButton.width) && (0 < dy) && (dy < game.sendQuestionButton.height)
 }
 
+function gateHitTest(i, mx, my) {
+    console.log(i)
+    var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+    var dx = mx - (xLocs[i] - 100);
+    var dy = Math.min(Math.abs(my - game.ratio * 200), Math.abs(my - game.ratio * 100 - 100))
+    console.log([dx, dy])
+    return (0 < dx) && (dx < 200) && (0 < dy) && (dy < 200)
+}
 
 // Automatically registers whether user has switched tabs...
 (function() {

@@ -39,17 +39,19 @@ var game_core = function(game_instance){
     this.world = {width : 600, height : 600};  // 160cm * 3
     this.ratio = 2;
     this.questionBox = {
-        tlX : 125*this.ratio, tlY: 300*this.ratio, 
-        height: 275*this.ratio, width: 350*this.ratio}
+        tlX : 125*this.ratio, tlY: 400*this.ratio, 
+        height: 175*this.ratio, width: 350*this.ratio}
+
     this.answerLine = {
         startX : this.questionBox.tlX + 50*this.ratio, 
         endX   : this.questionBox.tlX + this.questionBox.width - 50*this.ratio,
-        y      : this.questionBox.tlY + 150*this.ratio}
+        y      : this.questionBox.tlY + this.questionBox.height/2}
+
     this.sendQuestionButton = {
         width: this.questionBox.width/4,
         height: this.questionBox.height*1/8,
         tlX: this.questionBox.tlX + this.questionBox.width*3/8,
-        tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 5*this.ratio,
+        tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 2*this.ratio,
     }
 
     this.roundNum = -1;
@@ -77,6 +79,7 @@ var game_player = function( game_instance, player_instance) {
     this.instance = player_instance;
     this.game = game_instance;
     this.role = ''
+    this.waiting = true;
     //Set up initial values for our state information
     this.questionBoxAdjustment = 0; // so we don't have magic numbers!
     this.message = '';

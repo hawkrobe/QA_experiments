@@ -63,10 +63,25 @@ game_server.server_onMessage = function(client,message) {
         case 'questionSubmit' :
             var msg = message_parts[1]
             console.log("send " + msg)
+            _.map(others, function(p) {
+                p.player.instance.send( 's.stopWaiting')
+            })
             _.map(all, function(p) {
                 p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
             }) 
             break;
+
+        case 'answerSubmit' :
+            var msg = message_parts[1]
+            console.log(msg)
+            _.map(others, function(p) {
+                p.player.instance.send( 's.startPhase3')
+            })
+            _.map(all, function(p) {
+                p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
+            }) 
+            break;
+
         case 'h' : // Receive message when browser focus shifts
             target.visible = message_parts[1];
             break;

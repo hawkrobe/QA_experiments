@@ -34,6 +34,7 @@ var drawSendButton = function(game, player) {
   game.ctx.textAlign = 'center';
   game.ctx.textBaseline="middle"; 
   game.ctx.fillStyle = '#000000'
+  game.ctx.font = "24pt Helvetica";
   game.ctx.fillText("Send", but.tlX + but.width/2 + player.questionBoxAdjustment, but.tlY + but.height/2)
 }
 
@@ -70,16 +71,52 @@ var drawAnswerLine = function(game, player) {
 }
 
 var drawGoals = function(game, player) {
-  console.log("drawing goals")
+  setWhiteMessageTextStyle()
   _.map(game.goals, function(obj) { 
     if(player.role == "guesser") {
-      game.ctx.textAlign = "left"
-      game.ctx.fillStyle = "white"
-      game.ctx.font = "36pt Helvetica";
+      setWhiteMessageTextStyle()
       game.ctx.fillText("Your goal is to find the...", 
         game.questionBox.tlX + player.questionBoxAdjustment, game.ratio * 100)
+    } else {
+      game.ctx.textAlign = "center"
+      game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 25)
+      game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 175)
+      game.ctx.fillStyle = "#212121";
+      game.ctx.fillRect(
+        0, game.ratio*325,
+        game.viewport.width, game.ratio * 30 * 2);
+      if(player.waiting) {
+        setWhiteMessageTextStyle()
+        game.ctx.textAlign = "center"
+        wrapText(game, "Waiting for other player to ask a question \n Watch the box below.",
+          game.viewport.width/2, game.ratio*325,
+          game.viewport.width, game.ratio*30)
+      } else {
+        setWhiteMessageTextStyle()
+        game.ctx.textAlign = "center"
+        wrapText(game, "Now pick a gate to reveal and click on it!",
+          game.viewport.width/2, game.ratio*325,
+          game.viewport.width, game.ratio*30)
+
+      }
     }
     game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
+  })
+}
+
+var drawMysteryGates = function(game, player) {
+  var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+  _.map([1,2,3,4], function(num) {
+    console.log("stimuli/gate" + num + ".jpg")
+    var imgObj = new Image()
+    imgObj.src = "stimuli/gate" + num + ".jpg"
+    // Set it up to load properly
+    var x = xLocs[num-1] - 100
+    var y = game.ratio * 200
+
+    imgObj.onload = function(){
+      game.ctx.drawImage(imgObj, x, y, 200, 200)
+    }
   })
 }
 
@@ -106,7 +143,7 @@ function animateBorder(game, player, totalRotations, endNumber) {
       game.ctx.fillText(currGoal.name + "!", 
         game.questionBox.tlX + player.questionBoxAdjustment + game.ratio*100, game.ratio*150)
       setTimeout(function() {
-        game.ctx.fillStyle = "white"
+        setWhiteMessageTextStyle()
         wrapText(game, "Drag the words onto the line to ask the helper one question.",
           game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*200,
           game.questionBox.width, game.ratio*30)
@@ -172,6 +209,12 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
   }
 }
 
+function setWhiteMessageTextStyle() {
+  game.ctx.textAlign = "left"
+  game.ctx.fillStyle = "white"
+  game.ctx.font = "36pt Helvetica";
+}
+
 function setQuestionBoxStyle() {
   game.ctx.textAlign="center";
   game.ctx.font = "36pt Futura";
@@ -185,7 +228,6 @@ function setQuestionWordStyle() {
   game.ctx.strokeStyle = "#000000"
   game.ctx.fillStyle = "#000000"
   game.ctx.lineWidth=4;
-
 }
 
 function setBlankScreenTextStyle() {
