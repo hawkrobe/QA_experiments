@@ -3,7 +3,7 @@ OVERALL:
 [] switch to random sampling of conditions w/o replacement instead of going through full set of goals
    (worried that there will be stronger order effect if we keep the same alternatives and questions, 
     e.g. people might be reticent to ask the same question twice for different goals, even if it's the best one
-[] Clean transitions between phases
+[x] Clean transitions between phases
 
 PHASE 1:
 [x] remove chat box, keep messages panel
@@ -26,16 +26,20 @@ PHASE 1:
     [x] highlight the one that's the current goal
     [x] print message like "your goal is..."
     [x] change helper display to show "guesser view" vs. "your view" with ?s in guesser view
+
 PHASE 2:
 [x] display message to answerer like "click a gate to show to the guesser"
 [x] allow answerer to click on an animal to pick a gate to show
 [x] translate answerer selection to a sentence that gets posted
+
 PHASE 3:
 [x] transition question screen to "pick a gate" afterwards
-[] show guesser the gates
-[] register which one they pick
+[x] show guesser the gates
+[x] register which one they pick
+
 PHASE 4:
-[] show true location of objects after they pick
+[x] show true location of objects after they pick
+[x] introduce 'continue button' to reset...
 
 BUGS:
 [x] fix alignment problems (i.e. use questionBoxAdjustment)

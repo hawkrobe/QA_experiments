@@ -152,9 +152,14 @@ client_onMessage = function(data) {
 
         case 'newPhase' :
             game.phase += 1
-            console.log("phase is now...")
+            console.log("phase is now...", game.phase)
             drawScreen(game, game.get_player(my_id)); 
             break;
+
+        case 'reveal' :
+            game.gatePicked = commanddata
+            console.log("gatePicked:", game.gatePicked)
+            revealAnswer(game, game.get_player(my_id)); break;
 
         case 'add_player' : // New player joined... Need to add them to our list.
             console.log("adding player" + commanddata)
@@ -261,6 +266,11 @@ client_onjoingame = function(num_players, role) {
     _.map(_.range(num_players - 1), function(i){
         game.players.unshift({id: null, player: new game_player(game)})});
 
+    // set role locally
+    my_role = role;
+    game.get_player(my_id).role = my_role;
+    game.get_player(my_id).questionBoxAdjustment = my_role === "guesser" ? game.ratio * 75 : 0;
+
     // Update header w/ role 
     $('#header').append(role + '.');
     if(role === "guesser") {
@@ -269,11 +279,6 @@ client_onjoingame = function(num_players, role) {
         drawMysteryGates(game, game.get_player(my_id));
         $('#instructs').append("Click and drag objects to follow the guesser's instructions.")
     }
-
-    // set role locally
-    my_role = role;
-    game.get_player(my_id).role = my_role;
-    game.get_player(my_id).questionBoxAdjustment = my_role === "guesser" ? game.ratio * 75 : 0;
 
     // show waiting message for first player
     if(num_players == 1)
@@ -301,7 +306,6 @@ function mouseDownListener(evt) {
     if(my_role === "guesser" && game.phase == 1) {
         for (i=0; i < game.words.length; i++) {
             if  (wordHitTest(game.words[i], mouseX, mouseY)) {
-                console.log("hit!")
                 dragging = true;
                 if (i > highestIndex) {
                     //We will pay attention to the point on the object where the mouse is "holding" the object:
@@ -322,6 +326,13 @@ function mouseDownListener(evt) {
             if(gateHitTest(i, mouseX, mouseY)) {
                 console.log("passed gateHitTest!")
                 game.socket.send("advance." + "The " + game.goals[i].name + " is behind gate " + (i + 1))
+            }
+        }
+    } else if (my_role === "guesser" && game.phase == 3) {
+        for (i=0; i < game.goals.length; i++) {
+            if(mysteryGateHitTest(i, mouseX, mouseY)) {
+                console.log("passed gateHitTest!")
+                game.socket.send("advance.." + i)
             }
         }
     }
@@ -421,6 +432,15 @@ function gateHitTest(i, mx, my) {
     var dy2 = my - game.ratio * 200
     return (0 < dx) && (dx < 200) && (((0 < dy1) && (dy1 < 200)) || ((0 < dy2) && (dy2 < 200)))
 }
+
+function mysteryGateHitTest(i, mx, my) {
+    var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+    var dx = mx - (xLocs[i] - 100);
+    // allow people to click on either view... but not in between!
+    var dy = my - game.questionBox.tlY
+    return (0 < dx) && (dx < 200) && (0 < dy) && (dy < 200)
+}
+
 
 // Automatically registers whether user has switched tabs...
 (function() {

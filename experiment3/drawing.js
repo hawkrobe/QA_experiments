@@ -1,28 +1,48 @@
 var drawScreen = function(game, player) {
     //clear background
-    game.ctx.fillStyle = "#212121";
-    game.ctx.fillRect(
-      game.questionBox.tlX + player.questionBoxAdjustment,game.questionBox.tlY,
+    wipeRegion(
+      game.questionBox.tlX + player.questionBoxAdjustment,
+      game.questionBox.tlY,
       game.questionBox.width,game.questionBox.height);
 
     if (player.message) {
         // Draw message in center (for countdown, e.g.)
         game.ctx.fillStyle = 'white'
         game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
-
         setBlankScreenTextStyle();
         wrapText(game, player.message, 
           game.viewport.width/2, game.viewport.height/4,
           game.viewport.width*4/5,
           25*game.ratio);
     } else {
-      drawQuestionBox(game, player)
-      drawAnswerLine(game,player) 
-      drawWords(game, player)
-      drawGoals(game, player)
       drawMessages(game, player)
-      drawSendButton(game, player)
+      if (player.role === "helper" || game.phase < 3) {
+        drawQuestionBox(game, player)
+        drawAnswerLine(game, player)
+        drawWords(game, player)
+        drawSendButton(game, player)
+        drawGoals(game, player)
+      } else if (game.phase == 3) {
+        wipeRegion(0, 0, game.viewport.width/4 + 50, game.viewport.height - 5)
+        drawMysteryGates(game, player)
+      }
     }
+}
+
+var wipeRegion = function(tlx, tly, width, height) {
+  var tempStyle = game.ctx.fillStyle;
+  game.ctx.fillStyle = "#212121";
+  game.ctx.fillRect(
+    tlx, tly, width, height);
+  game.ctx.fillStyle = tempStyle;
+}
+
+var wipeBorder = function(tlx, tly, width, height) {
+  var tempStyle = game.ctx.strokeStyle;
+  game.ctx.strokeStyle = "#212121";
+  game.ctx.strokeRect(
+    tlx, tly, width, height);
+  game.ctx.strokeStyle = tempStyle;
 }
 
 var drawSendButton = function(game, player) {
@@ -32,10 +52,7 @@ var drawSendButton = function(game, player) {
   game.ctx.strokeStyle = "#000000"
   game.ctx.lineWidth=4;
   game.ctx.strokeRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
-  game.ctx.textAlign = 'center';
-  game.ctx.textBaseline="middle"; 
-  game.ctx.fillStyle = '#000000'
-  game.ctx.font = "24pt Helvetica";
+  setSendButtonStyle();
   game.ctx.fillText("Send", but.tlX + but.width/2 + player.questionBoxAdjustment, but.tlY + but.height/2)
 }
 
@@ -75,6 +92,7 @@ var drawGoals = function(game, player) {
   setWhiteMessageTextStyle()
   if(player.role == "guesser") {
     var goals = _.shuffle(game.goals)
+    console.log(game.ctx.textBaseline)
     game.ctx.fillText("Your goal is to find the...", 
       game.questionBox.tlX + player.questionBoxAdjustment, game.ratio * 100)
   } else {
@@ -91,11 +109,9 @@ var drawGoals = function(game, player) {
 }
 
 var drawMessages = function(game, player) {
-  var text = getText(player.role, game.phase)
+  var text = getText(game, player)
   if(player.role == "guesser") {
-    game.ctx.fillStyle = "#212121";
-    game.ctx.fillRect(
-      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*200,
+    wipeRegion(game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*200,
       game.viewport.width, game.ratio * 30 * 6);
     setWhiteMessageTextStyle()
     // Temp message... 
@@ -104,10 +120,7 @@ var drawMessages = function(game, player) {
       game.questionBox.width, game.ratio*30)
   } else {
       // Temp message:
-      game.ctx.fillStyle = "#212121";
-      game.ctx.fillRect(
-        0, game.ratio*325,
-        game.viewport.width, game.ratio * 30 * 2);
+      wipeRegion(0, game.ratio*325, game.viewport.width, game.ratio * 30 * 2);
       setWhiteMessageTextStyle()
       game.ctx.textAlign = "center"
       wrapText(game, text,
@@ -121,7 +134,9 @@ var drawMessages = function(game, player) {
 // Phase 2 is helper selecting answer
 // Phase 3 is guesser picking gate
 // Phase 4 is both players seeing result
-var getText = function(role, phase) {
+var getText = function(game, player) {
+  var role = player.role
+  var phase = game.phase
   if (role == "guesser" && phase == 1) {
     return "Drag the words onto the line to ask the helper one question"
   } else if(role == "guesser" && phase == 2) {
@@ -134,12 +149,23 @@ var getText = function(role, phase) {
     return "Click the gate you want to reveal!"
   } else if (role == "helper" && phase == 3) {
     return "Waiting for other player to guess..."
+  } else if (phase == 4) {
+    var correct = game.gatePicked == game.goalNum 
+    if(!correct && role == "helper")
+      return "They were looking for the " + game.goal.name + " but they incorrectly guessed gate " + (parseInt(game.gatePicked) + 1) + "."
+    else if (correct && role == "helper")
+      return "They were looking for the " + game.goal.name + " and they guessed correctly!"
+    else if (!correct && role == "guesser")
+      return "Incorrect -- the " + game.goal.name + " was behind gate " + (game.goalNum + 1) + "."
+    else if (correct && role == "guesser")
+      return "Correct! Great job!"
   } else {
     return ""
   }
 }
 
 var drawMysteryGates = function(game, player) {
+  var yLoc = player.role === "helper" ? game.ratio * 200 : game.questionBox.tlY
   var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
   _.map([1,2,3,4], function(num) {
     console.log("stimuli/gate" + num + ".jpg")
@@ -147,7 +173,7 @@ var drawMysteryGates = function(game, player) {
     imgObj.src = "stimuli/gate" + num + ".jpg"
     // Set it up to load properly
     var x = xLocs[num-1] - 100
-    var y = game.ratio * 200
+    var y = yLoc
 
     imgObj.onload = function(){
       game.ctx.drawImage(imgObj, x, y, 200, 200)
@@ -155,6 +181,33 @@ var drawMysteryGates = function(game, player) {
   })
 }
 
+function revealAnswer(game, player, objPicked) {
+  drawMessages(game, player)
+  if(player.role === "guesser") {
+    wipeRegion(0, game.questionBox.tlY, game.viewport.width, game.questionBox.height)
+    console.log("wiping region...")
+    var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+    _.map(_.zip(game.goals, xLocs), function(pair) {
+      var obj = pair[0]
+      game.ctx.drawImage(obj.img, pair[1] - 100, game.questionBox.tlY, 200, 200)
+    })
+    if( game.gatePicked != game.goalNum ) {
+      placeX(game.gatePicked)
+    }
+  }
+}
+
+function placeX(num) {
+  var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+  game.ctx.beginPath();
+  game.ctx.lineWidth = 8;
+  game.ctx.strokeStyle = "red"
+  game.ctx.moveTo(xLocs[num] - 100, game.questionBox.tlY);
+  game.ctx.lineTo(xLocs[num] + 100, game.questionBox.tlY + 200);
+  game.ctx.moveTo(xLocs[num] + 100, game.questionBox.tlY);
+  game.ctx.lineTo(xLocs[num] - 100, game.questionBox.tlY + 200);
+  game.ctx.stroke();
+}
 
 function animateBorder(game, player, totalRotations, endNumber, prevNum, target) {
   // Want to select DIFFERENT random one than previous...
@@ -166,26 +219,20 @@ function animateBorder(game, player, totalRotations, endNumber, prevNum, target)
   game.ctx.lineWidth = 8
   game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
     currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
-  console.log(totalRotations)
   if(totalRotations < endNumber) {
     setTimeout(function(){
-      game.ctx.strokeStyle = "#212121"
-      game.ctx.lineWidth = 8
-      game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
+      wipeBorder(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
         currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
       animateBorder(game, player, totalRotations + 1, endNumber, currNum)
     }, 250)
   } else {
     setTimeout(function(){
       // Erase old goal
-      game.ctx.strokeStyle = "#212121"
-      game.ctx.lineWidth = 8
-      game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
+      wipeBorder(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
         currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
       // Highlight final goal
       finalGoal = game.goals[_.indexOf(game.goals, game.goal)]
       game.ctx.strokeStyle = "red"
-      game.ctx.lineWidth = 8
       game.ctx.strokeRect(finalGoal.trueX - game.ctx.lineWidth, finalGoal.trueY - game.ctx.lineWidth, 
         finalGoal.width + 2*game.ctx.lineWidth, finalGoal.height + 2*game.ctx.lineWidth)
       // Write text of final goal
@@ -261,6 +308,7 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
 
 function setWhiteMessageTextStyle() {
   game.ctx.textAlign = "left"
+  game.ctx.textBaseline='top'
   game.ctx.fillStyle = "white"
   game.ctx.font = "36pt Helvetica";
 }
@@ -280,6 +328,12 @@ function setQuestionWordStyle() {
   game.ctx.lineWidth=4;
 }
 
+function setSendButtonStyle() {
+  game.ctx.textAlign = 'center';
+  game.ctx.textBaseline="middle"; 
+  game.ctx.fillStyle = '#000000'
+  game.ctx.font = "24pt Helvetica";
+}
 function setBlankScreenTextStyle() {
   game.ctx.font = "bold 46pt Helvetica";
   game.ctx.fillStyle = 'red';

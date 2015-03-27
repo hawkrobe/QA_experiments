@@ -62,11 +62,14 @@ game_server.server_onMessage = function(client,message) {
 
         case 'advance' :
             var msg = message_parts[1]
-            console.log("advancing phases!")
+            var objNum = message_parts[2]
+            console.log("objNum: ", objNum)
             _.map(all, function(p) {
                 p.player.instance.send( 's.newPhase')
                 if(msg) 
                     p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
+                if(objNum) 
+                    p.player.instance.send( 's.reveal.' + objNum)
             }) 
             break;
 
