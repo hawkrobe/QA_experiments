@@ -174,7 +174,6 @@ game_server.findGame = function(player) {
                 // notify existing players that someone new is joining
                 _.map(gamecore.get_others(player.userid), 
                     function(p){p.player.instance.send( 's.add_player.' + player.userid)})
-    //                gamecore.server_send_update()
 
                 gamecore.player_count = game.player_count;
                 gamecore.newRound()

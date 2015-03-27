@@ -294,7 +294,7 @@ function mouseDownListener(evt) {
     mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
     mouseY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
     //find which shape was clicked
-    if(my_role === "guesser") {
+    if(my_role === "guesser" && game.phase == 1) {
         for (i=0; i < game.words.length; i++) {
             if  (wordHitTest(game.words[i], mouseX, mouseY)) {
                 console.log("hit!")
@@ -313,7 +313,7 @@ function mouseDownListener(evt) {
             console.log(question)
             game.socket.send("advance." + question + "?") 
         }           
-    } else {
+    } else if (my_role === "helper" && game.phase == 2) {
         for (i=0; i < game.goals.length; i++) {
             if(gateHitTest(i, mouseX, mouseY)) {
                 console.log("passed gateHitTest!")
