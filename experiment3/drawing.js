@@ -130,7 +130,6 @@ var getText = function(role, phase) {
     return "Click the gate you want to reveal!"
   } else if (role == "helper" && phase == 3) {
     return "Waiting for other player to guess..."
-  }
   } else {
     return ""
   }
