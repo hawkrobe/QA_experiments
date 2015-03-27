@@ -1,6 +1,9 @@
+
+OVERALL:
 [] switch to random sampling of conditions w/o replacement instead of going through full set of goals
    (worried that there will be stronger order effect if we keep the same alternatives and questions, 
     e.g. people might be reticent to ask the same question twice for different goals, even if it's the best one
+[] Clean transitions between phases
 
 PHASE 1:
 [x] remove chat box, keep messages panel
@@ -28,7 +31,9 @@ PHASE 2:
 [x] allow answerer to click on an animal to pick a gate to show
 [x] translate answerer selection to a sentence that gets posted
 PHASE 3:
-[] transition question screen to "pick a gate" afterwards
+[x] transition question screen to "pick a gate" afterwards
+[] show guesser the gates
+[] register which one they pick
 PHASE 4:
 [] show true location of objects after they pick
 

@@ -20,6 +20,7 @@ var drawScreen = function(game, player) {
       drawAnswerLine(game,player) 
       drawWords(game, player)
       drawGoals(game, player)
+      drawMessages(game, player)
       drawSendButton(game, player)
     }
 }
@@ -72,33 +73,37 @@ var drawAnswerLine = function(game, player) {
 
 var drawGoals = function(game, player) {
   setWhiteMessageTextStyle()
-  console.log(player.role, game.phase)
-  var text = getText(player.role, game.phase)
   _.map(game.goals, function(obj) { 
     game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
   })    
   if(player.role == "guesser") {
-    // Permenent message...
     game.ctx.fillText("Your goal is to find the...", 
-        game.questionBox.tlX + player.questionBoxAdjustment, game.ratio * 100)
-    // Temp message... 
+      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio * 100)
+  } else {
+    game.ctx.textAlign = "center"
+    game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 25)
+    game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 175)
+  }
+}
+
+var drawMessages = function(game, player) {
+  var text = getText(player.role, game.phase)
+  if(player.role == "guesser") {
     game.ctx.fillStyle = "#212121";
     game.ctx.fillRect(
-      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*325,
-      game.viewport.width, game.ratio * 30 * 2);
+      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*200,
+      game.viewport.width, game.ratio * 30 * 6);
+    setWhiteMessageTextStyle()
+    // Temp message... 
     wrapText(game, text,
-      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*325,
-      game.viewport.width, game.ratio*30)
+      game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*250,
+      game.questionBox.width, game.ratio*30)
   } else {
-      // Permenent messages
-      game.ctx.textAlign = "center"
-      game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 25)
-      game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 175)
       // Temp message:
-        game.ctx.fillStyle = "#212121";
-        game.ctx.fillRect(
-          0, game.ratio*325,
-          game.viewport.width, game.ratio * 30 * 2);
+      game.ctx.fillStyle = "#212121";
+      game.ctx.fillRect(
+        0, game.ratio*325,
+        game.viewport.width, game.ratio * 30 * 2);
       setWhiteMessageTextStyle()
       game.ctx.textAlign = "center"
       wrapText(game, text,
@@ -113,14 +118,19 @@ var drawGoals = function(game, player) {
 // Phase 3 is guesser picking gate
 // Phase 4 is both players seeing result
 var getText = function(role, phase) {
-  if(role == "guesser" && phase == 2) {
+  if (role == "guesser" && phase == 1) {
+    return "Drag the words onto the line to ask the helper one question"
+  } else if(role == "guesser" && phase == 2) {
     return "Waiting for other player to respond..."
   } else if (role == "guesser" && phase == 3) {
     return "Now guess which gate it's behind!"
   } else if (role == "helper" && phase < 2) {
-    return "Waiting for other player to ask a question \n Watch the box below."
+    return "Waiting for other player to ask a question... \n Watch the box below."
   } else if (role == "helper" && phase == 2) {
     return "Click the gate you want to reveal!"
+  } else if (role == "helper" && phase == 3) {
+    return "Waiting for other player to guess..."
+  }
   } else {
     return ""
   }
@@ -141,6 +151,7 @@ var drawMysteryGates = function(game, player) {
     }
   })
 }
+
 
 function animateBorder(game, player, totalRotations, endNumber) {
   var currGoal = game.goals[totalRotations % 4]
@@ -166,9 +177,6 @@ function animateBorder(game, player, totalRotations, endNumber) {
         game.questionBox.tlX + player.questionBoxAdjustment + game.ratio*100, game.ratio*150)
       setTimeout(function() {
         setWhiteMessageTextStyle()
-        wrapText(game, "Drag the words onto the line to ask the helper one question.",
-          game.questionBox.tlX + player.questionBoxAdjustment, game.ratio*200,
-          game.questionBox.width, game.ratio*30)
         game.socket.send("advance")
       }, 1000)
     }, 1000)

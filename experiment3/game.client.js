@@ -99,8 +99,6 @@ client_onserverupdate_received = function(data){
     game.goal = data.goal
 
     // Draw all this new stuff
-    console.log("painting it dark")
-
     drawScreen(game, game.get_player(my_id))
 
     if(data.players.length > 1) {
@@ -197,12 +195,6 @@ window.onload = function(){
 
     //Fetch the rendering contexts
     game.ctx = game.viewport.getContext('2d');
-
-    //Set the draw style for the font
-    game.ctx.font = '11pt "Helvetica"';
-
-//    document.getElementById('chatbox').focus();
-
 };
 
 // Associates callback functions corresponding to different socket messages
