@@ -416,12 +416,12 @@ function buttonHitTest(mx,my) {
 }
 
 function gateHitTest(i, mx, my) {
-    console.log(i)
     var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
     var dx = mx - (xLocs[i] - 100);
-    var dy = Math.min(Math.abs(my - game.ratio * 200), Math.abs(my - game.ratio * 100 - 100))
-    console.log([dx, dy])
-    return (0 < dx) && (dx < 200) && (0 < dy) && (dy < 200)
+    // allow people to click on either view... but not in between!
+    var dy1 = my - game.ratio * 100 + 100
+    var dy2 = my - game.ratio * 200
+    return (0 < dx) && (dx < 200) && (((0 < dy1) && (dy1 < 200)) || ((0 < dy2) && (dy2 < 200)))
 }
 
 // Automatically registers whether user has switched tabs...
