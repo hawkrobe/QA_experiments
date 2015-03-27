@@ -60,15 +60,19 @@ client_onserverupdate_received = function(data){
         function(e){ return e.name})
     var localNames = _.map(game.goals,
         function(e){return e.name})
+    var possibleXVals = _.map(data.goals,
+        function(e){return e.trueX})
 
     // If your objects are out-of-date (i.e. if there's a new round), update them
     if (!_.isEqual(dataNames, localNames)) { 
-        game.goals = _.map(data.goals, function(obj) {
+        game.goals = _.map(_.zip(data.goals, _.shuffle(_.range(4))), function(pair) {
+            var obj = pair[0]
+            var i = pair[1]
             var imgObj = new Image()
             imgObj.src = obj.url
-            // Set it up to load properly
+            // Set it up to load properly (also randomize positioning of )
             var x = my_role === "guesser" ? parseInt(obj.trueY) : parseInt(obj.trueX)
-            var y = my_role === "guesser" ? parseInt(obj.trueX) : parseInt(obj.trueY)
+            var y = my_role === "guesser" ? parseInt(possibleXVals[i]) : parseInt(obj.trueY)
 
             imgObj.onload = function(){
                 game.ctx.drawImage(imgObj, x, y, obj.width, obj.height)
@@ -96,19 +100,19 @@ client_onserverupdate_received = function(data){
     game.game_started = data.gs;
     game.players_threshold = data.pt;
     game.player_count = data.pc;
-    game.goal = data.goal
 
     // Draw all this new stuff
     drawScreen(game, game.get_player(my_id))
 
     if(data.players.length > 1) {
+        game.goal = game.goals[game.goalNum]
         game.get_player(my_id).message = ""
         game.ctx.fillStyle = "#212121";
         game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
         if(my_role == "guesser") {
             setTimeout(function() {
                 itemToPresent = _.indexOf( _.pluck(game.goals, 'presentationNum'), game.goalNum)
-                animateBorder(game, game.get_player(my_id), 0, 4*4 + itemToPresent)
+                animateBorder(game, game.get_player(my_id), 0, 4*4 + itemToPresent, -1)
             }, 500)
         }
     }

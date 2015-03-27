@@ -73,17 +73,21 @@ var drawAnswerLine = function(game, player) {
 
 var drawGoals = function(game, player) {
   setWhiteMessageTextStyle()
-  _.map(game.goals, function(obj) { 
-    game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
-  })    
   if(player.role == "guesser") {
+    var goals = _.shuffle(game.goals)
     game.ctx.fillText("Your goal is to find the...", 
       game.questionBox.tlX + player.questionBoxAdjustment, game.ratio * 100)
   } else {
+    var goals = game.goals
     game.ctx.textAlign = "center"
     game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 25)
     game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 175)
   }
+  console.log(goals)
+  _.map(goals, function(obj) { 
+    game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
+  })    
+
 }
 
 var drawMessages = function(game, player) {
@@ -152,8 +156,12 @@ var drawMysteryGates = function(game, player) {
 }
 
 
-function animateBorder(game, player, totalRotations, endNumber) {
-  var currGoal = game.goals[totalRotations % 4]
+function animateBorder(game, player, totalRotations, endNumber, prevNum, target) {
+  // Want to select DIFFERENT random one than previous...
+  var currNum = Math.floor(Math.random() * 4)
+  while (currNum == prevNum)
+    var currNum = Math.floor(Math.random() * 4)
+  var currGoal = game.goals[currNum]
   game.ctx.strokeStyle = "red"
   game.ctx.lineWidth = 8
   game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
@@ -165,20 +173,32 @@ function animateBorder(game, player, totalRotations, endNumber) {
       game.ctx.lineWidth = 8
       game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
         currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
-      animateBorder(game, player, totalRotations + 1, endNumber)
+      animateBorder(game, player, totalRotations + 1, endNumber, currNum)
     }, 250)
   } else {
     setTimeout(function(){
+      // Erase old goal
+      game.ctx.strokeStyle = "#212121"
+      game.ctx.lineWidth = 8
+      game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
+        currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+      // Highlight final goal
+      finalGoal = game.goals[_.indexOf(game.goals, game.goal)]
+      game.ctx.strokeStyle = "red"
+      game.ctx.lineWidth = 8
+      game.ctx.strokeRect(finalGoal.trueX - game.ctx.lineWidth, finalGoal.trueY - game.ctx.lineWidth, 
+        finalGoal.width + 2*game.ctx.lineWidth, finalGoal.height + 2*game.ctx.lineWidth)
+      // Write text of final goal
       game.ctx.font = "36pt Helvetica";
       game.ctx.textAlign = "left"
       game.ctx.fillStyle = "red"
-      game.ctx.fillText(currGoal.name + "!", 
+      game.ctx.fillText(finalGoal.name + "!", 
         game.questionBox.tlX + player.questionBoxAdjustment + game.ratio*100, game.ratio*150)
       setTimeout(function() {
         setWhiteMessageTextStyle()
         game.socket.send("advance")
       }, 1000)
-    }, 1000)
+    }, 250)
   }
 }
 
