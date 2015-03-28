@@ -85,7 +85,7 @@ var drawAnswerLine = function(game, player) {
   game.ctx.stroke();
 
   game.ctx.fillText("?", game.answerLine.endX + player.questionBoxAdjustment + 10 * game.ratio, 
-    game.answerLine.y - 10 * game.ratio)
+    game.answerLine.y - 40 * game.ratio)
 }
 
 var drawGoals = function(game, player) {

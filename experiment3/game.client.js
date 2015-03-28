@@ -367,6 +367,7 @@ function mouseUpListener(evt) {
         if (dropY < game.answerLine.y) {
             word.trueY = game.answerLine.y - word.height
             word.onLine = true;
+            removeOverlap(word);
         } else {
             word.trueY = word.origY;
             word.trueX = word.origX;
@@ -380,6 +381,41 @@ function mouseUpListener(evt) {
         dragging = false;
         window.removeEventListener("mousemove", mouseMoveListener, false);
     }
+}
+
+function removeOverlap (origWord) {
+    qsOnLine = []
+    for(var i = 0; i < game.words.length; i++) {
+        var word = game.words[i];
+        if(word.onLine) {
+            qsOnLine = qsOnLine.concat(word)
+        }
+    }
+    var sortedWords = _.sortBy(qsOnLine, 'trueX')
+    var myIndex = _.indexOf(sortedWords, origWord)
+    var leftNeighbor = sortedWords[myIndex - 1]
+    var rightNeighbor = sortedWords[myIndex + 1]
+    if( leftNeighbor ) {
+        var diff = (leftNeighbor.trueX + leftNeighbor.width) - (origWord.trueX)
+        if( diff > 0) {
+            leftNeighbor.trueX -= (diff > 0) ? diff : 0
+            game.socket.send("objMove." + _.indexOf(game.words, leftNeighbor)
+                + "." + Math.round(leftNeighbor.trueX - game.get_player(my_id).questionBoxAdjustment) 
+                + "." + Math.round(leftNeighbor.trueY))
+            removeOverlap(leftNeighbor)
+        }
+    }
+    if ( rightNeighbor ) {
+        var diff = (origWord.trueX + origWord.width) - (rightNeighbor.trueX) 
+        if (diff > 0) {
+            rightNeighbor.trueX += (diff > 0) ? diff : 0
+            game.socket.send("objMove." + _.indexOf(game.words, rightNeighbor)
+                + "." + Math.round(rightNeighbor.trueX - game.get_player(my_id).questionBoxAdjustment) 
+                + "." + Math.round(rightNeighbor.trueY))
+            removeOverlap(rightNeighbor)
+        }
+    }
+
 }
 
 function mouseMoveListener(evt) {
