@@ -318,7 +318,7 @@ function mouseDownListener(evt) {
         if(buttonHitTest(mouseX, mouseY)) {
             var question = readQuestion();
             console.log(question)
-            game.socket.send("advance." + question + "?") 
+            game.socket.send("advance." + question + " ?") 
         }           
     } else if (my_role === "helper" && game.phase == 2) {
         for (i=0; i < game.goals.length; i++) {
@@ -372,9 +372,13 @@ function mouseUpListener(evt) {
             word.trueX = word.origX;
             word.onLine = false;
         }
+
         game.socket.send("objMove." + dragIndex 
             + "." + Math.round(word.trueX - game.get_player(my_id).questionBoxAdjustment) 
             + "." + Math.round(word.trueY))
+
+        game.socket.send("dropWord." + word.content
+            + "." + word.onLine)
 
         drawScreen(game, game.get_player(my_id))
         dragging = false;
@@ -472,7 +476,7 @@ function mysteryGateHitTest(i, mx, my) {
     var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
     var dx = mx - (xLocs[i] - 100);
     // allow people to click on either view... but not in between!
-    var dy = my - game.questionBox.tlY
+    var dy = my - game.ratio * 50
     return (0 < dx) && (dx < 200) && (0 < dy) && (dy < 200)
 }
 

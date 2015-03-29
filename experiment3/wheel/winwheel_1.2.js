@@ -363,8 +363,6 @@ function doSpin(game, prizes)
 						setWhiteMessageTextStyle()
 						game.socket.send("advance")
 					}, 1000)
-
-					console.log("You won " + prizes[x]['name'] + "!\nClick 'Play Again' to have another go.");
 					break;
 				}
 			}

@@ -54,6 +54,8 @@ var game_core = function(game_instance){
         tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 2*this.ratio,
     }
 
+    this.data = {trials : []}
+    this.trialPacket = {}
     this.roundNum = -1;
     this.goalNum = -1;
     this.numRounds = 8;
