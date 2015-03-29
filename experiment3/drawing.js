@@ -16,16 +16,17 @@ var drawScreen = function(game, player) {
           25*game.ratio);
     } else if (game.player_count > 1) {
       drawMessages(game, player)
-      drawMysteryGates(game, player)
+      drawQuestionBox(game, player)
+      drawAnswerLine(game, player)
+      drawWords(game, player)
+      drawSendButton(game, player)
+      drawGoals(game, player)
+
       if (player.role == "guesser" && game.phase == 0)
         initialWheelDraw(game)
-      if (player.role === "helper" || game.phase < 3) {
-        drawQuestionBox(game, player)
-        drawAnswerLine(game, player)
-        drawWords(game, player)
-        drawSendButton(game, player)
-        drawGoals(game, player)
-      }
+      if (player.role == "helper" || game.phase <= 3) 
+        drawMysteryGates(game, player)
+
     }
 }
 
@@ -71,7 +72,7 @@ var drawQuestionBox = function(game, player) {
   game.ctx.fillRect(x, y, game.questionBox.width, game.questionBox.height)
 
   setQuestionBoxStyle()
-  game.ctx.fillText("Question Box", x + game.questionBox.width / 2, y + game.ratio * 25);
+  game.ctx.fillText("Question Box", x + game.questionBox.width / 2, y + game.ratio * 15);
 }
 
 var drawAnswerLine = function(game, player) {
@@ -112,7 +113,7 @@ var drawMessages = function(game, player) {
   var text = getText(game, player)
   if(player.role == "guesser") {
     wipeRegion(game.questionBox.tlX + 250, game.ratio*325,
-      game.viewport.width, game.ratio * 30 * 4);
+      game.viewport.width, game.ratio * 30 * 2);
     setWhiteMessageTextStyle()
     // Temp message... 
     wrapText(game, text,
@@ -142,7 +143,7 @@ var getText = function(game, player) {
   } else if(role == "guesser" && phase == 2) {
     return "Waiting for other player to respond..."
   } else if (role == "guesser" && phase == 3) {
-    return "Now guess which gate it's behind!"
+    return "Now click a gate above to guess where it is"
   } else if (role == "helper" && phase < 2) {
     return "Waiting for other player to ask a question... \n Watch the box below."
   } else if (role == "helper" && phase == 2) {
@@ -184,16 +185,16 @@ var drawMysteryGates = function(game, player) {
 function revealAnswer(game, player, objPicked) {
   drawMessages(game, player)
   if(player.role === "guesser") {
-    wipeRegion(0, game.questionBox.tlY, game.viewport.width, game.questionBox.height)
+//    wipeRegion(0, game.ratio * 50, game.viewport.width, 200)
     console.log("wiping region...")
     var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
     _.map(_.zip(game.goals, xLocs), function(pair) {
       var obj = pair[0]
-      game.ctx.drawImage(obj.img, pair[1] - 100, game.questionBox.tlY, 200, 200)
+      game.ctx.drawImage(obj.img, pair[1] - 100, game.ratio * 50, 200, 200)
     })
-    if( game.gatePicked != game.goalNum ) {
-      placeX(game.gatePicked)
-    }
+  }
+  if( game.gatePicked != game.goalNum ) {
+    placeX(game.gatePicked)
   }
 }
 
@@ -202,10 +203,10 @@ function placeX(num) {
   game.ctx.beginPath();
   game.ctx.lineWidth = 8;
   game.ctx.strokeStyle = "red"
-  game.ctx.moveTo(xLocs[num] - 100, game.questionBox.tlY);
-  game.ctx.lineTo(xLocs[num] + 100, game.questionBox.tlY + 200);
-  game.ctx.moveTo(xLocs[num] + 100, game.questionBox.tlY);
-  game.ctx.lineTo(xLocs[num] - 100, game.questionBox.tlY + 200);
+  game.ctx.moveTo(xLocs[num] - 100, game.ratio * 50);
+  game.ctx.lineTo(xLocs[num] + 100, game.ratio * 50 + 200);
+  game.ctx.moveTo(xLocs[num] + 100, game.ratio * 50);
+  game.ctx.lineTo(xLocs[num] - 100, game.ratio * 50 + 200);
   game.ctx.stroke();
 }
 
