@@ -380,8 +380,14 @@ function checkForHit (mouseX, mouseY) {
     } else if (my_role === "helper" && game.phase == 2) {
         for (i=0; i < game.goals.length; i++) {
             if(gateHitTest(i, mouseX, mouseY)) {
-                game.socket.send("advance." + "The " + game.goals[i].name + " is behind gate " + (i + 1))
+                highlightGate(i, game.gateSelected);
+                game.gateSelected = i;
             }
+        }
+        if(buttonHitTest(mouseX, mouseY) && _.isNumber(game.gateSelected)) {
+            console.log("in here!!!!")
+            game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
+            game.gateSelected = false
         }
     } else if (my_role === "guesser" && game.phase == 3) {
         for (i=0; i < game.goals.length; i++) {
@@ -465,8 +471,10 @@ function wordHitTest(shape,mx,my) {
 }
 
 function buttonHitTest(mx,my) {
+    console.log("buttonHit Test")
     var dx = mx - game.sendQuestionButton.tlX - game.get_player(my_id).questionBoxAdjustment;
     var dy = my - game.sendQuestionButton.tlY;
+    console.log([dx, dy])
     return (0 < dx) && (dx < game.sendQuestionButton.width) && (0 < dy) && (dy < game.sendQuestionButton.height)
 }
 

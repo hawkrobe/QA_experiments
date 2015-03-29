@@ -21,12 +21,13 @@ var drawScreen = function(game, player) {
       drawAnswerLine(game, player)
       drawWords(game, player)
       drawGoals(game, player)
-      if( player.role == "guesser")  // Only draw send button for guesser
+      if( player.role == "guesser" || game.phase == 2)  // Only draw send button for guesser
         drawSendButton(game, player)
       if (player.role == "guesser" && game.phase == 0)
         initialWheelDraw(game)
       if (player.role == "helper" || game.phase <= 3) 
         drawMysteryGates(game, player)
+
     }
 }
 
@@ -48,6 +49,7 @@ var wipeBorder = function(tlx, tly, width, height) {
 
 var drawSendButton = function(game, player) {
   var but = game.sendQuestionButton;
+  but.tlY = player.role === "helper" ? game.ratio * 375 : but.tlY
   game.ctx.fillStyle = '#61e6ff'
   game.ctx.fillRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
   game.ctx.strokeStyle = "#000000"
@@ -100,8 +102,8 @@ var drawGoals = function(game, player) {
       game.questionBox.tlX + 250, game.ratio * 200)
   } else {
     var goals = game.goals
-    game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 25)
-    game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 175)
+    game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 15)
+    game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 165)
     _.map(goals, function(obj) { 
       game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
     })    
@@ -208,6 +210,25 @@ function placeX(num) {
   game.ctx.moveTo(xLocs[num] + 100, game.ratio * 50);
   game.ctx.lineTo(xLocs[num] - 100, game.ratio * 50 + 200);
   game.ctx.stroke();
+}
+
+function highlightGate(num, prevSelected) {
+  console.log([num, prevSelected])
+  if(_.isNumber(prevSelected)) {
+    prevGoal = game.goals[prevSelected]
+    wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth, 
+      prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
+    wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth + 300, 
+      prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
+  }
+  currGoal = game.goals[num]
+  game.ctx.strokeStyle = "red"
+  game.ctx.lineWidth = 8
+  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
+    currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth + 300, 
+      currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+
 }
 
 // function animateBorder(game, player, totalRotations, endNumber, prevNum, target) {

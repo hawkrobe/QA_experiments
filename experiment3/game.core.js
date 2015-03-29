@@ -54,7 +54,6 @@ var game_core = function(game_instance){
         tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 2*this.ratio,
     }
 
-    this.data = {trials : []}
     this.trialPacket = {}
     this.roundNum = -1;
     this.goalNum = -1;
@@ -62,6 +61,7 @@ var game_core = function(game_instance){
     this.phase = 0;
 
     if(this.server) {
+        this.data = {id : this.instance.id.slice(0,6), trials : []}
         this.players = [{
             id: this.instance.player_instances[0].id, 
             player: new game_player(this,this.instance.player_instances[0].player)
