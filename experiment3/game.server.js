@@ -83,8 +83,12 @@ game_server.server_onMessage = function(client,message) {
                 p.player.instance.send( 's.newPhase')
                 if(msg) 
                     p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
-                if(objNum) 
+                if(objNum) {
                     p.player.instance.send( 's.reveal.' + objNum)
+                    setTimeout(function(){
+                        gc.newRound()
+                    }, 2000)
+                }
             }) 
             break;
 

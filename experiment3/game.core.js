@@ -62,7 +62,6 @@ var game_core = function(game_instance){
     this.phase = 0;
 
     if(this.server) {
-        this.item = this.makeItem()
         this.players = [{
             id: this.instance.player_instances[0].id, 
             player: new game_player(this,this.instance.player_instances[0].player)
@@ -124,12 +123,12 @@ game_core.prototype.get_active_players = function() {
 game_core.prototype.newRound = function() {
     console.log("new round!")
     console.log(this.roundNum)
-
     if(this.roundNum == this.numRounds - 1) {
         var local_game = this;
         _.map(local_game.get_active_players(), function(p){
             p.player.instance.disconnect()})//send('s.end')})
     } else {
+        this.item = this.makeItem()
         this.roundNum += 1;
         this.goals = this.item.goals
         this.questions = this.item.questions
@@ -137,16 +136,12 @@ game_core.prototype.newRound = function() {
         this.words = _.map(wordList, function(content) {
             return new word(content)
         })
-        this.goalNum = -1;
-        this.newGoal()
-    }
-}
+        this.goalNum = Math.floor(Math.random() * 4);
+        this.phase = 0;
+        this.goal = this.goals[this.goalNum]
+        this.server_send_update()
 
-game_core.prototype.newGoal = function() {
-    this.goalNum += 1;
-    this.goal = this.goals[this.goalNum]
-    console.log("sending update")
-    this.server_send_update()
+    }
 }
 
 // Randomizes objects in the way given by Keysar et al (2003)
@@ -172,7 +167,6 @@ game_core.prototype.makeItem = function () {
         item.goals[i].presentationNum = presentationNum;
     })
 
-    console.log(item)
     return item
 }
 
@@ -210,7 +204,8 @@ game_core.prototype.server_send_update = function(){
             pt : this.players_threshold,
             pc : this.player_count,
             goalNum : this.goalNum,
-            goal : this.goal
+            goal : this.goal,
+            phase : this.phase
         };
 
     _.extend(state, {players: player_packet})
@@ -223,6 +218,7 @@ game_core.prototype.server_send_update = function(){
 
     //Send the snapshot to the players
     this.state = state;
+    console.log("sending update:")
     console.log(state)
     _.map(local_game.get_active_players(), function(p){
         p.player.instance.emit( 'onserverupdate', state)})

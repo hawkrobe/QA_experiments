@@ -99,6 +99,7 @@ client_onserverupdate_received = function(data){
         game.questionBox.width, game.ratio * 30);
 
     game.goalNum = data.goalNum;
+    game.phase = data.phase
     game.game_started = data.gs;
     game.players_threshold = data.pt;
     game.player_count = data.pc;
@@ -112,6 +113,7 @@ client_onserverupdate_received = function(data){
         game.ctx.fillStyle = "#212121";
         game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
         if(my_role == "guesser") {
+            resetWheel(game)
             setTimeout(function() {startSpin(game)}, 1000)
         }
     }
@@ -158,7 +160,8 @@ client_onMessage = function(data) {
         case 'reveal' :
             game.gatePicked = commanddata
             console.log("gatePicked:", game.gatePicked)
-            revealAnswer(game, game.get_player(my_id)); break;
+            revealAnswer(game, game.get_player(my_id)); 
+            break;
 
         case 'add_player' : // New player joined... Need to add them to our list.
             console.log("adding player" + commanddata)
@@ -315,26 +318,8 @@ function mouseDownListener(evt) {
                 }
             }
         }
-        if(buttonHitTest(mouseX, mouseY)) {
-            var question = readQuestion();
-            console.log(question)
-            game.socket.send("advance." + question + " ?") 
-        }           
-    } else if (my_role === "helper" && game.phase == 2) {
-        for (i=0; i < game.goals.length; i++) {
-            if(gateHitTest(i, mouseX, mouseY)) {
-                console.log("passed gateHitTest!")
-                game.socket.send("advance." + "The " + game.goals[i].name + " is behind gate " + (i + 1))
-            }
-        }
-    } else if (my_role === "guesser" && game.phase == 3) {
-        for (i=0; i < game.goals.length; i++) {
-            if(mysteryGateHitTest(i, mouseX, mouseY)) {
-                console.log("passed gateHitTest!")
-                game.socket.send("advance.." + i)
-            }
-        }
     }
+    checkForHit(mouseX, mouseY)
 
     if (dragging) {
         window.addEventListener("mousemove", mouseMoveListener, false);
@@ -385,6 +370,28 @@ function mouseUpListener(evt) {
         window.removeEventListener("mousemove", mouseMoveListener, false);
     }
 }
+
+function checkForHit (mouseX, mouseY) {
+    if(my_role === "guesser" && game.phase == 1) {
+        if(buttonHitTest(mouseX, mouseY)) {
+            var question = readQuestion();
+            game.socket.send("advance." + question + " ?") 
+        }           
+    } else if (my_role === "helper" && game.phase == 2) {
+        for (i=0; i < game.goals.length; i++) {
+            if(gateHitTest(i, mouseX, mouseY)) {
+                game.socket.send("advance." + "The " + game.goals[i].name + " is behind gate " + (i + 1))
+            }
+        }
+    } else if (my_role === "guesser" && game.phase == 3) {
+        for (i=0; i < game.goals.length; i++) {
+            if(mysteryGateHitTest(i, mouseX, mouseY)) {
+                game.socket.send("advance.." + i)
+            }
+        }
+    }
+}
+
 
 function removeOverlap (origWord) {
     qsOnLine = []

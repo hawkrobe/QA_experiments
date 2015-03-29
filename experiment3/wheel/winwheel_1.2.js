@@ -126,9 +126,6 @@ function startSpin(game)
 	prizes[3] = {"name" : "dalmatian", "startAngle" : 270, "endAngle" : 359};
 	determinedValue = _.indexOf(_.pluck(prizes, 'name'), game.goal.name)
 
-	console.log("starting spin!")
-	console.log(prizes)
-	console.log(determinedValue)
 	// This is the angle (0-360) around the wheel that is to be positioned where the pointer is located when the wheel stops.
 	// For example if pointer is located at 0 degrees (12 o'clock) and stopAngle is 67 degrees then the prize located at 67
 	// degrees will be pointed to when the wheel stops.
@@ -417,7 +414,7 @@ function powerSelected(powerLevel)
 // ==================================================================================================================================================
 // This function re-sets all vars as re-draws the wheel at the original position. Also re-sets the power and spin buttons on the example wheel.
 // ==================================================================================================================================================
-function resetWheel()
+function resetWheel(game)
 {
 	// Ensure that if wheel is spining then it is stopped.
 	clearTimeout(spinTimer);
@@ -426,22 +423,13 @@ function resetWheel()
 	angle 		 = 0;
 	targetAngle  = 0;
 	currentAngle = 0;
-	power        = 0;
-	
-	// Update styels of power buttons so they appear grey again.
-	document.getElementById('pw1').className = "";
-	document.getElementById('pw2').className = "";
-	document.getElementById('pw3').className = "";
-	
-	// Make spin button disabled again until power is selected.
-	document.getElementById('spin_button').src       = spinButtonImgOff;
-	document.getElementById('spin_button').className = "";
-	
+	power        = 1;
+			
 	// Set back to reset so that power selection and click of Spin button work again.
 	wheelState = 'reset';
 	
 	// Call function to draw wheel in start-up poistion.
-	initialDraw();
+	initialWheelDraw(game);
 }
 
 var drawArrow=function(game,x1,y1,x2,y2,d) {

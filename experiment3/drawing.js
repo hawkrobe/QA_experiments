@@ -5,6 +5,7 @@ var drawScreen = function(game, player) {
       game.questionBox.tlY,
       game.questionBox.width,game.questionBox.height);
 
+    console.log(game.phase)
     if (player.message) {
         // Draw message in center (for countdown, e.g.)
         game.ctx.fillStyle = 'white'
@@ -19,14 +20,13 @@ var drawScreen = function(game, player) {
       drawQuestionBox(game, player)
       drawAnswerLine(game, player)
       drawWords(game, player)
-      drawSendButton(game, player)
       drawGoals(game, player)
-
+      if( player.role == "guesser")  // Only draw send button for guesser
+        drawSendButton(game, player)
       if (player.role == "guesser" && game.phase == 0)
         initialWheelDraw(game)
       if (player.role == "helper" || game.phase <= 3) 
         drawMysteryGates(game, player)
-
     }
 }
 
