@@ -1,0 +1,11 @@
+HTML5 Canvas + JavaScript winning wheel
+Created by Douglas McKechie @ http://www.dougtesting.net
+2013-07-14
+	
+The code is open source and you are allowed to modify and use it however you wish.
+	
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Enjoy :)

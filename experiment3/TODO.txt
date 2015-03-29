@@ -22,7 +22,8 @@ PHASE 1:
 [x] draw gates 
     [x] create gates object mapping gate numbers to words
     [x] connect those words to pictures
-    [x] do the 'shuffle' thing with a border to make it look random
+    // [x] do the 'shuffle' thing with a border to make it look random
+    [x] put goals on a wheel and spin it!
     [x] highlight the one that's the current goal
     [x] print message like "your goal is..."
     [x] change helper display to show "guesser view" vs. "your view" with ?s in guesser view
@@ -43,10 +44,9 @@ PHASE 4:
 
 BUGS:
 [x] fix alignment problems (i.e. use questionBoxAdjustment)
-[] possible bug when screen is resized?
 [x] unset boolean when dragged off line
 [x] weird stuff happens when people try to move the words before the shuffle thing is done
 
 OPTIONAL:
 [] center words in box?
-[] push out to sides
+[x] push out to sides

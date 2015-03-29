@@ -71,11 +71,13 @@ client_onserverupdate_received = function(data){
             var imgObj = new Image()
             imgObj.src = obj.url
             // Set it up to load properly (also randomize positioning of )
-            var x = my_role === "guesser" ? parseInt(obj.trueY) : parseInt(obj.trueX)
-            var y = my_role === "guesser" ? parseInt(possibleXVals[i]) : parseInt(obj.trueY)
+            var x = parseInt(obj.trueX)
+            var y = parseInt(obj.trueY)
 
             imgObj.onload = function(){
-                game.ctx.drawImage(imgObj, x, y, obj.width, obj.height)
+                if(my_role === "helper") {
+                    game.ctx.drawImage(imgObj, x, y, obj.width, obj.height)
+                }
                 drawScreen(game, game.get_player(my_id))
             }
             return _.extend(_.omit(obj, ['trueX', 'trueY']),
@@ -110,10 +112,7 @@ client_onserverupdate_received = function(data){
         game.ctx.fillStyle = "#212121";
         game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
         if(my_role == "guesser") {
-            setTimeout(function() {
-                itemToPresent = _.indexOf( _.pluck(game.goals, 'presentationNum'), game.goalNum)
-                animateBorder(game, game.get_player(my_id), 0, 4*4 + itemToPresent, -1)
-            }, 500)
+            setTimeout(function() {startSpin(game)}, 1000)
         }
     }
 }; 
@@ -269,7 +268,7 @@ client_onjoingame = function(num_players, role) {
     // set role locally
     my_role = role;
     game.get_player(my_id).role = my_role;
-    game.get_player(my_id).questionBoxAdjustment = my_role === "guesser" ? game.ratio * 75 : 0;
+    game.get_player(my_id).questionBoxAdjustment = 0//my_role === "guesser" ? game.ratio * 75 : 0;
 
     // Update header w/ role 
     $('#header').append(role + '.');
