@@ -26,8 +26,25 @@ var dragging;
 client_ondisconnect = function(data) {
     // Redirect to exit survey
     console.log("server booted")
-    var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-    window.location.replace(URL);
+      var urlParams;
+      var match,
+          pl     = /\+/g,  // Regex for replacing addition symbol with a space
+          search = /([^&=]+)=?([^&]*)/g,
+          decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+          query  = location.search.substring(1);
+
+    urlParams = {};
+    while (match = search.exec(query))
+	urlParams[decode(match[1])] = decode(match[2]);
+      
+    console.log(urlParams)
+
+    if(_.size(urlParams) == 4) {
+	turk.submit(game.data)
+    } else {
+	var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
+	window.location.replace(URL);
+    }
 };
 
 
@@ -167,7 +184,8 @@ client_onMessage = function(data) {
 	       // Redirect to exit survey
           console.log("received end message...")
           var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-          window.location.replace(URL); break;
+            
+	    window.location.replace(URL); break;
 
         case 'alert' : // Not in database, so you can't play...
             alert('You did not enter an ID'); 

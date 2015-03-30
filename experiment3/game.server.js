@@ -262,8 +262,8 @@ game_server.createGame = function(player) {
 game_server.endGame = function(gameid, userid) {
     var thegame = this.games [ gameid ];
     if(thegame) {
-        _.map(thegame.gamecore.get_others(userid), function(p) {
-            p.player.instance.send('s.end');})
+        _.map(thegame.gamecore.get_others(userid), function(p){
+            p.player.instance.disconnect()})//send('s.end')})
         delete this.games[gameid];
         this.game_count--;
         this.log('game removed. there are now ' + this.game_count + ' games' );
