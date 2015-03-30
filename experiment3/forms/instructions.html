@@ -100,7 +100,7 @@
 	</p>	
 
 
-	There will be 4 rounds, where the locations of objects are randomly shuffled from round to round, meaning the information the helper gives on one round tells you nothing about locations in the next round! Once another player joins, the experiment should take about 7 minutes.
+	There will be 4 rounds, where the locations of objects are randomly shuffled from round to round. This means that the information the helper gives on one round is completely irrelevant to the locations of items in the next round! Once another player joins, the experiment should take about 7 minutes.
 	
       </div>
       <div class="page-header">
@@ -109,47 +109,47 @@
 
       <div class="well" style="width:800px; margin: 0 auto">
 	</br>
-	The director's goal in this game is to
+	The guesser's goal in this game is to
 	  </br>
-	  <input type="radio" name="dgoal" value="yes"> Communicate instructions clearly
+	  <input type="radio" name="dgoal" value="yes"> Guess the location of the specified item
 	  </br>
-	  <input type="radio" name="dgoal" value="no"> Move objects to the correct locations
+	  <input type="radio" name="dgoal" value="no"> Answer the other player's question by revealing an object
 	  </br>
 
 
 	</br>
-	The matcher's goal in this game is to 
+	The helper's goal in this game is to 
       </br>
-      <input type="radio" name="mgoal" value="no"> Communicate instructions clearly
+      <input type="radio" name="mgoal" value="no"> Guess the location of the specified item
       </br>
-      <input type="radio" name="mgoal" value="yes"> Move objects to the correct locations
+      <input type="radio" name="mgoal" value="yes"> Answer the other player's question by revealing an object
       </br>
 
       
-      </br>
-	If a square in the grid is black, it means
+      
+	  </br> The helper gets to see
 	  </br>
-	  <input type="radio" name="occ" value="no"> The matcher <strong> cannot </strong> see the object behind it
+	  <input type="radio" name="occ" value="no"> The locations of all the objects, but <strong> not </strong> the possible questions that could be asked.
 	  </br>
-	  <input type="radio" name="occ" value="yes"> The director <strong> cannot </strong> see the object behind it
+	  <input type="radio" name="occ" value="yes"> The locations of all the objects, <strong> and </strong> the possible questions that could be asked.
 	  </br>
-	    <input type="radio" name="occ" value="no"> The director <strong> can </strong> see the object behind it
+	    <input type="radio" name="occ" value="no"> <strong> Neither </strong> the locations of objects, nor the questions that could be asked.
 	  </br>
 	  
 
-      </br> To move an object, the matcher must
+      </br> To ask a question, the guesser must
       </br>
-	<input type="radio" name="move" value="yes"> Click and drag it
+	<input type="radio" name="move" value="yes"> Drag words in the "question box" onto the line, then click "send"
 	  </br>
-	    <input type="radio" name="move" value="no"> Use their keyboard to select the destination
+	    <input type="radio" name="move" value="no"> Use their keyboard to type it out 
        </br>
 
        </br> 
        At the end of a round
        </br>
-       <input type="radio" name="comp" value="no"> Some objects stay the same
+       <input type="radio" name="comp" value="no"> All objects stay in the same location, but there are new questions or goals
        </br>
-       <input type="radio" name="comp" value="yes"> All of the objects are replaced by new objects in new locations
+       <input type="radio" name="comp" value="yes"> Objects are randomly shuffled and new questions and goals are randomly selected
        </br>
 	  
           </br>
