@@ -78,7 +78,6 @@ game_server.server_onMessage = function(client,message) {
                 gc.data.trials.push(gc.trialPacket)
                 console.log(gc.data)
             }
-            gc.server_send_update()
 
             // relay messages
             _.map(all, function(p) {
