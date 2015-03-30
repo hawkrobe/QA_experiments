@@ -104,7 +104,7 @@ game_server.server_onMessage = function(client,message) {
 var writeData = function(client, type, message_parts) {
     var gc = client.game.gamecore
     var goal = gc.goal.name
-    var objectSet = gc.item.objectSet
+    var objectSet = gc.items[gc.roundNum].objectSet
     var id = gc.instance.id.slice(0,6)
     switch(type) {
         case "word" :

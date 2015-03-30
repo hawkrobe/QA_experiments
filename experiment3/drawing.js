@@ -49,7 +49,7 @@ var wipeBorder = function(tlx, tly, width, height) {
 
 var drawSendButton = function(game, player) {
   var but = game.sendQuestionButton;
-  but.tlY = player.role === "helper" ? game.ratio * 375 : but.tlY
+  but.tlY = player.role === "helper" ? game.ratio * 365 : but.tlY
   game.ctx.fillStyle = '#61e6ff'
   game.ctx.fillRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
   game.ctx.strokeStyle = "#000000"
@@ -99,7 +99,7 @@ var drawGoals = function(game, player) {
     game.ctx.fillText("Your view of the gates:", game.viewport.width/2, game.ratio * 15)
     game.ctx.textAlign = "left"
     game.ctx.fillText("Your goal is to find the...", 
-      game.questionBox.tlX + 250, game.ratio * 200)
+      500, game.ratio * 200)
   } else {
     var goals = game.goals
     game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 15)
@@ -114,16 +114,15 @@ var drawGoals = function(game, player) {
 var drawMessages = function(game, player) {
   var text = getText(game, player)
   if(player.role == "guesser") {
-    wipeRegion(game.questionBox.tlX + 250, game.ratio*325,
-      game.viewport.width, game.ratio * 30 * 2);
-    setWhiteMessageTextStyle()
+    wipeRegion(500, game.ratio*325,
+      690, game.ratio * 30 * 2); setWhiteMessageTextStyle()
     // Temp message... 
     wrapText(game, text,
-      game.questionBox.tlX + 250, game.ratio*325,
-      game.questionBox.width, game.ratio*30)
+      500, game.ratio*325,
+      690, game.ratio*30)
   } else {
       // Temp message:
-      wipeRegion(0, game.ratio*325, game.viewport.width, game.ratio * 30 * 2);
+      wipeRegion(0, game.ratio*325, game.viewport.width, game.ratio * 30 * 2.1);
       setWhiteMessageTextStyle()
       game.ctx.textAlign = "center"
       wrapText(game, text,

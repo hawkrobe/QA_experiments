@@ -38,21 +38,6 @@ var game_core = function(game_instance){
     //Dimensions of world -- Used in collision detection, etc.
     this.world = {width : 600, height : 600};  // 160cm * 3
     this.ratio = 2;
-    this.questionBox = {
-        tlX : 125*this.ratio, tlY: 400*this.ratio, 
-        height: 175*this.ratio, width: 350*this.ratio}
-
-    this.answerLine = {
-        startX : this.questionBox.tlX + 50*this.ratio, 
-        endX   : this.questionBox.tlX + this.questionBox.width - 50*this.ratio,
-        y      : this.questionBox.tlY + this.questionBox.height/2}
-
-    this.sendQuestionButton = {
-        width: this.questionBox.width/4,
-        height: this.questionBox.height*1/8,
-        tlX: this.questionBox.tlX + this.questionBox.width*3/8,
-        tlY: this.questionBox.tlY + this.questionBox.height*7/8 - 2*this.ratio,
-    }
 
     this.trialPacket = {}
     this.roundNum = -1;
@@ -61,6 +46,8 @@ var game_core = function(game_instance){
     this.phase = 0;
 
     if(this.server) {
+        this.items = this.makeItem()
+        console.log(this.item)
         this.data = {id : this.instance.id.slice(0,6), trials : []}
         this.players = [{
             id: this.instance.player_instances[0].id, 
@@ -128,10 +115,11 @@ game_core.prototype.newRound = function() {
         _.map(local_game.get_active_players(), function(p){
             p.player.instance.disconnect()})//send('s.end')})
     } else {
-        this.item = this.makeItem()
+        console.log(this.items)
         this.roundNum += 1;
-        this.goals = this.item.goals
-        this.questions = this.item.questions
+        this.goals = this.items[this.roundNum].goals
+        this.questions = this.items[this.roundNum].questions
+        this.wheelURL = this.items[this.roundNum].wheel
         wordList = _.shuffle([' where ', ' is ', ' the ', ' that '].concat(this.questions))
         this.words = _.map(wordList, function(content) {
             return new word(content)
@@ -150,24 +138,21 @@ game_core.prototype.makeItem = function () {
     var local_this = this;
 
     // 2) Assign target & distractor based on condition
-    var item = _.sample(JSON.parse(JSON.stringify(objectSet.items)))
+    var items = _.sample(JSON.parse(JSON.stringify(objectSet.items)), 4)
 
     // 3. assign random initial locations (probably won't want to do this in the real exp.)
-    var xLocs = _.range(100 * this.ratio, 600 * this.ratio , 125 * this.ratio)
-    item.goals = _.shuffle(item.goals)
-    _.map(_.zip(item.goals, xLocs), function(pair) {
-        obj = pair[0]
-        obj.trueX = pair[1] - obj.width/2
-        obj.trueY = local_this.ratio * 100 - obj.height/2
-    })
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i]
+        var xLocs = _.range(100 * this.ratio, 600 * this.ratio , 125 * this.ratio)
+        item.goals = _.shuffle(item.goals)
+        _.map(_.zip(item.goals, xLocs), function(pair) {
+            obj = pair[0]
+            obj.trueX = pair[1] - obj.width/2
+            obj.trueY = local_this.ratio * 100 - obj.height/2
+        })
+    }
 
-    _.map(_.zip(_.range(4), _.shuffle(_.range(4))),  function(pair) {
-        var i = pair[0]
-        var presentationNum = pair[1]
-        item.goals[i].presentationNum = presentationNum;
-    })
-
-    return item
+    return items
 }
 
 // maps a grid location to the exact pixel coordinates
@@ -205,7 +190,8 @@ game_core.prototype.server_send_update = function(){
             pc : this.player_count,
             goalNum : this.goalNum,
             goal : this.goal,
-            phase : this.phase
+            phase : this.phase,
+            wheelURL : this.wheelURL
         };
 
     _.extend(state, {players: player_packet})

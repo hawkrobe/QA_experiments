@@ -37,7 +37,6 @@ Version History:
 // --------------------------------
 // VARIABLES YOU CAN ALTER...
 var canvasId         = "viewport";   // Id of the canvas element on the page the wheel is to be rendered on.
-var wheelImageName   = "stimuli/wheel1.png";	// File name of the image for the wheel.
 var theSpeed         = 20; 		 // Controls how often the spin function is called (is miliseconds value for animation timer).
 var pointerAngle     = 270	;  	 	 // The angle / location around the wheel where the pointer indicaing the prize is located. Can be any value you like, 0 is top (12 oclock) 180 is bottom (6 o'clock) etc.
 var doPrizeDetection = true; 	 // Set to true if you want the code to detect the prize the user has won when the spinning has stopped. Prizes need to be specified in the prizes array.
@@ -102,7 +101,7 @@ var wheelState = 'reset';
 // ==================================================================================================================================================
 function initialWheelDraw(game) {
 	wheel = new Image();
-	wheel.src = wheelImageName;
+	wheel.src = game.wheelURL;
 	wheel.width = wheelSize
 	wheel.height = wheelSize
 	wheel.trueX = 150 * game.ratio - wheelSize/2

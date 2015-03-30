@@ -93,16 +93,20 @@ client_onserverupdate_received = function(data){
         return newWord
     })
 
+    makeDrawableObjects(game)
+
     initializeWords(
         game, game.get_player(my_id), game.questionBox.tlX + game.ratio * 5,
         game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2.5,
         game.questionBox.width, game.ratio * 30);
+
 
     game.goalNum = data.goalNum;
     game.phase = data.phase
     game.game_started = data.gs;
     game.players_threshold = data.pt;
     game.player_count = data.pc;
+    game.wheelURL = data.wheelURL;
 
     // Draw all this new stuff
     drawScreen(game, game.get_player(my_id))
@@ -119,6 +123,28 @@ client_onserverupdate_received = function(data){
     }
 }; 
 
+var makeDrawableObjects = function(game) {
+    var wordWidth = _.reduce(game.words, function(memo, word) {
+        return memo + word.width;
+    }, 20)
+
+    game.questionBox = {
+        tlX : (game.viewport.width - wordWidth)/2, 
+        tlY: 400*game.ratio, 
+        height: 175*game.ratio, width: wordWidth}
+
+    game.answerLine = {
+        startX : game.questionBox.tlX + 50*game.ratio, 
+        endX   : game.questionBox.tlX + game.questionBox.width - 50*game.ratio,
+        y      : game.questionBox.tlY + game.questionBox.height/2}
+
+    game.sendQuestionButton = {
+        width: game.questionBox.width/4,
+        height: game.questionBox.height*1/8,
+        tlX: game.questionBox.tlX + game.questionBox.width*3/8,
+        tlY: game.questionBox.tlY + game.questionBox.height*7/8 - 2*game.ratio,
+    }
+}
 // This is where clients parse socket.io messages from the server. If
 // you want to add another event (labeled 'x', say), just add another
 // case here, then call
