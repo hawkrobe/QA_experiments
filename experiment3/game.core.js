@@ -191,7 +191,8 @@ game_core.prototype.server_send_update = function(){
             goalNum : this.goalNum,
             goal : this.goal,
             phase : this.phase,
-            wheelURL : this.wheelURL
+            wheelURL : this.wheelURL,
+            dataObj  : this.data
         };
 
     _.extend(state, {players: player_packet})

@@ -38,9 +38,11 @@ client_ondisconnect = function(data) {
 	urlParams[decode(match[1])] = decode(match[2]);
       
     console.log(urlParams)
+    console.log(game)
 
     if(_.size(urlParams) == 4) {
-	turk.submit(game.data)
+      console.log(window.opener)
+      window.opener.turk.submit(game.data)
     } else {
 	var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
 	window.location.replace(URL);
@@ -124,6 +126,7 @@ client_onserverupdate_received = function(data){
     game.players_threshold = data.pt;
     game.player_count = data.pc;
     game.wheelURL = data.wheelURL;
+    game.data = data.dataObj
 
     // Draw all this new stuff
     drawScreen(game, game.get_player(my_id))
