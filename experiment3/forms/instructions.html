@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../favicon.ico">
+
+    <title>Experiment</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="theme.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document">
+    
+    <div class="container theme-showcase" role="main">
+
+      </br>
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100" style="width: 5%;"><span class="sr-only">5% Complete</span></div>
+      </div>
+
+      <div class="page-header">
+        <h1>Instructions</h1>
+      </div>
+      
+      <div class="well" style="width:800px; margin: 0 auto">
+
+	
+	<p> In this experiment, we'll be playing a guessing
+	game. The game has two roles, which will be assigned
+	randomly. Since you will not know which role you will play
+	until the game starts, you will be responsible for
+	understanding the responsibilities and goals of both
+	roles.  </p>
+
+	<p> If you are the first person to arrive in a game, you must wait
+	shortly for another player to join. Once both players have
+	joined the game, you will see a display like the
+	following: </p>
+
+	<p>
+	  <center><img src="images/guesserViewStart.jpg" alt="Example gameplay" style="width:730px;height:367.5px"></center>
+	</p>
+
+	<p> On the right side of the screen, you will see a workspace
+	filled with various objects and messages. On the left side of the screen,
+	you will see a chat window that will contain messages from the
+	other player. </p>
+	
+	<h3> Guesser instructions </h3>
+
+	<p> There are four objects hidden behind four gates. These
+	four objects are shown on a wheel. This wheel will spin and
+	pick out one of the objects for you to find. For example, if
+	it lands on the cat, you must try to guess which gate has the
+	  cat behind it. </p>
+
+	<p> If you had to guess without any further information, you
+	wouldn't stand much of a chance of finding it. Luckily, you
+	are playing with a helper, who knows exactly what is behind
+	each gate. You have the opportunity to ask them a single
+	question before you guess. Just drag the words in the
+	"question box" onto the line to make a question, and then
+	  click the 'send' button! </p>
+
+	</p> The helper can 'lift' one of the gates, showing you
+	what's behind it. Once you get their answer, you will click on
+	one of the green gates to guess where it is. You will then
+	find out whether you guessed correctly! </p>
+
+	<h3> Helper instructions </h3>
+
+	<p> If you are the "helper", you will see a different screen,
+	shown below. You don't know which object the guesser is trying
+	to find, but you know where all of the objects are located!
+	You will watch them drag words up to the line in the question
+	box and then see their question appear in the left side of the
+	screen. Based on this question, you will select one of the
+	four gates and click the "send" button. Sometimes their
+	question will be vague, making it harder to tell what they're
+	looking for, but think about why they might have picked the
+	question they did. </p>
+
+	<p>
+	  <center><img src="images/helperView.png" alt="helper view" style="width:602.5px;height:298.5px"></center>
+	</p>	
+
+
+	There will be 4 rounds, where the locations of objects are randomly shuffled from round to round, meaning the information the helper gives on one round tells you nothing about locations in the next round! Once another player joins, the experiment should take about 7 minutes.
+	
+      </div>
+      <div class="page-header">
+        <h3>Comprehension Quiz</h3>
+      </div>
+
+      <div class="well" style="width:800px; margin: 0 auto">
+	</br>
+	The director's goal in this game is to
+	  </br>
+	  <input type="radio" name="dgoal" value="yes"> Communicate instructions clearly
+	  </br>
+	  <input type="radio" name="dgoal" value="no"> Move objects to the correct locations
+	  </br>
+
+
+	</br>
+	The matcher's goal in this game is to 
+      </br>
+      <input type="radio" name="mgoal" value="no"> Communicate instructions clearly
+      </br>
+      <input type="radio" name="mgoal" value="yes"> Move objects to the correct locations
+      </br>
+
+      
+      </br>
+	If a square in the grid is black, it means
+	  </br>
+	  <input type="radio" name="occ" value="no"> The matcher <strong> cannot </strong> see the object behind it
+	  </br>
+	  <input type="radio" name="occ" value="yes"> The director <strong> cannot </strong> see the object behind it
+	  </br>
+	    <input type="radio" name="occ" value="no"> The director <strong> can </strong> see the object behind it
+	  </br>
+	  
+
+      </br> To move an object, the matcher must
+      </br>
+	<input type="radio" name="move" value="yes"> Click and drag it
+	  </br>
+	    <input type="radio" name="move" value="no"> Use their keyboard to select the destination
+       </br>
+
+       </br> 
+       At the end of a round
+       </br>
+       <input type="radio" name="comp" value="no"> Some objects stay the same
+       </br>
+       <input type="radio" name="comp" value="yes"> All of the objects are replaced by new objects in new locations
+       </br>
+	  
+          </br>
+	  Have you participated in this study before? </br>
+	  <input type="radio" name="completed" value="yes"> Yes
+          </br>
+	  <input type="radio" name="completed" value="no"> No
+          </br>
+
+	  </br>
+	  <input id="quiz_submit" type="submit" value="Submit"> 
+		  </br>
+		  </br>
+	<div class="error" style="display:none"> Ooops! Looks like you made a mistake. You have one more try. </div>
+    </div> <!-- /container -->
+      </div>
+    <script type="text/javascript">
+      var counter = 0;
+      document.getElementById("quiz_submit").onclick = function () {
+        var ans1 = $('input[name="comp"]:checked').val();
+        var ans2 = $('input[name="move"]:checked').val();
+        var ans3 = $('input[name="mgoal"]:checked').val();
+        var ans4 = $('input[name="dgoal"]:checked').val();
+        var ans5 = $('input[name="occ"]:checked').val();
+        if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
+           ans4 == "yes" && ans5 == "yes") {
+          location.replace("./pass.html");
+        } else if(counter == 1) {
+          location.replace("./fail.html");
+        } else {
+          $('.error').show()
+          counter += 1;
+        }
+      };
+    </script>
+    
+    <script src="./validate-form.js"></script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="../dist/js/bootstrap.min.js"></script>
+  </body>
+</html>
