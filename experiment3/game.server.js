@@ -76,6 +76,9 @@ game_server.server_onMessage = function(client,message) {
             if(objNum) {
                 gc.trialPacket = _.extend(gc.trialPacket, {"guess" : gc.goals[objNum].name})
                 gc.data.trials.push(gc.trialPacket)
+                setTimeout(function(){
+                  gc.newRound()
+		}, 2000)
                 console.log(gc.data)
             }
 
@@ -84,12 +87,8 @@ game_server.server_onMessage = function(client,message) {
                 p.player.instance.send( 's.newPhase')
                 if(msg) 
                     p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
-                if(objNum) {
+                if(objNum) 
                     p.player.instance.send( 's.reveal.' + objNum)
-                    setTimeout(function(){
-                        gc.newRound()
-                    }, 2000)
-                }
             }) 
             break;
 
@@ -264,7 +263,7 @@ game_server.endGame = function(gameid, userid) {
     var thegame = this.games [ gameid ];
     if(thegame) {
         _.map(thegame.gamecore.get_others(userid), function(p){
-            p.player.instance.disconnect()})//send('s.end')})
+          p.player.instance.send('s.end')})
         delete this.games[gameid];
         this.game_count--;
         this.log('game removed. there are now ' + this.game_count + ' games' );

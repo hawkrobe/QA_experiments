@@ -10,11 +10,17 @@
 var 
     use_db          = false,
     gameport        = 8888,
+    https           = require('https'),
+    fs              = require('fs'),
+    privateKey      = fs.readFileSync('/etc/apache2/ssl/private.key'),
+    certificate     = fs.readFileSync('/etc/apache2/ssl/ssl.crt'),
+    options         = {key: privateKey, cert: certificate},
     app             = require('express')(),
-    server          = app.listen(gameport),
+    server          = require('https').createServer(options,app).listen(gameport),
     io              = require('socket.io')(server),
-    _               = require('underscore'),
-    fs              = require('fs');
+    _               = require('underscore')
+
+
 
 if (use_db) {
     database        = require(__dirname + "/database"),
@@ -55,6 +61,7 @@ app.get( '/*' , function( req, res ) {
 io.on('connection', function (client) {
     // Recover query string information and set condition
     var hs = client.handshake;    
+    console.log(require('url').parse(client.handshake.headers.referer, true))
     var query = require('url').parse(client.handshake.headers.referer, true).query;
     if( !(query.id && query.id in global_player_set) ) {
         if(query.id) {
