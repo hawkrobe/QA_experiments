@@ -5,7 +5,6 @@ var drawScreen = function(game, player) {
       game.questionBox.tlY,
       game.questionBox.width,game.questionBox.height);
 
-    console.log(game.phase)
     if (player.message) {
         // Draw message in center (for countdown, e.g.)
         game.ctx.fillStyle = 'white'
@@ -170,7 +169,6 @@ var drawMysteryGates = function(game, player) {
   var yLoc = player.role === "helper" ? game.ratio * 200 : game.ratio * 50
   var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
   _.map([1,2,3,4], function(num) {
-    console.log("stimuli/gate" + num + ".jpg")
     var imgObj = new Image()
     imgObj.src = "stimuli/gate" + num + ".jpg"
     // Set it up to load properly
@@ -187,7 +185,6 @@ function revealAnswer(game, player, objPicked) {
   drawMessages(game, player)
   if(player.role === "guesser") {
 //    wipeRegion(0, game.ratio * 50, game.viewport.width, 200)
-    console.log("wiping region...")
     var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
     _.map(_.zip(game.goals, xLocs), function(pair) {
       var obj = pair[0]
@@ -212,7 +209,6 @@ function placeX(num) {
 }
 
 function highlightGate(num, prevSelected) {
-  console.log([num, prevSelected])
   if(_.isNumber(prevSelected)) {
     prevGoal = game.goals[prevSelected]
     wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth, 

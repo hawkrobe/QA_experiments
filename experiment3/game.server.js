@@ -76,7 +76,6 @@ game_server.server_onMessage = function(client,message) {
             if(objNum) {
                 gc.trialPacket = _.extend(gc.trialPacket, {"guess" : gc.goals[objNum].name === gc.goal.name})
                 gc.data.trials.push(gc.trialPacket)
-	        gc.server_send_update()
                 setTimeout(function(){
                   gc.newRound()
 		}, 4000)
@@ -90,6 +89,7 @@ game_server.server_onMessage = function(client,message) {
                 if(msg) 
                     p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
                 if(objNum) {
+		  p.player.instance.emit('updateData', gc.data)
                     p.player.instance.send( 's.reveal.' + objNum)
 		}
             }) 
