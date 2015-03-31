@@ -23,19 +23,19 @@ var items = [
 	},
 	{
 		goals: [dalmatian, poodle, siamese, whale],
-		questions: [" dog ", " pet ", " animal "],
+		questions: [" dog ", " dalmatian ", " pet ", " animal "],
 		wheel: "stimuli/animalWheel.png",
 		objectSet: 2,
 	},
 	{
 		goals: [dalmatian, poodle, siamese, whale],
-		questions: [" dog ", " dalmatian ", " cat ", " pet ", " animal "],
+		questions: [" dog ", " dalmatian ", " pet ", " animal "],
 		wheel: "stimuli/animalWheel.png",
 		objectSet: 3,
 	},
 	{
 		goals: [dalmatian, poodle, siamese, whale],
-		questions: [" dog ", " dalmatian ", " whale ", " pet "],
+		questions: [" dog ", " dalmatian ", " pet ", " animal "],
 		wheel: "stimuli/animalWheel.png",
 		objectSet: 4,
 	}]

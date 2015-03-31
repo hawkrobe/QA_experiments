@@ -135,12 +135,12 @@ game_core.prototype.newRound = function() {
 
 // Randomizes objects in the way given by Keysar et al (2003)
 game_core.prototype.makeItem = function () {
-    // 1) Choose order of experimental & baseline (no more than 2 in a row)
+
     var local_this = this;
 
     // 2) Assign target & distractor based on condition
     var items = _.sample(JSON.parse(JSON.stringify(objectSet.items)), 4)
-
+//    var items = _.shuffle(JSON.parse(JSON.stringify(objectSet.items)))
     // 3. assign random initial locations (probably won't want to do this in the real exp.)
     for (var i = 0; i < items.length; i++) {
         var item = items[i]
