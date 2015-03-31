@@ -45,15 +45,17 @@
         <h1>Congratulations!  You passed the comprehension checks.</h1>
       </div>
 
-      <div class="well">
-      <center>
-	Click below to start the game! You may have to wait briefly
-	until another player connects. At the end of the game, your
-	HIT will automatically be submitted and the window will close!
-	Do not worry about using a code to submit with your HIT. Do
-	not refresh the page, or you will not be able to finish the
-	game!
-	</center>
+      <div class="well" style="width:800px; margin 0 auto">
+      <p>
+	Click below to start the game! 
+      </p>
+
+      <p> You may have to wait briefly until another player
+	connects. At the end of the game, your HIT will automatically
+	be submitted and the window will close!  Do not worry about
+	using a code to submit with your HIT. Do not refresh the page,
+	or you will not be able to finish the game!
+      </p>
       </div>
 
       <p>
@@ -65,6 +67,7 @@
 
     
     <script type="text/javascript">
+      $('html,body').scrollTop(0);
       var urlParams;
       var match,
           pl     = /\+/g,  // Regex for replacing addition symbol with a space
