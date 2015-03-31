@@ -1,16 +1,19 @@
 
 OVERALL:
-[] switch to random sampling of conditions w/o replacement instead of going through full set of goals
+[x] switch to random sampling of conditions w/o replacement instead of going through full set of goals
    (worried that there will be stronger order effect if we keep the same alternatives and questions, 
     e.g. people might be reticent to ask the same question twice for different goals, even if it's the best one
+[] for pilot, ignore different questions sets?
 [x] Clean transitions between phases
-[] Write data
+[x] Write data
     [x] Record when participant places word on line (or removes it)...
-    [] record all messages sent
-    [] for each trial, additionally package up the 
+    [x] record all messages sent
+    [x] for each trial, additionally package up the 
        1. NOUN used in the question (i.e. the last word)
        2. NOUN used in the answer (i.e. the second word)
        3. whether or not they were correct
+    [x] submit this package to mmturkey
+
 PHASE 1:
 [x] remove chat box, keep messages panel
 [x] draw question box
@@ -54,5 +57,5 @@ BUGS:
 [x] weird stuff happens when people try to move the words before the shuffle thing is done
 
 OPTIONAL:
-[] center words in box?
+[x] center words in box?
 [x] push out to sides
