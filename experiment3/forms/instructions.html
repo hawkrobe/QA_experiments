@@ -57,9 +57,9 @@
 	</p>
 
 	<p> On the right side of the screen, you will see a workspace
-	filled with various objects and messages. On the left side of the screen,
-	you will see a chat window that will contain messages from the
-	other player. </p>
+	filled with various objects and messages. On the left side of
+	the screen, you will see a chat window that will contain
+	messages sent between you and the other player. </p>
 	
 	<h3> Guesser instructions </h3>
 
@@ -73,13 +73,13 @@
 	wouldn't stand much of a chance of finding it. Luckily, you
 	are playing with a helper, who knows exactly what is behind
 	each gate. You have the opportunity to ask them a single
-	question before you guess. Just drag the words in the
-	"question box" onto the line to make a question, and then
-	  click the 'send' button! </p>
+	question before you guess. Just drag the words in the bottom
+	of the "question box" onto the line to form a question, and
+	then click the 'send' button! </p>
 
-	</p> The helper can 'lift' one of the gates, showing you
-	what's behind it. Once you get their answer, you will click on
-	one of the green gates to guess where it is. You will then
+	</p> The helper can then 'lift' one of the gates, showing you
+	what's behind it. Once you receive their answer, you will click on
+	one of the green gates to guess where it is. Finally, you will
 	find out whether you guessed correctly! </p>
 
 	<h3> Helper instructions </h3>
@@ -91,16 +91,21 @@
 	box and then see their question appear in the left side of the
 	screen. Based on this question, you will select one of the
 	four gates and click the "send" button. Sometimes their
-	question will be vague, making it harder to tell what they're
-	looking for, but think about why they might have picked the
-	question they did. </p>
+	question will seem too vague to answer perfectly, but keep an
+	eye on the question box and think about why they might have
+	picked one question instead of another. </p>
 
 	<p>
 	  <center><img src="images/helperView.png" alt="helper view" style="width:602.5px;height:298.5px"></center>
 	</p>	
 
 
-	There will be 4 rounds, where the locations of objects are randomly shuffled from round to round. This means that the information the helper gives on one round is completely irrelevant to the locations of items in the next round! Once another player joins, the experiment should take about 7 minutes.
+	There will be 4 rounds, where the locations of objects are
+	randomly shuffled from round to round. This means that the
+	information the helper gives on one round is completely
+	irrelevant to the locations of items in the next round! Once
+	another player joins, the experiment should take about 7
+	minutes.
 	
       </div>
       <div class="page-header">
@@ -167,6 +172,19 @@
     </div> <!-- /container -->
       </div>
     <script type="text/javascript">
+      var urlParams;
+	var match,
+	      pl     = /\+/g,  // Regex for replacing addition symbol with a space
+	      search = /([^&=]+)=?([^&]*)/g,
+	      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+	      query  = location.search.substring(1);
+
+      urlParams = {};
+      while (match = search.exec(query))
+      urlParams[decode(match[1])] = decode(match[2]);
+      
+      console.log(urlParams)
+
       var counter = 0;
       document.getElementById("quiz_submit").onclick = function () {
         var ans1 = $('input[name="comp"]:checked').val();
@@ -176,7 +194,13 @@
         var ans5 = $('input[name="occ"]:checked').val();
         if(ans1 == "yes" && ans2 == "yes" && ans3 == "yes" && 
            ans4 == "yes" && ans5 == "yes") {
-          location.replace("./pass.html");
+           var workerId = urlParams.workerId;
+           var assignmentId = urlParams.assignmentId;
+           var hitId = urlParams.hitId;
+           var turkSubmitTo = urlParams.turkSubmitTo;
+           location.replace("./pass.html?workerId=" + workerId
+                            + "&assignmentId=" + assignmentId
+                            + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo);
         } else if(counter == 1) {
           location.replace("./fail.html");
         } else {

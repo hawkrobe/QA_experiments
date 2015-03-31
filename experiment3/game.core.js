@@ -42,7 +42,7 @@ var game_core = function(game_instance){
     this.trialPacket = {}
     this.roundNum = -1;
     this.goalNum = -1;
-    this.numRounds = 8;
+    this.numRounds = 4;
     this.phase = 0;
 
     if(this.server) {
@@ -122,10 +122,11 @@ game_core.prototype.newRound = function() {
         this.wheelURL = this.items[this.roundNum].wheel
         wordList = _.shuffle([' where ', ' is ', ' the ', ' that '].concat(this.questions))
         this.words = _.map(wordList, function(content) {
-            return new word(content)
+          return new word(content)
         })
         this.goalNum = Math.floor(Math.random() * 4);
         this.phase = 0;
+        this.trialPacket = {};
         this.goal = this.goals[this.goalNum]
         this.server_send_update()
 
@@ -191,7 +192,8 @@ game_core.prototype.server_send_update = function(){
             goalNum : this.goalNum,
             goal : this.goal,
             phase : this.phase,
-            wheelURL : this.wheelURL
+            wheelURL : this.wheelURL,
+            dataObj  : this.data
         };
 
     _.extend(state, {players: player_packet})

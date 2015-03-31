@@ -20,6 +20,10 @@
     <!-- <link href="cocolab-style.css" rel="stylesheet" type="text/css"/> -->
 
     <link href="theme.css" rel="stylesheet"/>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="../dist/js/bootstrap.min.js"></script>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -50,14 +54,28 @@
       <div class="well" style="width: 500px; margin: 0 auto"> 
 
 	<p align="left" id="instruct-text">
-	  The actions of asking and answering questions play an important role in our everyday lives. It's not always clear why someone is asking a question, but we have strong intuitions about what counts as a 'good question' or 'good answer'. </p>
+	  Actions of asking and answering questions play an
+	  important role in our everyday lives. It's not always clear
+	  why someone is asking a question, but we have strong
+	  intuitions about what counts as a 'good question' or 'good
+	  answer'. </p>
 	  
-	<p align="left" id="instruct-text"> In this HIT, you will play a guessing game with another Turker. One of you will be trying to find an object, and the other will know where it is. The guesser is allowed to ask the helper one question. Pick carefully! Before starting the game, you will be given further instructions and must pass a short quiz testing your understanding of the instructions. It should take 5-10 minutes, including the time it takes to read instructions and wait for another turker (which we cannot control). Please pay attention and think carefully before responding! Thank you!</p>
+	<p align="left" id="instruct-text"> In this HIT, you will play
+	a guessing game with another Turker. One of you will be trying
+	to find an object, and the other will know where it is. The
+	guesser is allowed to ask the helper one question. Pick
+	carefully! Before starting the game, you will be given further
+	instructions and must pass a short quiz testing your
+	understanding of the instructions. It should take 5-10
+	minutes, including the time it takes to read instructions and
+	wait for another turker (which we cannot control). Please pay
+	attention and think carefully before responding! Thank
+	you!</p>
 
       </div>
 
       <p>
-        <center><button id="agree" type="button" class="btn btn-sm btn-primary">SUBMIT</button></center>
+        <center><button id="agree" type="button" style="display: none" class="btn btn-sm btn-primary">SUBMIT</button></center>
 	<noscript><strong>JavaScript must be enabled to start.</strong></noscript>
       </p>
       <hr>
@@ -82,30 +100,54 @@
     </div> <!-- /container -->
     
     <script type="text/javascript">
+      $(document).ready(function () {
+          var urlParams;
+	var match,
+	      pl     = /\+/g,  // Regex for replacing addition symbol with a space
+	      search = /([^&=]+)=?([^&]*)/g,
+	      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+	      query  = location.search.substring(1);
+
+      urlParams = {};
+      while (match = search.exec(query))
+      urlParams[decode(match[1])] = decode(match[2]);
+      
+      console.log(urlParams)
+      if(urlParams.assignmentId != "ASSIGNMENT_ID_NOT_AVAILABLE") {
+      $("#agree").show()
+      }      
+
       document.getElementById("agree").onclick = function () {
-        location.replace("./instructions.html");
+        var workerId = urlParams.workerId;
+        var assignmentId = urlParams.assignmentId;
+        var hitId = urlParams.hitId;
+        var turkSubmitTo = urlParams.turkSubmitTo;
+        location.replace("./instructions.html?workerId=" + workerId
+                         + "&assignmentId=" + assignmentId
+                         + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo);
       };
+      //your code here
+      });
+
     </script>
 
 
     <!-- <script src="unique.js" type="text/javascript"></script> -->
-    <script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
-    <script type="text/javascript">
-      (function(){
-      var ut_id = "437b927ce01d56a46b8fba65b038bdbb";
-      if (UTWorkerLimitReached(ut_id)) {
-      document.getElementById('mturk_form').style.display = 'none';
-      document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
-      }
-      })();
-    </script>
+    <!-- <script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script> -->
+    <!-- <script type="text/javascript"> -->
+    <!--   (function(){ var ut_id = "437b927ce01d56a46b8fba65b038bdbb"; if -->
+    <!--   (UTWorkerLimitReached(ut_id)) { -->
+    <!--   document.getElementById('mturk_form').style.display = 'none'; -->
+    <!--   document.getElementsByTagName('body')[0].innerHTML = "You have -->
+    <!--   already completed the maximum number of HITs allowed by this -->
+    <!--   requester. Please click 'Return HIT' to avoid any impact on your -->
+    <!--   approval rating."; } })(); -->
+    <!-- </script> -->
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="../dist/js/bootstrap.min.js"></script>
-    <script src="../assets/js/docs.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../assets/js/ie10-viewport-bug-workaround.js"></script>
+    <!-- <script src="../assets/js/docs.min.js"></script> -->
+    <!-- <\!-- IE10 viewport hack for Surface/desktop Windows 8 bug -\-> -->
+    <!-- <script src="../assets/js/ie10-viewport-bug-workaround.js"></script> -->
   </body>
 </html>

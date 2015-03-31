@@ -67,28 +67,29 @@ game_server.server_onMessage = function(client,message) {
             if(msg) {
                 splitMsg = msg.split('  ')
                 if(splitMsg.slice(-1)[0]  == "?")
-                    gc.trialPacket = _.extend(gc.trialPacket, {"question" : splitMsg.slice(-2)[0]})
+                    gc.trialPacket = _.extend(gc.trialPacket, {"goal" : gc.goal.name, "question" : splitMsg.slice(-2)[0]})
                 else 
                     gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ')[1]})
                 writeData(client, "message", message_parts)
             }
             // collect the most important data, to submit through mmturkey
             if(objNum) {
-                gc.trialPacket = _.extend(gc.trialPacket, {"guess" : gc.goals[objNum].name})
+                gc.trialPacket = _.extend(gc.trialPacket, {"guess" : gc.goals[objNum].name === gc.goal.name})
                 gc.data.trials.push(gc.trialPacket)
+                setTimeout(function(){
+                  gc.newRound()
+		}, 2000)
+	      console.log(gc.trialPacket)
                 console.log(gc.data)
             }
+
             // relay messages
             _.map(all, function(p) {
                 p.player.instance.send( 's.newPhase')
                 if(msg) 
                     p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
-                if(objNum) {
+                if(objNum) 
                     p.player.instance.send( 's.reveal.' + objNum)
-                    setTimeout(function(){
-                        gc.newRound()
-                    }, 2000)
-                }
             }) 
             break;
 
@@ -262,8 +263,8 @@ game_server.createGame = function(player) {
 game_server.endGame = function(gameid, userid) {
     var thegame = this.games [ gameid ];
     if(thegame) {
-        _.map(thegame.gamecore.get_others(userid), function(p) {
-            p.player.instance.send('s.end');})
+        _.map(thegame.gamecore.get_others(userid), function(p){
+          p.player.instance.send('s.end')})
         delete this.games[gameid];
         this.game_count--;
         this.log('game removed. there are now ' + this.game_count + ' games' );

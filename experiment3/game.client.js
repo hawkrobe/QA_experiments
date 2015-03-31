@@ -24,12 +24,35 @@ var incorrect;
 var dragging;
 
 client_ondisconnect = function(data) {
-    // Redirect to exit survey
-    console.log("server booted")
-    var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-    window.location.replace(URL);
+
 };
 
+submitInfoAndClose = function() {
+    // Redirect to exit survey
+  console.log("server booted")
+  var urlParams;
+  var match,
+      pl     = /\+/g,  // Regex for replacing addition symbol with a space
+      search = /([^&=]+)=?([^&]*)/g,
+      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+      query  = location.search.substring(1);
+
+  urlParams = {};
+  while (match = search.exec(query))
+    urlParams[decode(match[1])] = decode(match[2]);
+      
+  console.log(urlParams)
+  console.log(game)
+
+  if(_.size(urlParams) == 4) {
+    console.log(window.opener)
+    window.opener.turk.submit(game.data)
+    window.close()
+  } else {
+    var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
+    window.location.replace(URL);
+  }
+}
 
 /* 
 Note: If you add some new variable to your game that must be shared
@@ -107,6 +130,7 @@ client_onserverupdate_received = function(data){
     game.players_threshold = data.pt;
     game.player_count = data.pc;
     game.wheelURL = data.wheelURL;
+    game.data = data.dataObj
 
     // Draw all this new stuff
     drawScreen(game, game.get_player(my_id))
@@ -164,10 +188,10 @@ client_onMessage = function(data) {
     case 's': //server message
         switch(subcommand) {    
         case 'end' :
-	       // Redirect to exit survey
+	  // Redirect to exit survey
+	  submitInfoAndClose();
           console.log("received end message...")
-          var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-          window.location.replace(URL); break;
+	  break;
 
         case 'alert' : // Not in database, so you can't play...
             alert('You did not enter an ID'); 
