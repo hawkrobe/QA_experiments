@@ -24,7 +24,7 @@ var incorrect;
 var dragging;
 
 client_ondisconnect = function(data) {
-
+  submitInfoAndClose()
 };
 
 submitInfoAndClose = function() {

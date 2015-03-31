@@ -16,6 +16,8 @@
 
     <!-- Custom styles for this template -->
     <link href="theme.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="../dist/js/bootstrap.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -40,15 +42,13 @@
       <div class="well" style="width:800px; margin: 0 auto">
 
 	
-	<p> In this experiment, we'll be playing a guessing
-	game. The game has two roles, which will be assigned
-	randomly. Since you will not know which role you will play
-	until the game starts, you will be responsible for
-	understanding the responsibilities and goals of both
-	roles.  </p>
+	<p> In this experiment, we'll be playing a guessing game. The
+	game has two roles, which will be assigned randomly. Since you
+	will not know which role you will play until the game starts,
+	you will be responsible for understanding both roles.  </p>
 
 	<p> If you are the first person to arrive in a game, you must wait
-	shortly for another player to join. Once both players have
+	for another player to join. Once both players have
 	joined the game, you will see a display like the
 	following: </p>
 
@@ -63,11 +63,11 @@
 	
 	<h3> Guesser instructions </h3>
 
-	<p> There are four objects hidden behind four gates. These
+	<p> There are four objects, each hidden behind a gate. These
 	four objects are shown on a wheel. This wheel will spin and
-	pick out one of the objects for you to find. For example, if
-	it lands on the cat, you must try to guess which gate has the
-	  cat behind it. </p>
+	randomly pick out one of the objects for you to find. For
+	example, if it lands on the cat, you must try to guess which
+	gate has the cat behind it. </p>
 
 	<p> If you had to guess without any further information, you
 	wouldn't stand much of a chance of finding it. Luckily, you
@@ -78,9 +78,9 @@
 	then click the 'send' button! </p>
 
 	</p> The helper can then 'lift' one of the gates, showing you
-	what's behind it. Once you receive their answer, you will click on
-	one of the green gates to guess where it is. Finally, you will
-	find out whether you guessed correctly! </p>
+	what's behind it. Once you receive their answer, you will
+	click on one of the gates to make your guess. Finally, you
+	will find out whether you guessed correctly! </p>
 
 	<h3> Helper instructions </h3>
 
@@ -100,12 +100,14 @@
 	</p>	
 
 
-	There will be 4 rounds, where the locations of objects are
-	randomly shuffled from round to round. This means that the
-	information the helper gives on one round is completely
-	irrelevant to the locations of items in the next round! Once
-	another player joins, the experiment should take about 7
-	minutes.
+	There will be 4 rounds. One each round, the wheel will
+	randomly pick a new object for the guesser to find (which may
+	or may not be the same as a previous round) and locations of
+	objects are randomly shuffled from round to round. This means
+	that the information the helper gives on one round is
+	completely irrelevant to the locations of items in the next
+	round! Once another player joins, the experiment should take
+	about 7 minutes.
 	
       </div>
       <div class="page-header">
@@ -116,7 +118,7 @@
 	</br>
 	The guesser's goal in this game is to
 	  </br>
-	  <input type="radio" name="dgoal" value="yes"> Guess the location of the specified item
+	  <input type="radio" name="dgoal" value="yes"> Find the specified item
 	  </br>
 	  <input type="radio" name="dgoal" value="no"> Answer the other player's question by revealing an object
 	  </br>
@@ -125,7 +127,7 @@
 	</br>
 	The helper's goal in this game is to 
       </br>
-      <input type="radio" name="mgoal" value="no"> Guess the location of the specified item
+      <input type="radio" name="mgoal" value="no"> Find the specified item
       </br>
       <input type="radio" name="mgoal" value="yes"> Answer the other player's question by revealing an object
       </br>
@@ -154,7 +156,7 @@
        </br>
        <input type="radio" name="comp" value="no"> All objects stay in the same location, but there are new questions or goals
        </br>
-       <input type="radio" name="comp" value="yes"> Objects are randomly shuffled and new questions and goals are randomly selected
+       <input type="radio" name="comp" value="yes"> Objects are randomly shuffled and new goals are randomly selected
        </br>
 	  
           </br>
@@ -172,6 +174,7 @@
     </div> <!-- /container -->
       </div>
     <script type="text/javascript">
+      $('html,body').scrollTop(0);
       var urlParams;
 	var match,
 	      pl     = /\+/g,  // Regex for replacing addition symbol with a space
@@ -215,7 +218,5 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="../dist/js/bootstrap.min.js"></script>
   </body>
 </html>

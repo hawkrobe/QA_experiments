@@ -76,11 +76,12 @@ game_server.server_onMessage = function(client,message) {
             if(objNum) {
                 gc.trialPacket = _.extend(gc.trialPacket, {"guess" : gc.goals[objNum].name === gc.goal.name})
                 gc.data.trials.push(gc.trialPacket)
+	        gc.server_send_update()
                 setTimeout(function(){
                   gc.newRound()
-		}, 2000)
+		}, 4000)
 	      console.log(gc.trialPacket)
-                console.log(gc.data)
+              console.log(gc.data)
             }
 
             // relay messages
@@ -88,8 +89,9 @@ game_server.server_onMessage = function(client,message) {
                 p.player.instance.send( 's.newPhase')
                 if(msg) 
                     p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
-                if(objNum) 
+                if(objNum) {
                     p.player.instance.send( 's.reveal.' + objNum)
+		}
             }) 
             break;
 
