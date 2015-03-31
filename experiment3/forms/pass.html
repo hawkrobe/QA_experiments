@@ -48,9 +48,11 @@
       <div class="well">
       <center>
 	Click below to start the game! You may have to wait briefly
-	until another player connects. At the end of the game you will
-	receive a code to submit with your HIT. Do not refresh the
-	page, or you will not be able to finish the game!
+	until another player connects. At the end of the game, your
+	HIT will automatically be submitted and the window will close!
+	Do not worry about using a code to submit with your HIT. Do
+	not refresh the page, or you will not be able to finish the
+	game!
 	</center>
       </div>
 
@@ -81,7 +83,7 @@
         var assignmentId = urlParams.assignmentId;
         var hitId = urlParams.hitId;
         var turkSubmitTo = urlParams.turkSubmitTo;
-        window.open("https://104.236.163.41:8888/index.html?workerId=" + workerId
+        window.open("https://rxdhawkins.net:8888/index.html?workerId=" + workerId
                          + "&assignmentId=" + assignmentId
                          + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo,
                     '_blank');

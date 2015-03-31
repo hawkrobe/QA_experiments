@@ -122,10 +122,11 @@ game_core.prototype.newRound = function() {
         this.wheelURL = this.items[this.roundNum].wheel
         wordList = _.shuffle([' where ', ' is ', ' the ', ' that '].concat(this.questions))
         this.words = _.map(wordList, function(content) {
-            return new word(content)
+          return new word(content)
         })
         this.goalNum = Math.floor(Math.random() * 4);
         this.phase = 0;
+        this.trialPacket = {};
         this.goal = this.goals[this.goalNum]
         this.server_send_update()
 
