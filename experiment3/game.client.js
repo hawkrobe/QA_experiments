@@ -46,7 +46,7 @@ submitInfoAndClose = function() {
 
   if(_.size(urlParams) == 4) {
     console.log(window.opener)
-    window.opener.turk.submit(game.data)
+    window.opener.turk.submit(game.data, true)
     window.close()
   } else {
     console.log("would have submitted the following :")

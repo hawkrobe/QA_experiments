@@ -67,7 +67,7 @@ game_server.server_onMessage = function(client,message) {
             if(msg) {
                 splitMsg = msg.split('  ')
                 if(splitMsg.slice(-1)[0]  == "?")
-                    gc.trialPacket = _.extend(gc.trialPacket, {"goal" : gc.goal.name, "question" : splitMsg.slice(-2)[0]})
+                    gc.trialPacket = _.extend(gc.trialPacket, {"goal" : gc.goal.name, "question" : splitMsg.slice(0, -1).join(" ")})
                 else 
                     gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ')[1]})
                 writeData(client, "message", message_parts)
@@ -201,8 +201,7 @@ game_server.findGame = function(player) {
 game_server.fileSetup = function(game) {
     // Establish write streams
     var d = new Date();
-    var start_time = d.getFullYear() + '-' + d.getMonth() + 1 + '-' + d.getDate() + '-' + d.getHours() + '-' + d.getMinutes() + '-' + d.getSeconds() + '-' + d.getMilliseconds()
-    var name = start_time + '_' + game.id;
+    var name = game.id;
     var word_f = "data/word/" + name + ".csv"
 
     fs.writeFile(word_f, "gameid, time, goal, objectSet, word, online\n", function (err) {if(err) throw err;})
