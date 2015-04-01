@@ -48,7 +48,8 @@ var game_core = function(game_instance){
     if(this.server) {
         this.items = this.makeItem()
         console.log(this.item)
-        this.data = {id : this.instance.id.slice(0,6), trials : []}
+        this.data = {id : this.instance.id.slice(0,6), trials : [],
+		    catch_trials : [], system : {}, subj_data : {}}
         this.players = [{
             id: this.instance.player_instances[0].id, 
             player: new game_player(this,this.instance.player_instances[0].player)
