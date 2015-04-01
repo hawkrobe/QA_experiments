@@ -49,6 +49,8 @@ submitInfoAndClose = function() {
     window.opener.turk.submit(game.data)
     window.close()
   } else {
+    console.log("would have submitted the following :")
+    console.log(game.data);
     var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
     window.location.replace(URL);
   }
@@ -69,6 +71,14 @@ Explanation: This function is at the center of the problem of
   that they can update their variables to reflect changes.
 */
 client_onserverupdate_received = function(data){
+
+    game.goalNum = data.goalNum;
+    game.phase = data.phase
+    game.game_started = data.gs;
+    game.players_threshold = data.pt;
+    game.player_count = data.pc;
+    game.wheelURL = data.wheelURL;
+    game.data = data.dataObj
 
     // Update client versions of variables with data received from
     // server_send_update function in game.core.js
@@ -123,27 +133,19 @@ client_onserverupdate_received = function(data){
         game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2.5,
         game.questionBox.width, game.ratio * 30);
 
-
-    game.goalNum = data.goalNum;
-    game.phase = data.phase
-    game.game_started = data.gs;
-    game.players_threshold = data.pt;
-    game.player_count = data.pc;
-    game.wheelURL = data.wheelURL;
-    game.data = data.dataObj
-
     // Draw all this new stuff
-    drawScreen(game, game.get_player(my_id))
-
     if(data.players.length > 1) {
         game.goal = game.goals[game.goalNum]
         game.get_player(my_id).message = ""
         game.ctx.fillStyle = "#212121";
         game.ctx.fillRect(0,0,game.viewport.width-1,game.viewport.height-1);
+      drawScreen(game, game.get_player(my_id))
         if(my_role == "guesser") {
             resetWheel(game)
             setTimeout(function() {startSpin(game)}, 1000)
         }
+    } else {
+      drawScreen(game, game.get_player(my_id))
     }
 }; 
 
@@ -285,6 +287,11 @@ client_connect_to_server = function(game) {
             scrollTop: $("#messages")[0].scrollHeight
         }, 800);
     })
+
+  game.socket.on('updateData', function(data){
+    console.log(data)
+    game.data = data;
+  })
 
     // Draw objects when someone else moves them
     game.socket.on('objMove', function(data){
