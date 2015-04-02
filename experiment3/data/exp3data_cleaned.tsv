@@ -1,0 +1,205 @@
+workerid	answer	guess	question	goal
+0	poodle	False	pet	siamese cat
+0	dalmatian	True	dalmatian	dalmatian
+0	poodle	True	dog	poodle
+0	siamese	False	animal	whale
+1	poodle	False	pet	siamese cat
+1	dalmatian	True	dalmatian	dalmatian
+1	poodle	True	dog	poodle
+1	siamese	False	animal	whale
+2	dalmatian	False	dog	whale
+2	dalmatian	True	dalmatian	dalmatian
+2	poodle	True	dog	poodle
+2	whale	True	animal	siamese cat
+3	dalmatian	False	dog	whale
+3	dalmatian	True	dalmatian	dalmatian
+3	poodle	True	dog	poodle
+3	whale	True	animal	siamese cat
+4	dalmatian	True	dog	dalmatian
+4	dalmatian	True	dalmatian	dalmatian
+4	dalmatian	True	dalmatian	dalmatian
+4	siamese	True	pet	siamese cat
+5	dalmatian	True	dog	dalmatian
+5	dalmatian	True	dalmatian	dalmatian
+5	dalmatian	True	dalmatian	dalmatian
+5	siamese	True	pet	siamese cat
+6	poodle	True	dog	poodle
+6	siamese	True	pet	siamese cat
+6	siamese	True	pet	siamese cat
+6	whale	False	animal	poodle
+7	poodle	True	dog	poodle
+7	siamese	True	pet	siamese cat
+7	siamese	True	pet	siamese cat
+7	whale	False	animal	poodle
+8	dalmatian	False	dalmatian	siamese cat
+8	whale	True	animal	whale
+8	dalmatian	True	dalmatian	dalmatian
+8	siamese	True	pet	siamese cat
+9	dalmatian	False	dalmatian	siamese cat
+9	whale	True	animal	whale
+9	dalmatian	True	dalmatian	dalmatian
+9	siamese	True	pet	siamese cat
+10	whale	True	animal	whale
+10	dalmatian	True	dalmatian	dalmatian
+10	dalmatian	True	dalmatian	dalmatian
+10	whale	True	animal	whale
+11	whale	True	animal	whale
+11	dalmatian	True	dalmatian	dalmatian
+11	dalmatian	True	dalmatian	dalmatian
+11	whale	True	animal	whale
+12	poodle	True	dog	poodle
+12	poodle	True	dog	poodle
+12	siamese	True	pet	siamese cat
+12	poodle	True	dog	poodle
+13	poodle	True	dog	poodle
+13	poodle	True	dog	poodle
+13	siamese	True	pet	siamese cat
+13	poodle	True	dog	poodle
+14	siamese	True	pet	siamese cat
+14	siamese	True	pet	siamese cat
+14	poodle	True	dog	poodle
+14	dalmatian	True	dalmatian	dalmatian
+15	siamese	True	pet	siamese cat
+15	siamese	True	pet	siamese cat
+15	poodle	True	dog	poodle
+15	dalmatian	True	dalmatian	dalmatian
+16	dalmatian	True	dalmatian	dalmatian
+16	whale	True	animal	whale
+16	siamese	True	pet	siamese cat
+16	dalmatian	True	dalmatian	dalmatian
+17	dalmatian	True	dalmatian	dalmatian
+17	whale	True	animal	whale
+17	siamese	True	pet	siamese cat
+17	dalmatian	True	dalmatian	dalmatian
+18	whale	False	animal	whale
+18	dalmatian	False	dalmatian	dalmatian
+18	whale	True	animal	whale
+18	poodle	True	dog	poodle
+19	whale	False	animal	whale
+19	dalmatian	False	dalmatian	dalmatian
+19	whale	True	animal	whale
+19	poodle	True	dog	poodle
+20	siamese	False	animal	whale
+20	poodle	True	dog	poodle
+20	siamese	True	pet	siamese cat
+20	siamese	True	pet	siamese cat
+21	siamese	False	animal	whale
+21	poodle	True	dog	poodle
+21	siamese	True	pet	siamese cat
+21	siamese	True	pet	siamese cat
+22	poodle	True	animal	whale
+22	siamese	False	animal	whale
+22	dalmatian	True	pet	siamese cat
+22	dalmatian	True	dalmatian	dalmatian
+23	poodle	True	animal	whale
+23	siamese	False	animal	whale
+23	dalmatian	True	pet	siamese cat
+23	dalmatian	True	dalmatian	dalmatian
+24	dalmatian	True	dalmatian	dalmatian
+24	siamese	True	pet	siamese cat
+24	dalmatian	True	 dalmatian	dalmatian
+24	dalmatian	True	 dalmatian	dalmatian
+25	dalmatian	True	 dalmatian	dalmatian
+25	siamese	True	pet	siamese cat
+25	dalmatian	True	 dalmatian	dalmatian
+25	dalmatian	True	 dalmatian	dalmatian
+26	dalmatian	True	 where  is  the  dalmatian	dalmatian
+26	dalmatian	True	 where  is  the  dalmatian	dalmatian
+26	poodle	True	dog	poodle
+26	poodle	True	dog	poodle
+27	dalmatian	True	 where  is  the  dalmatian	dalmatian
+27	dalmatian	True	 where  is  the  dalmatian	dalmatian
+27	poodle	True	dog	poodle
+27	poodle	True	dog	poodle
+28	poodle	True	dog	poodle
+28	siamese	True	pet	siamese cat
+28	dalmatian	True	dalmatian	dalmatian
+28	siamese	True	pet	siamese cat
+29	poodle	True	dog	poodle
+29	siamese	True	animal	siamese cat
+29	dalmatian	True	dalmatian	dalmatian
+29	siamese	True	pet	siamese cat
+30	poodle	True	dog	poodle
+30	poodle	True	dog	poodle
+30	poodle	True	dog	poodle
+30	poodle	True	dog	poodle
+31	whale	True	animal	whale
+31	dalmatian	True	dalmatian	dalmatian
+31	dalmatian	True	dalmatian	dalmatian
+31	siamese	True	pet	siamese cat
+32	whale	True	animal	whale
+32	dalmatian	True	dalmatian	dalmatian
+32	dalmatian	True	dalmatian	dalmatian
+32	siamese	True	pet	siamese cat
+33	whale	False	animal	poodle
+33	siamese	False	animal	whale
+33	siamese	True	pet	siamese cat
+33	dalmatian	True	dalmatian	dalmatian
+34	whale	False	animal	poodle
+34	siamese	False	animal	whale
+34	siamese	True	pet	siamese cat
+34	dalmatian	True	dalmatian	dalmatian
+35	siamese	True	pet	siamese cat
+35	dalmatian	True	dalmatian	dalmatian
+35	poodle	True	dog	poodle
+35	whale	True	animal	whale
+36	siamese	True	pet	siamese cat
+36	dalmatian	True	dalmatian	dalmatian
+36	poodle	True	dog	poodle
+36	whale	True	animal	whale
+37	dalmatian	True	dalmatian	dalmatian
+37	poodle	True	dog	poodle
+37	whale	True	animal	whale
+37	poodle	True	dog	poodle
+38	dalmatian	True	dalmatian	dalmatian
+38	poodle	True	dog	poodle
+38	whale	True	animal	whale
+38	poodle	True	dog	poodle
+39	dalmatian	True	dalmatian	dalmatian
+39	poodle	True	dog	poodle
+39	siamese	True	pet	siamese cat
+39	dalmatian	True	dalmatian	dalmatian
+40	dalmatian	True	dalmatian	dalmatian
+40	poodle	True	dog	poodle
+40	siamese	True	pet	siamese cat
+40	dalmatian	True	dalmatian	dalmatian
+41	dalmatian	False	dalmatian	poodle
+41	whale	True	animal	whale
+41	whale	True	animal	whale
+41	siamese	True	pet	siamese cat
+42	dalmatian	False	dalmatian	poodle
+42	whale	True	animal	whale
+42	whale	True	animal	whale
+42	siamese	True	pet	siamese cat
+43	dalmatian	True	dalmatian	dalmatian
+43	dalmatian	True	dalmatian	dalmatian
+43	dalmatian	True	dalmatian	dalmatian
+43	poodle	False	dog	dalmatian
+44	dalmatian	True	dalmatian	dalmatian
+44	dalmatian	True	dalmatian	dalmatian
+44	dalmatian	True	dalmatian	dalmatian
+44	poodle	False	dog	dalmatian
+45	poodle	True	dog	poodle
+45	dalmatian	True	dalmatian	dalmatian
+45	whale	False	animal	siamese cat
+45	poodle	True	dog	poodle
+46	poodle	True	dog	poodle
+46	dalmatian	True	dalmatian	dalmatian
+46	whale	False	animal	siamese cat
+46	poodle	True	dog	poodle
+47	dalmatian	False	dog	poodle
+47	whale	True	animal	whale
+47	poodle	True	dog	poodle
+47	poodle	False	dog	dalmatian
+48	dalmatian	False	dog	poodle
+48	whale	True	animal	whale
+48	poodle	True	dog	poodle
+48	poodle	False	dog	dalmatian
+49	dalmatian	False	dalmatian	whale
+49	dalmatian	False	dalmatian  dog	whale
+49	whale	True	dog	poodle
+49	dalmatian	True	dalmatian	dalmatian
+50	dalmatian	False	dalmatian	whale
+50	dalmatian	False	dalmatian  dog	whale
+50	whale	True	dog	poodle
+50	dalmatian	True	dalmatian	dalmatian
