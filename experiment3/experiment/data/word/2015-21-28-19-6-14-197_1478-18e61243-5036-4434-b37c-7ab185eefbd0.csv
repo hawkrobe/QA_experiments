@@ -1,0 +1,7 @@
+gameid, time, goal, objectSet, word, online
+1478-1,1427594789167,poodle,1, where ,true
+1478-1,1427594798347,poodle,1, is ,true
+1478-1,1427594799874,poodle,1, that ,true
+1478-1,1427594802278,poodle,1, that ,false
+1478-1,1427594805711,poodle,1, dalmatian ,true
+1478-1,1427594807248,poodle,1, dalmatian ,false

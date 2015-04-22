@@ -1,0 +1,9 @@
+gameid, time, goal, objectSet, sender, contents
+2915-8,1427661855631,whale,3,guesser, " where   is   that   animal  ?"
+2915-8,1427661884294,whale,3,helper, "The siamese cat is behind gate 3"
+2915-8,1427661907712,dalmatian,3,guesser, " ?"
+2915-8,1427661910990,dalmatian,3,helper, "The dalmatian is behind gate 3"
+2915-8,1427661944555,poodle,2,guesser, " ?"
+2915-8,1427661946091,poodle,2,helper, "The poodle is behind gate 4"
+2915-8,1427661972756,dalmatian,1,guesser, " ?"
+2915-8,1427661973847,dalmatian,1,helper, "The dalmatian is behind gate 3"
