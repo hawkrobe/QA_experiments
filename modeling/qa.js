@@ -123,9 +123,9 @@ var _leaves = function(key, obj){
 // recursively traverse object; return all keys that map to null
 var leaves = function(obj){
   var pairs = _.pairs(obj);
-  return flatten(
+  return _.unique(flatten(
     pairs.map(
-      function(pair){return _leaves(pair[0], pair[1]);}));
+      function(pair){return _leaves(pair[0], pair[1]);})));
   };
 
 // recursively traverse object; return value of key
