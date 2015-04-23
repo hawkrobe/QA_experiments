@@ -1,9 +1,0 @@
-gameid, time, goal, objectSet, sender, contents
-1834-7,1427661571422,whale,2,guesser, " ?"
-1834-7,1427661572832,whale,2,helper, "The dalmatian is behind gate 3"
-1834-7,1427661588250,dalmatian,1,guesser, " ?"
-1834-7,1427661590633,dalmatian,1,helper, "The dalmatian is behind gate 1"
-1834-7,1427661608551,dalmatian,2,guesser, " ?"
-1834-7,1427661611143,dalmatian,2,helper, "The dalmatian is behind gate 1"
-1834-7,1427661642820,siamese cat,1,guesser, " where   is   the   animal  ?"
-1834-7,1427661647623,siamese cat,1,helper, "The siamese cat is behind gate 1"

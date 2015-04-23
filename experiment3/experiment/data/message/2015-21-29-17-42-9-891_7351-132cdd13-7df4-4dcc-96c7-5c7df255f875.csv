@@ -1,5 +1,0 @@
-gameid, time, goal, objectSet, sender, contents
-7351-1,1427676153969,dalmatian,3,guesser, " where   is   that   dalmatian  ?"
-7351-1,1427676160304,dalmatian,3,helper, "The dalmatian is behind gate 1"
-7351-1,1427676193393,poodle,2,guesser, " where   is   dog  ?"
-7351-1,1427676199250,poodle,2,helper, "The dalmatian is behind gate 2"
