@@ -120,7 +120,7 @@ game_core.prototype.newRound = function() {
         this.roundNum += 1;
         this.goals = this.items[this.roundNum].goals
         this.questions = this.items[this.roundNum].questions
-        this.wheelURL = this.items[this.roundNum].wheel
+        this.wheel = this.items[this.roundNum].wheel
         wordList = _.shuffle([' where ', ' is ', ' the ', ' that '].concat(this.questions))
         this.words = _.map(wordList, function(content) {
           return new word(content)
@@ -140,8 +140,8 @@ game_core.prototype.makeItem = function () {
     var local_this = this;
 
     // 2) Assign target & distractor based on condition
-    var items = _.sample(JSON.parse(JSON.stringify(objectSet.items)), 4)
-//    var items = _.shuffle(JSON.parse(JSON.stringify(objectSet.items)))
+//    var items = _.sample(JSON.parse(JSON.stringify(objectSet.items)), 4)
+    var items = _.shuffle(JSON.parse(JSON.stringify(objectSet.items)))
     // 3. assign random initial locations (probably won't want to do this in the real exp.)
     for (var i = 0; i < items.length; i++) {
         var item = items[i]
@@ -155,25 +155,6 @@ game_core.prototype.makeItem = function () {
     }
 
     return items
-}
-
-// maps a grid location to the exact pixel coordinates
-// for x = 1,2,3,4; y = 1,2,3,4
-game_core.prototype.getPixelFromCell = function (x, y) {
-    return {
-        centerX: 25 + 68.75 + 137.5 * (x - 1),
-        centerY: 25 + 68.75 + 137.5 * (y - 1),
-        width: 137.5,
-        height: 137.5
-    }
-}
-
-// maps a raw pixel coordinate to to the exact pixel coordinates
-// for x = 1,2,3,4; y = 1,2,3,4
-game_core.prototype.getCellFromPixel = function (mx, my) {
-    var cellX = Math.floor((mx - 25) / 137.5) + 1
-    var cellY = Math.floor((my - 25) / 137.5) + 1
-    return [cellX, cellY]
 }
 
 game_core.prototype.server_send_update = function(){
@@ -193,7 +174,7 @@ game_core.prototype.server_send_update = function(){
             goalNum : this.goalNum,
             goal : this.goal,
             phase : this.phase,
-            wheelURL : this.wheelURL,
+            wheel : this.wheel,
             dataObj  : this.data
         };
 

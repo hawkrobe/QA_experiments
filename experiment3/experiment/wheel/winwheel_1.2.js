@@ -101,7 +101,7 @@ var wheelState = 'reset';
 // ==================================================================================================================================================
 function initialWheelDraw(game) {
 	wheel = new Image();
-	wheel.src = game.wheelURL;
+	wheel.src = game.wheel.url;
 	wheel.width = wheelSize
 	wheel.height = wheelSize
 	wheel.trueX = 150 * game.ratio - wheelSize/2
@@ -110,7 +110,7 @@ function initialWheelDraw(game) {
 		game.ctx.drawImage(wheel, wheel.trueX, wheel.trueY, wheel.width, wheel.height);
 	}
 	drawArrow(game, 0, wheel.trueY + wheelSize/2, 150 * game.ratio - wheelSize/2, wheel.trueY + wheelSize/2, 50)
-	game.wheel = wheel
+	game.wheel.img = wheel
 }
 
 // ==================================================================================================================================================
@@ -118,11 +118,8 @@ function initialWheelDraw(game) {
 // ==================================================================================================================================================
 function startSpin(game)
 {
-	var prizes = new Array();
-	prizes[0] = {"name" : "siamese cat", "startAngle" : 0,   "endAngle" : 89};  // Note how prize end angle is 1 less than start angle of next prize so no overlap.
-	prizes[1] = {"name" : "whale", "startAngle" : 90,  "endAngle" : 179};
-	prizes[2] = {"name" : "poodle", "startAngle" : 180,  "endAngle" : 269};
-	prizes[3] = {"name" : "dalmatian", "startAngle" : 270, "endAngle" : 359};
+	var prizes = game.wheel.prizes
+
 	determinedValue = _.indexOf(_.pluck(prizes, 'name'), game.goal.name)
 
 	// This is the angle (0-360) around the wheel that is to be positioned where the pointer is located when the wheel stops.
@@ -185,6 +182,8 @@ function startSpin(game)
 			// Because the determinedValue is the number of the prize in the prizes array, we cannot simply make the stopAngle this value, so
 			// make the stopAngle a random value between the startAngle and endAngle of the prize so when the wheel stops the pointer is pointing to
 			// a random place inside the segment displaying the prize (random inside is nicer than always dead center).
+			console.log(prizes)
+			console.log(determinedValue)
 			stopAngle = Math.floor(prizes[determinedValue]['startAngle'] + (Math.random() * (prizes[determinedValue]['endAngle'] - prizes[determinedValue]['startAngle'])));
 		}
 	}
@@ -243,7 +242,7 @@ function doSpin(game, prizes)
 {	
 	// Grab the context of the canvas.
 	var surfaceContext = game.ctx
-	var wheel = game.wheel
+	var wheel = game.wheel.img;
 	// Save the current context - we need this so we can restore it later.
 	surfaceContext.save();
 	

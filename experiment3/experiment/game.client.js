@@ -77,8 +77,10 @@ client_onserverupdate_received = function(data){
     game.game_started = data.gs;
     game.players_threshold = data.pt;
     game.player_count = data.pc;
-    game.wheelURL = data.wheelURL;
+    game.wheel = data.wheel;
     game.data = data.dataObj
+
+    console.log(game.wheel)
 
     // Update client versions of variables with data received from
     // server_send_update function in game.core.js
