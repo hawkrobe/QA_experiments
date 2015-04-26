@@ -26,6 +26,7 @@ var condition = function(x){
 
 // World knowledge
 
+
 var taxonomy = {
   animal: {
     pet: {
@@ -69,17 +70,43 @@ var makeQUD = function(node){
   };
 };
 
+// These are the objects the questioner might be interested in
 var qudSpace = ['dalmatian', 'whale', 'lion', 'siamese'];
 
 var qudNodePrior = function() {
   return uniformDraw(qudSpace)
 };
 
-var questionSpace = ['whereIsPet?', 'whereIsCat?', 'whereIsLion?', 'whereIsAnimal?'];
+// These are the labels that the questioner can use to refer to items
+var labelSpace = ['pet', 'cat', 'lion', 'animal']
+
+var questionSpace = map(
+  function(v)  {return 'whereIs' + v.charAt(0).toUpperCase() + v.slice(1) + '?'}, 
+  labelSpace);
 
 var questionPrior = function() {
   return uniformDraw(questionSpace);
 };
+
+var getFitnessVals = function(labelVal) {
+  var labeledSubtree = qa.findSubtree(labelVal, taxonomy)
+  return map(function(objectVal) {
+    // match if this object is a decendent of the labelVal 
+    // have to hack it a bit if the label is a leaf of the tree
+    var match = (labeledSubtree == null  
+                ? objectVal == labelVal 
+                : qa.isNodeInTree(objectVal, labeledSubtree))
+    // will eventually want to sample instead of fixing at 0
+    return match ? 0 : -Infinity
+  }, qudSpace)
+}
+
+var fitnessMat = function() {
+  reduce(function(labelVal, memo) {
+    var innerDict = _.object(qudSpace, getFitnessVals(labelVal))
+    return _.extend(memo, _.object([[labelVal,innerDict]]))
+  }, {}, labelSpace)
+}
 
 var isTaxonomyQuestion = function(x){
   var testableX = (last(x) === '?') ? x.split("Is")[1].toLowerCase() : x;
@@ -138,20 +165,6 @@ var meaning = cache(function(utterance){
           undefined);
 });
 
-// Captures the notion that some labels are better than others for a given object
-// we'll eventually want to let these weights be free variables
-var fitness = function(label, obj) {
-  if(label == "cat") {
-    if (obj == "siamese") {
-      return 1
-    } else if (obj == "lion") {
-      return -1
-    }
-  } else {
-    return 0;
-  }
-}
-
 // For "x@n."-style answers, the question doesn't play any role.
 var literalListener = cache(function(question, answer){
   Enumerate(function(){
@@ -193,11 +206,15 @@ var explicitAnswerer = cache(
             // We may be uncertain about which leaf node the question
             // refers to, so we're integrating over possible leaf nodes
             // of interest
+            var fitness = fitnessMat()
             var questionNode = questionToNode(question);
             var subtree = qa.findSubtree(questionNode, taxonomy);
             var leavesBelowNode = subtree === null ? [questionNode] : qa.leaves(subtree);
             var leafOfInterest = uniformDraw(leavesBelowNode);
-            factor(fitness(questionNode, leafOfInterest))
+
+            // factor based on fitness of label to object
+            factor(fitness[questionNode][leafOfInterest])
+            
             // Did the listener infer the correct location of the leaf
             // node of interest?
             var inferredWorld = sample(literalListener(question, answer));
