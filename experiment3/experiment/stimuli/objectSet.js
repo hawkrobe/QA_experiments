@@ -54,18 +54,18 @@ var items = [
 	// 	wheel: "stimuli/animalWheel.png",
 	// 	objectSet: 1,
 	// },
-	// {
-	// 	goals: [dalmatian, poodle, siamese, whale],
-	// 	questions: [" dog ", " dalmatian ", " pet ", " animal "],
-	// 	wheel: "stimuli/animalWheel.png",
-	// 	objectSet: 2,
-	// },
-	// {
-	// 	goals: [dalmatian, poodle, siamese, whale],
-	// 	questions: [" dog ", " dalmatian ", " pet ", " animal "],
-	// 	wheel: "stimuli/animalWheel.png",
-	// 	objectSet: 3,
-	// },
+	{
+		goals: [dalmatian, poodle, siamese, whale],
+		questions: [" dog ", " animal "],
+		wheel: "stimuli/animalWheel.png",
+		objectSet: 2,
+	},
+	{
+		goals: [dalmatian, poodle, siamese, whale],
+		questions: [" dog ", " dalmatian ", " pet ", " animal "],
+		wheel: "stimuli/animalWheel.png",
+		objectSet: 3,
+	},
 	{
 		goals: [evergreen, palm, daisy, rose],
 		questions: [" rose ", " flower ", " plant ", " tree ", " evergreen "],
