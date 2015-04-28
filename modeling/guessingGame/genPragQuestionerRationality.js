@@ -6,7 +6,7 @@ var uniformDraw = function (xs) {
 };
 
 var mean = function(thunk){
-  return expectation(Enumerate(thunk), function(v){return v;});
+  return expectation(MH(thunk, 100), function(v){return v;});
 };
 
 var negate = function(predicate){
@@ -25,28 +25,62 @@ var condition = function(x){
 
 
 // World knowledge
-
-
-var taxonomy = {
-  animal: {
-    pet: {
-       dalmatian: null,
-       siamese: null
-      //   poodle: null,
-      //   dalmatian: null,
-//        lab: null,
-//      },
-    },
-    cat: {
-        siamese: null, // no super category allowed
-        lion: null
-      },
+var condition1 = {
+  taxonomy : {
+    animal: {
+      pet: {
+        dog : {
+         dalmatian: null,
+         poodle: null
+       },
+       siamese : null
+     },
     whale: null // no good category for this thing
-//    },
-  }
+    },
+  },
+  qudSpace : ['dalmatian', 'poodle', 'siamese', 'whale'],
+  labelSpace : ['dalmatian', 'dog', 'pet', 'animal']
 };
 
-// All possible assignments of four objects to four positions
+var condition2 = {
+  taxonomy : {
+    animal: {
+      pet: {
+        dalmatian: null,
+        siamese : null
+      },
+      cat: {
+        lion : null,
+        siamese : null
+      },
+      whale: null // no good category for this thing
+    },
+  },
+  qudSpace : ['dalmatian', 'whale', 'lion', 'siamese'],
+  labelSpace : ['pet', 'cat', 'lion', 'animal']
+}
+
+var condition3 = {
+  taxonomy : {
+    animal: {
+      dalmatian: null,
+      poodle : null,
+      siamese : null,
+      whale: null // no good category for this thing
+    },
+  },
+  qudSpace : ['dalmatian', 'whale', 'poodle', 'siamese'],
+  labelSpace : ['animal', 'dalmatian']
+}
+
+var expCondition = condition3
+
+// Worlds
+
+var taxonomy = expCondition.taxonomy
+
+// set up world space: All possible assignments of four objects to four positions
+
 var worldSpace = map(
   function(perm) {
     return _.object(qa.leaves(taxonomy), perm);
@@ -71,14 +105,14 @@ var makeQUD = function(node){
 };
 
 // These are the objects the questioner might be interested in
-var qudSpace = ['dalmatian', 'whale', 'lion', 'siamese'];
+var qudSpace = expCondition.qudSpace
 
 var qudNodePrior = function() {
   return uniformDraw(qudSpace)
 };
 
 // These are the labels that the questioner can use to refer to items
-var labelSpace = ['pet', 'cat', 'lion', 'animal']
+var labelSpace = expCondition.labelSpace
 
 var questionSpace = map(
   function(v)  {return 'whereIs' + v.charAt(0).toUpperCase() + v.slice(1) + '?'}, 
@@ -96,8 +130,8 @@ var getFitnessVals = function(labelVal) {
     var match = (labeledSubtree == null  
                 ? objectVal == labelVal 
                 : qa.isNodeInTree(objectVal, labeledSubtree))
-    // will eventually want to sample instead of fixing at 0
-    return match ? 0 : -Infinity
+    // will eventually want to sample instead of fixing at 0...
+    return match ? uniformDraw([-2,-1.5,-1,-0.5, 0]) : -Infinity
   }, qudSpace)
 }
 
@@ -171,7 +205,6 @@ var literalListener = cache(function(question, answer){
     var world = worldPrior();
     var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-
     condition(answerMeaning(questionMeaning)(world));
     return world;
   });
@@ -214,7 +247,7 @@ var explicitAnswerer = cache(
 
             // factor based on fitness of label to object
             factor(fitness[questionNode][leafOfInterest])
-            
+
             // Did the listener infer the correct location of the leaf
             // node of interest?
             var inferredWorld = sample(literalListener(question, answer));
@@ -232,9 +265,7 @@ var explicitQuestioner = cache(function(qud_node, rationality) {
   var qud = (makeQUD(qud_node))
   
   Enumerate(function(){
-//    console.log("evaluating question for qud " + qud_node)
     var question = questionPrior();
-//    console.log(question)
     // What is the gate value I'd guess under my prior?
     var prior = Enumerate(function(){
       return qud(worldPrior());
