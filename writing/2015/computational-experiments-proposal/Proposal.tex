@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[margin=1in]{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+\pagenumbering{gobble}\usepackage{apacite}
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{titling}
+%SetFonts
+
+%SetFonts
+
+\title{\normalsize\vspace{-2.5cm}Robert Hawkins \hfill PSYCH 204 Project Proposal }
+%\author{Robert Hawkins\vspace{-1cm}}
+\date{\vspace{-2cm}}
+%\setlength{\droptitle}{-2cm}
+%\addtolength{\droptitle}{-6pt}   % Only a guess. Use this for adjustment
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+There is a small but targeted literature on the psycholinguistics of question asking and answering. Certain phenomena have occupied formal linguistic theorists for decades (e.g. the \emph{mention-some} vs. \emph{mention-all} reading of questions), while others have only emerged in recent experimental pragmatics studies (e.g. levels of specificity in response to \emph{Where~are~you?}~and \emph{What~time~is~it?}). For my project, I'd like to do a mini-review of this literature and reproduce a subset of these effects in a single computational model.
+
+Before laying out the phenomena of interest, it's worth outlining the Rational Speech Act model and an extension we have used in previous work to make predictions about question and answer behavior. The Rational Speech Act model  formalizes pragmatic language understanding as recursive Bayesian inference, where listeners reason about speakers who choose utterances that maximize information gained by an imagined listener. 
+
+We cannot directly apply this model to question and answer behavior, however, because there is no direct information gain from asking a question. Instead, we define the questioner's utility in terms of \emph{future expected information}: they must maximize the (relevant) information they will gain from the answerer later in the dialogue. Critically, we can specify a \emph{pragmatic answerer}, which observes the question utterance and reasons about the likely underlying goal of the questioner (their QUD). This answerer serves two purposes: (1) a nested query that the questioner model can call to estimate future expected information and (2) a model of real answerer data. It would be valuable to show  how this model captures the following four classic phenomena, and to 
+
+\noindent\begin{description}
+\item[Clark (1979), Experiment 4] In this experiment on indirect questions, Clark calls liquor merchants and asks whether a fifth of Jim Bean costs more than \$5. They were more likely to give a literal `yes/no' answer when a certain context sentence is given, and more likely to give an exact price when a different context is given.
+
+\item[Clark (1979), Experiment 5] In this follow-up, Clark tested the inferences the merchant made about the questioner's goals on the basis of their question utterance, \emph{without} hearing an explicit context sentence. The goal of the questioner was to find out all the kinds of credit cards the merchant accepted, and they could ask questions at different levels of specificity, e.g. \emph{Do you accept Master Charge cards?} or \emph{Do you accept credit cards?} or \emph{Do you accept any kinds of credit cards?}.
+
+\item[Gibbs \& Bryant (2008), Experiment 3] This study probed the way people answer the question \emph{Do you have the time?} in different contexts. When people were stopped and asked, they often rounded the number -- even when wearing a digital watch. However, if the questioner added a context like ``I have a meeting at 4pm'' before asking, people rounded less frequently as a function of the time until the meeting.
+
+\item[Groenendijk and Stokhof (1984)] Although there is very little empirical work on it, many linguistic theorists have noted the difference between \emph{mention-some} and \emph{mention-all} readings of questions. For example, \emph{Where can one buy Italian newspapers?} can usually be sufficiently answered with a single location (rather than a list of all foreign newspaper places in the area), but if you were talking to someone who wanted to set up a distribution network for foreign newspapers, that list might be appropriate
+\end{description}
+
+\bibliographystyle{apacite}
+\bibliography{bib}
+
+\end{document}  
