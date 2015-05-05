@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Collective Behavior</title>
+    <!-- Load style sheet -->
+    <link href="index.css" media="screen" rel="stylesheet" type="text/css">
+
+    <!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+    <!-- Include some extra functional programming tools -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.2/underscore-min.js"> </script>
+    <!-- <script src="https://documentcloud.github.com/underscore/underscore-min.js"> </script> -->
+
+    <!-- Load jQuery, which lets us handle mouse events -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+    <!-- Load the common game code. -->
+    <script type="text/javascript" src="game.core.js"></script>
+
+    <!-- Load the wheel -->
+    <script type='text/javascript' src='wheel/winwheel_1.2.js'></script>
+
+    <script type='text/javascript' src="mmturkey/mmturkey.js"></script>
+
+    <!-- Finally, Load the game client code. -->
+    <script type="text/javascript" src="game.client.js"></script>
+    <script type="text/javascript" src="drawing.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 13px Helvetica, Arial; }
+        #messages li { padding: 5px 10px; }
+        /*#messages li:nth-child(odd) { background: #eee; }*/
+    </style>
+
+    </head>
+
+    <body>
+        <h1 id='header'> You are the </h1> 
+        
+        <p id='instructs'>  </p>
+        <div id='main'>
+            <span>
+            <div id='message_panel'>
+                <ul id="messages"></ul>
+            </div>
+            <canvas id="viewport"> </canvas>
+            </span>
+        </div>
+    </body>
+</html>

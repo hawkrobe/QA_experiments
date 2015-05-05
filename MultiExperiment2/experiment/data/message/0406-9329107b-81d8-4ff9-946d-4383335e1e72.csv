@@ -1,0 +1,9 @@
+gameid, time, goal, objectSet, sender, contents
+0406-9,1430254027953,rose,5,guesser, " rose  ?"
+0406-9,1430254030469,rose,5,helper, "The rose is behind gate 3"
+0406-9,1430254055917,dalmatian,3,guesser, " where   is   dog  ?"
+0406-9,1430254063465,dalmatian,3,helper, "The poodle is behind gate 3"
+0406-9,1430254097990,park,2,guesser, " where   is   that   place  ?"
+0406-9,1430254103531,park,2,helper, "The park is behind gate 4"
+0406-9,1430254134467,mansion,1,guesser, " where   is   that   mansion  ?"
+0406-9,1430254138245,mansion,1,helper, "The mansion is behind gate 1"

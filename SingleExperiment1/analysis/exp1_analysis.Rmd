@@ -1,0 +1,406 @@
+---
+title: "exp1_analysis"
+output: html_document
+---
+
+Set wd
+
+```{r}
+library(knitr)
+opts_knit$set(root.dir = '/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment1/')
+setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment1/")
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(MultinomialCI)
+```
+
+Experiment data analysis
+--------------------------
+
+Load and clean data. We remove people who self-identify as 'confused' 
+
+```{r}
+d1 = read.csv("versions/experiment1/data/q_and_a_nomammal1-trials.tsv",  sep = '\t')
+# Remove people who were confused...
+ps1 = read.csv("versions/experiment1/data/q_and_a_nomammal1-subject_information.tsv", sep = '\t')
+# we only want to exclude people who specifically recorded that they were confused,
+# keeping people who just left the response box blank.
+nonconfused_ps1 <- (ps1 %>% 
+                   mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
+                   filter(asses2 != 1))$workerid
+d1 = filter(d1, workerid %in% nonconfused_ps1)
+
+d2 = read.csv("versions/experiment1/data/q_and_a_nomammal2-trials.tsv",  sep = '\t')
+ps2 = read.csv("versions/experiment1/data/q_and_a_nomammal2-subject_information.tsv", quote = "", sep = '\t')
+nonconfused_ps2 <- (ps2 %>% 
+                   mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
+                   filter(asses2 != 1))$workerid
+d2 = filter(d2, workerid %in% nonconfused_ps2)
+d = rbind(d1, d2)
+cat("there were", 125 - (length(nonconfused_ps1) + length(nonconfused_ps2)), 
+    "confused participants")
+```
+
+Compute the median time people took, to justify compensation
+```{r}
+times1 = unique(read.csv("versions/experiment1/data/q_and_a_nomammal1-mturk.tsv", sep = '\t')$Answer.time_in_minutes)
+times2 = unique(read.csv("versions/experiment1/data/q_and_a_nomammal2-mturk.tsv", sep = '\t')$Answer.time_in_minutes)
+cat("median time spent is...", median(c(times1,times2)))
+```
+
+Compute ages
+```{r}
+cat("max age is", max(c(ps1$age, ps2$age), na.rm = T))
+cat("min age is", min(c(ps1$age, ps2$age), na.rm = T))
+```
+
+Tidy up questioner data...
+
+```{r}
+d_q = d %>% 
+      filter(trial_type == 'question') %>%
+      mutate(response = ordered(response, levels = c("dalmatian", "dog", 
+                                                     "pet", "animal"))) %>%
+      mutate(utterance = ordered(qud, levels = c("dalmatian", "poodle", 
+                                                 "siamese cat", "whale"))) %>%
+      group_by(qud) %>%
+      mutate(group_size = n()) %>%
+      group_by(qud, response) %>% # collapse over participants
+      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
+      select(qud, response, count, emp_prob)
+
+# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
+d_q = d_q %>%
+      right_join(expand.grid(response  = levels(d_q$response),
+                             qud = levels(d_q$qud))) %>%
+      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
+
+# get confidence intervals in the stupidest way possible...
+qud_levels = unique(d_q$qud)
+cis = rbind(multinomialCI(subset(d_q, qud == qud_levels[1])$count, .05),
+            multinomialCI(subset(d_q, qud == qud_levels[2])$count, .05),
+            multinomialCI(subset(d_q, qud == qud_levels[3])$count, .05),
+            multinomialCI(subset(d_q, qud == qud_levels[4])$count, .05))
+colnames(cis) <- c("lower_ci", "upper_ci")
+d_q = cbind(d_q, cis)
+```
+
+Tidy up answerer data...
+
+```{r}
+d_a = d %>% 
+      filter(trial_type == 'ans:') %>%
+      filter(response != "None", response != "") %>% 
+      mutate(response = as.numeric(factor(response))) %>%
+      mutate(response = as.character(mapply(function(str, num) strsplit(str,",")[[1]][num], 
+                                    as.character(world_state), response))) %>%
+      mutate(response = ordered(response,
+                                levels=c("dalmatian","poodle","siamese cat","whale"))) %>%
+      mutate(utterance = ordered(utterance,
+                                 levels = c("dalmatian", "dog", "pet", "animal"))) %>%
+      group_by(utterance) %>%
+      mutate(group_size = n()) %>%
+      group_by(utterance, response) %>% # collapse over participants
+      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
+      select(utterance, response, emp_prob, count)
+
+# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
+d_a = d_a %>% 
+      right_join(expand.grid(response  = levels(d_a$response),
+                             utterance = levels(d_a$utterance))) %>%
+      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
+# And compute confidence intervals
+utterance_levels = unique(d_a$utterance)
+cis = rbind(multinomialCI(subset(d_a, utterance == utterance_levels[1])$count, .05),
+            multinomialCI(subset(d_a, utterance == utterance_levels[2])$count, .05),
+            multinomialCI(subset(d_a, utterance == utterance_levels[3])$count, .05),
+            multinomialCI(subset(d_a, utterance == utterance_levels[4])$count, .05))
+colnames(cis) <- c("lower_ci", "upper_ci")
+d_a = cbind(d_a, cis)
+```
+
+Some chi-squared tests
+----------------------
+
+For each distribution, we run a chi-squared test, as planned
+
+```{r}
+overall_distribution = (d %>% filter(trial_type == "question") %>% group_by(response) %>% tally)$n
+test_dal_q = chisq.test(subset(d_q, qud == "dalmatian")$count) #p = overall_distribution/sum(overall_distribution))
+test_dal_q
+test_poodle_q = chisq.test(subset(d_q, qud == "poodle")$count)
+test_poodle_q
+test_cat_q = chisq.test(subset(d_q, qud == "siamese cat")$count)
+test_cat_q
+test_fish_q = chisq.test(subset(d_q, qud == "whale")$count)
+test_fish_q
+
+test_dal_a = chisq.test(subset(d_a, utterance == "dalmatian")$count) 
+test_dal_a
+test_dog_a = chisq.test(subset(d_a, utterance == "dog")$count)
+test_dog_a
+test_mammal_a = chisq.test(subset(d_a, utterance == "pet")$count)
+test_mammal_a
+test_animal_a = chisq.test(subset(d_a, utterance == "animal")$count)
+test_animal_a
+```
+
+Fitting rationality parameters
+------------------------------
+
+First, we define this function that takes a data frame and computes which parameter values optimize the correlation between model and data.
+
+```{r}
+# Expect two columns that end with _prob (i.e. emp_prob and model_prob)
+optimalFit <- function(data, equal = FALSE) {
+  if(sd(data$model_prob) == 0 || sd(data$emp_prob) == 0){
+    return (data %>% group_by(answerR, questionR) %>% 
+        filter(answerR == 1, questionR == 1))
+  }
+  prob_correlation <- data %>%
+    group_by(answerR, questionR) %>%
+    filter(answerR > 1) %>%
+    filter(ifelse(equal, answerR == questionR, T)) %>%
+    summarise(correlation = cor(model_prob, emp_prob))
+  print.data.frame(prob_correlation)
+  max_val_data = prob_correlation[which.max(prob_correlation$correlation),]
+  print(max_val_data)
+  return = data %>%
+    filter(answerR == max_val_data$answerR, questionR == max_val_data$questionR)  
+}
+```
+
+Now we import the literal answer fits and tidy them up to eventually be joined
+```{r}
+lit_ans_fits = join(d_a,read.csv("analysis/model_prediction/litAnswererRationalityWhale.csv", sep = ',')) %>%
+  #mutate(model_prob = jitter(model_prob)) %>%
+  mutate(answerR = ansR) %>% # This looks sketchy, but we know that these parameters don't matter...
+  mutate(questionR = ansR) %>%
+  select(utterance, response, emp_prob, answerR, questionR, model_prob)
+lit_ans_fits = optimalFit(lit_ans_fits) %>%
+  mutate(lit_cor = 0) %>%
+  rename(lit_ansR = answerR, lit_qR = questionR, lit_prob = model_prob)
+```
+
+Next we import the explicit answer fits and tidy them up
+
+```{r}
+exp_ans_fits = optimalFit(join(d_a, 
+                          read.csv("analysis/model_prediction/expAnswererRationalityWhale.csv", 
+                                    sep =',')), T) %>%
+  mutate(explicit_cor = cor(emp_prob, model_prob)) %>%
+  rename(explicit_ansR = answerR, explicit_qR = questionR, explicit_prob = model_prob) 
+```
+
+Finally, we import the pragmatic answer fits and tidy them up
+
+```{r}
+prag_ans_fits = optimalFit(join(d_a, read.csv("analysis/model_prediction/pragAnswererRationalityWhale.csv", sep =',')), equal = T) %>% 
+  mutate(pragmatic_cor = cor(emp_prob, model_prob)) %>%
+  rename(pragmatic_ansR = answerR, pragmatic_qR = questionR, pragmatic_prob = model_prob) 
+```
+
+Now that each of these data sets is in a nice format, we can join them all together and plot their fits:
+
+```{r}
+# join them all together
+all_ans = d_a %>% 
+  join(lit_ans_fits) %>% 
+  join(exp_ans_fits) %>% 
+  join(prag_ans_fits) %>%
+  gather(condition.1, model_prob, 
+         explicit_prob, pragmatic_prob, lit_prob) %>%
+  separate(condition.1, c("model_level", "type")) %>%
+  mutate(model_level = ordered(model_level, 
+                               levels = c("lit", "explicit", "pragmatic"))) %>%
+  select(utterance, response, emp_prob, lower_ci, upper_ci,
+         model_level, model_prob) 
+  #distinct(utterance, response, model_level, model_prob)
+
+# Since they won't let us annotate nicely...
+  
+answer_plots = (ggplot(all_ans, aes(x = model_prob, y = emp_prob))
+  + theme(text = element_text(size = 20),
+          axis.text.x = element_text(angle=90, vjust=1))
+  + xlab("Model predicted probability")
+  + ylim(0,1)
+  + ylab("")
+  + geom_point()
+  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+  + ggtitle("Answerers")
+  + geom_smooth(method = "lm")
+  + facet_wrap(~ model_level)
+  + geom_text(aes(x,y,label=lab),
+              data=data.frame(x = .75, y = .25,
+                              model_level = levels(all_ans$model_level),
+                              lab = (all_ans %>% group_by(model_level) %>% 
+                                    summarise(correlation = paste("r =",
+                                                                  round(cor(emp_prob, model_prob, method = 'pearson'), 2))))$correlation)))
+answer_plots               
+```
+
+Now we import the literal questioner fits and tidy them up to eventually be joined
+
+```{r}
+lit_quest_fits = join(d_q,read.csv("analysis/model_prediction/litQuestionerRationalityWhale.csv", sep = ',')) %>%
+  mutate(answerR = ansR) %>% # This looks sketchy, but we know that these parameters don't matter...
+  mutate(questionR = ansR) %>%
+  select(qud, response, emp_prob, answerR, questionR, model_prob)
+lit_quest_fits = optimalFit(lit_quest_fits, T) %>%
+  mutate(lit_cor = 0) %>%
+  rename(lit_ansR = answerR, lit_qR = questionR, lit_prob = model_prob) %>%
+  distinct(qud, response, emp_prob)
+```
+
+Next we import the explicit answer fits and tidy them up
+
+```{r}
+exp_quest_fits = optimalFit(join(d_q, 
+                          read.csv("analysis/model_prediction/expQuestionerRationalityWhale.csv", 
+                                    sep =',')), T) %>%
+  mutate(explicit_cor = cor(emp_prob, model_prob)) %>%
+  rename(explicit_ansR = answerR, explicit_qR = questionR, explicit_prob = model_prob) 
+```
+
+Finally, we import the pragmatic answer fits and tidy them up
+
+```{r}
+prag_quest_fits = optimalFit(join(d_q, 
+                          read.csv("analysis/model_prediction/pragQuestionerRationalityWhale.csv", 
+                                   sep =',')), T) %>% 
+  mutate(pragmatic_cor = cor(emp_prob, model_prob)) %>%
+  rename(pragmatic_ansR = answerR, pragmatic_qR = questionR, pragmatic_prob = model_prob) 
+```
+
+Now make the questioner plot
+
+```{r}
+# join them all together
+all_qs = d_q %>% 
+  join(lit_quest_fits) %>% 
+  join(exp_quest_fits) %>% 
+  join(prag_quest_fits) %>%
+  gather(condition.1, model_prob, 
+         explicit_prob, pragmatic_prob, lit_prob) %>%
+  separate(condition.1, c("model_level", "type")) %>%
+  mutate(model_level = ordered(model_level, 
+                               levels = c("lit", "explicit", "pragmatic"))) %>%
+  select(qud, response, emp_prob, lower_ci, upper_ci,
+         model_level, model_prob) 
+   #distinct(utterance, response, model_level, model_prob)
+
+# Since they won't let us annotate nicely...
+  
+#jpeg(filename="../writing/2015/cogsci/questionerFits.jpeg")
+question_plots = (ggplot(all_qs, aes(x = model_prob, y = emp_prob))
+  + theme(text = element_text(size = 20),
+          axis.text.x = element_blank(), axis.ticks = element_blank(),
+          plot.margin=unit(c(1,1,-1,1), "cm"))
+  + ylim(0,1)
+  + xlab("")
+  + ylab("")
+  + geom_point()
+  + ggtitle("Questioners")
+  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  + geom_smooth(method = "lm")
+  + facet_wrap(~ model_level)
+  + geom_text(aes(x,y,label=lab),
+              data=data.frame(x = .75, y = .25,
+                              model_level = levels(all_qs$model_level),
+                              lab = (all_qs %>% 
+                                       group_by(model_level) %>% 
+                                       summarise(correlation = paste("r =",  round(cor(emp_prob, model_prob), 2))))$correlation)))
+question_plots               
+#dev.off()
+```
+
+Put these next to each other
+```{r}
+pdf("../writing/2015/cogsci-revision/model_fits_grid.pdf")
+grid.newpage()
+grid.draw(rbind(ggplotGrob(question_plots), ggplotGrob(answer_plots), size="last"))
+grid.draw(textGrob("Empirical probability", rot = 90, vjust = 1, 
+                   x = unit(0.01, "npc"), y = unit(0.5, "npc"),
+                   gp=gpar(fontsize=20)))
+dev.off()
+```
+
+Model + data bar plots
+----------------------
+
+Plot for pragmatic questioner. These bar graphs will help show what our model is getting right and what it's getting wrong.
+
+```{r}
+fitted_data = (prag_quest_fits %>% rename(model_prob =pragmatic_prob))
+plot_title = "Pragmatic_Questioner"
+# fitted_data = (exp_quest_fits %>% rename(model_prob = explicit_prob)) 
+# plot_title = "Explicit_Questioner"
+
+new_labels = as.factor(sapply(X = fitted_data$qud, FUN = function(v) {return(paste("goal:", v))}))
+fitted_data$facet_label = ordered(new_labels,
+                             levels = c("goal: dalmatian", "goal: poodle", 
+                                        "goal: siamese cat", "goal: whale"))
+q_comparison <- fitted_data %>% 
+  select(qud, response, emp_prob, upper_ci, lower_ci, model_prob, facet_label) %>%
+  rename(empirical = emp_prob, model = model_prob) %>%
+  gather(src, prob, empirical, model) 
+print(q_comparison)
+# Hack to set confidence intervals to 0 for the model
+q_comparison[q_comparison$src == "model",]$upper_ci = q_comparison[q_comparison$src == "model",]$prob
+q_comparison[q_comparison$src == "model",]$lower_ci = q_comparison[q_comparison$src == "model",]$prob
+name = paste("../writing/2015/cogsci-revision/", plot_title, ".pdf", sep = '')
+pdf(name)
+dodge <- position_dodge(width=0.9)
+g4<-(ggplot(q_comparison, aes(x=response, y=prob, fill=src)) 
+    #+ scale_y_continuous(limits = c(0,.3))
+    + geom_bar(stat='identity', position=dodge)
+    + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci), 
+                    position=dodge, width = .25)
+    + ylim(-.1, 1.1)
+    + scale_fill_grey()
+    + theme_bw(base_size = 20)
+    + theme(axis.text.x = element_text(angle=90, vjust=1))
+    + ggtitle(plot_title)
+    + facet_wrap(~facet_label))
+g4
+dev.off()
+```
+
+Now, plot for answerer model:
+
+```{r}
+# fitted_data = (prag_ans_fits %>% rename(model_prob = pragmatic_prob)) 
+# plot_title = "Pragmatic_Answerer"
+fitted_data = (exp_ans_fits %>% rename(model_prob = explicit_prob)) 
+plot_title = "Explicit_Answerer"
+
+new_labels = as.factor(sapply(X = fitted_data$utterance, FUN = function(v) {return(paste("utterance:", v))}))
+fitted_data$facet_label = ordered(new_labels, 
+                              levels = c("utterance: dalmatian", "utterance: dog", 
+                                         "utterance: pet","utterance: animal"))
+a_comparison <- fitted_data %>% 
+  select(utterance, response, emp_prob, upper_ci, lower_ci, model_prob, facet_label) %>%
+  rename(empirical = emp_prob, model = model_prob) %>%
+  gather(src, prob, empirical, model) 
+
+a_comparison[a_comparison$src == "model",]$upper_ci = a_comparison[a_comparison$src == "model",]$prob
+a_comparison[a_comparison$src == "model",]$lower_ci = a_comparison[a_comparison$src == "model",]$prob
+name = paste("../writing/2015/cogsci-revision/", plot_title, ".pdf", sep = '')
+pdf(name)
+dodge <- position_dodge(width=0.9)
+g4<-(ggplot(a_comparison, aes(x=response, y = prob, fill=src)) 
+     + geom_bar(stat='identity', position=position_dodge())
+     + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci), 
+                    position=dodge, width = .25)
+     + scale_fill_grey()
+     + theme_bw(base_size = 20)
+     + ggtitle(plot_title)
+     + theme(axis.text.x = element_text(angle=90, vjust=1))
+     + facet_wrap(~facet_label))
+g4
+dev.off()
+```

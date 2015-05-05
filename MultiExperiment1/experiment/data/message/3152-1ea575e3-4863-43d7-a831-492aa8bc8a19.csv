@@ -1,0 +1,5 @@
+gameid, time, goal, objectSet, sender, contents
+3152-1,1430278805669,poodle,7,guesser, " where   is   that   animal  ?"
+3152-1,1430278809695,poodle,7,helper, "The whale is behind gate 4"
+3152-1,1430278833288,siamese cat,3,guesser, " where   is   the   pet  ?"
+3152-1,1430278836851,siamese cat,3,helper, "The poodle is behind gate 4"
