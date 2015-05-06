@@ -93,6 +93,19 @@ var carrots = {
 var flower = {
 	url: 'stimuli/flower.jpg', name: 'flower', width: 200, height: 200}
 
+var sunflower = {
+	url: 'stimuli/sunflower.jpg', name: 'sunflower', width: 200, height: 200}
+
+var burger = {
+	url: 'stimuli/burger.jpg', name: 'burger', width: 200, height: 200}
+
+var tomato = {
+	url: 'stimuli/tomato.jpg', name: 'tomatos', width: 200, height: 200}
+
+var carrot2 = {
+	url: 'stimuli/carrot2.jpg', name: 'carrot', width: 200, height: 200}
+
+
 // Wheels
 
 var animalWheel1 = {
@@ -139,6 +152,15 @@ var plantWheel2 = {
          	  {"name" : "carrots", "startAngle" : 270, "endAngle" : 359},
          	  ],
     url: 'stimuli/plantWheel2.png'
+}
+
+var plantWheel3 = {
+	prizes : [{"name" : "sunflower", "startAngle" : 0,   "endAngle" : 89},
+         	  {"name" : "burger", "startAngle" : 90,  "endAngle" : 179},
+         	  {"name" : "tomatos", "startAngle" : 180,  "endAngle" : 269},
+         	  {"name" : "carrot", "startAngle" : 270, "endAngle" : 359},
+         	  ],
+    url: 'stimuli/plantWheel3.png'
 }
 
 var placeWheel1 = {
@@ -243,6 +265,14 @@ var items = [
 		wheel: plantWheel2,
 		domain: "plants",
 		type : "overlapping",
+		objectSet: 7,
+	},
+	{
+		goals: [sunflower, tomato, carrot2, burger],
+		questions: [" food ", " plant "],
+		wheel: plantWheel3,
+		domain: "plants",
+		type : "equiovcal",
 		objectSet: 7,
 	},
 	{
