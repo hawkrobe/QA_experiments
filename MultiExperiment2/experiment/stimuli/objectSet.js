@@ -33,18 +33,6 @@ var goldfish = {
 var angler = {
 	url: 'stimuli/angler.jpg', name: 'angler fish', width: 200, height: 200}
 
-var evergreen = {
-	url: 'stimuli/evergreen.png', name: 'evergreen', width: 200, height: 200}
-
-var palm = {
-	url: 'stimuli/palm.png', name: 'palm', width: 200, height: 200}
-
-var daisy = {
-	url: 'stimuli/daisy.png', name: 'daisy', width: 200, height: 200}
-
-var rose = {
-	url: 'stimuli/rose.png', name: 'rose', width: 200, height: 200}
-
 var cottage = {
 	url: 'stimuli/cottage.jpg', name: 'cottage', width: 200, height: 200}
 
@@ -68,6 +56,30 @@ var diveBar = {
 
 var park2 = {
     url: 'stimuli/park2.jpg', name: 'park', width: 200, height: 200}	
+
+var iceHotelRoom = {
+	url: 'stimuli/iceHotelRoom.jpg', name: 'ice hotel room', width: 200, height: 200}	
+
+var snowyForest = {
+	url: 'stimuli/snowyForest.jpg', name: 'snowy forest', width: 200, height: 200}	
+
+var snowyMountain = {
+	url: 'stimuli/snowyMountain.jpg', name: 'snowy mountain', width: 200, height: 200}	
+
+var sunnyBeach = {
+	url: 'stimuli/sunnyBeach.jpg', name: 'sunny beach', width: 200, height: 200}	
+
+var evergreen = {
+	url: 'stimuli/evergreen.png', name: 'evergreen', width: 200, height: 200}
+
+var palm = {
+	url: 'stimuli/palm.png', name: 'palm', width: 200, height: 200}
+
+var daisy = {
+	url: 'stimuli/daisy.png', name: 'daisy', width: 200, height: 200}
+
+var rose = {
+	url: 'stimuli/rose.png', name: 'rose', width: 200, height: 200}
 
 var oakLeaves = {
 	url: 'stimuli/oakLeaves.jpg', name: 'oak', width: 200, height: 200}	
@@ -101,14 +113,6 @@ var animalWheel2 = {
     url: 'stimuli/animalWheel2.png'
 }
 
-var animalWheel2 = {
-	prizes : [{"name" : "house cat", "startAngle" : 0,   "endAngle" : 89},
-         	  {"name" : "lion", "startAngle" : 90,  "endAngle" : 179},
-         	  {"name" : "whale", "startAngle" : 180,  "endAngle" : 269},
-         	  {"name" : "golden retriever", "startAngle" : 270, "endAngle" : 359},
-         	  ],
-    url: 'stimuli/animalWheel2.png'
-}
 
 var animalWheel3 = {
 	prizes : [{"name" : "dalmatian", "startAngle" : 0,   "endAngle" : 89},
@@ -116,7 +120,7 @@ var animalWheel3 = {
          	  {"name" : "goldfish", "startAngle" : 180,  "endAngle" : 269},
          	  {"name" : "angler fish", "startAngle" : 270, "endAngle" : 359},
          	  ],
-    url: 'stimuli/animalWheel2.png'
+    url: 'stimuli/animalWheel3.png'
 }
 
 var plantWheel1 = {
@@ -153,7 +157,33 @@ var placeWheel2 = {
          	  {"name" : "dive bar", "startAngle" : 270, "endAngle" : 359},
          	  ],
     url: 'stimuli/placeWheel2.png'
+}
 
+var placeWheel3 = {
+	prizes : [{"name" : "snowy forest", "startAngle" : 0,   "endAngle" : 89},
+         	  {"name" : "snowy mountain", "startAngle" : 90,  "endAngle" : 179},
+         	  {"name" : "sunny beach", "startAngle" : 180,  "endAngle" : 269},
+         	  {"name" : "ice hotel room", "startAngle" : 270, "endAngle" : 359},
+         	  ],
+    url: 'stimuli/placeWheel3.png'
+}
+
+var artifactWheel1 = {
+	prizes : [{"name" : "chair", "startAngle" : 0,   "endAngle" : 89},
+         	  {"name" : "couch", "startAngle" : 90,  "endAngle" : 179},
+         	  {"name" : "lawnmower", "startAngle" : 180,  "endAngle" : 269},
+         	  {"name" : "table", "startAngle" : 270, "endAngle" : 359},
+         	  ],
+    url: 'stimuli/artifactWheel1.png'
+}
+
+var artifactWheel2 = {
+	prizes : [{"name" : "ruler", "startAngle" : 0,   "endAngle" : 89},
+         	  {"name" : "wooden chair", "startAngle" : 90,  "endAngle" : 179},
+         	  {"name" : "skillet", "startAngle" : 180,  "endAngle" : 269},
+         	  {"name" : "metal chair", "startAngle" : 270, "endAngle" : 359},
+         	  ],
+    url: 'stimuli/artifactWheel2.png'
 }
 
 // These are the different 'items' that could be seen.
@@ -176,36 +206,44 @@ var items = [
 		objectSet: 2,
 	},
 	{
+		goals: [iceHotelRoom, snowyForest, snowyMountain, sunnyBeach],
+		questions: [" outdoor place ", " cold place "],
+		domain: "places",
+		type: "equivocal",
+		wheel: placeWheel3,
+		objectSet: 3,
+	},
+	{
 		goals: [dalmatian, poodle, siamese, whale1],
 		questions: [" dog ", " dalmatian ", " pet ", " animal "],
 		domain: "animals",
 		type: "branching",
 		wheel: animalWheel1,
-		objectSet: 3,
+		objectSet: 4,
 	},
 	{
 		goals: [retriever, housecat, lion, whale2],
-		questions: [" lion ", " cat ", " pet ", " animal "],
+		questions: [" lion ", " cat ", " pet animal ", " animal "],
 		domain: "animals",
 		type: "overlapping",
 		wheel: animalWheel2,
-		objectSet: 4,
+		objectSet: 5,
 	},
 		{
-		goals: [dalmatian, beta, goldfish, angler],
-		questions: [" pet ", " fish "]
+		goals: [dalmatian, betta, goldfish, angler],
+		questions: [" pet animal ", " fish "],	
 		domain: "animals",
 		type: "equivocal",
 		wheel: animalWheel3,
-		objectSet: 4,
+		objectSet: 6,
 	},
 	{
 		goals: [oakLeaves, lettuce, carrots, flower],
-		questions: [" carrot ", " food ", " plant ", " leaves "],
+		questions: [" carrots ", " food ", " plant ", " leaves ", " are "],
 		wheel: plantWheel2,
 		domain: "plants",
 		type : "overlapping",
-		objectSet: 5,
+		objectSet: 7,
 	},
 	{
 		goals: [evergreen, palm, daisy, rose],
@@ -213,15 +251,23 @@ var items = [
 		wheel: plantWheel1,
 		domain: "plants",
 		type : "filler",
-		objectSet: 6,
+		objectSet: 8,
 	},
 	{
-		goals: [dalmatian, poodle, siamese, whale1],
-		questions: [" dog ", " animal "],
-		wheel: animalWheel1,
-		domain: "animals",
-		type : "filler",
-		objectSet: 7,
+		goals: [couch, chair, table, lawnmower],
+		questions: [" couch ", " seat ", " furniture ", " thing "],
+		wheel: artifactWheel1,
+		domain: "artifact",
+		type : "branching",
+		objectSet: 9,
+	},
+	{
+		goals: [metalChair, woodChair, ruler, castIronPan],
+		questions: [" skillet ", " seat ", " metal thing ", " thing "],
+		wheel: artifactWheel2,
+		domain: "artifact",
+		type : "overlapping",
+		objectSet: 10,
 	}]
 
 
