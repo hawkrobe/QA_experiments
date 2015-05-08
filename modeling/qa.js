@@ -138,7 +138,7 @@ var findSubtree = function(key, obj){
         if (maybeObj === undefined){
           return undefined;
         } else if (maybeObj === null){
-          return undefined;
+          return undefined; 
         } else if (typeof maybeObj === 'object'){
           return findSubtree(key, maybeObj);
         } else {

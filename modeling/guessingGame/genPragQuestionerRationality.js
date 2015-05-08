@@ -6,7 +6,7 @@ var uniformDraw = function (xs) {
 };
 
 var mean = function(thunk){
-  return expectation(MH(thunk, 100), function(v){return v;});
+  return expectation(Enumerate(thunk, 100), function(v){return v;});
 };
 
 var negate = function(predicate){
@@ -39,7 +39,8 @@ var condition1 = {
     },
   },
   qudSpace : ['dalmatian', 'poodle', 'siamese', 'whale'],
-  labelSpace : ['dalmatian', 'dog', 'pet', 'animal']
+  labelSpace : ['dalmatian', 'dog', 'pet', 'animal'],
+  exampleWorld: {poodle: 1, dalmatian: 2, siamese: 3, whale: 4}
 };
 
 var condition2 = {
@@ -57,20 +58,29 @@ var condition2 = {
     },
   },
   qudSpace : ['dalmatian', 'whale', 'lion', 'siamese'],
-  labelSpace : ['pet', 'cat', 'lion', 'animal']
+  labelSpace : ['pet', 'cat', 'lion', 'animal'],
+  exampleWorld: {siamese: 1, dalmatian: 2, lion: 3, whale: 4}
+
 }
 
 var condition3 = {
   taxonomy : {
     animal: {
-      dalmatian: null,
-      poodle : null,
-      siamese : null,
-      whale: null // no good category for this thing
+      fish : {
+        beta : null,
+        goldfish: null,
+        angler : null
+      },
+      pet : {
+        dalmatian : null,
+        goldfish: null,
+        beta : null
+      }
     },
   },
-  qudSpace : ['dalmatian', 'whale', 'poodle', 'siamese'],
-  labelSpace : ['animal', 'dalmatian']
+  qudSpace : ['beta', 'goldfish', 'angler', 'dalmatian'],
+  labelSpace : ['fish', 'pet'],
+  exampleWorld: {beta: 1, goldfish: 2, angler: 3, dalmatian: 4}
 }
 
 var expCondition = condition3
@@ -131,7 +141,7 @@ var getFitnessVals = function(labelVal) {
                 ? objectVal == labelVal 
                 : qa.isNodeInTree(objectVal, labeledSubtree))
     // will eventually want to sample instead of fixing at 0...
-    return match ? uniformDraw([-2,-1.5,-1,-0.5, 0]) : -Infinity
+    return match ? 0 : -Infinity
   }, qudSpace)
 }
 
@@ -349,14 +359,14 @@ var pragmaticQuestioner = cache(function(qud_node, rationality) {
 });
 
 var main = function(){
-  var world = {poodle: 1, dalmatian: 2, siamese: 3, whale: 4};
+  var world = expCondition.exampleWorld
   var questions = questionSpace
   var qudNodes = qudSpace
 
   var rationalityPs = [2,4]
 
   var f_ans = function(question,rationality){
-    qa.printERP(literalAnswerer(question, world,rationality));
+    qa.printERP(explicitAnswerer(question, world,rationality));
   };
   var f_q = function(qudNode,rationality) {
     qa.printERP(explicitQuestioner(qudNode,rationality))
@@ -381,5 +391,22 @@ var main = function(){
 
   return 'done';
 };
+
+
+//   map(function(rationality) {
+//     map(function(question) {
+//       var label = [question, rationality]
+//       console.log(label)
+//       console.log("reg q")
+// //      f_q(qudNode, rationality)
+//       f_ans(question, rationality)
+//       console.log("prag q")
+// //      f_prag_q(qudNode, rationality)
+//       f_prag_ans(question, rationality)
+//     }, questions)
+//   }, rationalityPs)
+
+//   return 'done';
+// };
 
 main();
