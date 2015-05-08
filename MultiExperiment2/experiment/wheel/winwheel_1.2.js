@@ -164,28 +164,16 @@ function startSpin(game)
 	}
 	else if (spinMode == "determinedPrize")
 	{	
-		// Again if determined value is undefined then do the GET to the dertmined url.
-		if (typeof(determinedValue) === 'undefined')
-		{
-			// So determinedValue is has not been passed in, do an request then to the specified determinedGetUrl.
-			if (determinedGetUrl)
-			{
-				xhr.open('GET', determinedGetUrl, true);
-				xhr.send('');
-			}
-		}
-		else
-		{
-			// The determined value is specified. In this case it is the prize the user is to win so it is just a number representing the item in the prize array.
-			// For example if the user is to win prize 3 then "2" will be retruned (as arrays start at 0 price 3 is in #2 spot of prizes array).
-			
-			// Because the determinedValue is the number of the prize in the prizes array, we cannot simply make the stopAngle this value, so
-			// make the stopAngle a random value between the startAngle and endAngle of the prize so when the wheel stops the pointer is pointing to
-			// a random place inside the segment displaying the prize (random inside is nicer than always dead center).
-			console.log(prizes)
-			console.log(determinedValue)
-			stopAngle = Math.floor(prizes[determinedValue]['startAngle'] + (Math.random() * (prizes[determinedValue]['endAngle'] - prizes[determinedValue]['startAngle'])));
-		}
+		// The determined value is specified. In this case it is the prize the user is to win so it is just a number representing the item in the prize array.
+		// For example if the user is to win prize 3 then "2" will be retruned (as arrays start at 0 price 3 is in #2 spot of prizes array).
+				
+		// Because the determinedValue is the number of the prize in the prizes array, we cannot simply make the stopAngle this value, so
+		// make the stopAngle a random value between the startAngle and endAngle of the prize so when the wheel stops the pointer is pointing to
+		// a random place inside the segment displaying the prize (random inside is nicer than always dead center).
+		console.log("goal is", game.goal)
+    	console.log(prizes)
+    	console.log(determinedValue)
+    	stopAngle = Math.floor(prizes[determinedValue]['startAngle'] + (Math.random() * (prizes[determinedValue]['endAngle'] - prizes[determinedValue]['startAngle'])));
 	}
 	
 	// ------------------------------------------

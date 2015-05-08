@@ -13,7 +13,7 @@ var whale1 = {
 	url: 'stimuli/whale1.jpg', name: 'whale', width: 200, height: 200}
 
 var retriever = {
-	url: 'stimuli/retriever.jpg', name: 'retriever', width: 200, height: 200}
+	url: 'stimuli/retriever.jpg', name: 'golden retriever', width: 200, height: 200}
 
 var lion = {
 	url: 'stimuli/lion.jpg', name: 'lion', width: 200, height: 200}
@@ -251,7 +251,7 @@ var artifactWheel3 = {
 	prizes : [{"name" : "metal stool", "startAngle" : 0,   "endAngle" : 89},
          	  {"name" : "metal chair", "startAngle" : 90,  "endAngle" : 179},
          	  {"name" : "iron skillet", "startAngle" : 180,  "endAngle" : 269},
-         	  {"name" : "wood chair", "startAngle" : 270, "endAngle" : 359},
+         	  {"name" : "wooden chair", "startAngle" : 270, "endAngle" : 359},
          	  ],
     url: 'stimuli/artifactWheel3.png'
 }
