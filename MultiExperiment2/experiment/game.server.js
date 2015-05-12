@@ -67,7 +67,11 @@ game_server.server_onMessage = function(client,message) {
             if(msg) {
                 splitMsg = msg.split('  ')
                 if(splitMsg.slice(-1)[0]  == "?")
-                    gc.trialPacket = _.extend(gc.trialPacket, {"goal" : gc.goal.name, "question" : splitMsg.slice(0, -1).join(" ")})
+                    gc.trialPacket = _.extend(gc.trialPacket, 
+                        {"goal" : gc.goal.name, 
+                         "domain" : gc.items[gc.roundNum].domain,
+                         "type" : gc.items[gc.roundNum].type,
+                         "question" : splitMsg.slice(0, -1).join(" ")})
                 else 
                     gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ')[1]})
                 writeData(client, "message", message_parts)
@@ -78,9 +82,9 @@ game_server.server_onMessage = function(client,message) {
                 gc.data.trials.push(gc.trialPacket)
                 setTimeout(function(){
                   gc.newRound()
-		}, 4000)
-	      console.log(gc.trialPacket)
-              console.log(gc.data)
+                }, 4000)
+                console.log(gc.trialPacket)
+                console.log(gc.data)
             }
 
             // relay messages
@@ -89,9 +93,9 @@ game_server.server_onMessage = function(client,message) {
                 if(msg) 
                     p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
                 if(objNum) {
-		  p.player.instance.emit('updateData', gc.data)
+                    p.player.instance.emit('updateData', gc.data)
                     p.player.instance.send( 's.reveal.' + objNum)
-		}
+                }
             }) 
             break;
 
