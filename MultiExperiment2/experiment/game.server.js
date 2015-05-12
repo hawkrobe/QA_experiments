@@ -65,15 +65,19 @@ game_server.server_onMessage = function(client,message) {
             var objNum = message_parts[2]
             // write msg to file
             if(msg) {
-                splitMsg = msg.split('  ')
-                if(splitMsg.slice(-1)[0]  == "?")
-                    gc.trialPacket = _.extend(gc.trialPacket, 
-                        {"goal" : gc.goal.name, 
-                         "domain" : gc.items[gc.roundNum].domain,
-                         "type" : gc.items[gc.roundNum].type,
-                         "question" : splitMsg.slice(0, -1).join(" ")})
-                else 
-                    gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ')[1]})
+                splitMsg = msg.split('   ')
+	      console.log(splitMsg)
+                if(splitMsg.slice(-1)[0]  == "?") {
+                  gc.trialPacket = _.extend(gc.trialPacket, 
+					    {"goal" : gc.goal.name, 
+					     "domain" : gc.items[gc.roundNum].domain,
+					     "type" : gc.items[gc.roundNum].type,
+					     "question" : splitMsg.slice(0, -1).join(" ")})
+		}
+                else {
+                    gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ').slice(0, 4)})
+		  console.log(gc.trialPacket)
+		}
                 writeData(client, "message", message_parts)
             }
             // collect the most important data, to submit through mmturkey

@@ -135,6 +135,9 @@ client_onserverupdate_received = function(data){
         game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2.5,
         game.questionBox.width, game.ratio * 30);
 
+    $('#instructs').html("<h3>Round " + (data.roundNum + 1) + " of " 
+			 + data.numRounds + "</h3>")
+
     // Draw all this new stuff
     if(data.players.length > 1) {
         game.goal = game.goals[game.goalNum]
@@ -335,10 +338,10 @@ client_onjoingame = function(num_players, role) {
     // Update header w/ role 
     $('#header').append(role + '.');
     if(role === "guesser") {
-        $('#instructs').append("Type instructions for the matcher to move the object in the direction of the arrow!")
+        $('#instructs').html("<p>Round 0 of 12</p>")
     } else {
         drawMysteryGates(game, game.get_player(my_id));
-        $('#instructs').append("Click and drag objects to follow the guesser's instructions.")
+        $('#instructs').html("Round 0 of 12")
     }
 
     // show waiting message for first player
@@ -434,7 +437,7 @@ function checkForHit (mouseX, mouseY) {
     if(my_role === "guesser" && game.phase == 1) {
         if(buttonHitTest(mouseX, mouseY)) {
             var question = readQuestion();
-            game.socket.send("advance." + question + " ?") 
+            game.socket.send("advance." + question.trim() + "   ?") 
         }           
     } else if (my_role === "helper" && game.phase == 2) {
         for (i=0; i < game.goals.length; i++) {
