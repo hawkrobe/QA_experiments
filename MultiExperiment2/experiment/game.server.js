@@ -75,8 +75,7 @@ game_server.server_onMessage = function(client,message) {
 					     "question" : splitMsg.slice(0, -1).join(" ")})
 		}
                 else {
-                    gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ').slice(0, 4)})
-		  console.log(gc.trialPacket)
+                    gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ').slice(0, 4).join(' ')})
 		}
                 writeData(client, "message", message_parts)
             }
