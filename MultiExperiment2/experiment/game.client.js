@@ -29,30 +29,44 @@ client_ondisconnect = function(data) {
 
 submitInfoAndClose = function() {
     // Redirect to exit survey
-  console.log("server booted")
-  var urlParams;
-  var match,
-      pl     = /\+/g,  // Regex for replacing addition symbol with a space
-      search = /([^&=]+)=?([^&]*)/g,
-      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-      query  = location.search.substring(1);
+  console.log("server booted")      
+  game.viewport.style.display="none";
+  $('#exit_survey').show()
+}
 
-  urlParams = {};
-  while (match = search.exec(query))
-    urlParams[decode(match[1])] = decode(match[2]);
-      
-  console.log(urlParams)
-  console.log(game)
+// This gets called when someone selects something in the menu
+dropdownTip = function(data){
+  console.log(data)
+  var commands = data.split('::')
+  switch(commands[0]) {
+    case 'human' :
+      $('#humanResult').show()
+      game.data = _.extend(game.data, {'thinksHuman' : commands[1]}); break;
+    case 'language' :
+      game.data = _.extend(game.data, {'nativeEnglish' : commands[1]}); break;
+    case 'submit' :
+      game.data = _.extend(game.data, {'comments' : $('#comments').val()}); 
+      if(_.size(urlParams) == 4) {
+	var urlParams;
+	var match,
+	pl     = /\+/g,  // Regex for replacing addition symbol with a space
+	search = /([^&=]+)=?([^&]*)/g,
+	decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+	query  = location.search.substring(1);
 
-  if(_.size(urlParams) == 4) {
-    console.log(window.opener)
-    window.opener.turk.submit(game.data, true)
-    window.close()
-  } else {
-    console.log("would have submitted the following :")
-    console.log(game.data);
-    var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-    window.location.replace(URL);
+	urlParams = {};
+	while (match = search.exec(query))
+	  urlParams[decode(match[1])] = decode(match[2]);
+
+	window.opener.turk.submit(game.data, true)
+	window.close(); 
+      } else {
+	console.log("would have submitted the following :")
+	console.log(game.data);
+	// var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
+	// window.location.replace(URL);
+      }
+      break;
   }
 }
 

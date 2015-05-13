@@ -46,7 +46,34 @@
                 <ul id="messages"></ul>
             </div>
             <canvas id="viewport"> </canvas>
+	    <div id="exit_survey" style="display:none">
+	      <br><br><br><br><br>
+	      <h3> Thanks for participating in our experiment! </h3>
+	      <h3> Before you submit your HIT, we'd like to ask you a few questions. </h3>
+	      <br><br><br>
+	      <p> Did you believe you were playing against another human player? </p>
+	      <select onChange="dropdownTip('human::' + this.value)">
+		<option value=""></option>
+		<option value="yes">Yes, I thought they were a human</option>
+		<option value="no">No, I thought it was a computer program</option>
+	      </select>
+	      <p id='humanResult' style="display:none;color:red"> Thank you for your response -- in fact, all players were paired with other human turkers! <p>
+
+		<br> <br>
+	      <p> Are you a native English speaker? </p>
+	      <select onChange="dropdownTip('language::' + this.value)">
+		<option value = ""></option>
+		<option value="yes">Yes</option>
+		<option value="no">No</option>
+	      </select>
+	      <br><br>
+	      <p> Do you have any comments on the experiment? </p>
+	      <textarea id='comments' rows="4" cols="50"></textarea>
+	      <br>
+	      <div><button id="surveySubmit" onclick="dropdownTip('submit')" type="button">Submit HIT</button></div>
+	    </div>
             </span>
         </div>
     </body>
 </html>
+
