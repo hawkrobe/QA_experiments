@@ -41,23 +41,23 @@ dropdownTip = function(data){
   switch(commands[0]) {
     case 'human' :
       $('#humanResult').show()
-      game.data = _.extend(game.data, {'thinksHuman' : commands[1]}); break;
+      game.data.subj_data = _.extend(game.data.subj_data, {'thinksHuman' : commands[1]}); break;
     case 'language' :
-      game.data = _.extend(game.data, {'nativeEnglish' : commands[1]}); break;
+      game.data.subj_data = _.extend(game.data.subj_data, {'nativeEnglish' : commands[1]}); break;
     case 'submit' :
-      game.data = _.extend(game.data, {'comments' : $('#comments').val()}); 
+      game.data.subj_data = _.extend(game.data.subj_data, {'comments' : $('#comments').val(), 'role' : my_role}); 
+      var urlParams;
+      var match,
+      pl     = /\+/g,  // Regex for replacing addition symbol with a space
+      search = /([^&=]+)=?([^&]*)/g,
+      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+      query  = location.search.substring(1);
+
+      urlParams = {};
+      while (match = search.exec(query))
+        urlParams[decode(match[1])] = decode(match[2]);
+	
       if(_.size(urlParams) == 4) {
-	var urlParams;
-	var match,
-	pl     = /\+/g,  // Regex for replacing addition symbol with a space
-	search = /([^&=]+)=?([^&]*)/g,
-	decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-	query  = location.search.substring(1);
-
-	urlParams = {};
-	while (match = search.exec(query))
-	  urlParams[decode(match[1])] = decode(match[2]);
-
 	window.opener.turk.submit(game.data, true)
 	window.close(); 
       } else {

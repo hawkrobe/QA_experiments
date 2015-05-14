@@ -42,7 +42,7 @@ var game_core = function(game_instance){
     this.trialPacket = {}
     this.roundNum = -1;
     this.goalNum = -1;
-    this.numRounds = 1;
+    this.numRounds = 12;
     this.phase = 0;
 
     if(this.server) {
