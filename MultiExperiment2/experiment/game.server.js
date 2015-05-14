@@ -81,7 +81,7 @@ game_server.server_onMessage = function(client,message) {
             }
             // collect the most important data, to submit through mmturkey
             if(objNum) {
-                gc.trialPacket = _.extend(gc.trialPacket, {"guess" : gc.goals[objNum].name === gc.goal.name})
+                gc.trialPacket = _.extend(gc.trialPacket, {"guess" : (gc.goals[objNum].name === gc.goal.name).toString()})
                 gc.data.trials.push(gc.trialPacket)
                 setTimeout(function(){
                   gc.newRound()
