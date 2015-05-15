@@ -4,6 +4,7 @@
 stanford-corenlp-python
 auth.json
 node_modules
+*~
 *.aux
 *.bbl
 *.blg
