@@ -1,10 +1,15 @@
-var uniformDraw = function (xs) {
-  return xs[randomInteger(xs.length)];
-};
+// Run as:
+// webppl simulations/clark.js --require-js ./qa.js
 
-var mean = function(thunk){
-  return expectation(Enumerate(thunk), function(v){return v;});
-};
+
+// Question: "Does Jim Beam cost more than $5?"
+
+// The merchants give the (over-informative) exact price of liquor
+// more often when he prefaced the question with "I'd like to buy some
+// whiskey" than when he prefaced the question with "I only have $5 to
+// spend."
+
+var identity = function(x){return x;};
 
 var negate = function(predicate){
   return function(x){
@@ -12,117 +17,101 @@ var negate = function(predicate){
   };
 };
 
-
-
-var identity = function(x){
- return x;
-};
-
 var condition = function(x){
- factor(x ? 0 : -Infinity);
+  var score = x ? 0 : -Infinity;
+  factor(score);
 };
 
-
-// World knowledge
-
-var taxonomy = {
-  people: {
-    James : null,
-    Alice : null,
-    Susan : null,
-    Bill  : null
-	}
+var mean = function(thunk){
+  return expectation(Enumerate(thunk), function(v){return v;});
 };
 
-// All possible assignments of leaves to boolean values indicating whether they will go to party
-var worldSpace = map(
-  function(perm) {
-    return _.object(qa.leaves(taxonomy), perm);
-  }, qa.TFCartesianProd(qa.leaves(taxonomy).length));
+var allTrue = function(boolList) {
+  return reduce(function(val, memo) {
+    return val && memo;
+  }, true, boolList)
+}
 
-var worldPrior = function() {
-  return uniformDraw(worldSpace);
+// --------------------------------------------------------------------
+
+// var buyWhiskeyContext = "I'd like to buy some whiskey.";
+// var spendFiveDollarsContext = "I only have $5 to spend.";
+
+var distances = [1]//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+var cafes = ['cafe1', 'cafe2', 'cafe3', 'cafe4']
+
+var isCafeList = function(x){
+  return map(function(v) {return _.contains(cafes, v)}, x);
 };
 
-// Questions
-
-var uniqueQuestion = 'who will be at the concert?';
-
-var questionPrior = function() {
-  return uniformDraw(questionSpace);
-};
-
-var isTaxonomyQuestion = function(x){
-  return x == questionSpace[0]
-};
-
-var questionToNode = function(utterance){
-  var temp = qa.butLast(utterance).split("Are");
-  var node = temp[1].toLowerCase();
-  return node;
-};
-
-var taxonomyQuestionMeaning = cache(function(utterance){
-  var node = questionToNode(utterance);
-  var subtree = qa.findSubtree(node, taxonomy);
-  var leavesBelowNode = subtree === null ? [node] : qa.leaves(subtree);
-  return function(world){
-    return map(function(node) {return world[node];}, leavesBelowNode);
+var worldPrior = function(){
+  return {
+    'cafe1' : [uniformDraw(distances), flip(.5)],
+    'cafe2' : [uniformDraw(distances), flip(.5)],
+    'cafe3' : [uniformDraw(distances), flip(.5)],
+    'cafe4' : [uniformDraw(distances), flip(.5)]
   };
-});
-
-// Answers
-
-// Can tell questioner whether one or more people was there
-var fullAnswerSpace = qa.flatten(map(
-  function(personSet){
-    map(function(TFSet){
-      qa.flatten(map2(function(person, TF){
-      return person + ':' + TF + ",";
-      }, personSet, TFSet))
-    }, qa.TFCartesianProd(personSet.length));
-  }, filter(function(v){return v.length > 0},
-    qa.powerset(qa.leaves(taxonomy)))));
-
-var fullAnswerPrior = function(){
-  return uniformDraw(fullAnswerSpace);
 };
 
-var isTaxonomyAnswer = function(x){
-  var person_pairs = qa.butLast(x).split(',')
-  return all(function(v){
-    return qa.isNodeInTree(v.split(":")[0], taxonomy)
-  }, person_pairs)
-//  return (last(x) === '.') & (qa.isNodeInTree(butLast(x).split(",")[0], taxonomy));
+// Returns whether or not the given cafe has a newspapers
+var hasNewspaper = function(world, cafe) {
+  return world[cafe][1]
+}
+
+// Returns the distance of a cafe
+var distance = function(world, cafe) {
+  return world[cafe][0]
+}
+
+var newspaperQuestion = "Where can one buy an Italian newspaper?";
+
+// projects from a world to the relevant properties for the desired answer
+var newspaperQuestionMeaning = function(world){
+  return _.object(map(function(cafe){
+    return [cafe, hasNewspaper(world, cafe)]
+  }, cafes))
 };
 
-var taxonomyAnswerMeaning = cache(function(utterance){
-  return function(pred){
-    return function(x){
-      var person_pairs = qa.butLast(utterance).split(',')
-      return all(function(v){
-        var pair = v.split(":")
-        var person = pair[0]
-        var truth_val = pair[1]
-        return x[person] == truth_val
-      }, person_pairs)
+var questions = [newspaperQuestion] //doYouTakeCreditQuestion];
+
+var questionPrior = function(){
+  return uniformDraw(questions);
+};
+
+// built-in cost for saying more than one answer
+var answerPrior = function(){
+  var drawCafe = function(cafeList) {
+    if(_.isEmpty(cafeList))
+      return []
+    else {
+      var newCafe = [uniformDraw(cafeList)]
+      return (flip(0.5) ? newCafe :
+        newCafe.concat(drawCafe(_.without(cafeList, newCafe[0]))))
+    }
+  }
+  return drawCafe(cafes)
+};
+
+var cafeAnswerMeaning = function(cafeList){
+  return function(questionMeaning){
+    return function(world){
+      var doTheyHaveNewspapers = map(function(cafe) {
+        hasNewspaper(world, cafe)
+      }, cafeList);
+      return allTrue(doTheyHaveNewspapers);
     };
   };
-});
+};
 
-// // Sentence meaning (questions and answers)
+var meaning = function(utterance){
+  return (isCafeList(utterance) ? cafeAnswerMeaning(utterance) :
+         (utterance === newspaperQuestion) ? newspaperQuestionMeaning :
+         console.error('unknown utterance!', utterance));
+};
 
-var meaning = cache(function(utterance){
-  return (isTaxonomyQuestion(utterance) ? taxonomyQuestionMeaning(utterance) :
-          isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) :
-          utterance === 'null' ? function(w){return true;} :
-          undefined);
-});
-
-
-// // For "x@n."-style answers, the question doesn't play any role.
 var literalListener = cache(function(question, answer){
-  Enumerate(function(){
+  return Enumerate(function(){
     var world = worldPrior();
     var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
@@ -131,123 +120,47 @@ var literalListener = cache(function(question, answer){
   });
 });
 
-var literalAnswerer = cache(
-  function(question, trueWorld, ansRationality) {
-    // Pick answer conditioned on communicating question predicate value
-    return Enumerate(
-      function(){
-        var answer = fullAnswerPrior();
-        factor(literalListener(question, answer).score([], trueWorld) * ansRationality);
-        return answer;
-      });
-  });
-
-var explicitAnswerer = cache(
-  function(question, trueWorld, ansRationality) {
-    // Pick answer conditioned on communicating question predicate value
-    return Enumerate(
-      function(){
-        var answer = fullAnswerPrior();
-        //var answer = sample(truthfulAnswerPrior);
-        var score = mean(
-          function(){
-            // We may be uncertain about which leaf node the question
-            // refers to, so we're integrating over possible leaf nodes
-            // of interest
-            var questionNode = questionToNode(question);
-            var subtree = qa.findSubtree(questionNode, taxonomy);
-            var leavesBelowNode = subtree === null ? [questionNode] : qa.leaves(subtree);
-            var leafOfInterest = uniformDraw(leavesBelowNode);
-            // Did the listener infer the correct location of the leaf
-            // node of interest?
-            var inferredWorld = sample(literalListener(question, answer));
-            var inferredPosition = inferredWorld[leafOfInterest];
-            var truePosition = trueWorld[leafOfInterest];
-            return (truePosition == inferredPosition) ? 1 : 0;
-          });
-        factor(Math.log(score) * ansRationality);
-        return answer;
-      });
-  });
-
-var questioner = cache(function(qud_node, ansRationality, KLRationality) {
-  var qud = (makeQUD(qud_node))
-  Enumerate(function(){
-    console.log("evaluating question for qud " + qud_node)
-    var question = questionPrior();
-    // What is the gate value I'd guess under my prior?
-    var prior = Enumerate(function(){
-      return qud(worldPrior());
-    });
-    var expectedKL = mean(
-      function(){
-        // What do I expect the world to be like?
-        var trueWorld = worldPrior();
-        // If I ask this question, what answer do I expect to get,
-        // given what the world is like?
-        var answer = sample(explicitAnswerer(question, trueWorld, ansRationality));
-        var posterior = Enumerate(function(){
-          // Given this answer, how would I update my distribution on worlds?
-          var world = sample(literalListener(question, answer));
-          // What is the value of the predicate I care about under
-          // this new distribution on worlds?
-          return qud(world);
-        });
-        return qa.KL(posterior, prior);
-      });
-    factor(expectedKL * KLRationality);
-    console.log(question)
-    return question;
-  });
+var literalAnswerer = cache(function(question, trueWorld){
+  return Enumerate(
+    function(){
+      var answer = answerPrior();
+      factor(literalListener(question, answer).score([], trueWorld) * 3);
+      return answer;
+    }
+  );
 });
 
-var pragmaticAnswerer = cache(function(question, trueWorld, ansR, KLR, qudR, pragR){
-  var qudNodePosterior = Enumerate(function(){
-    var qudNode = qudNodePrior();
-    var q_erp = questioner(qudNode, ansR, KLR);
-    factor(q_erp.score([], question) * qudR);
-    return qudNode;
-  });
-  return Enumerate(function(){
-    var qud = makeQUD(sample(qudNodePosterior));
-    // Pick answer conditioned on communicating question predicate value
-    var answer = fullAnswerPrior()
-    var score = mean(
-      function(){
-        var inferredWorld = sample(literalListener(question, answer));
-        var inferredPosition = qud(inferredWorld);
-        var truePosition = qud(trueWorld)
-        return (truePosition[0] == inferredPosition[0]) ? 1 : 0;
-      });
-    factor(Math.log(score) * pragR);
-    return answer;
-  });
-})
+world = {'cafe1' : [1, true],
+         'cafe2' : [1, true],
+         'cafe3' : [1, false],
+         'cafe4' : [1, false]}
 
-var myCartesianProductOf = function(listOfLists) {
-    return reduce(function(b, a) {
-        return _.flatten(map(function(x) {
-          console.log(x)
-            return map(function(y) {
-              console.log(y)
-              return x.concat(y);
-            }, b);
-          }, a), true);
-  }, [[]], listOfLists);
-};
+qa.printERP(literalAnswerer(newspaperQuestion, world))
 
-console.log("this is no probs")
-console.log(myCartesianProductOf([[1,2], [1,2]]))
+// var qudPrice = function(world){return price(world);};
+// var qudPriceGreaterThan5 = function(world){return price(world) > 5;};
+// var qudTakeCredit = function(world){return credit(world);};
 
-// var w = worldSpace[0]
-// console.log(w)
-// qa.printERP(pragmaticAnswerer('whoArePeople?', w, 1, 1, 1, 3))
+// var qudPrior = function(context){
+//   var p = ((context === buyWhiskeyContext) ? 0.5 :
+//            (context === spendFiveDollarsContext) ? 0.9 :
+//            console.error('unknown context'));
+//   return (flip(0.4) ? "qudTakeCredit" :
+//           flip(p) ? "qudPriceGreaterThan5" :
+//           "qudPrice");
+// };
 
-// var pragmaticQuestioner = cache(function(qud_node) {
-//   var qud = (makeQUD(qud_node))
-//   Enumerate(function(){
+// var nameToQUD = function(qudName){
+//   return (qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 :
+//           qudName == "qudPrice" ? qudPrice :
+//           qudName == "qudTakeCredit" ? qudTakeCredit :
+//           console.error('unknown qud name', qudName));
+// };
+
+// var questioner = function(qudName) {
+//   var qud = nameToQUD(qudName);
+//   return Enumerate(function(){
 //     var question = questionPrior();
-//     // What is the gate value I'd guess under my prior?
 //     var prior = Enumerate(function(){
 //       return qud(worldPrior());
 //     });
@@ -255,48 +168,65 @@ console.log(myCartesianProductOf([[1,2], [1,2]]))
 //       function(){
 //         // What do I expect the world to be like?
 //         var trueWorld = worldPrior();
+//         // If I ask this question, what answer do I expect to get,
+//         // given what the world is like?
+//         var answer = sample(literalAnswerer(question, trueWorld));
 //         var posterior = Enumerate(function(){
-//           // If I ask this question, what answer do I expect to get,
-//           // given what the world is like?
-//           var answer = sample(pragmaticAnswerer(question, trueWorld));
 //           // Given this answer, how would I update my distribution on worlds?
 //           var world = sample(literalListener(question, answer));
 //           // What is the value of the predicate I care about under
 //           // this new distribution on worlds?
 //           return qud(world);
 //         });
-//         return KL(posterior, prior);
+//         return qa.KL(posterior, prior);
 //       });
-//     factor(expectedKL);
+//     factor(expectedKL * 3);
+    
 //     return question;
 //   });
-// });
-
-// var main = function(){
-//   var world = {poodle: 1, dalmatian: 2, siamese: 3, flower: 4};
-//   var questions = ['whereIsDalmatian?', 'whereIsDog?', 'whereIsAnimal?', 'whereIsThing?'];
-//   var qudNodes = ['dalmatian', 'poodle', 'siamese', 'flower']
-//   var f_ans = function(question){
-//     console.log(question);
-//     printERP(literalAnswerer(question, world));
-//   };
-//   var f_q = function(qudNode) {
-//     console.log(qudNode);
-//     printERP(questioner(qudNode))
-//   };
-//   var f_prag_ans = function(question){
-//     console.log(question);
-//     printERP(pragmaticAnswerer(question, world));
-//   };
-//   var f_prag_q = function(qudNode) {
-//     console.log(qudNode);
-//     printERP(pragmaticQuestioner(qudNode))
-//   };
-//   //map(f_ans, questions)
-//   //map(f_q, qudNodes)
-//   map(f_prag_q, qudNodes);
-//   //map(f_prag_ans, questions)
-//   return 'done';
 // };
 
-// main();
+
+// var pragmaticAnswerer = function(context, question, trueWorld){
+//   var qudPosterior = Enumerate(function(){
+//     var qudName = qudPrior(context);
+//     var qud = nameToQUD(qudName);
+//     var q_erp = questioner(qudName);
+//     factor(q_erp.score([], question));
+//     return qudName;
+//   });
+//   return Enumerate(function(){
+//     var qudName = sample(qudPosterior);
+//     var qud = nameToQUD(qudName);
+//     // Pick answer conditioned on communicating question predicate value
+//     var truthfulAnswerPrior = Enumerate(function(){
+//       var answer = answerPrior();
+//       factor(literalListener(question, answer).score([], trueWorld));
+//       return answer
+//     })
+
+//     var answer = sample(truthfulAnswerPrior);
+//     var score = mean(
+//       function(){
+//         var inferredWorld = sample(literalListener(question, answer));
+//         return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
+//       });
+//     factor(Math.log(score) * 3);
+//     return answer;
+//   });
+// };
+
+// var world = [true, 8];
+// console.log("world", world);
+
+// console.log(buyWhiskeyContext, doYouTakeCreditQuestion);
+// qa.printERP(pragmaticAnswerer(buyWhiskeyContext, doYouTakeCreditQuestion, world));
+
+// console.log(spendFiveDollarsContext, doYouTakeCreditQuestion);
+// qa.printERP(pragmaticAnswerer(spendFiveDollarsContext, doYouTakeCreditQuestion, world));
+
+// console.log(buyWhiskeyContext, isMoreThanFiveQuestion);
+// qa.printERP(pragmaticAnswerer(buyWhiskeyContext, isMoreThanFiveQuestion, world));
+
+// console.log(spendFiveDollarsContext, isMoreThanFiveQuestion);
+// qa.printERP(pragmaticAnswerer(spendFiveDollarsContext, isMoreThanFiveQuestion, world));
