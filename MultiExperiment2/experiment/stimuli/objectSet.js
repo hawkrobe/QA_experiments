@@ -25,7 +25,7 @@ var whale2 = {
 	url: 'stimuli/whale2.jpg', name: 'whale', width: 200, height: 200}
 
 var betta = {
-	url: 'stimuli/betta.jpg', name: 'beta', width: 200, height: 200}
+	url: 'stimuli/betta.jpg', name: 'betta fish', width: 200, height: 200}
 
 var goldfish = {
 	url: 'stimuli/goldfish.jpg', name: 'goldfish', width: 200, height: 200}
@@ -159,7 +159,7 @@ var animalWheel2 = {
 
 var animalWheel3 = {
 	prizes : [{"name" : "dalmatian", "startAngle" : 0,   "endAngle" : 89},
-         	  {"name" : "beta fish", "startAngle" : 90,  "endAngle" : 179},
+         	  {"name" : "betta fish", "startAngle" : 90,  "endAngle" : 179},
          	  {"name" : "goldfish", "startAngle" : 180,  "endAngle" : 269},
          	  {"name" : "angler fish", "startAngle" : 270, "endAngle" : 359},
          	  ],

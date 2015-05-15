@@ -175,7 +175,9 @@ game_core.prototype.server_send_update = function(){
             goal : this.goal,
             phase : this.phase,
             wheel : this.wheel,
-            dataObj  : this.data
+            dataObj  : this.data,
+            roundNum: this.roundNum,
+            numRounds: this.numRounds
         };
 
     _.extend(state, {players: player_packet})

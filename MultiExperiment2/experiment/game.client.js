@@ -29,30 +29,44 @@ client_ondisconnect = function(data) {
 
 submitInfoAndClose = function() {
     // Redirect to exit survey
-  console.log("server booted")
-  var urlParams;
-  var match,
+  console.log("server booted")      
+  game.viewport.style.display="none";
+  $('#exit_survey').show()
+}
+
+// This gets called when someone selects something in the menu
+dropdownTip = function(data){
+  console.log(data)
+  var commands = data.split('::')
+  switch(commands[0]) {
+    case 'human' :
+      $('#humanResult').show()
+      game.data.subj_data = _.extend(game.data.subj_data, {'thinksHuman' : commands[1]}); break;
+    case 'language' :
+      game.data.subj_data = _.extend(game.data.subj_data, {'nativeEnglish' : commands[1]}); break;
+    case 'submit' :
+      game.data.subj_data = _.extend(game.data.subj_data, {'comments' : $('#comments').val(), 'role' : my_role}); 
+      var urlParams;
+      var match,
       pl     = /\+/g,  // Regex for replacing addition symbol with a space
       search = /([^&=]+)=?([^&]*)/g,
       decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
       query  = location.search.substring(1);
 
-  urlParams = {};
-  while (match = search.exec(query))
-    urlParams[decode(match[1])] = decode(match[2]);
-      
-  console.log(urlParams)
-  console.log(game)
-
-  if(_.size(urlParams) == 4) {
-    console.log(window.opener)
-    window.opener.turk.submit(game.data, true)
-    window.close()
-  } else {
-    console.log("would have submitted the following :")
-    console.log(game.data);
-    var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
-    window.location.replace(URL);
+      urlParams = {};
+      while (match = search.exec(query))
+        urlParams[decode(match[1])] = decode(match[2]);
+	
+      if(_.size(urlParams) == 4) {
+	window.opener.turk.submit(game.data, true)
+	window.close(); 
+      } else {
+	console.log("would have submitted the following :")
+	console.log(game.data);
+	// var URL = 'http://web.stanford.edu/~rxdh/psych254/replication_project/forms/end.html?id=' + my_id;
+	// window.location.replace(URL);
+      }
+      break;
   }
 }
 
@@ -134,6 +148,9 @@ client_onserverupdate_received = function(data){
         game, game.get_player(my_id), game.questionBox.tlX + game.ratio * 5,
         game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2.5,
         game.questionBox.width, game.ratio * 30);
+
+    $('#instructs').html("<h3>Round " + (data.roundNum + 1) + " of " 
+			 + data.numRounds + "</h3>")
 
     // Draw all this new stuff
     if(data.players.length > 1) {
@@ -335,10 +352,10 @@ client_onjoingame = function(num_players, role) {
     // Update header w/ role 
     $('#header').append(role + '.');
     if(role === "guesser") {
-        $('#instructs').append("Type instructions for the matcher to move the object in the direction of the arrow!")
+        $('#instructs').html("<p>Round 0 of 12</p>")
     } else {
         drawMysteryGates(game, game.get_player(my_id));
-        $('#instructs').append("Click and drag objects to follow the guesser's instructions.")
+        $('#instructs').html("Round 0 of 12")
     }
 
     // show waiting message for first player
@@ -434,7 +451,7 @@ function checkForHit (mouseX, mouseY) {
     if(my_role === "guesser" && game.phase == 1) {
         if(buttonHitTest(mouseX, mouseY)) {
             var question = readQuestion();
-            game.socket.send("advance." + question + " ?") 
+            game.socket.send("advance." + question.trim() + "   ?") 
         }           
     } else if (my_role === "helper" && game.phase == 2) {
         for (i=0; i < game.goals.length; i++) {
