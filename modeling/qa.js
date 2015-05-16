@@ -195,6 +195,29 @@ var orderIsEqual = function(erp1, erp2){
   return arraysEqual(erpOrder(erp1), erpOrder(erp2));
 };
 
+var pickAllNewspaperCafes = function(world) {
+  var trueCafes = _.keys(_.pick(world, function(value, key, object) {
+    return value[1];
+  }))
+  if(_.isEmpty(trueCafes))
+    return 'none'
+  else 
+    return trueCafes
+}
+
+var pickClosestNewspaperCafe = function(world) {
+  var validPicks = _.pick(world, function(value, key, object) {
+    return value[1];
+  })
+  if(_.isEmpty(validPicks))
+    return 'none'
+  else {
+    return [_.min(_.keys(validPicks), function(k) {
+      return validPicks[k][0];
+    })]
+  }
+}
+
 module.exports = {
   arraysEqual: arraysEqual,
   setsEqual: setsEqual,
@@ -202,6 +225,8 @@ module.exports = {
   flatten: flatten,
   permute: permute,
   KL: KL,
+  pickAllNewspaperCafes: pickAllNewspaperCafes,
+  pickClosestNewspaperCafe: pickClosestNewspaperCafe,
   cartesianProductOf: cartesianProductOf,
   TFCartesianProd : TFCartesianProd,
   isNodeInTree: isNodeInTree,
