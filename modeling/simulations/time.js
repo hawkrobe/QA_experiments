@@ -32,6 +32,13 @@ var timeDiff = function(timeString1, timeString2) {
   return Math.abs(min2 - min1)
 }
 
+var roundToNearest = function(time) {
+  var hour = time.split(":")[0]
+  var minutes = time.split(":")[1]
+  var roundedMinutes = 5 * Math.round(minutes / 5)
+  return hour + ":" + roundedMinutes
+}
+
 var allTrue = function(boolList) {
   return reduce(function(val, memo) {
     return val && memo;
@@ -46,8 +53,6 @@ var allFalse = function(boolList) {
 
 // --------------------------------------------------------------------
 
-// var buyWhiskeyContext = "I'd like to buy some whiskey.";
-// var spendFiveDollarsContext = "I only have $5 to spend.";
 
 var currTimes = map(function(n) {return "3:" + n;}, _.range(30, 60))
 
@@ -108,27 +113,33 @@ var literalAnswerer = cache(function(question, trueWorld){
     function(){
       var answer = answerPrior();
       var ll = literalListener(question, answer)
-      factor(literalListener(question, answer).score([], trueWorld) * 3);
+      factor(literalListener(question, answer).score([], trueWorld));
       return answer;
     }
   );
 });
 
-var qudAll = function(world){return qa.pickAllNewspaperCafes(world)}
-var qudClosest = function(world){return qa.pickClosestNewspaperCafe(world);};
+var qudFactory = function(threshold) {
+ return function(world){
+  if(world < threshold) {
+    return roundToNearest(world)
+  } else {
+    return world
+  }
+ }}
 
+// Family of quds parameterized by threshold at which "running late"
+// Thresholds closer to the appointment are more likely
 var qudPrior = function(context){
-  var p = ((context === businesspersonContext) ? 0.9 :
-           (context === touristContext) ? 0.1 :
-           console.error('unknown context'));
-  return (flip(p) ? "qudAll" :
-          "qudClosest");
+  var threshold = uniformDraw(qa.getEveryFifthElement(currTimes))
+  var appointmentTime = "4:00"
+  factor(timeDiff(threshold, appointmentTime))
+  return "qud" + threshold
 };
 
 var nameToQUD = function(qudName){
-  return (qudName == "qudClosest" ? qudClosest :
-          qudName == "qudAll" ? qudAll :
-          console.error('unknown qud name', qudName));
+  var threshold = qudName.slice(3)
+  return qudFactory(threshold)
 };
 
 var questioner = function(qudName) {
@@ -144,7 +155,6 @@ var questioner = function(qudName) {
         var trueWorld = worldPrior();
         // If I ask this question, what answer do I expect to get,
         // given what the world is like?
-//        qa.printERP(literalAnswerer(question, trueWorld))
         var answer = sample(literalAnswerer(question, trueWorld));
         var posterior = Enumerate(function(){
           // Given this answer, how would I update my distribution on worlds?
@@ -169,17 +179,11 @@ var pragmaticAnswerer = function(context, question, trueWorld){
     factor(q_erp.score([], question));
     return qudName;
   });
-//  qa.printERP(qudPosterior)
   return Enumerate(function(){
     var qudName = sample(qudPosterior);
     var qud = nameToQUD(qudName);
     // Pick answer conditioned on communicating question predicate value
-    var truthfulAnswerPrior = Enumerate(function(){
-      var answer = answerPrior();
-      factor(literalListener(question, answer).score([], trueWorld));
-      return answer
-    })
-    var answer = sample(truthfulAnswerPrior);
+    var answer = answerPrior();
     var score = mean(
       function(){
         var inferredWorld = sample(literalListener(question, answer));
@@ -191,20 +195,13 @@ var pragmaticAnswerer = function(context, question, trueWorld){
 };
 
 
-var world = "3:41"
+//var qud = qudFactory("qud3:30")
 
-qa.printERP(literalAnswerer(timeQuestion, world))
+var world = "3:34"
+console.log(appointmentContext, timeQuestion, "true time = ", world);
+qa.printERP(pragmaticAnswerer(appointmentContext, timeQuestion, world));
 
-// world = {'cafe1' : [3, false],
-//          'cafe2' : [1, true],
-//          'cafe3' : [3, true],
-//          'cafe4' : [3, true]}
-
-// console.log("world", world);
-
-// console.log(businesspersonContext, newspaperQuestion);
-// qa.printERP(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world));
-
-// console.log(touristContext, newspaperQuestion);
-// qa.printERP(pragmaticAnswerer(touristContext, newspaperQuestion, world));
+var world = "3:54"
+console.log(appointmentContext, timeQuestion, "true time = ", world);
+qa.printERP(pragmaticAnswerer(appointmentContext, timeQuestion, world));
 

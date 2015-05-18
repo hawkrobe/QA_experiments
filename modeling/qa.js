@@ -183,6 +183,12 @@ var sortWithIndices = function(toSort) {
   return toSort;
 };
 
+var getEveryFifthElement = function(list) {
+  return _.filter(list, function(num, index) {
+    return index % 5 == 0;
+  })
+}
+
 var erpOrder = function(erp){
   var scores = erp.support([]).map(function(v){
     return erp.score([], v);
@@ -227,6 +233,7 @@ module.exports = {
   KL: KL,
   pickAllNewspaperCafes: pickAllNewspaperCafes,
   pickClosestNewspaperCafe: pickClosestNewspaperCafe,
+  getEveryFifthElement : getEveryFifthElement,
   cartesianProductOf: cartesianProductOf,
   TFCartesianProd : TFCartesianProd,
   isNodeInTree: isNodeInTree,
