@@ -95,14 +95,14 @@ var drawGoals = function(game, player) {
   game.ctx.textAlign = "center"
 
   if(player.role == "guesser") {
-    game.ctx.fillText("Your view of the gates:", game.viewport.width/2, game.ratio * 15)
+    game.ctx.fillText("Your view of the gates:", game.halfwayPoint + game.viewport.width/2, game.ratio * 15)
     game.ctx.textAlign = "left"
     game.ctx.fillText("Your goal is to find the...", 
       500, game.ratio * 200)
   } else {
     var goals = game.goals
-    game.ctx.fillText("Your view:", game.viewport.width/2, game.ratio * 15)
-    game.ctx.fillText("Partner's view:", game.viewport.width/2, game.ratio * 165)
+    game.ctx.fillText("Your view:", game.halfwayPoint + game.viewport.width/2, game.ratio * 15)
+    game.ctx.fillText("Partner's view:", game.viewport.width/2 - game.halfwayPoint, game.ratio * 15)
     _.map(goals, function(obj) { 
       game.ctx.drawImage(obj.img, obj.trueX, obj.trueY, obj.width, obj.height)
     })    

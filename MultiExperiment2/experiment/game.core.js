@@ -36,9 +36,11 @@ var game_core = function(game_instance){
     this.server = this.instance !== undefined;
 
     //Dimensions of world -- Used in collision detection, etc.
-    this.world = {width : 600, height : 600};  // 160cm * 3
+    this.world = {width : 1200, height : 600};  // 160cm * 3
     this.ratio = 2;
 
+    this.halfwayPoint = this.world.width/2
+  
     this.trialPacket = {}
     this.roundNum = -1;
     this.goalNum = -1;

@@ -174,7 +174,7 @@ var makeDrawableObjects = function(game) {
     }, 20)
 
     game.questionBox = {
-        tlX : (game.viewport.width - wordWidth)/2, 
+        tlX : game.halfwayPoint + (game.viewport.width - wordWidth)/2, 
         tlY: 400*game.ratio, 
         height: 175*game.ratio, width: wordWidth}
 

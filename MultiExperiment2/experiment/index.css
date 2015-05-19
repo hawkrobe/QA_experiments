@@ -48,11 +48,10 @@ html , body {
 }
 
 #viewport {
-	float: right;
+	float: center;
 	border:solid 1px #999;
-	height: 81vh;
-    width: 81vh;
-	margin-right: 2.5%;
+	height: 85vh;
+	width: 170vh;
 	background: #383838; 
 
 }
