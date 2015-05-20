@@ -120,7 +120,7 @@ client_onserverupdate_received = function(data){
             var imgObj = new Image()
             imgObj.src = obj.url
 
-	    var adjustment = my_role == "guesser" ? game.halfwayPoint * 2 : 0
+	    var adjustment = my_role == "helper" ? game.halfwayPoint * 2 : 0
 	  
             // Set it up to load properly (also randomize positioning of )
             var x = parseInt(obj.trueX) + adjustment
@@ -562,13 +562,12 @@ function buttonHitTest(mx,my) {
 }
 
 function gateHitTest(i, mx, my) {
-  
-  var xLocs = game.get_player(my_id).gateXLocs
-    var dx = mx - (xLocs[i] - 100);
+  var xLocs1 = _.map(game.get_player(my_id).gateXLocs,
+		     function(n) {return n + game.halfwayPoint * 2})
+  var dx1 = mx - (xLocs1[i] - 100);
     // allow people to click on either view... but not in between!
-    var dy1 = my - game.ratio * 100 + 100
-    var dy2 = my - game.ratio * 200
-    return (0 < dx) && (dx < 200) && (((0 < dy1) && (dy1 < 200)) || ((0 < dy2) && (dy2 < 200)))
+  var dy = my - game.ratio * 100 + 100
+  return (0 < dy) && (dy < 200) && (((0 < dx1) && (dx1 < 200)))
 }
 
 function mysteryGateHitTest(i, mx, my) {

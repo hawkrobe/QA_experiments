@@ -96,9 +96,9 @@ var drawGoals = function(game, player) {
 
   if(player.role == "guesser") {
     game.ctx.fillText("Your view of the gates:", game.halfwayPoint + game.viewport.width/2, game.ratio * 15)
-    game.ctx.textAlign = "left"
+    game.ctx.textAlign = "center"
     game.ctx.fillText("Your goal is to find the...", 
-      500, game.ratio * 200)
+		      game.halfwayPoint, game.ratio * 400)
   } else {
     var goals = game.goals
     game.ctx.fillText("Your view:", game.halfwayPoint + game.viewport.width/2, game.ratio * 15)
@@ -113,20 +113,22 @@ var drawGoals = function(game, player) {
 var drawMessages = function(game, player) {
   var text = getText(game, player)
   if(player.role == "guesser") {
-    wipeRegion(500, game.ratio*325,
-      690, game.ratio * 30 * 2); setWhiteMessageTextStyle()
+    wipeRegion(0, game.ratio*500,
+	       game.halfwayPoint * 2,
+	       game.ratio * 30 * 2);
+    setWhiteMessageTextStyle()
     // Temp message... 
     wrapText(game, text,
-      500, game.ratio*325,
-      690, game.ratio*30)
+	     game.halfwayPoint, game.ratio*500,
+	     game.halfwayPoint * 2, game.ratio*30)
   } else {
       // Temp message:
-      wipeRegion(0, game.ratio*325, game.viewport.width, game.ratio * 30 * 2.1);
+    wipeRegion(0, game.ratio*325,
+	       game.halfwayPoint*2, game.ratio * 30 * 2.1);
       setWhiteMessageTextStyle()
-      game.ctx.textAlign = "center"
       wrapText(game, text,
-        game.viewport.width/2, game.ratio*325,
-        game.viewport.width, game.ratio*30)
+               game.halfwayPoint, game.ratio*325,
+               game.halfwayPoint * 2, game.ratio*30)
     }
 }
 
@@ -212,16 +214,16 @@ function highlightGate(num, prevSelected) {
     prevGoal = game.goals[prevSelected]
     wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth, 
       prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
-    wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth + 300, 
-      prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
+//    wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth + 300, 
+//      prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
   }
   currGoal = game.goals[num]
   game.ctx.strokeStyle = "red"
   game.ctx.lineWidth = 8
   game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
     currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
-  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth + 300, 
-      currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+//  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth + 300, 
+//      currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
 
 }
 
@@ -323,7 +325,7 @@ function wrapText(game, text, x, y, maxWidth, lineHeight) {
 }
 
 function setWhiteMessageTextStyle() {
-  game.ctx.textAlign = "left"
+  game.ctx.textAlign = "center"
   game.ctx.textBaseline='top'
   game.ctx.fillStyle = "white"
   game.ctx.font = "36pt Helvetica";

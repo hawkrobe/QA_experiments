@@ -42,7 +42,7 @@ var pointerAngle     = 270	;  	 	 // The angle / location around the wheel where
 var doPrizeDetection = true; 	 // Set to true if you want the code to detect the prize the user has won when the spinning has stopped. Prizes need to be specified in the prizes array.
 var spinMode         = "determinedPrize"; // Values can be: random, determinedAngle, determinedPrize.
 var determinedGetUrl = "";  	 // Set to URL of the server-side process to load via ajax when spinMode is determinedAngle or determinedPrize.
-var wheelSize        = 400
+var wheelSize        = 600;
 /*
 	The following files included in the download can be used to test the different modes (you will need an Apache server; I use XAMPP on my local machine).
 	determinedPrize: get_determined_prize.php;  // Always returns "2" (so will win prize 3).
@@ -104,12 +104,13 @@ function initialWheelDraw(game) {
 	wheel.src = game.wheel.url;
 	wheel.width = wheelSize
 	wheel.height = wheelSize
-	wheel.trueX = 150 * game.ratio - wheelSize/2
-	wheel.trueY = 275 * game.ratio - wheelSize/2
+	wheel.trueX = game.halfwayPoint - wheelSize/2
+	wheel.trueY = 175 * game.ratio - wheelSize/2
 	wheel.onload = 	function(){
 		game.ctx.drawImage(wheel, wheel.trueX, wheel.trueY, wheel.width, wheel.height);
 	}
-	drawArrow(game, 0, wheel.trueY + wheelSize/2, 150 * game.ratio - wheelSize/2, wheel.trueY + wheelSize/2, 50)
+  drawArrow(game, 0, wheel.trueY + wheelSize/2,
+	    300, wheel.trueY + wheelSize/2, 100)
 	game.wheel.img = wheel
 }
 
@@ -338,10 +339,10 @@ function doSpin(game, prizes)
 					// Do something with the knowlege. For this example the user is just alerted, but you could play a sound,
 					// change the innerHTML of a div to indicate the prize etc - up to you.
 					game.ctx.font = "36pt Helvetica";
-					game.ctx.textAlign = "left"
+					game.ctx.textAlign = "center"
 					game.ctx.fillStyle = "red"
 					game.ctx.fillText(prizes[x]['name'] + "!", 
-						game.questionBox.tlX + 350, game.ratio * 255)
+						game.halfwayPoint, game.ratio * 450)
 					setTimeout(function() {
 						setWhiteMessageTextStyle()
 						game.socket.send("advance")
