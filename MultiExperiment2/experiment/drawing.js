@@ -166,8 +166,8 @@ var getText = function(game, player) {
 }
 
 var drawMysteryGates = function(game, player) {
-  var yLoc = player.role === "helper" ? game.ratio * 200 : game.ratio * 50
-  var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+  var yLoc = game.ratio * 50
+  var xLocs = player.gateXLocs
   _.map([1,2,3,4], function(num) {
     var imgObj = new Image()
     imgObj.src = "stimuli/gate" + num + ".jpg"
@@ -185,19 +185,18 @@ function revealAnswer(game, player, objPicked) {
   drawMessages(game, player)
   if(player.role === "guesser") {
 //    wipeRegion(0, game.ratio * 50, game.viewport.width, 200)
-    var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
-    _.map(_.zip(game.goals, xLocs), function(pair) {
+    _.map(_.zip(game.goals, player.gateXLocs), function(pair) {
       var obj = pair[0]
       game.ctx.drawImage(obj.img, pair[1] - 100, game.ratio * 50, 200, 200)
     })
   }
   if( game.gatePicked != game.goalNum ) {
-    placeX(game.gatePicked)
+    placeX(player, game.gatePicked)
   }
 }
 
-function placeX(num) {
-  var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+function placeX(player, num) {
+  var xLocs = player.gateXLocs
   game.ctx.beginPath();
   game.ctx.lineWidth = 8;
   game.ctx.strokeStyle = "red"

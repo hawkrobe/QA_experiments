@@ -119,8 +119,11 @@ client_onserverupdate_received = function(data){
             var i = pair[1]
             var imgObj = new Image()
             imgObj.src = obj.url
+
+	    var adjustment = my_role == "guesser" ? game.halfwayPoint * 2 : 0
+	  
             // Set it up to load properly (also randomize positioning of )
-            var x = parseInt(obj.trueX)
+            var x = parseInt(obj.trueX) + adjustment
             var y = parseInt(obj.trueY)
 
             imgObj.onload = function(){
@@ -346,7 +349,11 @@ client_onjoingame = function(num_players, role) {
 
     // set role locally
     my_role = role;
-    game.get_player(my_id).role = my_role;
+  game.get_player(my_id).role = my_role;
+  var adjustment = role == "guesser" ? game.halfwayPoint * 2 : 0
+  game.get_player(my_id).gateXLocs = _.range(adjustment + 100 * game.ratio,
+					     adjustment + 600 * game.ratio ,
+					     125 * game.ratio)
     game.get_player(my_id).questionBoxAdjustment = 0//my_role === "guesser" ? game.ratio * 75 : 0;
 
     // Update header w/ role 
@@ -555,7 +562,8 @@ function buttonHitTest(mx,my) {
 }
 
 function gateHitTest(i, mx, my) {
-    var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+  
+  var xLocs = game.get_player(my_id).gateXLocs
     var dx = mx - (xLocs[i] - 100);
     // allow people to click on either view... but not in between!
     var dy1 = my - game.ratio * 100 + 100
@@ -564,7 +572,9 @@ function gateHitTest(i, mx, my) {
 }
 
 function mysteryGateHitTest(i, mx, my) {
-    var xLocs = _.range(100 * game.ratio, 600 * game.ratio , 125 * game.ratio)
+    var adjustment = my_role == "guesser" ? game.halfwayPoint * 2 : 0
+    var xLocs = _.range(adjustment + 100 * game.ratio,
+			adjustment + 600 * game.ratio , 125 * game.ratio)
     var dx = mx - (xLocs[i] - 100);
     // allow people to click on either view... but not in between!
     var dy = my - game.ratio * 50
