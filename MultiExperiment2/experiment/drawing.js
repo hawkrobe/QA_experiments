@@ -17,6 +17,7 @@ var drawScreen = function(game, player) {
     } else if (game.player_count > 1) {
       drawMessages(game, player)
       drawQuestionBox(game, player)
+      drawRevealBox(game, player)
       drawAnswerLine(game, player)
       drawWords(game, player)
       drawGoals(game, player)
@@ -86,8 +87,26 @@ var drawAnswerLine = function(game, player) {
   game.ctx.lineTo(game.answerLine.endX + player.questionBoxAdjustment, game.answerLine.y);
   game.ctx.stroke();
 
+  game.ctx.fillText("Where's the", game.questionBox.tlX + player.questionBoxAdjustment + 75 * game.ratio, 
+    game.answerLine.y - 30 * game.ratio)
+
   game.ctx.fillText("?", game.answerLine.endX + player.questionBoxAdjustment + 10 * game.ratio, 
-    game.answerLine.y - 40 * game.ratio)
+    game.answerLine.y - 30 * game.ratio)
+}
+
+var drawRevealBox = function(game,player) {
+  var x = game.revealBox.tlX
+  var y = game.revealBox.tlY;
+  game.ctx.lineWidth = 1
+  game.ctx.strokeStyle = "white"
+  game.ctx.setLineDash([6]);
+
+  game.ctx.strokeRect(x, y, game.revealBox.width, game.revealBox.height)
+  game.ctx.setLineDash([0]);
+
+  setWhiteMessageTextStyle()
+  game.ctx.fillText("Reveal Box", x + game.revealBox.width / 2, y - game.ratio * 30);
+
 }
 
 var drawGoals = function(game, player) {
@@ -292,8 +311,22 @@ var initializeWords = function(game, player, x, y, maxWidth, lineHeight) {
     // Draw & get ready for next word
     game.ctx.fillText(testWord, currX, currY);
     accumulatedWidth += words[n].width;
-    currX += words[n].width      
+    currX += words[n].width  
+  }
+  if(words.length > 0)
+    centerWords(game, words)
+}
 
+function centerWords(game, words) {
+  console.log(words)
+  var rightMostWord = words[words.length-1]
+  var rightMostPoint = rightMostWord.trueX + rightMostWord.width
+  var questionBoxWidth = game.questionBox.width
+  var leftMostPoint = words[0].trueX
+  var shift = (questionBoxWidth - (rightMostPoint - leftMostPoint))/2
+  for (var n = 0; n < words.length; n++) {
+    words[n].origX += shift
+    words[n].trueX += shift
   }
 }
 

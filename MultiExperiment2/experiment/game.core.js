@@ -123,7 +123,7 @@ game_core.prototype.newRound = function() {
         this.goals = this.items[this.roundNum].goals
         this.questions = this.items[this.roundNum].questions
         this.wheel = this.items[this.roundNum].wheel
-        wordList = _.shuffle([' where ', ' is ', ' the ', ' that '].concat(this.questions))
+        wordList = _.shuffle(this.questions)
         this.words = _.map(wordList, function(content) {
           return new word(content)
         })

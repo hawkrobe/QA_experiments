@@ -172,17 +172,23 @@ client_onserverupdate_received = function(data){
 }; 
 
 var makeDrawableObjects = function(game) {
-    var wordWidth = _.reduce(game.words, function(memo, word) {
-        return memo + word.width;
-    }, 20)
-
+    // var wordWidth = _.reduce(game.words, function(memo, word) {
+    //     return memo + word.width;
+    // }, 20)
+    var wordWidth = 650
     game.questionBox = {
         tlX : game.halfwayPoint + (game.viewport.width - wordWidth)/2, 
-        tlY: 400*game.ratio, 
+        tlY: 375*game.ratio, 
         height: 175*game.ratio, width: wordWidth}
 
+    var revealWidth = 200
+    game.revealBox = {
+        tlX : game.halfwayPoint + (game.viewport.width - revealWidth)/2, 
+        tlY: 250*game.ratio, 
+        height: revealWidth, width: revealWidth}
+
     game.answerLine = {
-        startX : game.questionBox.tlX + 50*game.ratio, 
+        startX : game.questionBox.tlX + 150*game.ratio, 
         endX   : game.questionBox.tlX + game.questionBox.width - 50*game.ratio,
         y      : game.questionBox.tlY + game.questionBox.height/2}
 
@@ -250,6 +256,17 @@ client_onMessage = function(data) {
         }
     } 
 }; 
+
+var numWordsOnLine = function(){
+    qsOnLine = []
+    for(var i = 0; i < game.words.length; i++) {
+        var word = game.words[i];
+        if(word.onLine) {
+            qsOnLine = qsOnLine.concat([{content: word.content, xVal : word.trueX}])
+        }
+    }
+    return qsOnLine.length
+}
 
 var readQuestion = function(){
     qsOnLine = []
@@ -349,11 +366,11 @@ client_onjoingame = function(num_players, role) {
 
     // set role locally
     my_role = role;
-  game.get_player(my_id).role = my_role;
-  var adjustment = role == "guesser" ? game.halfwayPoint * 2 : 0
-  game.get_player(my_id).gateXLocs = _.range(adjustment + 100 * game.ratio,
-					     adjustment + 600 * game.ratio ,
-					     125 * game.ratio)
+    game.get_player(my_id).role = my_role;
+    var adjustment = role == "guesser" ? game.halfwayPoint * 2 : 0
+    game.get_player(my_id).gateXLocs = _.range(adjustment + 100 * game.ratio,
+      adjustment + 600 * game.ratio ,
+      125 * game.ratio)
     game.get_player(my_id).questionBoxAdjustment = 0//my_role === "guesser" ? game.ratio * 75 : 0;
 
     // Update header w/ role 
@@ -431,11 +448,13 @@ function mouseUpListener(evt) {
         var word = game.words[dragIndex]
         
         // If you were dragging the correct object... And dragged it to the correct location...
-        if (dropY < game.answerLine.y) {
+        console.log(numWordsOnLine())
+        if (dropY < game.answerLine.y && numWordsOnLine() == 0) {
             word.trueY = game.answerLine.y - word.height
             word.onLine = true;
             removeOverlap(word);
         } else {
+            showError();
             word.trueY = word.origY;
             word.trueX = word.origX;
             word.onLine = false;
@@ -457,8 +476,12 @@ function mouseUpListener(evt) {
 function checkForHit (mouseX, mouseY) {
     if(my_role === "guesser" && game.phase == 1) {
         if(buttonHitTest(mouseX, mouseY)) {
-            var question = readQuestion();
-            game.socket.send("advance." + question.trim() + "   ?") 
+            if(numWordsOnLine() == 0) {
+                showError()
+            } else {
+                var question = readQuestion();
+                game.socket.send("advance." + question.trim() + "   ?") 
+            }
         }           
     } else if (my_role === "helper" && game.phase == 2) {
         for (i=0; i < game.goals.length; i++) {
@@ -481,6 +504,13 @@ function checkForHit (mouseX, mouseY) {
     }
 }
 
+function showError () {
+    game.ctx.fillStyle = "red"
+    game.ctx.fillText("You must pick exactly one word to describe the object!",
+        game.questionBox.tlX + game.questionBox.width/2, 
+        game.questionBox.tlY + game.questionBox.height + 30)
+
+}
 
 function removeOverlap (origWord) {
     qsOnLine = []
