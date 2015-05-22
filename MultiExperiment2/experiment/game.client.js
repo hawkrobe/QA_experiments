@@ -120,7 +120,7 @@ client_onserverupdate_received = function(data){
             var imgObj = new Image()
             imgObj.src = obj.url
 
-	    var adjustment = my_role == "helper" ? game.halfwayPoint * 2 : 0
+            var adjustment = my_role == "helper" ? game.halfwayPoint * 2 : 0
 	  
             // Set it up to load properly (also randomize positioning of )
             var x = parseInt(obj.trueX) + adjustment
@@ -237,6 +237,13 @@ client_onMessage = function(data) {
             drawScreen(game, game.get_player(my_id)); 
             break;
 
+        case 'gateDrop' :
+            var obj = game.goals[commanddata]
+            game.gateSelected = commanddata
+            game.ctx.drawImage(obj.img, game.revealBox.tlX, game.revealBox.tlY, 
+                obj.width, obj.height);
+            game.ctx.drawImage(obj.img, obj.trueX + (game.halfwayPoint * 2), obj.trueY,
+                obj.width, obj.height);break;
         case 'reveal' :
             game.gatePicked = commanddata
             console.log("gatePicked:", game.gatePicked)
@@ -334,10 +341,21 @@ client_connect_to_server = function(game) {
 
     // Draw objects when someone else moves them
     game.socket.on('objMove', function(data){
-        console.log("object" + data.i + "is being moved!")
-        game.words[data.i].trueX = parseInt(data.x);
-        game.words[data.i].trueY = parseInt(data.y);
+        var obj = data.type == "word" ? game.words[data.i] : game.goals[data.i]
+        if(data.type == "word") {
+            obj.trueX = parseInt(data.x);
+            obj.trueY = parseInt(data.y);
+        }
         drawScreen(game, game.get_player(my_id))
+
+        if(data.type == "gate" && my_role == "guesser") {
+          game.ctx.lineWidth = 1
+          game.ctx.strokeStyle = "white"
+          game.ctx.setLineDash([6]);
+
+          game.ctx.strokeRect(data.x, data.y, obj.width, obj.height)
+          game.ctx.setLineDash([0]);
+        }
     })
 
     //When we connect, we are not 'connected' until we have an id
@@ -408,7 +426,7 @@ function mouseDownListener(evt) {
     if(my_role === "guesser" && game.phase == 1) {
         for (i=0; i < game.words.length; i++) {
             if  (wordHitTest(game.words[i], mouseX, mouseY)) {
-                dragging = true;
+                dragging = "word";
                 if (i > highestIndex) {
                     //We will pay attention to the point on the object where the mouse is "holding" the object:
                     game.words[i].onLine = false
@@ -419,6 +437,22 @@ function mouseDownListener(evt) {
                 }
             }
         }
+    }
+    else if (my_role === "helper" && game.phase == 2) {
+        for (i=0; i < game.goals.length; i++) {
+            if (gateHitTest(i, mouseX, mouseY)) {
+                console.log("hit!")
+                dragging = "gate";
+                if (i > highestIndex) {
+                    //We will pay attention to the point on the object where the mouse is "holding" the object:
+                    dragHoldX = mouseX - game.goals[i].trueX;
+                    dragHoldY = mouseY - game.goals[i].trueY;
+                    highestIndex = i;
+                    dragIndex = i;
+                }
+            }
+        }
+
     }
     checkForHit(mouseX, mouseY)
 
@@ -441,7 +475,7 @@ function mouseDownListener(evt) {
 function mouseUpListener(evt) {    
     game.viewport.addEventListener("mousedown", mouseDownListener, false);
     window.removeEventListener("mouseup", mouseUpListener, false);
-    if (dragging) {
+    if (dragging== "word") {
         // Set up the right variables
         var bRect = game.viewport.getBoundingClientRect();
         dropX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
@@ -462,17 +496,37 @@ function mouseUpListener(evt) {
             word.onLine = false;
         }
 
-        game.socket.send("objMove." + dragIndex 
+        game.socket.send("objMove." + dragging + "." + dragIndex 
             + "." + Math.round(word.trueX - game.get_player(my_id).questionBoxAdjustment) 
             + "." + Math.round(word.trueY))
 
         game.socket.send("dropWord." + word.content
             + "." + word.onLine)
+    } else if(dragging == "gate") {
+        var bRect = game.viewport.getBoundingClientRect();
+        dropX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
+        dropY = (evt.clientY - bRect.top)*(game.viewport.height/bRect.height);
+        var gate = game.goals[dragIndex]
 
-        drawScreen(game, game.get_player(my_id))
-        dragging = false;
-        window.removeEventListener("mousemove", mouseMoveListener, false);
+        if( dropY > game.revealBox.tlY && dropY < game.revealBox.tlY + game.revealBox.height
+            && dropX > game.revealBox.tlX && dropX < game.revealBox.tlX + game.revealBox.width) {
+            gate.trueY = game.revealBox.tlY;
+            gate.trueX = game.revealBox.tlX;
+            game.gateSelected = dragIndex;
+        } else {
+            gate.trueY = gate.origY;
+            gate.trueX = gate.origX;
+        }
+
+        game.socket.send("objMove." + dragging + "." + dragIndex 
+            + "." + Math.round(gate.trueX - game.get_player(my_id).questionBoxAdjustment) 
+            + "." + Math.round(gate.trueY))
+        game.socket.send("dropGate." + game.gateSelected)
+
     }
+    drawScreen(game, game.get_player(my_id))
+    dragging = false;
+    window.removeEventListener("mousemove", mouseMoveListener, false);
 }
 
 function checkForHit (mouseX, mouseY) {
@@ -494,6 +548,7 @@ function checkForHit (mouseX, mouseY) {
         }
         if(buttonHitTest(mouseX, mouseY) && _.isNumber(game.gateSelected)) {
             console.log("in here!!!!")
+            console.log(game.gateSelected)
             game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
             game.gateSelected = false
         }
@@ -530,7 +585,7 @@ function removeOverlap (origWord) {
         var diff = (leftNeighbor.trueX + leftNeighbor.width) - (origWord.trueX)
         if( diff > 0) {
             leftNeighbor.trueX -= (diff > 0) ? diff : 0
-            game.socket.send("objMove." + _.indexOf(game.words, leftNeighbor)
+            game.socket.send("objMove.word." + _.indexOf(game.words, leftNeighbor)
                 + "." + Math.round(leftNeighbor.trueX - game.get_player(my_id).questionBoxAdjustment) 
                 + "." + Math.round(leftNeighbor.trueY))
             removeOverlap(leftNeighbor)
@@ -540,7 +595,7 @@ function removeOverlap (origWord) {
         var diff = (origWord.trueX + origWord.width) - (rightNeighbor.trueX) 
         if (diff > 0) {
             rightNeighbor.trueX += (diff > 0) ? diff : 0
-            game.socket.send("objMove." + _.indexOf(game.words, rightNeighbor)
+            game.socket.send("objMove.word." + _.indexOf(game.words, rightNeighbor)
                 + "." + Math.round(rightNeighbor.trueX - game.get_player(my_id).questionBoxAdjustment) 
                 + "." + Math.round(rightNeighbor.trueY))
             removeOverlap(rightNeighbor)
@@ -550,12 +605,18 @@ function removeOverlap (origWord) {
 }
 
 function mouseMoveListener(evt) {
-    // prevent from dragging offscreen
-    var minX = game.questionBox.tlX + game.get_player(my_id).questionBoxAdjustment;
-    var maxX = game.questionBox.tlX + game.questionBox.width - game.words[dragIndex].width + game.get_player(my_id).questionBoxAdjustment;
-    var minY = game.questionBox.tlY;
-    var maxY = game.questionBox.tlY + game.questionBox.height - game.words[dragIndex].height;
-
+    if (dragging == "word") {
+        // prevent from dragging offscreen
+        var minX = game.questionBox.tlX + game.get_player(my_id).questionBoxAdjustment;
+        var maxX = game.questionBox.tlX + game.questionBox.width - game.words[dragIndex].width + game.get_player(my_id).questionBoxAdjustment;
+        var minY = game.questionBox.tlY;
+        var maxY = game.questionBox.tlY + game.questionBox.height - game.words[dragIndex].height;
+    } else if (dragging == "gate") {
+        var minX = game.halfwayPoint * 2
+        var maxX = game.viewport.width
+        var minY = 0
+        var maxY = game.viewport.height
+    }
     //getting mouse position correctly 
     var bRect = game.viewport.getBoundingClientRect();
     mouseX = (evt.clientX - bRect.left)*(game.viewport.width/bRect.width);
@@ -568,12 +629,12 @@ function mouseMoveListener(evt) {
     posY = (posY < minY) ? minY : ((posY > maxY) ? maxY : posY);
 
     // Update object locally
-    var word = game.words[dragIndex]
-    word.trueX = Math.round(posX);
-    word.trueY = Math.round(posY);
+    var obj = dragging == "word" ? game.words[dragIndex] : game.goals[dragIndex]
+    obj.trueX = Math.round(posX);
+    obj.trueY = Math.round(posY);
 
     // Tell server about it
-    game.socket.send("objMove." + dragIndex 
+    game.socket.send("objMove." + dragging + "." + dragIndex 
         + "." + Math.round(posX - game.get_player(my_id).questionBoxAdjustment) 
         + "." + Math.round(posY))
     drawScreen(game, game.get_player(my_id));

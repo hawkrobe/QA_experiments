@@ -24,13 +24,13 @@ global.window = global.document = global;
 require('./game.core.js');
 utils = require('./utils.js');
 
-var moveObject = function(client, i, x, y) {
-    var obj = client.game.gamecore.words[i]
+var moveObject = function(client, type, i, x, y) {
+    var obj = type == "word" ? client.game.gamecore.words[i] : client.game.gamecore.goals[i]
     var others = client.game.gamecore.get_others(client.userid);
     obj.trueX = parseInt(x)
     obj.trueY = parseInt(y)
     _.map(others, function(p) {
-      p.player.instance.emit('objMove', {i: i, x: x, y: y})
+      p.player.instance.emit('objMove', {type: type, i: i, x: x, y: y})
   })
 }
 
@@ -57,7 +57,7 @@ game_server.server_onMessage = function(client,message) {
     switch(message_type) {
         case 'objMove' :    // Client is changing angle
 
-            moveObject(client, message_parts[1], message_parts[2], message_parts[3])
+            moveObject(client, message_parts[1], message_parts[2], message_parts[3], message_parts[4])
             break;
 
         case 'advance' :
@@ -66,18 +66,18 @@ game_server.server_onMessage = function(client,message) {
             // write msg to file
             if(msg) {
                 splitMsg = msg.split('   ')
-	      console.log(splitMsg)
+                console.log(splitMsg)
                 if(splitMsg.slice(-1)[0]  == "?") {
                   gc.trialPacket = _.extend(gc.trialPacket, 
-					    {"goal" : gc.goal.name, 
-					     "domain" : gc.items[gc.roundNum].domain,
-					     "type" : gc.items[gc.roundNum].type,
-					     "question" : splitMsg.slice(0, -1).join(" ")})
-		}
-                else {
-                    gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ').slice(0, 4).join(' ')})
-		}
-                writeData(client, "message", message_parts)
+                   {"goal" : gc.goal.name, 
+                   "domain" : gc.items[gc.roundNum].domain,
+                   "type" : gc.items[gc.roundNum].type,
+                   "question" : splitMsg.slice(0, -1).join(" ")})
+              }
+              else {
+                gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ').slice(0, 4).join(' ')})
+              }
+            writeData(client, "message", message_parts)
             }
             // collect the most important data, to submit through mmturkey
             if(objNum) {
@@ -104,7 +104,8 @@ game_server.server_onMessage = function(client,message) {
 
         case 'dropWord' :
             writeData(client, 'word', message_parts); break;
-
+        case 'dropGate' :
+            others[0].player.instance.send('s.gateDrop.' + message_parts[1])
         case 'h' : // Receive message when browser focus shifts
             target.visible = message_parts[1];
             break;

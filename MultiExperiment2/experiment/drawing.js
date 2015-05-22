@@ -1,9 +1,13 @@
 var drawScreen = function(game, player) {
     //clear background
-    wipeRegion(
-      game.questionBox.tlX + player.questionBoxAdjustment,
-      game.questionBox.tlY,
-      game.questionBox.width,game.questionBox.height);
+    if(game.phase == 2) 
+      wipeRegion(game.halfwayPoint * 2, 0, game.viewport.width, game.viewport.height)
+    else {
+      wipeRegion(
+        game.questionBox.tlX + player.questionBoxAdjustment,
+        game.questionBox.tlY,
+        game.questionBox.width,game.questionBox.height);
+    }
 
     if (player.message) {
         // Draw message in center (for countdown, e.g.)
@@ -99,10 +103,8 @@ var drawRevealBox = function(game,player) {
   var y = game.revealBox.tlY;
   game.ctx.lineWidth = 1
   game.ctx.strokeStyle = "white"
-  game.ctx.setLineDash([6]);
 
   game.ctx.strokeRect(x, y, game.revealBox.width, game.revealBox.height)
-  game.ctx.setLineDash([0]);
 
   setWhiteMessageTextStyle()
   game.ctx.fillText("Reveal Box", x + game.revealBox.width / 2, y - game.ratio * 30);
@@ -189,7 +191,8 @@ var getText = function(game, player) {
 var drawMysteryGates = function(game, player) {
   var yLoc = game.ratio * 50
   var xLocs = player.gateXLocs
-  _.map([1,2,3,4], function(num) {
+  var gatesToBeShown = _.without([1,2,3,4], game.gateSelected)
+  _.map(gatesToBeShown, function(num) {
     var imgObj = new Image()
     imgObj.src = "stimuli/gate" + num + ".jpg"
     // Set it up to load properly
