@@ -49,7 +49,7 @@ var wipeBorder = function(tlx, tly, width, height) {
 
 var drawSendButton = function(game, player) {
   var but = game.sendQuestionButton;
-  but.tlY = player.role === "helper" ? game.ratio * 365 : but.tlY
+  but.tlY = player.role === "helper" ? game.ratio * 335 : but.tlY
   game.ctx.fillStyle = '#61e6ff'
   game.ctx.fillRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
   game.ctx.strokeStyle = "#000000"

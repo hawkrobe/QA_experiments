@@ -184,7 +184,7 @@ var makeDrawableObjects = function(game) {
     var revealWidth = 200
     game.revealBox = {
         tlX : game.halfwayPoint + (game.viewport.width - revealWidth)/2, 
-        tlY: 250*game.ratio, 
+        tlY: 225*game.ratio, 
         height: revealWidth, width: revealWidth}
 
     game.answerLine = {
@@ -411,6 +411,7 @@ function mouseDownListener(evt) {
                 dragging = true;
                 if (i > highestIndex) {
                     //We will pay attention to the point on the object where the mouse is "holding" the object:
+                    game.words[i].onLine = false
                     dragHoldX = mouseX - game.words[i].trueX;
                     dragHoldY = mouseY - game.words[i].trueY;
                     highestIndex = i;
@@ -454,7 +455,8 @@ function mouseUpListener(evt) {
             word.onLine = true;
             removeOverlap(word);
         } else {
-            showError();
+            if(numWordsOnLine() > 0)
+                showError();
             word.trueY = word.origY;
             word.trueX = word.origX;
             word.onLine = false;
