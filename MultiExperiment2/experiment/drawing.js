@@ -25,11 +25,11 @@ var drawScreen = function(game, player) {
       drawAnswerLine(game, player)
       drawWords(game, player)
       drawGoals(game, player)
-      if( player.role == "guesser" || game.phase == 2)  // Only draw send button for guesser
+      if( player.role == "guesser")  // Only draw send button for guesser
         drawSendButton(game, player)
       if (player.role == "guesser" && game.phase == 0)
         initialWheelDraw(game)
-      if (player.role == "helper" || game.phase <= 3) 
+      if (player.role == "helper" || game.phase <= 2) 
         drawMysteryGates(game, player)
 
     }

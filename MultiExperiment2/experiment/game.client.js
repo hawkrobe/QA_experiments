@@ -522,7 +522,8 @@ function mouseUpListener(evt) {
             + "." + Math.round(gate.trueX - game.get_player(my_id).questionBoxAdjustment) 
             + "." + Math.round(gate.trueY))
         game.socket.send("dropGate." + game.gateSelected)
-
+        game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
+        game.gateSelected = false
     }
     drawScreen(game, game.get_player(my_id))
     dragging = false;
@@ -539,19 +540,19 @@ function checkForHit (mouseX, mouseY) {
                 game.socket.send("advance." + question.trim() + "   ?") 
             }
         }           
-    } else if (my_role === "helper" && game.phase == 2) {
-        for (i=0; i < game.goals.length; i++) {
-            if(gateHitTest(i, mouseX, mouseY)) {
-                highlightGate(i, game.gateSelected);
-                game.gateSelected = i;
-            }
-        }
-        if(buttonHitTest(mouseX, mouseY) && _.isNumber(game.gateSelected)) {
-            console.log("in here!!!!")
-            console.log(game.gateSelected)
-            game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
-            game.gateSelected = false
-        }
+    // } else if (my_role === "helper" && game.phase == 2) {
+    //     for (i=0; i < game.goals.length; i++) {
+    //         if(gateHitTest(i, mouseX, mouseY)) {
+    //             highlightGate(i, game.gateSelected);
+    //             game.gateSelected = i;
+    //         }
+    //     }
+    //     if(buttonHitTest(mouseX, mouseY) && _.isNumber(game.gateSelected)) {
+    //         console.log("in here!!!!")
+    //         console.log(game.gateSelected)
+    //         game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
+    //         game.gateSelected = false
+    //     }
     } else if (my_role === "guesser" && game.phase == 3) {
         for (i=0; i < game.goals.length; i++) {
             if(mysteryGateHitTest(i, mouseX, mouseY)) {
