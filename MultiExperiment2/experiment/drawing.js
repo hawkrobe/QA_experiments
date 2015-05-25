@@ -1,14 +1,4 @@
 var drawScreen = function(game, player) {
-    //clear background
-    if(game.phase == 2) 
-      wipeRegion(game.halfwayPoint * 2, 0, game.viewport.width, game.viewport.height)
-    else {
-      wipeRegion(
-        game.questionBox.tlX + player.questionBoxAdjustment,
-        game.questionBox.tlY,
-        game.questionBox.width,game.questionBox.height);
-    }
-
     if (player.message) {
         // Draw message in center (for countdown, e.g.)
         game.ctx.fillStyle = 'white'
@@ -19,6 +9,16 @@ var drawScreen = function(game, player) {
           game.viewport.width*4/5,
           25*game.ratio);
     } else if (game.player_count > 1) {
+      //clear background
+      if(game.phase == 2) 
+        wipeRegion(game.halfwayPoint * 2, 0, game.viewport.width, game.viewport.height)
+      else {
+        wipeRegion(
+          game.questionBox.tlX + player.questionBoxAdjustment,
+          game.questionBox.tlY,
+          game.questionBox.width,game.questionBox.height);
+      }
+
       drawMessages(game, player)
       drawQuestionBox(game, player)
       drawRevealBox(game, player)
@@ -31,7 +31,6 @@ var drawScreen = function(game, player) {
         initialWheelDraw(game)
       if (player.role == "helper" || game.phase <= 2) 
         drawMysteryGates(game, player)
-
     }
 }
 
@@ -120,6 +119,26 @@ var drawGoals = function(game, player) {
     game.ctx.textAlign = "center"
     game.ctx.fillText("Your goal is to find the...", 
 		      game.halfwayPoint, game.ratio * 400)
+    if(game.phase == 2 && game.gateBeingMoved) {
+      game.ctx.lineWidth = 1
+      game.ctx.strokeStyle = "white"
+      game.ctx.setLineDash([6]);
+
+      game.ctx.strokeRect(game.gateBeingMoved.x, game.gateBeingMoved.y, 
+        game.gateBeingMoved.obj.width, game.gateBeingMoved.obj.height)
+      game.ctx.setLineDash([0]);
+    }
+    if(game.phase == 3) {
+      wipeRegion(game.gateBeingMoved.x - 5 , game.gateBeingMoved.y - 5, 
+        game.gateBeingMoved.obj.width + 10, game.gateBeingMoved.obj.height + 10)
+      var obj = game.goals[game.gateSelected]
+      console.log("gateSelected:" + game.gateSelected)
+      console.log(obj)
+      game.ctx.drawImage(obj.img, game.revealBox.tlX, game.revealBox.tlY, 
+        obj.width, obj.height);
+      game.ctx.drawImage(obj.img, obj.trueX + (game.halfwayPoint * 2), obj.trueY,
+        obj.width, obj.height);
+    }
   } else {
     var goals = game.goals
     game.ctx.fillText("Your view:", game.halfwayPoint + game.viewport.width/2, game.ratio * 15)
@@ -162,18 +181,18 @@ var getText = function(game, player) {
   var role = player.role
   var phase = game.phase
   if (role == "guesser" && phase == 1) {
-    return "Drag the words onto the line to ask the helper one question"
+    return "Drag a word onto the line to ask the helper a question"
   } else if(role == "guesser" && phase == 2) {
     return "Waiting for other player to respond..."
   } else if (role == "guesser" && phase == 3) {
-    return "Now click a gate above to guess where it is"
+    return "Now click on a gate to guess where your goal object is"
   } else if (role == "helper" && phase < 2) {
-    return "Waiting for other player to ask a question... \n Watch the box below."
+    return "Waiting for other player to ask a question... \n Watch the box to the right."
   } else if (role == "helper" && phase == 2) {
-    return "Click the gate you want to reveal!"
+    return "Drag the item you want to reveal into the reveal box!"
   } else if (role == "helper" && phase == 3) {
     return "Waiting for other player to guess..."
-  } else if (phase == 4) {
+  } else if (phase >= 4) {
     var correct = game.gatePicked == game.goalNum 
     if(!correct && role == "helper")
       return "They were looking for the " + game.goal.name + " but they incorrectly guessed gate " + (parseInt(game.gatePicked) + 1) + "."
@@ -189,19 +208,10 @@ var getText = function(game, player) {
 }
 
 var drawMysteryGates = function(game, player) {
-  var yLoc = game.ratio * 50
-  var xLocs = player.gateXLocs
   var gatesToBeShown = _.without([1,2,3,4], game.gateSelected)
   _.map(gatesToBeShown, function(num) {
-    var imgObj = new Image()
-    imgObj.src = "stimuli/gate" + num + ".jpg"
-    // Set it up to load properly
-    var x = xLocs[num-1] - 100
-    var y = yLoc
-
-    imgObj.onload = function(){
-      game.ctx.drawImage(imgObj, x, y, 200, 200)
-    }
+    var obj = game.mysteryGates[num-1]
+    game.ctx.drawImage(obj.img, obj.x, obj.y, 200, 200)
   })
 }
 

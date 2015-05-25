@@ -63,38 +63,44 @@ game_server.server_onMessage = function(client,message) {
         case 'advance' :
             var msg = message_parts[1]
             var objNum = message_parts[2]
+            var gateRevealed;
+
             // write msg to file
             if(msg) {
-                splitMsg = msg.split('   ')
-                console.log(splitMsg)
+                splitMsg = msg.split('   ');
+                console.log(splitMsg);
                 if(splitMsg.slice(-1)[0]  == "?") {
-                  gc.trialPacket = _.extend(gc.trialPacket, 
+                    gc.trialPacket = _.extend(gc.trialPacket, 
                    {"goal" : gc.goal.name, 
-                   "domain" : gc.items[gc.roundNum].domain,
-                   "type" : gc.items[gc.roundNum].type,
-                   "question" : splitMsg.slice(0, -1).join(" ")})
-              }
-              else {
-                gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ').slice(0, 4).join(' ')})
-              }
-            writeData(client, "message", message_parts)
+                    "domain" : gc.items[gc.roundNum].domain,
+                    "type" : gc.items[gc.roundNum].type,
+                    "question" : splitMsg.slice(0, -1).join(" ")});
+                }
+                else {
+                  gc.trialPacket = _.extend(gc.trialPacket, {"answer" : msg.split(' ').slice(0, 4).join(' ')});
+                  var answerSplit = msg.split(' ')
+                  var gateRevealed = answerSplit[answerSplit.length - 1] - 1
+                  console.log("setting gateRevealed to" + gateRevealed)
+                }
+                writeData(client, "message", message_parts);
             }
             // collect the most important data, to submit through mmturkey
             if(objNum) {
-                gc.trialPacket = _.extend(gc.trialPacket, {"guess" : (gc.goals[objNum].name === gc.goal.name).toString()})
-                gc.data.trials.push(gc.trialPacket)
+                gc.trialPacket = _.extend(gc.trialPacket, {"guess" : (gc.goals[objNum].name === gc.goal.name).toString()});
+                gc.data.trials.push(gc.trialPacket);
                 setTimeout(function(){
-                  gc.newRound()
-                }, 4000)
-                console.log(gc.trialPacket)
-                console.log(gc.data)
+                    gc.newRound();
+                }, 4000);
+                console.log(gc.trialPacket);
+                console.log(gc.data);
             }
 
             // relay messages
             _.map(all, function(p) {
-                p.player.instance.send( 's.newPhase')
+                var phraseToSend = _.isNumber(gateRevealed) ? 's.newPhase.' + gateRevealed : 's.newPhase'
+                p.player.instance.send( phraseToSend);
                 if(msg) 
-                    p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg})
+                    p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});
                 if(objNum) {
                     p.player.instance.emit('updateData', gc.data)
                     p.player.instance.send( 's.reveal.' + objNum)
@@ -104,8 +110,8 @@ game_server.server_onMessage = function(client,message) {
 
         case 'dropWord' :
             writeData(client, 'word', message_parts); break;
-        case 'dropGate' :
-            others[0].player.instance.send('s.gateDrop.' + message_parts[1])
+        // case 'dropGate' :
+        //     others[0].player.instance.send('s.gateDrop.' + message_parts[1])
         case 'h' : // Receive message when browser focus shifts
             target.visible = message_parts[1];
             break;

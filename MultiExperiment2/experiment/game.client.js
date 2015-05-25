@@ -36,7 +36,6 @@ submitInfoAndClose = function() {
 
 // This gets called when someone selects something in the menu
 dropdownTip = function(data){
-  console.log(data)
   var commands = data.split('::')
   switch(commands[0]) {
     case 'human' :
@@ -85,7 +84,7 @@ Explanation: This function is at the center of the problem of
   that they can update their variables to reflect changes.
 */
 client_onserverupdate_received = function(data){
-
+    console.log("receiving update")
     game.goalNum = data.goalNum;
     game.phase = data.phase
     game.game_started = data.gs;
@@ -93,8 +92,6 @@ client_onserverupdate_received = function(data){
     game.player_count = data.pc;
     game.wheel = data.wheel;
     game.data = data.dataObj
-
-    console.log(game.wheel)
 
     // Update client versions of variables with data received from
     // server_send_update function in game.core.js
@@ -133,7 +130,7 @@ client_onserverupdate_received = function(data){
                 drawScreen(game, game.get_player(my_id))
             }
             return _.extend(_.omit(obj, ['trueX', 'trueY']),
-                {img: imgObj, trueX : x, trueY : y})
+                {img: imgObj, origX: x, origY: y, trueX : x, trueY : y})
         })
     }
 
@@ -151,6 +148,7 @@ client_onserverupdate_received = function(data){
         game, game.get_player(my_id), game.questionBox.tlX + game.ratio * 5,
         game.questionBox.tlY + game.questionBox.height - game.sendQuestionButton.height*2.5,
         game.questionBox.width, game.ratio * 30);
+
 
     $('#instructs').html("<h3>Round " + (data.roundNum + 1) + " of " 
 			 + data.numRounds + "</h3>")
@@ -198,6 +196,19 @@ var makeDrawableObjects = function(game) {
         tlX: game.questionBox.tlX + game.questionBox.width*3/8,
         tlY: game.questionBox.tlY + game.questionBox.height*7/8 - 2*game.ratio,
     }
+
+    if(my_role) {    
+        var yLoc = game.ratio * 50
+        var xLocs = game.get_player(my_id).gateXLocs
+        game.mysteryGates = _.map([1,2,3,4], function(num) {
+            var imgObj = new Image()
+            imgObj.src = "stimuli/gate" + num + ".jpg"
+            // Set it up to load properly
+            var x = xLocs[num-1] - 100
+            var y = yLoc
+            return {x: x, y: y, img: imgObj}
+        })
+    }
 }
 // This is where clients parse socket.io messages from the server. If
 // you want to add another event (labeled 'x', say), just add another
@@ -218,10 +229,10 @@ client_onMessage = function(data) {
     case 's': //server message
         switch(subcommand) {    
         case 'end' :
-	  // Redirect to exit survey
-	  submitInfoAndClose();
-          console.log("received end message...")
-	  break;
+            // Redirect to exit survey
+            submitInfoAndClose();
+            console.log("received end message...")
+            break;
 
         case 'alert' : // Not in database, so you can't play...
             alert('You did not enter an ID'); 
@@ -233,17 +244,13 @@ client_onMessage = function(data) {
 
         case 'newPhase' :
             game.phase += 1
-            console.log("phase is now...", game.phase)
+            if(commanddata) {
+                game.gateSelected = commanddata
+            }
             drawScreen(game, game.get_player(my_id)); 
+            console.log("phase is now...", game.phase)
             break;
 
-        case 'gateDrop' :
-            var obj = game.goals[commanddata]
-            game.gateSelected = commanddata
-            game.ctx.drawImage(obj.img, game.revealBox.tlX, game.revealBox.tlY, 
-                obj.width, obj.height);
-            game.ctx.drawImage(obj.img, obj.trueX + (game.halfwayPoint * 2), obj.trueY,
-                obj.width, obj.height);break;
         case 'reveal' :
             game.gatePicked = commanddata
             console.log("gatePicked:", game.gatePicked)
@@ -251,7 +258,6 @@ client_onMessage = function(data) {
             break;
 
         case 'add_player' : // New player joined... Need to add them to our list.
-            console.log("adding player" + commanddata)
             if(hidden === 'hidden') {
                 flashTitle("GO!")
             }
@@ -329,33 +335,26 @@ client_connect_to_server = function(game) {
         var source = data.user === my_id ? "You" : otherRole
         var col = source === "You" ? "#363636" : "#707070"
         $('#messages').append($('<li style="padding: 5px 10px; background: ' + col + '">').text(source + ": " + data.msg));
-        $('#messages').stop().animate({
-            scrollTop: $("#messages")[0].scrollHeight
-        }, 800);
+        // $('#messages').stop().animate({
+        //     scrollTop: $("#messages")[0].scrollHeight
+        // }, 800);
     })
 
-  game.socket.on('updateData', function(data){
-    console.log(data)
-    game.data = data;
-  })
+    game.socket.on('updateData', function(data){
+        console.log("new data!")
+        console.log(data)
+        game.data = data;
+    })
 
     // Draw objects when someone else moves them
     game.socket.on('objMove', function(data){
         var obj = data.type == "word" ? game.words[data.i] : game.goals[data.i]
+        game.gateBeingMoved = {obj: obj, x: data.x, y: data.y}
         if(data.type == "word") {
             obj.trueX = parseInt(data.x);
             obj.trueY = parseInt(data.y);
         }
         drawScreen(game, game.get_player(my_id))
-
-        if(data.type == "gate" && my_role == "guesser") {
-          game.ctx.lineWidth = 1
-          game.ctx.strokeStyle = "white"
-          game.ctx.setLineDash([6]);
-
-          game.ctx.strokeRect(data.x, data.y, obj.width, obj.height)
-          game.ctx.setLineDash([0]);
-        }
     })
 
     //When we connect, we are not 'connected' until we have an id
@@ -382,6 +381,8 @@ client_onjoingame = function(num_players, role) {
     _.map(_.range(num_players - 1), function(i){
         game.players.unshift({id: null, player: new game_player(game)})});
 
+    console.log("joining game")
+
     // set role locally
     my_role = role;
     game.get_player(my_id).role = my_role;
@@ -396,7 +397,7 @@ client_onjoingame = function(num_players, role) {
     if(role === "guesser") {
         $('#instructs').html("<p>Round 0 of 12</p>")
     } else {
-        drawMysteryGates(game, game.get_player(my_id));
+//        drawMysteryGates(game, game.get_player(my_id));
         $('#instructs').html("Round 0 of 12")
     }
 
@@ -441,7 +442,6 @@ function mouseDownListener(evt) {
     else if (my_role === "helper" && game.phase == 2) {
         for (i=0; i < game.goals.length; i++) {
             if (gateHitTest(i, mouseX, mouseY)) {
-                console.log("hit!")
                 dragging = "gate";
                 if (i > highestIndex) {
                     //We will pay attention to the point on the object where the mouse is "holding" the object:
@@ -483,7 +483,6 @@ function mouseUpListener(evt) {
         var word = game.words[dragIndex]
         
         // If you were dragging the correct object... And dragged it to the correct location...
-        console.log(numWordsOnLine())
         if (dropY < game.answerLine.y && numWordsOnLine() == 0) {
             word.trueY = game.answerLine.y - word.height
             word.onLine = true;
@@ -513,17 +512,16 @@ function mouseUpListener(evt) {
             gate.trueY = game.revealBox.tlY;
             gate.trueX = game.revealBox.tlX;
             game.gateSelected = dragIndex;
+            game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
         } else {
             gate.trueY = gate.origY;
             gate.trueX = gate.origX;
+            game.ctx.drawImage(gate.img, gate.trueX, gate.trueY, gate.width, gate.height)
+            game.gateSelected = false
         }
-
         game.socket.send("objMove." + dragging + "." + dragIndex 
             + "." + Math.round(gate.trueX - game.get_player(my_id).questionBoxAdjustment) 
             + "." + Math.round(gate.trueY))
-        game.socket.send("dropGate." + game.gateSelected)
-        game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
-        game.gateSelected = false
     }
     drawScreen(game, game.get_player(my_id))
     dragging = false;
@@ -648,10 +646,8 @@ function wordHitTest(shape,mx,my) {
 }
 
 function buttonHitTest(mx,my) {
-    console.log("buttonHit Test")
     var dx = mx - game.sendQuestionButton.tlX - game.get_player(my_id).questionBoxAdjustment;
     var dy = my - game.sendQuestionButton.tlY;
-    console.log([dx, dy])
     return (0 < dx) && (dx < game.sendQuestionButton.width) && (0 < dy) && (dy < game.sendQuestionButton.height)
 }
 
