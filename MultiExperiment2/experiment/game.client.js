@@ -486,7 +486,8 @@ function mouseUpListener(evt) {
         if (dropY < game.answerLine.y && numWordsOnLine() == 0) {
             word.trueY = game.answerLine.y - word.height
             word.onLine = true;
-            removeOverlap(word);
+            var question = readQuestion();
+            game.socket.send("advance." + question.trim() + "   ?") 
         } else {
             if(numWordsOnLine() > 0)
                 showError();
@@ -529,15 +530,15 @@ function mouseUpListener(evt) {
 }
 
 function checkForHit (mouseX, mouseY) {
-    if(my_role === "guesser" && game.phase == 1) {
-        if(buttonHitTest(mouseX, mouseY)) {
-            if(numWordsOnLine() == 0) {
-                showError()
-            } else {
-                var question = readQuestion();
-                game.socket.send("advance." + question.trim() + "   ?") 
-            }
-        }           
+    // if(my_role === "guesser" && game.phase == 1) {
+    //     if(buttonHitTest(mouseX, mouseY)) {
+    //         if(numWordsOnLine() == 0) {
+    //             showError()
+    //         } else {
+    //             var question = readQuestion();
+    //             game.socket.send("advance." + question.trim() + "   ?") 
+    //         }
+    //     }           
     // } else if (my_role === "helper" && game.phase == 2) {
     //     for (i=0; i < game.goals.length; i++) {
     //         if(gateHitTest(i, mouseX, mouseY)) {
@@ -551,7 +552,7 @@ function checkForHit (mouseX, mouseY) {
     //         game.socket.send("advance." + "The " + game.goals[game.gateSelected].name + " is behind gate " + (game.gateSelected + 1)) 
     //         game.gateSelected = false
     //     }
-    } else if (my_role === "guesser" && game.phase == 3) {
+    if (my_role === "guesser" && game.phase == 3) {
         for (i=0; i < game.goals.length; i++) {
             if(mysteryGateHitTest(i, mouseX, mouseY)) {
                 game.socket.send("advance.." + i)
@@ -612,9 +613,9 @@ function mouseMoveListener(evt) {
         var maxY = game.questionBox.tlY + game.questionBox.height - game.words[dragIndex].height;
     } else if (dragging == "gate") {
         var minX = game.halfwayPoint * 2
-        var maxX = game.viewport.width
+        var maxX = game.viewport.width - game.goals[dragIndex].width 
         var minY = 0
-        var maxY = game.viewport.height
+        var maxY = game.viewport.height - game.goals[dragIndex].height
     }
     //getting mouse position correctly 
     var bRect = game.viewport.getBoundingClientRect();
