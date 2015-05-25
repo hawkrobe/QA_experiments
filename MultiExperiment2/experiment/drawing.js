@@ -2,7 +2,7 @@ var drawScreen = function(game, player) {
     if (player.message) {
         // Draw message in center (for countdown, e.g.)
         game.ctx.fillStyle = 'white'
-        game.ctx.fillRect(0, 0, game.viewport.width, game.viewport.height);
+        game.ctx.fillRect(5, 5, game.viewport.width - 10, game.viewport.height - 10 );
         setBlankScreenTextStyle();
         wrapText(game, player.message, 
           game.viewport.width/2, game.viewport.height/4,
@@ -11,7 +11,7 @@ var drawScreen = function(game, player) {
     } else if (game.player_count > 1) {
       //clear background
       if(game.phase == 2) 
-        wipeRegion(game.halfwayPoint * 2, 0, game.viewport.width, game.viewport.height)
+        wipeRegion(game.halfwayPoint * 2 - 10, 0, game.viewport.width/2 + 20, game.viewport.height)
       else {
         wipeRegion(
           game.questionBox.tlX + player.questionBoxAdjustment,
@@ -25,8 +25,8 @@ var drawScreen = function(game, player) {
       drawAnswerLine(game, player)
       drawWords(game, player)
       drawGoals(game, player)
-      if( player.role == "guesser")  // Only draw send button for guesser
-        drawSendButton(game, player)
+      // if( player.role == "guesser")  // Only draw send button for guesser
+      //   drawSendButton(game, player)
       if (player.role == "guesser" && game.phase == 0)
         initialWheelDraw(game)
       if (player.role == "helper" || game.phase <= 2) 
@@ -50,17 +50,17 @@ var wipeBorder = function(tlx, tly, width, height) {
   game.ctx.strokeStyle = tempStyle;
 }
 
-var drawSendButton = function(game, player) {
-  var but = game.sendQuestionButton;
-  but.tlY = player.role === "helper" ? game.ratio * 335 : but.tlY
-  game.ctx.fillStyle = '#61e6ff'
-  game.ctx.fillRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
-  game.ctx.strokeStyle = "#000000"
-  game.ctx.lineWidth=4;
-  game.ctx.strokeRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
-  setSendButtonStyle();
-  game.ctx.fillText("Send", but.tlX + but.width/2 + player.questionBoxAdjustment, but.tlY + but.height/2)
-}
+// var drawSendButton = function(game, player) {
+//   var but = game.sendQuestionButton;
+//   but.tlY = player.role === "helper" ? game.ratio * 335 : but.tlY
+//   game.ctx.fillStyle = '#61e6ff'
+//   game.ctx.fillRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
+//   game.ctx.strokeStyle = "#000000"
+//   game.ctx.lineWidth=4;
+//   game.ctx.strokeRect(but.tlX + player.questionBoxAdjustment, but.tlY, but.width, but.height)
+//   setSendButtonStyle();
+//   game.ctx.fillText("Send", but.tlX + but.width/2 + player.questionBoxAdjustment, but.tlY + but.height/2)
+// }
 
 var drawWords = function(game, player) {
   setQuestionWordStyle();
@@ -100,7 +100,7 @@ var drawAnswerLine = function(game, player) {
 var drawRevealBox = function(game,player) {
   var x = game.revealBox.tlX
   var y = game.revealBox.tlY;
-  game.ctx.lineWidth = 1
+  game.ctx.lineWidth = 3
   game.ctx.strokeStyle = "white"
 
   game.ctx.strokeRect(x, y, game.revealBox.width, game.revealBox.height)
@@ -241,23 +241,23 @@ function placeX(player, num) {
   game.ctx.stroke();
 }
 
-function highlightGate(num, prevSelected) {
-  if(_.isNumber(prevSelected)) {
-    prevGoal = game.goals[prevSelected]
-    wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth, 
-      prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
-//    wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth + 300, 
-//      prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
-  }
-  currGoal = game.goals[num]
-  game.ctx.strokeStyle = "red"
-  game.ctx.lineWidth = 8
-  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
-    currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
-//  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth + 300, 
-//      currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+// function highlightGate(num, prevSelected) {
+//   if(_.isNumber(prevSelected)) {
+//     prevGoal = game.goals[prevSelected]
+//     wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth, 
+//       prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
+// //    wipeBorder(prevGoal.trueX - game.ctx.lineWidth, prevGoal.trueY - game.ctx.lineWidth + 300, 
+// //      prevGoal.width + 2*game.ctx.lineWidth, prevGoal.height + 2*game.ctx.lineWidth)
+//   }
+//   currGoal = game.goals[num]
+//   game.ctx.strokeStyle = "red"
+//   game.ctx.lineWidth = 8
+//   game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth, 
+//     currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
+// //  game.ctx.strokeRect(currGoal.trueX - game.ctx.lineWidth, currGoal.trueY - game.ctx.lineWidth + 300, 
+// //      currGoal.width + 2*game.ctx.lineWidth, currGoal.height + 2*game.ctx.lineWidth)
 
-}
+// }
 
 // function animateBorder(game, player, totalRotations, endNumber, prevNum, target) {
 //   // Want to select DIFFERENT random one than previous...
@@ -392,12 +392,12 @@ function setQuestionWordStyle() {
   game.ctx.lineWidth=4;
 }
 
-function setSendButtonStyle() {
-  game.ctx.textAlign = 'center';
-  game.ctx.textBaseline="middle"; 
-  game.ctx.fillStyle = '#000000'
-  game.ctx.font = "24pt Helvetica";
-}
+// function setSendButtonStyle() {
+//   game.ctx.textAlign = 'center';
+//   game.ctx.textBaseline="middle"; 
+//   game.ctx.fillStyle = '#000000'
+//   game.ctx.font = "24pt Helvetica";
+// }
 function setBlankScreenTextStyle() {
   game.ctx.font = "bold 46pt Helvetica";
   game.ctx.fillStyle = 'red';
