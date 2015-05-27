@@ -82,7 +82,7 @@ game_server.server_onMessage = function(client,message) {
                   var gateRevealed = answerSplit[answerSplit.length - 1] - 1
                   console.log("setting gateRevealed to" + gateRevealed)
                 }
-                writeData(client, "message", message_parts);
+//                writeData(client, "message", message_parts);
             }
             // collect the most important data, to submit through mmturkey
             if(objNum) {
@@ -119,40 +119,41 @@ game_server.server_onMessage = function(client,message) {
     };
 
 var writeData = function(client, type, message_parts) {
-    var gc = client.game.gamecore
-    var goal = gc.goal.name
-    var objectSet = gc.items[gc.roundNum].objectSet
-    var id = gc.instance.id.slice(0,6)
-    switch(type) {
-        case "word" :
-            var date = Date.now()
-            var word = message_parts[1]
-            var online = message_parts[2] == "true" ? "on" : "off"
-            var line = String(id + ',' + date + ',' + goal + ',' + 
-                objectSet + ',' + word + ',' + online) + "\n"
-            gc.wordDataStream.write(line, function (err) {if(err) throw err;}); 
-            break;
-        case "message" :
-            var date = Date.now()
-            var msg = message_parts[1].replace(/-/g,'.')
-            var line = (id + ',' + date + ',' + goal + ',' + 
-                objectSet + ',' + client.role + ', "' + msg + '"\n')
-            console.log("message:" + line)
-            gc.messageStream.write(line);
-            break;
-        case "error" :
-            var trueItem = gc.instructions[gc.instructionNum].split(' ')[0]
-            var line = (id + ',' + String(message_parts[6]) + ',' + condition + ',' 
-                        + critical + ',' + objectSet + ',' + instructionNum + ',' 
-                        + attemptNum + ',' +trueItem + ',' 
-                        + gc.objects[message_parts[1]].name + ','
-                        + parseInt(gc.currentDestination[0]) + ',' 
-                        + parseInt(gc.currentDestination[1]) + ','
-                        + parseInt(message_parts[4]) + ',' + parseInt(message_parts[5]) + '\n')
-            console.log("incorrect: ", line);
-            gc.errorStream.write(line)
-            break;
-    }
+  
+    // var gc = client.game.gamecore
+    // var goal = gc.goal.name
+    // var objectSet = gc.items[gc.roundNum].objectSet
+    // var id = gc.instance.id.slice(0,6)
+    // switch(type) {
+    //     case "word" :
+    //         var date = Date.now()
+    //         var word = message_parts[1]
+    //         var online = message_parts[2] == "true" ? "on" : "off"
+    //         var line = String(id + ',' + date + ',' + goal + ',' + 
+    //             objectSet + ',' + word + ',' + online) + "\n"
+    //         gc.wordDataStream.write(line, function (err) {if(err) throw err;}); 
+    //         break;
+    //     case "message" :
+    //         var date = Date.now()
+    //         var msg = message_parts[1].replace(/-/g,'.')
+    //         var line = (id + ',' + date + ',' + goal + ',' + 
+    //             objectSet + ',' + client.role + ', "' + msg + '"\n')
+    //         console.log("message:" + line)
+    //         gc.messageStream.write(line);
+    //         break;
+    //     case "error" :
+    //         var trueItem = gc.instructions[gc.instructionNum].split(' ')[0]
+    //         var line = (id + ',' + String(message_parts[6]) + ',' + condition + ',' 
+    //                     + critical + ',' + objectSet + ',' + instructionNum + ',' 
+    //                     + attemptNum + ',' +trueItem + ',' 
+    //                     + gc.objects[message_parts[1]].name + ','
+    //                     + parseInt(gc.currentDestination[0]) + ',' 
+    //                     + parseInt(gc.currentDestination[1]) + ','
+    //                     + parseInt(message_parts[4]) + ',' + parseInt(message_parts[5]) + '\n')
+    //         console.log("incorrect: ", line);
+    //         gc.errorStream.write(line)
+    //         break;
+    // }
 }
 
 /* 
@@ -218,16 +219,16 @@ game_server.fileSetup = function(game) {
     var name = game.id;
     var word_f = "data/word/" + name + ".csv"
 
-    fs.writeFile(word_f, "gameid, time, goal, objectSet, word, online\n", function (err) {if(err) throw err;})
-    game.gamecore.wordDataStream = fs.createWriteStream(word_f, {'flags' : 'a'});
+    // fs.writeFile(word_f, "gameid, time, goal, objectSet, word, online\n", function (err) {if(err) throw err;})
+    // game.gamecore.wordDataStream = fs.createWriteStream(word_f, {'flags' : 'a'});
 
     // var error_f = "data/error/" + name + ".csv"
     // fs.writeFile(error_f, "gameid, time, condition, critical, objectSet, instructionNum, attemptNum, intendedObj, actualObj, intendedX, intendedY, actualX, actualY\n", function (err) {if(err) throw err;})
     // game.gamecore.errorStream = fs.createWriteStream(error_f, {'flags' : 'a'});
 
-    var message_f = "data/message/" + name + ".csv"
-    fs.writeFile(message_f, "gameid, time, goal, objectSet, sender, contents\n", function (err) {if(err) throw err;})
-    game.gamecore.messageStream = fs.createWriteStream(message_f, {'flags' : 'a'});
+    // var message_f = "data/message/" + name + ".csv"
+    // fs.writeFile(message_f, "gameid, time, goal, objectSet, sender, contents\n", function (err) {if(err) throw err;})
+//    game.gamecore.messageStream = fs.createWriteStream(message_f, {'flags' : 'a'});
 }
 
 
