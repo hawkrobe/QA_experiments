@@ -304,7 +304,7 @@ var items = [
 	},
 	{
 		goals: [deadFlower, tomato, carrot2, sunflower],
-		questions: [" food ", " plant ", " living thing ", " carrot "],
+		questions: [" food ", " plant ", " living plant ", " carrot "],
 		domain: "plants",
 		type : "branching",
 		wheel: plantWheel4,
