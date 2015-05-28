@@ -83,7 +83,7 @@ var condition3 = {
   exampleWorld: {beta: 1, goldfish: 2, angler: 3, dalmatian: 4}
 }
 
-var expCondition = condition3
+var expCondition = condition1
 
 // Worlds
 
@@ -232,6 +232,36 @@ var literalAnswerer = cache(
       });
   });
 
+var literalQuestioner = cache(function(qud_node, rationality) {
+  var qud = (makeQUD(qud_node))
+  
+  Enumerate(function(){
+    var question = questionPrior();
+    // What is the gate value I'd guess under my prior?
+    var prior = Enumerate(function(){
+      return qud(worldPrior());
+    });
+    var expectedKL = mean(
+      function(){
+        // What do I expect the world to be like?
+        var trueWorld = worldPrior();
+        // If I ask this question, what answer do I expect to get,
+        // given what the world is like?
+        var answer = sample(literalAnswerer(question, trueWorld, rationality));
+        var posterior = Enumerate(function(){
+          // Given this answer, how would I update my distribution on worlds?
+          var world = sample(literalListener(question, answer));
+          // What is the value of the predicate I care about under
+          // this new distribution on worlds?
+          return qud(world);
+        });
+        return qa.KL(posterior, prior);
+      });
+    factor(expectedKL * rationality);
+    return question;
+  });
+});
+
 
 var explicitAnswerer = cache(
   function(question, trueWorld, rationality) {
@@ -360,36 +390,62 @@ var pragmaticQuestioner = cache(function(qud_node, rationality) {
 
 var main = function(){
   var world = expCondition.exampleWorld
-  var questions = questionSpace
-  var qudNodes = qudSpace
+  var questions = expCondition.questionSpace
+  var qudNodes = expCondition.qudSpace
 
-  var rationalityPs = [2,4]
+  var rationalityPs = _.range(1, 3, .5)
 
-  var f_ans = function(question,rationality){
-    qa.printERP(explicitAnswerer(question, world,rationality));
-  };
-  var f_q = function(qudNode,rationality) {
-    qa.printERP(explicitQuestioner(qudNode,rationality))
-  };
-  var f_prag_ans = function(question,rationality){
-    qa.printERP(pragmaticAnswerer(question, world,rationality));
-  };
-  var f_prag_q = function(qudNode, rationality) {
-    qa.printERP(pragmaticQuestioner(qudNode,rationality))
-  };
-
-  map(function(rationality) {
+  var fileName = "branching.csv"
+  qa.writeCSV([["modelLevel", "goal", "rationality", "response", "modelProb"]], fileName)
+  map(function(r) {
     map(function(qudNode) {
-      var label = [qudNode, rationality]
+
+      var erp = literalQuestioner(qudNode, r)
+      var label = ["literal", "G:" + qudNode, r]
       console.log(label)
-      console.log("reg q")
-      f_q(qudNode, rationality)
-      console.log("prag q")
-      f_prag_q(qudNode, rationality)
+      qa.writeERP(erp, label, fileName)
+
+
+      var erp = pragmaticQuestioner(qudNode, r)
+      var label = ["pragmatic", "G:" + qudNode, r]
+      console.log(label)
+      qa.writeERP(erp, label, fileName)
+
+      var erp = explicitQuestioner(qudNode, r)
+      var label = ["explicit", "G:" + qudNode, r]
+      console.log(label)
+      qa.writeERP(erp, label, fileName)
     }, qudNodes)
   }, rationalityPs)
-
   return 'done';
+
+//  var rationalityPs = [2,4]
+
+  // var f_ans = function(question,rationality){
+  //   qa.printERP(explicitAnswerer(question, world,rationality));
+  // };
+  // var f_q = function(qudNode,rationality) {
+  //   qa.printERP(explicitQuestioner(qudNode,rationality))
+  // };
+  // var f_prag_ans = function(question,rationality){
+  //   qa.printERP(pragmaticAnswerer(question, world,rationality));
+  // };
+  // var f_prag_q = function(qudNode, rationality) {
+  //   qa.printERP(pragmaticQuestioner(qudNode,rationality))
+  // };
+
+  // map(function(rationality) {
+  //   map(function(qudNode) {
+  //     var label = [qudNode, rationality]
+  //     console.log(label)
+  //     console.log("reg q")
+  //     f_q(qudNode, rationality)
+  //     console.log("prag q")
+  //     f_prag_q(qudNode, rationality)
+  //   }, qudNodes)
+  // }, rationalityPs)
+
+  // return 'done';
 };
 
 
