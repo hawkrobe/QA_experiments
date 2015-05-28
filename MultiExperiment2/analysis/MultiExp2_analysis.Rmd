@@ -53,74 +53,34 @@ In order to compare different items in a convenient way, we're going to map the 
 
 ```{r}
 
-equivocalLeftQuestions <- c("seat", "food", "pet", "outdoor place")
-equivocalRightQuestions <- c("metal thing", "plant", "fish", "cold place")
-branchingLowestLevelQuestions <- c("mansion", "dalmatian", "carrot", "couch")
-branchingNextLowestLevelQuestions <- c("house", "dog", "food", "seat")
-branchingNextHighestLevelQuestions <- c("building", "pet", "living thing", "furniture")
-branchingHighestLevelQuestions <- c("place", "animal", "plant", "thing")
-overlappingLowestLevelQuestions <- c("diner", "lion", "carrots", "skillet")
-overlappingNonDominatedQuestions <- c("bar", "pet", "leaves", "seat")
-overlappingDominatedQuestions <- c("restaurant", "cat", "food", "metal thing")
-overlappingHighestLevelQuestions <- c("place", "animal", "plant", "thing")
-
-mapQuestion <- function(row) {
-  if(row$type == "equivocal") {
-    if(row$question %in% equivocalLeftQuestions)
-      return "Node1"
-    else if(row$question %in% equivocalRightQuestions)
-      return "Node2"
-    else 
-      stop(cat("Unrecognized question in equivocal:", row$question))
-  } else if(row$type == "branching") {
-    if(row$question %in% branchingLowestLevelQuestions)
-      return "Node1"
-    else if(row$question %in% branchingNextLowestLevelQuestions)
-      return "Node2"
-    else if(row$question %in% branchingNextHighestLevelQuestions)
-      return "Node3"
-    else if(row$question %in% branchingHighestLevelQuestions)
-      return "Node4"
-    else 
-      stop(cat("Unrecognized question in branching:", row$question))
-  } else if(row$type == "overlapping") {
-    if(row$question %in% overlappingLowestLevelQuestions)
-      return "Node1"
-    else if(row$question %in% overlappingDominatedQuestions)
-      return "Node2"
-    else if(row$question %in% overlappingNonDominatedQuestions)
-      return "Node3"
-    else if(row$question %in% overlappingHighestLevelQuestions)
-      return "Node4"
-    else 
-      stop(cat("Unrecognized question in overlapping: ", row$question))
-  } else 
-    stop(cat("Unrecognized type", row$type))
-  }
-    else if(row$question == "metal thing")
-  }
-}
-  
-  
+source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
 mapWordsToNodes <- function(d) {
+  answerNodes = c()
+  questionNodes = c()
+  goalNodes = c()
   for(i in 1:length(d$workerid)) {
-    if(d$type[i] == "equivocal")
-      
+    answerNodes <- append(answerNodes, mapAnswer(d[i,]))
+    questionNodes <- append(questionNodes, mapQuestion(d[i,]))
+    goalNodes <- append(goalNodes, mapGoal(d[i,]))
   }
+  d$goalNodes = goalNodes
+  d$answerNodes = answerNodes
+  d$questionNodes = questionNodes
+  return(d)
 }
+
+d <- mapWordsToNodes(d)
 ```
 
 Tidy up questioner data...
 
 ```{r}
 d_q = d %>% 
-      mutate(response = ordered(question, levels = c("dalmatian", "dog", 
-                                                     "pet", "animal"))) %>%
-      mutate(goal = ordered(goal, levels = c("dalmatian", "poodle", 
-                                                 "siamese cat", "whale"))) %>%
-      group_by(goal) %>%
+      mutate(response = ordered(questionNodes, levels = c("Q1", "Q2", "Q3", "Q4"))) %>%
+      mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
+      group_by(type, domain, goal) %>%
       mutate(group_size = n()) %>%
-      group_by(goal, response) %>% # collapse over participants
+      group_by(type, domain, goal, response) %>% # collapse over participants
       summarize(count = n(), emp_prob = n() / mean(group_size))%>%
       select(goal, response, count, emp_prob)
 
@@ -145,16 +105,15 @@ Tidy up answerer data...
 
 ```{r}
 d_a = d %>% 
-      filter(workerid %% 2 == 0) %>% # we have two copies of every game...
-      mutate(response = ordered(answer,
-                                levels=c("dalmatian","poodle","siamese cat","whale"))) %>%
-      mutate(utterance = ordered(question,
-                                 levels = c("dalmatian", "dog", "pet", "animal"))) %>%
-      group_by(utterance) %>%
+      mutate(response = ordered(answerNodes,
+                                levels=c("A1","A2","A3","A4"))) %>%
+      mutate(utterance = ordered(questionNodes,
+                                 levels = c("Q1", "Q2", "Q3", "Q4"))) %>%
+      group_by(domain, type, utterance) %>%
       mutate(group_size = n()) %>%
-      group_by(utterance, response) %>% # collapse over participants
+      group_by(domain, type, utterance, response) %>% # collapse over participants
       summarize(count = n(), emp_prob = n() / mean(group_size))%>%
-      select(utterance, response, emp_prob, count)
+      select(domain, type, utterance, response, emp_prob, count)
 
 # Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
 d_a = d_a %>% 
@@ -330,16 +289,16 @@ Now make the questioner plot
 ```{r}
 # join them all together
 all_qs = d_q %>% 
-  join(lit_quest_fits) %>% 
-  join(exp_quest_fits) %>% 
-  join(prag_quest_fits) %>%
-  gather(condition.1, model_prob, 
-         explicit_prob, pragmatic_prob, lit_prob) %>%
-  separate(condition.1, c("model_level", "type")) %>%
-  mutate(model_level = ordered(model_level, 
-                               levels = c("lit", "explicit", "pragmatic"))) %>%
-  select(goal, response, emp_prob, lower_ci, upper_ci,
-         model_level, model_prob) 
+#   join(lit_quest_fits) %>% 
+#   join(exp_quest_fits) %>% 
+#   join(prag_quest_fits) %>%
+#   gather(condition.1, model_prob, 
+#          explicit_prob, pragmatic_prob, lit_prob) %>%
+#  separate(condition.1, c("model_level", "type")) %>%
+# #   mutate(model_level = ordered(model_level, 
+# #                                levels = c("lit", "explicit", "pragmatic"))) %>%
+#   select(goal, response, emp_prob, lower_ci, upper_ci,
+#          model_level, model_prob) 
    #distinct(utterance, response, model_level, model_prob)
 
 # Since they won't let us annotate nicely...
@@ -453,3 +412,21 @@ g4<-(ggplot(a_comparison, aes(x=response, y = prob, fill=src))
 g4
 dev.off()
 ```
+
+quick plots
+
+```{r}
+qplot(x = response, y = emp_prob,
+      data = subset(d_a, domain == "places" & type == "eq"), 
+      facets = type ~ utterance, 
+      geom = 'bar', stat = 'identity', position = 'dodge')
+```
+
+full answer
+
+```{r}
+qplot(x = response, y = emp_prob, fill = domain,
+      data = d_a, facets = type ~ utterance, 
+      geom = 'bar', stat = 'identity',  position = 'dodge')
+```
+
