@@ -40,7 +40,7 @@ var condition1 = {
   },
   qudSpace : ['dalmatian', 'poodle', 'siamese', 'whale'],
   labelSpace : ['dalmatian', 'dog', 'pet', 'animal'],
-  exampleWorld: {poodle: 1, dalmatian: 2, siamese: 3, whale: 4}
+  exampleWorld: {dalmatian: 2, poodle: 1, siamese: 3, whale: 4}
 };
 
 var condition2 = {
@@ -59,7 +59,7 @@ var condition2 = {
   },
   qudSpace : ['dalmatian', 'whale', 'lion', 'siamese'],
   labelSpace : ['pet', 'cat', 'lion', 'animal'],
-  exampleWorld: {siamese: 1, dalmatian: 2, lion: 3, whale: 4}
+  exampleWorld: {dalmatian: 2, siamese: 1, lion: 3, whale: 4}
 
 }
 
@@ -332,6 +332,7 @@ var pragmaticAnswerer = cache(function(question, trueWorld, rationality){
   return Enumerate(function(){
     var qud = makeQUD(sample(qudNodePosterior));
     // Pick answer conditioned on communicating question predicate value
+
     var truthfulAnswerPrior = Enumerate(function(){
       var answer = fullAnswerPrior();
       factor(literalListener(question, answer).score([], trueWorld));
@@ -379,6 +380,8 @@ var pragmaticQuestioner = cache(function(qud_node, rationality) {
   });
   });
   return {qudSpace : qudSpace,
+  	      questionSpace : questionSpace,
+  	      exampleWorld : exampleWorld,
           pragQ : pragmaticQuestioner,
           litQ : literalQuestioner,
           expQ: explicitQuestioner,
@@ -391,42 +394,42 @@ var main = function(){
 
   var rationalityPs = _.range(1, 10, .1)
 
-  var conditions = [{filename: "branchingQuestioners.csv", gameObj : condition1},
-                    {filename: "overlappingQuestioners.csv", gameObj: condition2},
-                    {filename: "equivocalQuestioners.csv", gameObj: condition3}]
+  var conditions = [{filename: "branchingAnswerers.csv", gameObj : condition1},
+                    {filename: "overlappingAnswerers.csv", gameObj: condition2},
+                    {filename: "equivocalAnswerers.csv", gameObj: condition3}]
 
   map(function(expCond) {
     // Set up file
     var fileName = expCond.filename
-    qa.writeCSV([["modelLevel", "goal", "rationality", "response", "modelProb"]], fileName)
+    qa.writeCSV([["modelLevel", "question", "rationality", "response", "modelProb"]], fileName)
     var model = QAmodel(expCond.gameObj)
     map(function(rationality) {
       // Set up r to be nice
       var r = rationality.toFixed(1)
-      console.log(r)
 
-      map(function(qudNode) {
+      map(function(question) {
         // // get relevant parameters
-        // var world = expCond.gameObj.exampleWorld
-        // var questions = expCond.gameObj.questionSpace
-        var litQ = model.litQ
-        var erp = litQ(qudNode, r)
-        var label = ["literal", "G:" + qudNode, r]
+        var world = expCond.gameObj.exampleWorld
+        var questions = expCond.gameObj.questionSpace
+
+        var litA = model.litA
+        var erp = litA(question, model.exampleWorld, r)
+        var label = ["literal", "Q:" + question, r]
         console.log(label)
         qa.writeERP(erp, label, fileName)
 
-        var pragQ = model.pragQ
-        var erp = pragQ(qudNode, r)
-        var label = ["pragmatic", "G:" + qudNode, r]
+        var pragA = model.pragA
+        var erp = pragA(question, model.exampleWorld, r)
+        var label = ["pragmatic", "Q:" + question, r]
         console.log(label)
         qa.writeERP(erp, label, fileName)
 
-        var expQ = model.expQ
-        var erp = expQ(qudNode, r)
-        var label = ["explicit", "G:" + qudNode, r]
+        var expA = model.expA
+        var erp = expA(question, model.exampleWorld, r)
+        var label = ["explicit", "Q:" + question, r]
         console.log(label)
         qa.writeERP(erp, label, fileName)
-      }, model.qudSpace)
+      }, model.questionSpace)
     }, rationalityPs)
   }, conditions)
   return 'done';
