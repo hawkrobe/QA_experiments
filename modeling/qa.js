@@ -1,5 +1,39 @@
 var _ = require('underscore');
 var assert = require('assert');
+var fs = require('fs');
+
+var babyparse = require('babyparse');
+
+function readCSV(filename){
+  return babyparse.parse(fs.readFileSync(filename, 'utf8'));
+};
+
+function writeCSV(jsonCSV, filename){
+  fs.writeFileSync(filename, babyparse.unparse(jsonCSV) + '\n');
+}
+
+function appendCSV(jsonCSV, filename){
+  fs.appendFileSync(filename, babyparse.unparse(jsonCSV) + '\n');
+}
+
+var writeERP = function(erp, labels, filename) {
+  var data = _.filter(erp.support().map(
+   function(v) {
+     var prob = Math.exp(erp.score([], v));
+     if (prob > 0.0){
+      if(v.slice(-1) === ".")
+        out = "A:" + v.split("@")[0];
+      else if (v.slice(-1) === "?")
+        out = "Q:" + butLast(v).split("Is")[1].toLowerCase();
+      return labels.concat([out, String(prob.toFixed(2))]);
+    } else {
+      return [];
+    }
+  }
+  ), function(v) {return v.length > 0;});
+  console.log(data);
+  appendCSV(data, filename);
+};
 
 var sum = function(xs){
   if (xs.length == 0) {
@@ -242,5 +276,9 @@ module.exports = {
   nodes: nodes,
   butLast: butLast,
   printERP: printERP,
+  readCSV: readCSV,
+  writeCSV: writeCSV,
+  appendCSV: appendCSV,
+  writeERP: writeERP,
   orderIsEqual: orderIsEqual
 };
