@@ -78,18 +78,20 @@ Tidy up questioner data...
 d_q = d %>% 
       mutate(response = ordered(questionNodes, levels = c("Q1", "Q2", "Q3", "Q4"))) %>%
       mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
-      group_by(type, domain, goal) %>%
+      group_by(domain, type, goal) %>%
       mutate(group_size = n()) %>%
-      group_by(type, domain, goal, response) %>% # collapse over participants
-      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
-      select(goal, response, count, emp_prob)
+      group_by(domain, type, goal, response) %>% # collapse over participants
+      summarize(count = n(), empProb = n() / mean(group_size))%>%
+      select(goal, type, response, count, empProb)
 
 # Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
 d_q = d_q %>%
-      right_join(expand.grid(response = levels(d_q$response),
+      right_join(expand.grid(domain = levels(d_q$domain),
+                             type = levels(d_q$type),
+                             response = levels(d_q$response),
                              goal = levels(d_q$goal))) %>%
-      mutate(count = ifelse(is.na(count), 0, count)) %>%
-      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
+      do(mutate(., count = ifelse(is.na(count), 0, count))) %>%
+      do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb)))
 
 # get confidence intervals in the stupidest way possible...
 qud_levels = unique(d_q$goal)
@@ -117,10 +119,12 @@ d_a = d %>%
 
 # Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
 d_a = d_a %>% 
-      right_join(expand.grid(response  = levels(d_a$response),
+      right_join(expand.grid(domain = levels(d_a$domain),
+                             type = levels(d_a$type), 
+                             response  = levels(d_a$response),
                              utterance = levels(d_a$utterance))) %>%
-      mutate(count = ifelse(is.na(count), 0, count)) %>%
-      mutate(emp_prob = ifelse(is.na(emp_prob), 0, emp_prob)) 
+      do(mutate(., count = ifelse(is.na(count), 0, count))) %>%
+      do(mutate(., emp_prob = ifelse(is.na(emp_prob), 0, emp_prob))) 
 
 # And compute confidence intervals
 utterance_levels = unique(d_a$utterance)
@@ -166,51 +170,33 @@ First, we define this function that takes a data frame and computes which parame
 ```{r}
 # Expect two columns that end with _prob (i.e. emp_prob and model_prob)
 optimalFit <- function(data, equal = FALSE) {
-  if(sd(data$model_prob) == 0 || sd(data$emp_prob) == 0){
-    return (data %>% group_by(answerR, questionR) %>% 
-        filter(answerR == 1, questionR == 1))
-  }
   prob_correlation <- data %>%
-    group_by(answerR, questionR) %>%
-    filter(answerR > 1) %>%
-    filter(ifelse(equal, answerR == questionR, T)) %>%
-    summarise(correlation = cor(model_prob, emp_prob))
-  print.data.frame(prob_correlation)
-  max_val_data = prob_correlation[which.max(prob_correlation$correlation),]
-  print(max_val_data)
-  return = data %>%
-    filter(answerR == max_val_data$answerR, questionR == max_val_data$questionR)  
+#     group_by(type, modelLevel, rationality, utterance, response, modelProb) %>%
+#     summarise(meanEmpProb = mean(emp_prob)) %>%
+    group_by(type, modelLevel, rationality) %>%
+    filter(rationality > 1) %>%
+    summarise(correlation = cor(modelProb, meanEmpProb)) %>%
+    mutate(m = max(correlation)) %>%
+    ungroup() %>%
+    filter(m == correlation) %>%
+    mutate(maximizingR = rationality) %>%
+    group_by(type, modelLevel, correlation) %>%
+    summarize(maximizingR = min(maximizingR)) %>%
+    select(type, modelLevel, maximizingR, correlation)
+  # add literal back in w/ correlation = NA
+  prob_correlation <- rbind(prob_correlation, c('overlapping', 'literal', 1.0, NA))
+  prob_correlation <- rbind(prob_correlation, c('equivocal', 'literal', 1.0, NA))
+  prob_correlation <- rbind(prob_correlation, c('branching', 'literal', 1.0, NA))
+
+  return(data %>% join(prob_correlation) %>% 
+         filter(rationality == maximizingR))
 }
 ```
 
 Now we import the literal answer fits and tidy them up to eventually be joined
 ```{r}
-lit_ans_fits = join(d_a,read.csv("analysis/model_prediction/litAnswererRationalityWhale.csv", sep = ',')) %>%
-  #mutate(model_prob = jitter(model_prob)) %>%
-  mutate(answerR = ansR) %>% # This looks sketchy, but we know that these parameters don't matter...
-  mutate(questionR = ansR) %>%
-  select(utterance, response, emp_prob, answerR, questionR, model_prob)
-lit_ans_fits = optimalFit(lit_ans_fits) %>%
-  mutate(lit_cor = 0) %>%
-  rename(lit_ansR = answerR, lit_qR = questionR, lit_prob = model_prob)
-```
-
-Next we import the explicit answer fits and tidy them up
-
-```{r}
-exp_ans_fits = optimalFit(join(d_a, 
-                          read.csv("analysis/model_prediction/expAnswererRationalityWhale.csv", 
-                                    sep =',')), T) %>%
-  mutate(explicit_cor = cor(emp_prob, model_prob)) %>%
-  rename(explicit_ansR = answerR, explicit_qR = questionR, explicit_prob = model_prob) 
-```
-
-Finally, we import the pragmatic answer fits and tidy them up
-
-```{r}
-prag_ans_fits = optimalFit(join(d_a, read.csv("analysis/model_prediction/pragAnswererRationalityWhale.csv", sep =',')), equal = T) %>% 
-  mutate(pragmatic_cor = cor(emp_prob, model_prob)) %>%
-  rename(pragmatic_ansR = answerR, pragmatic_qR = questionR, pragmatic_prob = model_prob) 
+ansFits = optimalFit(inner_join(d_a, read.csv("analysis/predictions/answererPredictions.csv", sep = ','))) %>%
+  select(modelLevel, type, utterance, response, emp_prob, rationality, modelProb)
 ```
 
 Now that each of these data sets is in a nice format, we can join them all together and plot their fits:
@@ -218,38 +204,35 @@ Now that each of these data sets is in a nice format, we can join them all toget
 ```{r}
 # join them all together
 all_ans = d_a %>% 
-  join(lit_ans_fits) %>% 
-  join(exp_ans_fits) %>% 
-  join(prag_ans_fits) %>%
-  gather(condition.1, model_prob, 
-         explicit_prob, pragmatic_prob, lit_prob) %>%
-  separate(condition.1, c("model_level", "type")) %>%
-  mutate(model_level = ordered(model_level, 
-                               levels = c("lit", "explicit", "pragmatic"))) %>%
-  select(utterance, response, emp_prob, lower_ci, upper_ci,
-         model_level, model_prob) 
+  inner_join(ansFits) %>%
+#  group_by(type, modelLevel, utterance, response, modelProb, rationality) %>%
+#  summarise(meanEmpProb = mean(emp_prob)) %>%
+#  ungroup() %>%
+  mutate(modelLevel = ordered(modelLevel, 
+                               levels = c("literal", "explicit", "pragmatic"))) %>%
+  select(type, domain, utterance, response, emp_prob, modelLevel, modelProb) 
   #distinct(utterance, response, model_level, model_prob)
 
 # Since they won't let us annotate nicely...
   
-answer_plots = (ggplot(all_ans, aes(x = model_prob, y = emp_prob))
+answer_plots = (ggplot(all_ans, aes(x = modelProb, y = emp_prob))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
   + xlab("Model predicted probability")
   + ylim(0,1)
   + ylab("")
-  + geom_point()
+  + geom_point(aes(colour = type))
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Answerers")
   + geom_smooth(method = "lm")
-  + facet_wrap(~ model_level)
-  + geom_text(aes(x,y,label=lab),
-              data=data.frame(x = .75, y = .25,
-                              model_level = levels(all_ans$model_level),
-                              lab = (all_ans %>% group_by(model_level) %>% 
-                                    summarise(correlation = paste("r =",
-                                                                  round(cor(emp_prob, model_prob, method = 'pearson'), 2))))$correlation)))
+  + facet_grid(domain ~ modelLevel))
+#   + geom_text(aes(x,y,label=lab),
+#               data=data.frame(x = .75, y = .25,
+#                               modelLevel = levels(all_ans$modelLevel),
+#                               lab = (all_ans %>% group_by(modelLevel) %>% 
+#                                     summarise(correlation = paste("r =",
+#                                                                   round(cor(emp_prob, modelProb, method = 'pearson'), 2))))$correlation)))
 answer_plots               
 ```
 
@@ -417,7 +400,7 @@ quick plots
 
 ```{r}
 qplot(x = response, y = emp_prob,
-      data = subset(d_a, domain == "places" & type == "eq"), 
+      data = subset(d_a, domain == "places" & type == "overlapping"), 
       facets = type ~ utterance, 
       geom = 'bar', stat = 'identity', position = 'dodge')
 ```
@@ -430,3 +413,10 @@ qplot(x = response, y = emp_prob, fill = domain,
       geom = 'bar', stat = 'identity',  position = 'dodge')
 ```
 
+full question
+
+```{r}
+qplot(x = response, y = emp_prob, fill = domain,
+      data = d_q, facets = type ~ goal, 
+      geom = 'bar', stat = 'identity',  position = 'dodge')
+```
