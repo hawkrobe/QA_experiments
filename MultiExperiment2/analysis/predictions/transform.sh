@@ -56,7 +56,7 @@ gsed -i 's/Ab:siamese/A3/g' answererPredictions.csv
 gsed -i 's/Ab:whale/A4/g' answererPredictions.csv 
 
 # branching questioner
-gsed -i 's/Qb:dalmatian/Q1/g' questionerPredictions.raw.csv > questionerPredictions.csv
+gsed -i 's/Qb:dalmatian/Q1/g' questionerPredictions.csv
 gsed -i 's/Qb:dog/Q2/g' questionerPredictions.csv
 gsed -i 's/Qb:pet/Q3/g' questionerPredictions.csv
 gsed -i 's/Qb:animal/Q4/g' questionerPredictions.csv
