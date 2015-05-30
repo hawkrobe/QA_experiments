@@ -326,7 +326,7 @@ var pragmaticAnswerer = cache(function(question, trueWorld, rationality){
   var qudNodePosterior = Enumerate(function(){
     var qudNode = qudNodePrior();
     var q_erp = explicitQuestioner(qudNode, rationality);
-    factor(q_erp.score([], question));
+    factor(q_erp.score([], question) * 4); // This is arbitrarily set -- 1 doesn't give full range of predictions
     return qudNode;
   });
   return Enumerate(function(){
@@ -390,13 +390,14 @@ var pragmaticQuestioner = cache(function(qud_node, rationality) {
           expA: explicitAnswerer}
 }
 
-var main = function(){
+var answererMain = function(){
 
   var rationalityPs = _.range(1, 10, .1)
 
   var conditions = [{gameObj : condition1, type : "branching"},
                     {gameObj: condition2, type : "overlapping"},
-                    {gameObj: condition3, type : "equivocal"}]
+                    {gameObj: condition3, type : "equivocal"}
+                    ]
   var fileName = "answererPredictions.raw.csv"                    
 
   qa.writeCSV([["type", "modelLevel", "question", "rationality", "response", "modelProb"]], fileName)
@@ -418,68 +419,73 @@ var main = function(){
         var erp = litA(question, model.exampleWorld, r)
         var label = [expCond.type, "literal", "Q" + expCond.type.slice(0,1) + ":" + question, r]
         console.log(label)
-        qa.writeERP(erp, label, fileName)
+       qa.writeERP(erp, label, fileName)
 
         var pragA = model.pragA
         var erp = pragA(question, model.exampleWorld, r)
         var label = [expCond.type, "pragmatic", "Q" + expCond.type.slice(0,1) + ":" + question, r]
         console.log(label)
-        qa.writeERP(erp, label, fileName)
+       qa.writeERP(erp, label, fileName)
 
         var expA = model.expA
         var erp = expA(question, model.exampleWorld, r)
         var label = [expCond.type, "explicit", "Q" + expCond.type.slice(0,1) + ":" + question, r]
         console.log(label)
-        qa.writeERP(erp, label, fileName)
+       qa.writeERP(erp, label, fileName)
       }, model.questionSpace)
     }, rationalityPs)
   }, conditions)
   return 'done';
+};
 
-//  var rationalityPs = [2,4]
+var questionerMain = function(){
 
-  // var f_ans = function(question,rationality){
-  //   qa.printERP(explicitAnswerer(question, world,rationality));
-  // };
-  // var f_q = function(qudNode,rationality) {
-  //   qa.printERP(explicitQuestioner(qudNode,rationality))
-  // };
-  // var f_prag_ans = function(question,rationality){
-  //   qa.printERP(pragmaticAnswerer(question, world,rationality));
-  // };
-  // var f_prag_q = function(qudNode, rationality) {
-  //   qa.printERP(pragmaticQuestioner(qudNode,rationality))
-  // };
+  var rationalityPs = _.range(1, 10, .1)
 
-  // map(function(rationality) {
-  //   map(function(qudNode) {
-  //     var label = [qudNode, rationality]
-  //     console.log(label)
-  //     console.log("reg q")
-  //     f_q(qudNode, rationality)
-  //     console.log("prag q")
-  //     f_prag_q(qudNode, rationality)
-  //   }, qudNodes)
-  // }, rationalityPs)
+  var conditions = [{gameObj: condition1, type : "branching"},
+                    {gameObj: condition2, type : "overlapping"},
+                    {gameObj: condition3, type : "equivocal"}]
+  var fileName = "questionerPredictions.raw.csv"                    
+  qa.writeCSV([["modelLevel", "goal", "rationality", "response", "modelProb"]], fileName)
 
-  // return 'done';
+  map(function(expCond) {
+    // Set up file
+    var model = QAmodel(expCond.gameObj)
+
+    map(function(rationality) {
+      // Set up r to be nice
+      var r = rationality.toFixed(1)
+      console.log(r)
+
+      map(function(qudNode) {
+        // // get relevant parameters
+
+        var litQ = model.litQ
+        var erp = litQ(qudNode, r)
+        var label = [expCond.type, "literal", "G" + expCond.type.slice(0,1) + ":" + qudNode, r]
+        console.log(label)
+//        qa.printERP(erp)
+       qa.writeERP(erp, label, fileName)
+
+        var pragQ = model.pragQ
+        var erp = pragQ(qudNode, r)
+        var label = [expCond.type, "pragmatic", "G" + expCond.type.slice(0,1) + ":" + qudNode, r]
+        console.log(label)
+//        qa.printERP(erp)
+       qa.writeERP(erp, label, fileName)
+
+        var expQ = model.expQ
+        var erp = expQ(qudNode, r)
+        var label = [expCond.type, "explicit", "G" + expCond.type.slice(0,1) + ":" + qudNode, r]
+        console.log(label)
+//        qa.printERP(erp)
+       qa.writeERP(erp, label, fileName)
+      }, model.qudSpace)
+    }, rationalityPs)
+  }, conditions)
+  return 'done';
 };
 
 
-//   map(function(rationality) {
-//     map(function(question) {
-//       var label = [question, rationality]
-//       console.log(label)
-//       console.log("reg q")
-// //      f_q(qudNode, rationality)
-//       f_ans(question, rationality)
-//       console.log("prag q")
-// //      f_prag_q(qudNode, rationality)
-//       f_prag_ans(question, rationality)
-//     }, questions)
-//   }, rationalityPs)
-
-//   return 'done';
-// };
-
-main();
+questionerMain();
+answererMain();
