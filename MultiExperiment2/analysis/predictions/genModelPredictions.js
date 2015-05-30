@@ -400,7 +400,7 @@ var answererMain = function(){
                     ]
   var fileName = "answererPredictions.raw.csv"                    
 
-  qa.writeCSV([["type", "modelLevel", "question", "rationality", "response", "modelProb"]], fileName)
+  qa.writeCSV([["type", "modelLevel", "utterance", "rationality", "response", "modelProb"]], fileName)
 
   map(function(expCond) {
     // Set up file
@@ -446,7 +446,7 @@ var questionerMain = function(){
                     {gameObj: condition2, type : "overlapping"},
                     {gameObj: condition3, type : "equivocal"}]
   var fileName = "questionerPredictions.raw.csv"                    
-  qa.writeCSV([["modelLevel", "goal", "rationality", "response", "modelProb"]], fileName)
+  qa.writeCSV([["type", "modelLevel", "goal", "rationality", "response", "modelProb"]], fileName)
 
   map(function(expCond) {
     // Set up file
