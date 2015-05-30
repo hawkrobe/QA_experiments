@@ -114,8 +114,8 @@ d_a = d %>%
       group_by(domain, type, utterance) %>%
       mutate(group_size = n()) %>%
       group_by(domain, type, utterance, response) %>% # collapse over participants
-      summarize(count = n(), emp_prob = n() / mean(group_size))%>%
-      select(domain, type, utterance, response, emp_prob, count)
+      summarize(count = n(), empProb = n() / mean(group_size))%>%
+      select(domain, type, utterance, response, empProb, count)
 
 # Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
 d_a = d_a %>% 
@@ -124,7 +124,7 @@ d_a = d_a %>%
                              response  = levels(d_a$response),
                              utterance = levels(d_a$utterance))) %>%
       do(mutate(., count = ifelse(is.na(count), 0, count))) %>%
-      do(mutate(., emp_prob = ifelse(is.na(emp_prob), 0, emp_prob))) 
+      do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb))) 
 
 # And compute confidence intervals
 utterance_levels = unique(d_a$utterance)
@@ -171,23 +171,26 @@ First, we define this function that takes a data frame and computes which parame
 # Expect two columns that end with _prob (i.e. emp_prob and model_prob)
 optimalFit <- function(data, equal = FALSE) {
   prob_correlation <- data %>%
-#     group_by(type, modelLevel, rationality, utterance, response, modelProb) %>%
-#     summarise(meanEmpProb = mean(emp_prob)) %>%
-    group_by(type, modelLevel, rationality) %>%
+#     group_by(modelLevel, rationality, goal, response, modelProb) %>%
+#     summarise(empProb = mean(empProb)) %>%
+    group_by(modelLevel, rationality) %>%
     filter(rationality > 1) %>%
-    summarise(correlation = cor(modelProb, meanEmpProb)) %>%
+    summarise(correlation = cor(modelProb, empProb, method = 'pearson')) %>%
     mutate(m = max(correlation)) %>%
     ungroup() %>%
     filter(m == correlation) %>%
     mutate(maximizingR = rationality) %>%
-    group_by(type, modelLevel, correlation) %>%
+    group_by(modelLevel, correlation) %>%
     summarize(maximizingR = min(maximizingR)) %>%
-    select(type, modelLevel, maximizingR, correlation)
+    select(modelLevel, maximizingR, correlation)
+  print(prob_correlation)
   # add literal back in w/ correlation = NA
-  prob_correlation <- rbind(prob_correlation, c('overlapping', 'literal', 1.0, NA))
-  prob_correlation <- rbind(prob_correlation, c('equivocal', 'literal', 1.0, NA))
-  prob_correlation <- rbind(prob_correlation, c('branching', 'literal', 1.0, NA))
-
+  
+  #for(domain in levels(data$domain)) {
+#     for(type in levels(data$type)) {
+#       prob_correlation <- rbind(prob_correlation, c(domain, type, 'literal', 1.0, NA))
+#     }
+  #}
   return(data %>% join(prob_correlation) %>% 
          filter(rationality == maximizingR))
 }
@@ -196,7 +199,7 @@ optimalFit <- function(data, equal = FALSE) {
 Now we import the literal answer fits and tidy them up to eventually be joined
 ```{r}
 ansFits = optimalFit(inner_join(d_a, read.csv("analysis/predictions/answererPredictions.csv", sep = ','))) %>%
-  select(modelLevel, type, utterance, response, emp_prob, rationality, modelProb)
+  select(domain, modelLevel, type, utterance, response, empProb, rationality, modelProb)
 ```
 
 Now that each of these data sets is in a nice format, we can join them all together and plot their fits:
@@ -204,18 +207,18 @@ Now that each of these data sets is in a nice format, we can join them all toget
 ```{r}
 # join them all together
 all_ans = d_a %>% 
-  inner_join(ansFits) %>%
+  inner_join(ansFits, by = c('domain', 'type', 'utterance', 'response', 'empProb')) %>%
 #  group_by(type, modelLevel, utterance, response, modelProb, rationality) %>%
 #  summarise(meanEmpProb = mean(emp_prob)) %>%
 #  ungroup() %>%
   mutate(modelLevel = ordered(modelLevel, 
                                levels = c("literal", "explicit", "pragmatic"))) %>%
-  select(type, domain, utterance, response, emp_prob, modelLevel, modelProb) 
+  select(type, domain, utterance, response, empProb, modelLevel, modelProb) 
   #distinct(utterance, response, model_level, model_prob)
 
 # Since they won't let us annotate nicely...
   
-answer_plots = (ggplot(all_ans, aes(x = modelProb, y = emp_prob))
+answer_plots = (ggplot(all_ans, aes(x = modelProb, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
   + xlab("Model predicted probability")
@@ -226,45 +229,22 @@ answer_plots = (ggplot(all_ans, aes(x = modelProb, y = emp_prob))
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Answerers")
   + geom_smooth(method = "lm")
-  + facet_grid(domain ~ modelLevel))
-#   + geom_text(aes(x,y,label=lab),
-#               data=data.frame(x = .75, y = .25,
-#                               modelLevel = levels(all_ans$modelLevel),
-#                               lab = (all_ans %>% group_by(modelLevel) %>% 
-#                                     summarise(correlation = paste("r =",
-#                                                                   round(cor(emp_prob, modelProb, method = 'pearson'), 2))))$correlation)))
+  + facet_grid(domain ~ modelLevel)
+  + geom_text(aes(x,y,label=lab),
+              data=data.frame(x = .75, y = .25,
+                              modelLevel = levels(all_ans$modelLevel),
+                              domain = levels(all_ans$domain),
+                              lab = (all_ans %>% group_by(domain, modelLevel) %>% 
+                                    summarise(correlation = paste("r =",
+                                                                  round(cor(empProb, modelProb, method = 'pearson'), 2))))$correlation)))
 answer_plots               
 ```
 
 Now we import the literal questioner fits and tidy them up to eventually be joined
 
 ```{r}
-lit_quest_fits = join(d_q,read.csv("analysis/model_prediction/litQuestionerRationalityWhale.csv", sep = ',')) %>%
-  mutate(answerR = ansR) %>% # This looks sketchy, but we know that these parameters don't matter...
-  mutate(questionR = ansR) %>%
-  select(goal, response, emp_prob, answerR, questionR, model_prob)
-lit_quest_fits = optimalFit(lit_quest_fits, T) %>%
-  mutate(lit_cor = 0) %>%
-  rename(lit_ansR = answerR, lit_qR = questionR, lit_prob = model_prob) %>%
-  distinct(goal, response, emp_prob)
-```
-
-Next we import the explicit answer fits and tidy them up
-
-```{r}
-exp_quest_fits = optimalFit(join(d_q, read.csv("analysis/model_prediction/expQuestionerRationalityWhale.csv", sep =',')), T) %>%
-  mutate(explicit_cor = cor(emp_prob, model_prob)) %>%
-  rename(explicit_ansR = answerR, explicit_qR = questionR, explicit_prob = model_prob) 
-```
-
-Finally, we import the pragmatic answer fits and tidy them up
-
-```{r}
-prag_quest_fits = optimalFit(join(d_q, 
-                          read.csv("analysis/model_prediction/pragQuestionerRationalityWhale.csv", 
-                                   sep =',')), T) %>% 
-  mutate(pragmatic_cor = cor(emp_prob, model_prob)) %>%
-  rename(pragmatic_ansR = answerR, pragmatic_qR = questionR, pragmatic_prob = model_prob) 
+questFits = optimalFit(inner_join(d_q, read.csv("analysis/predictions/questionerPredictions.csv", sep = ','))) %>%
+  select(type, domain, modelLevel, goal, response, empProb, modelProb)
 ```
 
 Now make the questioner plot
@@ -272,39 +252,40 @@ Now make the questioner plot
 ```{r}
 # join them all together
 all_qs = d_q %>% 
-#   join(lit_quest_fits) %>% 
-#   join(exp_quest_fits) %>% 
-#   join(prag_quest_fits) %>%
-#   gather(condition.1, model_prob, 
-#          explicit_prob, pragmatic_prob, lit_prob) %>%
-#  separate(condition.1, c("model_level", "type")) %>%
-# #   mutate(model_level = ordered(model_level, 
-# #                                levels = c("lit", "explicit", "pragmatic"))) %>%
-#   select(goal, response, emp_prob, lower_ci, upper_ci,
-#          model_level, model_prob) 
-   #distinct(utterance, response, model_level, model_prob)
+  inner_join(questFits, by = c('type', 'domain', 'goal', 'response', 'empProb')) %>%
+#  group_by(type, modelLevel, goal, response, modelProb, rationality) %>%
+#  summarise(meanEmpProb = mean(emp_prob)) %>%
+#  ungroup() %>%
+  mutate(modelLevel = ordered(modelLevel, 
+                               levels = c("literal", "explicit", "pragmatic"))) %>%
+  select(type, domain, goal, response, empProb, modelLevel, modelProb) 
+  #distinct(type, domain, goal, response, modelLevel, modelProb)
 
 # Since they won't let us annotate nicely...
   
+labelDataFrame = all_qs %>% 
+   group_by(domain, modelLevel) %>% 
+   summarise(correlation = paste("r =", round(cor(empProb, 
+                                                  modelProb, method = 'pearson'), 2)))
+
 #jpeg(filename="../writing/2015/cogsci/questionerFits.jpeg")
-question_plots = (ggplot(all_qs, aes(x = model_prob, y = emp_prob))
+question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_blank(), axis.ticks = element_blank(),
           plot.margin=unit(c(1,1,-1,1), "cm"))
   + ylim(0,1)
   + xlab("")
   + ylab("")
-  + geom_point()
+  + geom_point(aes(colour = type))
   + ggtitle("Questioners")
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + geom_smooth(method = "lm")
-  + facet_wrap(~ model_level)
+  + facet_grid(domain ~ modelLevel)
   + geom_text(aes(x,y,label=lab),
               data=data.frame(x = .75, y = .25,
-                              model_level = levels(all_qs$model_level),
-                              lab = (all_qs %>% 
-                                       group_by(model_level) %>% 
-                                       summarise(correlation = paste("r =",  round(cor(emp_prob, model_prob), 2))))$correlation)))
+                              modelLevel = labelDataFrame$modelLevel,
+                              domain = labelDataFrame$domain,
+                              lab = labelDataFrame$correlation)))
 question_plots               
 #dev.off()
 ```
@@ -416,7 +397,7 @@ qplot(x = response, y = emp_prob, fill = domain,
 full question
 
 ```{r}
-qplot(x = response, y = emp_prob, fill = domain,
+qplot(x = response, y = empProb, fill = domain,
       data = d_q, facets = type ~ goal, 
       geom = 'bar', stat = 'identity',  position = 'dodge')
 ```
