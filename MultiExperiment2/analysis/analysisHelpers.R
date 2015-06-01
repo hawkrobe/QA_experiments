@@ -57,8 +57,8 @@ branchingNextLowestLevelQuestions <- c("house", "dog", "food", "seat")
 branchingNextHighestLevelQuestions <- c("building", "pet", "living plant", "furniture")
 branchingHighestLevelQuestions <- c("place", "animal", "plant", "thing")
 overlappingLowestLevelQuestions <- c("diner", "lion", "carrots", "skillet")
-overlappingNonDominatedQuestions <- c("bar", "pet", "leaves", "seat")
 overlappingDominatedQuestions <- c("restaurant", "cat", "food", "metal thing")
+overlappingNonDominatedQuestions <- c("bar", "pet", "leaves", "seat")
 overlappingHighestLevelQuestions <- c("place", "animal", "plant", "thing")
 
 mapQuestion <- function(row) {

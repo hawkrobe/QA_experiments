@@ -39,13 +39,24 @@ Filter out participants who didn't complete all 12 trials or didn't list english
 ```{r}
 english_ps <- (ps %>% 
                filter(nativeEnglish == "yes"))$workerid
-cat("We removed", length(ps$workerid) - length(english_ps), "due to language")
-trialsCompleted = d %>% count(workerid) %>% mutate(numCompleted = n)
-d = right_join(d, trialsCompleted, by = "workerid") %>%
-    filter(workerid %in% english_ps) %>% 
-    filter(numCompleted == 12) %>% 
-    filter(answer != "NA") %>%
-    distinct(domain, goal, question, guess, answer, type, gameID)    
+cat("We removed", length(ps$workerid) - length(english_ps), "ps due to language")
+#trialsCompleted = d %>% count(workerid) %>% mutate(numCompleted = n)
+filteredD = d %>% filter(workerid %in% english_ps) %>% 
+       filter(answer != "NA") 
+completedGames = (filteredD %>% group_by(gameID) %>% 
+                    count(gameID) %>% mutate(numCompleted = n) %>% 
+                    filter(numCompleted == 24))$gameID
+cat("We removed", length(unique(d$workerid)) - length(completedGames)*2, "games total")
+d <- filteredD %>% filter(gameID %in% completedGames) %>% 
+     distinct(domain, goal, question, guess, answer, type, gameID)
+#     filter(numCompleted == 12) %>% 
+#     distinct(domain, goal, question, guess, answer, type, gameID)    
+# make counts 
+
+  
+    #group_by(gameID) %>% 
+#     count(workerid) %>%
+#     filter(n == 2)# %>%
 ```
 
 In order to compare different items in a convenient way, we're going to map the questions and answers to the corresponding node positions in the hierarchy. So, in 'branching' trials, for example, 'dalmatian', 'mansion', 'carrot', and 'couch' would all be treated the same.
