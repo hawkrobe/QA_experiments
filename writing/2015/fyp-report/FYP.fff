@@ -1,0 +1,12 @@
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .4]{pragmatic_questioner.pdf}
+\includegraphics[scale = .4]{pragmatic_answerer.pdf}
+\end{center}
+\vspace{-.5cm}
+\caption{Exp.~1 results, compared with the predictions of the best-performing model  for questioner (left) and answerer (right).  The explicit and pragmatic questioner models do not make different predictions in this task, but the pragmatic answerer better accounts for the qualitative patterns in the response data than the explicit answerer.}
+\vspace{-.1cm}
+\label{fig:exp1res}
+\end{figure*}
+\efloatseparator
+ 
