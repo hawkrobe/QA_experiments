@@ -255,24 +255,8 @@ var noneMeaning = function() {
         hasNewspaper(world, cafe)
       }, cafes);
       return allFalse(doTheyHaveNewspapers);
-
-var answerLength = function(a) {
-  return butLast(a).split(',').length
-}
-
-var taxonomyAnswerMeaning = cache(function(utterance){
-  return function(pred){
-    return function(x){
-      var person_pairs = butLast(utterance).split(',')
-      return all(function(v){
-        var pair = v.split(":")
-        var person = pair[0]
-        var truth_val = pair[1]
-        return x[person] == truth_val
-      }, person_pairs)
-    };
-  };
-
+    } 
+  }
 }
 
 var meaning = function(utterance){
