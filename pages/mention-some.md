@@ -310,35 +310,6 @@ var qudPrior = function(context){
           "qudClosest");
 };
 
-var explicitAnswerer = cache(
-  function(question, trueWorld, ansRationality) {
-    // Pick answer conditioned on communicating question predicate value
-    return Enumerate(
-      function(){
-        var answer = fullAnswerPrior();
-        //var answer = sample(truthfulAnswerPrior);
-        var score = mean(
-          function(){
-            // We may be uncertain about which leaf node the question
-            // refers to, so we're integrating over possible leaf nodes
-            // of interest
-            var questionNode = questionToNode(question);
-            var subtree = findSubtree(questionNode, taxonomy);
-            var leavesBelowNode = subtree === null ? [questionNode] : leaves(subtree);
-            var leafOfInterest = uniformDraw(leavesBelowNode);
-            // Did the listener infer the correct location of the leaf
-            // node of interest?
-            var inferredWorld = sample(literalListener(question, answer));
-            var inferredPosition = inferredWorld[leafOfInterest];
-            var truePosition = trueWorld[leafOfInterest];
-            return (truePosition == inferredPosition) ? 1 : 0;
-          });
-        factor((Math.log(score) * ansRationality)
-        	- answerLength(answer) * .25);
-        return answer;
-      });
-  });
-
 var nameToQUD = function(qudName){
   return (qudName == "qudClosest" ? qudClosest :
           qudName == "qudAll" ? qudAll :
@@ -407,12 +378,12 @@ var world = {'cafe1' : [3, false],
          'cafe3' : [3, true],
          'cafe4' : [3, true]}
 
-console.log("world", world);
+print("world", world);
 
-console.log(businesspersonContext, newspaperQuestion);
+print(businesspersonContext, newspaperQuestion);
 print(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world));
 
-console.log(touristContext, newspaperQuestion);
+print(touristContext, newspaperQuestion);
 print(pragmaticAnswerer(touristContext, newspaperQuestion, world));
 
 ~~~~
