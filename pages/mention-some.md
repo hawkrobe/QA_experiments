@@ -204,7 +204,8 @@ var worldPrior = function(){
     'cafe2' : [uniformDraw(distances), flip(.5)],
     'cafe3' : [uniformDraw(distances), flip(.5)],
     'cafe4' : [uniformDraw(distances), flip(.5)]
-
+  }
+}
 // Questions
 
 var newspaperQuestion = "Where can one buy an Italian newspaper?";
