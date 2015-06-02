@@ -208,6 +208,18 @@ var worldPrior = function(){
 }
 // Questions
 
+var hasNewspaper = function(world, cafe) {
+  if(_.contains(_.keys(world), cafe))
+    return world[cafe][1]
+  else
+    return false
+}
+
+// Returns the distance of a cafe
+var distance = function(world, cafe) {
+  return world[cafe][0]
+}
+  
 var newspaperQuestion = "Where can one buy an Italian newspaper?";
 
 // projects from a world to the relevant properties for the desired answer
@@ -390,7 +402,7 @@ var pragmaticAnswerer = function(context, question, trueWorld){
   });
 };
 
-world = {'cafe1' : [3, false],
+var world = {'cafe1' : [3, false],
          'cafe2' : [1, true],
          'cafe3' : [3, true],
          'cafe4' : [3, true]}
