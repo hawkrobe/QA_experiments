@@ -8,7 +8,6 @@ We'll set up the mention-some problem below, using the same structure as our oth
 
 ~~~~
 ///fold:
-///fold:
 var identity = function(x){return x;};
 
 var negate = function(predicate){
@@ -104,6 +103,14 @@ var powerset = function(set) {
   }
 }
 
+var mapReduce1 = function(f,g,ar){
+  // specialized to above reduce
+  return reduce(function(a,b) { return f(g(a),b); }, g(ar[ar.length-1]), ar.slice(0,-1));
+};
+
+var all = function(p,l) { 
+  return mapReduce1(function(a,b){ return a & b; }, p, l); };
+
 var permute = function (input) {
   var input = input.slice();
   var permArr = [];
@@ -197,8 +204,6 @@ var worldPrior = function(){
     'cafe2' : [uniformDraw(distances), flip(.5)],
     'cafe3' : [uniformDraw(distances), flip(.5)],
     'cafe4' : [uniformDraw(distances), flip(.5)]
-  };
-};
 
 // Questions
 
@@ -249,6 +254,21 @@ var noneMeaning = function() {
         hasNewspaper(world, cafe)
       }, cafes);
       return allFalse(doTheyHaveNewspapers);
+
+var answerLength = function(a) {
+  return butLast(a).split(',').length
+}
+
+var taxonomyAnswerMeaning = cache(function(utterance){
+  return function(pred){
+    return function(x){
+      var person_pairs = butLast(utterance).split(',')
+      return all(function(v){
+        var pair = v.split(":")
+        var person = pair[0]
+        var truth_val = pair[1]
+        return x[person] == truth_val
+      }, person_pairs)
     };
   };
 
@@ -292,6 +312,35 @@ var qudPrior = function(context){
   return (flip(p) ? "qudAll" :
           "qudClosest");
 };
+
+var explicitAnswerer = cache(
+  function(question, trueWorld, ansRationality) {
+    // Pick answer conditioned on communicating question predicate value
+    return Enumerate(
+      function(){
+        var answer = fullAnswerPrior();
+        //var answer = sample(truthfulAnswerPrior);
+        var score = mean(
+          function(){
+            // We may be uncertain about which leaf node the question
+            // refers to, so we're integrating over possible leaf nodes
+            // of interest
+            var questionNode = questionToNode(question);
+            var subtree = findSubtree(questionNode, taxonomy);
+            var leavesBelowNode = subtree === null ? [questionNode] : leaves(subtree);
+            var leafOfInterest = uniformDraw(leavesBelowNode);
+            // Did the listener infer the correct location of the leaf
+            // node of interest?
+            var inferredWorld = sample(literalListener(question, answer));
+            var inferredPosition = inferredWorld[leafOfInterest];
+            var truePosition = trueWorld[leafOfInterest];
+            return (truePosition == inferredPosition) ? 1 : 0;
+          });
+        factor((Math.log(score) * ansRationality)
+        	- answerLength(answer) * .25);
+        return answer;
+      });
+  });
 
 var nameToQUD = function(qudName){
   return (qudName == "qudClosest" ? qudClosest :
