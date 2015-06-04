@@ -147,15 +147,11 @@ var isNumeric = function(x){
 };
 
 var worldPrior = function(){
-  return [flip(0.5), uniformDraw(prices)];
-};
-
-var credit = function(world){
-  return world[0];
+  return [uniformDraw(prices)];
 };
 
 var price = function(world){
-  return world[1];
+  return world[0];
 };
 
 var isMoreThanFiveQuestion = "Does Jim Beam cost more than $5?";
@@ -163,12 +159,7 @@ var isMoreThanFiveQuestionMeaning = function(world){
   return price(world) <= 5;
 };
 
-var doYouTakeCreditQuestion = "Do you take credit cards?";
-var doYouTakeCreditQuestionMeaning = function(world){
-  return credit(world);
-};
-
-var questions = [isMoreThanFiveQuestion, doYouTakeCreditQuestion];
+var questions = [isMoreThanFiveQuestion];
 
 var questionPrior = function(){
   return uniformDraw(questions);
@@ -176,16 +167,16 @@ var questionPrior = function(){
 
 var answerPrior = function(){
   // prefer yes/no over detailed answer
-  return flip(0.5) ? uniformDraw(["yes", "no"]) : uniformDraw(prices);
+  return flip(0.6) ? uniformDraw(["yes", "no"]) : uniformDraw(prices);
 };
 
 var numericAnswerMeaning = function(number){
   return function(questionMeaning){
     return function(world){
       if (questionMeaning == isMoreThanFiveQuestionMeaning){
-	return price(world) == number;
+  return price(world) == number;
       } else {
-	return true; // vacuous
+  return true; // vacuous
       }
     };
   };
@@ -195,9 +186,7 @@ var booleanAnswerMeaning = function(bool){
   return function(questionMeaning){
     return function(world){
       if (questionMeaning == isMoreThanFiveQuestionMeaning){
-	return (price(world) > 5) == bool;
-      } else {
-	return credit(world) == bool;
+        return (price(world) > 5) == bool;
       }
     }
   }
@@ -205,11 +194,10 @@ var booleanAnswerMeaning = function(bool){
 
 var meaning = function(utterance){
   return ((utterance === "yes") ? booleanAnswerMeaning(true) :
-	  (utterance === "no") ? booleanAnswerMeaning(false) :
-	  isNumeric(utterance) ? numericAnswerMeaning(utterance) :
-	  (utterance === isMoreThanFiveQuestion) ? isMoreThanFiveQuestionMeaning :
-	  (utterance === doYouTakeCreditQuestion) ? doYouTakeCreditQuestionMeaning :
-	  console.error('unknown utterance!', utterance));
+          (utterance === "no") ? booleanAnswerMeaning(false) :
+          isNumeric(utterance) ? numericAnswerMeaning(utterance) :
+          (utterance === isMoreThanFiveQuestion) ? isMoreThanFiveQuestionMeaning :
+          console.error('unknown utterance!', utterance));
 };
 
 var literalListener = cache(function(question, answer){
@@ -234,22 +222,19 @@ var literalAnswerer = cache(function(question, trueWorld){
 
 var qudPrice = function(world){return price(world);};
 var qudPriceGreaterThan5 = function(world){return price(world) > 5;};
-var qudTakeCredit = function(world){return credit(world);};
 
 var qudPrior = function(context){
   var p = ((context === buyWhiskeyContext) ? 0.5 :
-	   (context === spendFiveDollarsContext) ? 0.9 :
-	   console.error('unknown context'));
-  return (flip(0.4) ? "qudTakeCredit" :
-	  flip(p) ? "qudPriceGreaterThan5" :
-	  "qudPrice");
+           (context === spendFiveDollarsContext) ? 0.9 :
+           console.error('unknown context'));
+  return (flip(p) ? "qudPriceGreaterThan5" :
+          "qudPrice");
 };
 
 var nameToQUD = function(qudName){
   return (qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 :
-	  qudName == "qudPrice" ? qudPrice :
-	  qudName == "qudTakeCredit" ? qudTakeCredit :
-	  console.error('unknown qud name', qudName));
+    qudName == "qudPrice" ? qudPrice :
+    console.error('unknown qud name', qudName));
 };
 
 var questioner = function(qudName) {
@@ -261,19 +246,19 @@ var questioner = function(qudName) {
     });
     var expectedKL = mean(
       function(){
-	// What do I expect the world to be like?
-	var trueWorld = worldPrior();
-	// If I ask this question, what answer do I expect to get,
-	// given what the world is like?
-	var answer = sample(literalAnswerer(question, trueWorld));
-	var posterior = Enumerate(function(){
-	  // Given this answer, how would I update my distribution on worlds?
-	  var world = sample(literalListener(question, answer));
-	  // What is the value of the predicate I care about under
-	  // this new distribution on worlds?
-	  return qud(world);
-	});
-	return KL(posterior, prior);
+  // What do I expect the world to be like?
+  var trueWorld = worldPrior();
+  // If I ask this question, what answer do I expect to get,
+  // given what the world is like?
+  var answer = sample(literalAnswerer(question, trueWorld));
+  var posterior = Enumerate(function(){
+    // Given this answer, how would I update my distribution on worlds?
+    var world = sample(literalListener(question, answer));
+    // What is the value of the predicate I care about under
+    // this new distribution on worlds?
+    return qud(world);
+  });
+  return KL(posterior, prior);
       });
     factor(expectedKL * 3);
 
@@ -293,31 +278,30 @@ var pragmaticAnswerer = function(context, question, trueWorld){
   return Enumerate(function(){
     var qudName = sample(qudPosterior);
     var qud = nameToQUD(qudName);
+    var truthfulAnswerPrior = Enumerate(function(){
+      var answer = answerPrior();
+      factor(literalListener(question, answer).score([], trueWorld));
+      return answer
+    })
     // Pick answer conditioned on communicating question predicate value
-    var answer = answerPrior();
+    var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
-	var inferredWorld = sample(literalListener(question, answer));
-	return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
+        var inferredWorld = sample(literalListener(question, answer));
+        return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
       });
     factor(Math.log(score) * 3);
     return answer;
   });
 };
 
-var world = [true, 4];
+var world = [4];
 print("world", world);
 
-print(buyWhiskeyContext, doYouTakeCreditQuestion);
-print(pragmaticAnswerer(buyWhiskeyContext, doYouTakeCreditQuestion, world));
-
-print(spendFiveDollarsContext, doYouTakeCreditQuestion);
-print(pragmaticAnswerer(spendFiveDollarsContext, doYouTakeCreditQuestion, world));
-
-print(buyWhiskeyContext, isMoreThanFiveQuestion);
+print(buyWhiskeyContext + " " + isMoreThanFiveQuestion);
 print(pragmaticAnswerer(buyWhiskeyContext, isMoreThanFiveQuestion, world));
 
-print(spendFiveDollarsContext, isMoreThanFiveQuestion);
+print(spendFiveDollarsContext + " " + isMoreThanFiveQuestion);
 print(pragmaticAnswerer(spendFiveDollarsContext, isMoreThanFiveQuestion, world));
 
 ~~~~
