@@ -11,8 +11,6 @@ This set of notes contains work-in-progress on modelling question and answer beh
 
 {% assign sorted_pages = site.pages | sort:"name" %}
 
-{{sorted_pages}}
-
 ### Current models
 <!-- - Current pages-->
 {% for p in sorted_pages %}
