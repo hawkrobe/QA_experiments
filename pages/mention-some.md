@@ -37,28 +37,44 @@ var allFalse = function(boolList) {
   }, true, boolList)
 }
 
+var getFilteredCafeList = function(world) {
+  var cafeList = map(function(value) {
+    var hasNewspaper = world[value][1];
+    if(hasNewspaper) {
+      return value;
+    } else {
+      return []
+    }
+  }, _.keys(world))
+
+  var filteredCafeList = filter(function(val){
+    if(_.isEmpty(val))
+      return false
+    else
+      return true
+  }, cafeList)
+
+  return filteredCafeList;
+}
+
 var pickAllNewspaperCafes = function(world) {
-  var trueCafes = _.keys(_.pick(world, function(value, key, object) {
-    return value[1];
-  }))
-  if(_.isEmpty(trueCafes))
+  var filt = getFilteredCafeList(world)
+  if(_.isEmpty(filt))
     return 'none'
-  else 
-    return trueCafes
+  else
+    return filt
 }
 
 var pickClosestNewspaperCafe = function(world) {
-  var validPicks = _.pick(world, function(value, key, object) {
-    return value[1];
-  })
-  if(_.isEmpty(validPicks))
+  var filt = getFilteredCafeList(world);
+  if(_.isEmpty(filt)) {
     return 'none'
-  else {
-    return [_.min(_.keys(validPicks), function(k) {
-      return validPicks[k][0];
-    })]
+  } else {
+    return minWith(function(k) {
+      return world[k][0];
+    }, filt)[0]
   }
-}
+}			       
 
 var KL = function(erpTrue, erpApprox){
   var values = erpTrue.support([]);
