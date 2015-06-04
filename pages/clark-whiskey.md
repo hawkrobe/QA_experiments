@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Clark (1979): Whiskey
+title: Clark (1979)
 status: current
 ---
 
