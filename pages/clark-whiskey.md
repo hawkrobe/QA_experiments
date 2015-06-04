@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Mention-some Questions
+title: Clark (1979): Whiskey
 status: current
 ---
 
