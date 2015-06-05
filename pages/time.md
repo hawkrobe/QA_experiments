@@ -231,7 +231,7 @@ var qudFactory = function(threshold) {
 // Family of quds parameterized by threshold at which "running late"
 // Thresholds closer to the appointment are more likely
 var qudPrior = function(context){
-  var threshold = uniformDraw(qa.getEveryFifthElement(currTimes))
+  var threshold = uniformDraw(getEveryFifthTime(currTimes))
   var appointmentTime = "4:00"
   factor(timeDiff(threshold, appointmentTime))
   return "qud" + threshold
