@@ -296,7 +296,6 @@ var pragmaticAnswerer = function(context, question, trueWorld){
 };
 
 var world = [4];
-print("world", world);
 
 print(buyWhiskeyContext + " " + isMoreThanFiveQuestion);
 print(pragmaticAnswerer(buyWhiskeyContext, isMoreThanFiveQuestion, world));
