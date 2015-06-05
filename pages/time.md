@@ -7,6 +7,7 @@ status: current
 We'll set up the mention-some problem below, using the same structure as our other models
 
 ~~~~
+///fold:
 var identity = function(x){return x;};
 
 var negate = function(predicate){
@@ -152,9 +153,6 @@ var roundToNearest = function(time) {
 }
 
 ///
-
-// --------------------------------------------------------------------
-
 
 var currTimes = map(function(n) {return "3:" + n;}, _.range(30, 60));
 
