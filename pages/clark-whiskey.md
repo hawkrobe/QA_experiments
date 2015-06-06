@@ -1,10 +1,10 @@
 ---
 layout: page
-title: Clark (1979): Experiment 3
+title: Clark, 1979 -- Experiment 3
 status: current
 ---
 
-We'll set up the mention-some problem below, using the same structure as our other models
+Depending on the context, liquor merchants will be more or less likely to give over-informative answers. Our model accounts for this via inference about the underlying goal, given the context.
 
 ~~~~
 ///fold:

@@ -1,10 +1,10 @@
 ---
 layout: page
-title: Clark (1979): Experiment 4
+title: Clark (1979) -- Experiment 4
 status: current
 ---
 
-We'll set up the mention-some problem below, using the same structure as our other models
+In this experiment, the pragmatic answerer infers the questioner's goal from their *question* rather than an explicitly given context.
 
 ~~~~
 
