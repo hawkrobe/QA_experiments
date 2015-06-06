@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Mention-some Questions
+title: Groenendijk and Stokhof (1984) -- mention-some vs. mention-all
 status: current
 ---
 

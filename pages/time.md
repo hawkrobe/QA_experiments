@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Gibbs Jr. & Bryant (2008)
+title: Gibbs Jr. & Bryant (2008) -- time
 status: current
 ---
 

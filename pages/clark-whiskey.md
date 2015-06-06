@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Clark, 1979 -- Experiment 3
+title: Clark (1979) -- whiskey answers
 status: current
 ---
 

@@ -7,7 +7,6 @@ status: current
 We'll set up the mention-some problem below, using the same structure as our other models
 
 ~~~~
-///fold:
 var identity = function(x){return x;};
 
 var negate = function(predicate){
@@ -132,84 +131,73 @@ var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
 };
 
-///
 
+var timeDiff = function(timeString1, timeString2) {
+  var min1 = timeString1.split(":")[1]
+  var min2 = timeString2.split(":")[1]
+  return Math.abs(min2 - min1)
+}
+
+var getEveryFifthTime = function(list) {
+  return filter(function(num) {
+    return num[3] % 5 == 0;
+  }, list);
+};
+
+var roundToNearest = function(time) {
+  var hour = time.split(":")[0]
+  var minutes = time.split(":")[1]
+  var roundedMinutes = 5 * Math.round(minutes / 5)
+  return hour + ":" + roundedMinutes
+}
+
+///
 
 // --------------------------------------------------------------------
 
-var buyWhiskeyContext = "I'd like to buy some whiskey.";
-var spendFiveDollarsContext = "I only have $5 to spend.";
 
-var prices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+var currTimes = map(function(n) {return "3:" + n;}, _.range(30, 60));
 
-var isNumeric = function(x){
-  return _.contains(prices, x);
-};
+var appointmentContext = "I have an appointment at 4:00.";
 
+// World state is just the true current time
 var worldPrior = function(){
-  return [flip(0.5), uniformDraw(prices)];
+  return uniformDraw(currTimes)
 };
 
-var credit = function(world){
-  return world[0];
+var timeQuestion = "What time is it?";
+
+// projects from a world to the relevant properties for the desired answer
+var timeQuestionMeaning = function(world){
+  return world
 };
 
-var price = function(world){
-  return world[1];
-};
-
-var isMoreThanFiveQuestion = "Does Jim Beam cost more than $5?";
-var isMoreThanFiveQuestionMeaning = function(world){
-  return price(world) <= 5;
-};
-
-var doYouTakeCreditQuestion = "Do you take credit cards?";
-var doYouTakeCreditQuestionMeaning = function(world){
-  return credit(world);
-};
-
-var questions = [isMoreThanFiveQuestion, doYouTakeCreditQuestion];
+var questions = [timeQuestion] 
 
 var questionPrior = function(){
   return uniformDraw(questions);
 };
 
+// saying inexact times is easier?
 var answerPrior = function(){
-  // prefer yes/no over detailed answer
-  return flip(0.5) ? uniformDraw(["yes", "no"]) : uniformDraw(prices);
+   var time = uniformDraw(currTimes)
+   return time
 };
 
-var numericAnswerMeaning = function(number){
+// rather than true/false, the time answer meaning returns 
+// a score that can be used in a factor statement
+var timeAnswerMeaning = function(currTime){
   return function(questionMeaning){
     return function(world){
-      if (questionMeaning == isMoreThanFiveQuestionMeaning){
-	return price(world) == number;
-      } else {
-	return true; // vacuous
-      }
+      return timeDiff(currTime, world)
     };
   };
 };
 
-var booleanAnswerMeaning = function(bool){
-  return function(questionMeaning){
-    return function(world){
-      if (questionMeaning == isMoreThanFiveQuestionMeaning){
-	return (price(world) > 5) == bool;
-      } else {
-	return credit(world) == bool;
-      }
-    }
-  }
-}
-
 var meaning = function(utterance){
-  return ((utterance === "yes") ? booleanAnswerMeaning(true) :
-	  (utterance === "no") ? booleanAnswerMeaning(false) :
-	  isNumeric(utterance) ? numericAnswerMeaning(utterance) :
-	  (utterance === isMoreThanFiveQuestion) ? isMoreThanFiveQuestionMeaning :
-	  (utterance === doYouTakeCreditQuestion) ? doYouTakeCreditQuestionMeaning :
-	  console.error('unknown utterance!', utterance));
+  return (_.contains(currTimes, utterance) ? timeAnswerMeaning(utterance) :
+         (utterance === timeQuestion) ? timeQuestionMeaning :
+         console.error('unknown utterance!', utterance));
 };
 
 var literalListener = cache(function(question, answer){
@@ -217,7 +205,7 @@ var literalListener = cache(function(question, answer){
     var world = worldPrior();
     var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-    condition(answerMeaning(questionMeaning)(world));
+    factor(- answerMeaning(questionMeaning)(world));
     return world;
   });
 });
@@ -226,30 +214,34 @@ var literalAnswerer = cache(function(question, trueWorld){
   return Enumerate(
     function(){
       var answer = answerPrior();
-      factor(literalListener(question, answer).score([], trueWorld) * 3);
+      var ll = literalListener(question, answer)
+      factor(literalListener(question, answer).score([], trueWorld));
       return answer;
     }
   );
 });
 
-var qudPrice = function(world){return price(world);};
-var qudPriceGreaterThan5 = function(world){return price(world) > 5;};
-var qudTakeCredit = function(world){return credit(world);};
+var qudFactory = function(threshold) {
+ return function(world){
+  if(world < threshold) {
+    return roundToNearest(world)
+  } else {
+    return world
+  }
+ }}
 
+// Family of quds parameterized by threshold at which "running late"
+// Thresholds closer to the appointment are more likely
 var qudPrior = function(context){
-  var p = ((context === buyWhiskeyContext) ? 0.5 :
-	   (context === spendFiveDollarsContext) ? 0.9 :
-	   console.error('unknown context'));
-  return (flip(0.4) ? "qudTakeCredit" :
-	  flip(p) ? "qudPriceGreaterThan5" :
-	  "qudPrice");
+  var threshold = uniformDraw(qa.getEveryFifthElement(currTimes))
+  var appointmentTime = "4:00"
+  factor(timeDiff(threshold, appointmentTime))
+  return "qud" + threshold
 };
 
 var nameToQUD = function(qudName){
-  return (qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 :
-	  qudName == "qudPrice" ? qudPrice :
-	  qudName == "qudTakeCredit" ? qudTakeCredit :
-	  console.error('unknown qud name', qudName));
+  var threshold = qudName.slice(3)
+  return qudFactory(threshold)
 };
 
 var questioner = function(qudName) {
@@ -261,26 +253,25 @@ var questioner = function(qudName) {
     });
     var expectedKL = mean(
       function(){
-	// What do I expect the world to be like?
-	var trueWorld = worldPrior();
-	// If I ask this question, what answer do I expect to get,
-	// given what the world is like?
-	var answer = sample(literalAnswerer(question, trueWorld));
-	var posterior = Enumerate(function(){
-	  // Given this answer, how would I update my distribution on worlds?
-	  var world = sample(literalListener(question, answer));
-	  // What is the value of the predicate I care about under
-	  // this new distribution on worlds?
-	  return qud(world);
-	});
-	return KL(posterior, prior);
+        // What do I expect the world to be like?
+        var trueWorld = worldPrior();
+        // If I ask this question, what answer do I expect to get,
+        // given what the world is like?
+        var answer = sample(literalAnswerer(question, trueWorld));
+        var posterior = Enumerate(function(){
+          // Given this answer, how would I update my distribution on worlds?
+          var world = sample(literalListener(question, answer));
+          // What is the value of the predicate I care about under
+          // this new distribution on worlds?
+          return qud(world);
+        });
+        return KL(posterior, prior);
       });
     factor(expectedKL * 3);
-
+    
     return question;
   });
 };
-
 
 var pragmaticAnswerer = function(context, question, trueWorld){
   var qudPosterior = Enumerate(function(){
@@ -297,27 +288,24 @@ var pragmaticAnswerer = function(context, question, trueWorld){
     var answer = answerPrior();
     var score = mean(
       function(){
-	var inferredWorld = sample(literalListener(question, answer));
-	return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
+        var inferredWorld = sample(literalListener(question, answer));
+        return (_.isEqual(qud(trueWorld), qud(inferredWorld))) ? 1.0 : 0.0;
       });
-    factor(Math.log(score) * 3);
+    factor(Math.log(score) * 10);
     return answer;
   });
 };
 
-var world = [true, 4];
-print("world", world);
 
-print(buyWhiskeyContext, doYouTakeCreditQuestion);
-print(pragmaticAnswerer(buyWhiskeyContext, doYouTakeCreditQuestion, world));
+//var qud = qudFactory("qud3:30")
 
-print(spendFiveDollarsContext, doYouTakeCreditQuestion);
-print(pragmaticAnswerer(spendFiveDollarsContext, doYouTakeCreditQuestion, world));
+var world = "3:34"
+print(appointmentContext + " " + timeQuestion + "; " +  "true time = ", world);
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world)
+print(erp)
 
-print(buyWhiskeyContext, isMoreThanFiveQuestion);
-print(pragmaticAnswerer(buyWhiskeyContext, isMoreThanFiveQuestion, world));
+var world = "3:54"
+print(appointmentContext + " " + timeQuestion + "; " +  "true time = ", world);
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world)
+print(erp);
 
-print(spendFiveDollarsContext, isMoreThanFiveQuestion);
-print(pragmaticAnswerer(spendFiveDollarsContext, isMoreThanFiveQuestion, world));
-
-~~~~

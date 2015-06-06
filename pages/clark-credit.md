@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Clark (1979) -- Experiment 4
+title: Clark (1979) -- credit card questions
 status: current
 ---
 
