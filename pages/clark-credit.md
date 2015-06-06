@@ -166,13 +166,6 @@ var worldPrior = function(){
 	'Diners' : flip(0.5),
 	'CarteBlanche' : flip(0.5)
     }
-    // return {
-    // 'Visa' : flip(0.72),
-    // 'MasterCard' : flip(0.71),
-    // 'AmericanExpress' : flip(0.38),
-    // 'Diners' : flip(0.12),
-    // 'CarteBlanche' : flip(0.1)
-    // }
 };
 
 var masterCardQuestion = "Do you accept MasterCard?";
@@ -207,7 +200,7 @@ var cardAnswerSpace = powerset(cardTypes);
 // Say 'yes' 'no' or some combination of cards
 var answerPrior = function(){
     // prefer yes/no over detailed answer
-    return flip(0.4) ? uniformDraw(["yes", "no"]) : uniformDraw(cardAnswerSpace);
+    return flip(0.2) ? uniformDraw(["yes", "no"]) : uniformDraw(cardAnswerSpace);
 };
 
 var cardAnswerMeaning = function(cardList){
@@ -274,14 +267,13 @@ var literalAnswerer = cache(function(question, trueWorld){
 });
 
 var qudMasterCard = function(world){return world['MasterCard'];};
-var qudAmericanExpress = function(world){return world['AmericanExpress']};
-var qudMasterPlusDiners = function(world){return world['MasterCard'] & world['Diners']};
-var qudMasterExpressDiners = function(world){return world['AmericanExpress'] & world['MasterCard'] & world['Diners']};
+var qudMasterPlusDiners = function(world){return world['MasterCard'] | world['Diners']};
+var qudMasterExpressDiners = function(world){return world['AmericanExpress'] | world['MasterCard'] | world['Diners']};
 var qudNames = function(world) {return getFilteredCardList(world)}
 var qudAny = function(world) {return _.any(_.values(world))}
 
-var qudSpace = ["qudMasterCard", "qudAmericanExpress", "qudMasterPlusDiners",
-		"qudMasterExpressDiners", "qudAny", "qudNames"];
+var qudSpace = ["qudMasterCard", "qudMasterPlusDiners",
+		"qudMasterExpressDiners", "qudNames"];
 
 var qudPrior = function(){
     return uniformDraw(qudSpace);
@@ -351,13 +343,15 @@ var pragmaticAnswerer = function(question, trueWorld){
 var world = {
     'Visa' : false,
     'MasterCard' : true,
-    'AmericanExpress' : true,
+    'AmericanExpress' : false,
     'Diners' : true,
     'CarteBlanche' : false
 };
 
+print("Do you accept credit cards?")
 print(pragmaticAnswerer(creditCardsQuestion, world))
 
+print("Do you accept MasterCard?")
 print(pragmaticAnswerer(masterCardQuestion, world))
 
 ~~~~
