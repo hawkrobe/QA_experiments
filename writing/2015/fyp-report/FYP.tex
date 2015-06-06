@@ -26,16 +26,16 @@
 \makeatother
 
 \title{Why do you ask? Good questions provoke informative answers.}
-\shorttitle{Dots}
+\shorttitle{Q\&A}
 \author{Robert X.D. Hawkins, Noah D. Goodman}
 \affiliation{Stanford University}
 
-\abstract{What makes a question useful? What makes an answer appropriate? In this paper, we formulate a family of increasingly  sophisticated models of question-answer behavior within the Rational Speech Act framework. We compare these models based on three different pieces of evidence: first, we demonstrate how our answerer models capture a battery of four classic effects in psycholinguistics, which show that an answerer's level of informativeness varies with the inferred questioner goal. Second, we jointly test the questioner and answerer components of our model based on empirical evidence from a simple question-answer reasoning game. Third, we designed a real-time, multi-player version of this game with a wider range of conditions, which allows us to distinguish among the questioner models. We find that sophisticated pragmatic reasoning is needed to account for some critical aspects of the data. People can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests.
+\abstract{What makes a question useful? What makes an answer appropriate? In this paper, we formulate a family of increasingly  sophisticated models of question-answer behavior within the Rational Speech Act framework. We compare these models based on three different pieces of evidence: first, we demonstrate how our answerer models capture a battery of three classic effects in psycholinguistics, which show that an answerer's level of informativeness varies with the inferred questioner goal. Second, we jointly test the questioner and answerer components of our model based on empirical evidence from a simple question-answer reasoning game. Third, we designed a real-time, multi-player version of this game with a wider range of conditions, which allows us to distinguish among the questioner models. We find that sophisticated pragmatic reasoning is needed to account for some critical aspects of the data. People can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests.
 }
 
 \keywords{pragmatics, computational modeling}
 
-\authornote{This research took place while the first author was a student at Indiana University. He is now at Stanford University, Stanford, CA 94305, USA. This work was supported by National Institute of Mental Health Grant 05771710 awarded to J. T. T. We thank Devin Burns for helpful comments on the experiment reported, and Patricia Knapp for her assistance in data collection. Correspondence concerning this article should be addressed to Robert X.D. Hawkins, e-mail: rxdh@stanford.edu}
+\authornote{This report is based in part on work presented at the 37th Conference of the Cognitive Science Society. The first author is supported by a NSF Graduate Research Fellowship and a Stanford Graduate Fellowship. Correspondence concerning this article should be addressed to Robert X.D. Hawkins, e-mail: rxdh@stanford.edu}
 
 \begin{document}
 \maketitle
@@ -85,7 +85,7 @@ The rest of this paper is structured as follows. First, we lay out the details o
 %we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
 %We then formally individuate literal, explicit, and pragmatic models in this family, which represent different hypotheses about how questioners and answerers reason about their task. 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
-We then present a set of computational experiments demonstrating how this set of models captures four classic answerer-sensitivity effects from the psycholinguistics literature. Because data on \emph{questioner} behavior is relatively sparse, we collected data in a simple communication game paradigm allowing us to manipulate private goals, potential questions, and potential answers. After testing the predictions of the different models on data from a simple single-player version of the task, we scale up this paradigm to a more natural real-time, multi-player experiment using a wider variety of goal sets, question sets, and answer sets. We dedicate particular attention to one condition in which the questioners models make different predictions.
+We then present a set of computational experiments demonstrating how this set of models captures three classic answerer-sensitivity effects from the psycholinguistics literature. Because data on \emph{questioner} behavior is relatively sparse, we collected data in a simple communication game paradigm allowing us to manipulate private goals, potential questions, and potential answers. After testing the predictions of the different models on data from a simple single-player version of the task, we scale up this paradigm to a more natural real-time, multi-player experiment using a wider variety of goal sets, question sets, and answer sets. We dedicate particular attention to one condition in which the questioners models make different predictions.
 %We find that the most sophisticated, pragmatic models best account for human performance.
 %derive predictions for a  of experiments using a novel guessing-game task, and compare these predictions to human performance. 
 %In one phase of the task, we require participants to ask a question (from a fixed set of possible questions), given a decision problem. In the second phase, we require participants to give an answer (from a fixed set of possible answers) to a question (from a fixed set of possible questions). 
@@ -182,9 +182,9 @@ While there is a growing literature on dialogue models in general, far less atte
 
 More recent theories have tried to fix these problems by introducing some consideration of the questioner's goals. \citeA{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals as a decision problem faced by the questioner. A useful answer under this decision theoretic account is one that maximizes the expected value of the questioner's decision problem. A useful question is one that induces a sufficiently fine-grained partition, optimally distinguishing the worlds relevant to the decision problem. While this framework elegantly accounts for the context-dependence and relevance-maximization of question and answer behavior, it assumes that the questioner's decision problem is known a priori by the answerer. If this were the case, the act of asking questions would seem irrelevant: why wouldn't the answerer directly tell the questioner which action to take? Nevertheless, while empirical work has almost exclusively focused on answerer behavior, van Rooy's approach suggests that the question itself is important in prompting a relevant answer. 
 
-Our models are an effort to expand on this core idea in a probabilistic framework that also provides an inferential mechanism for the answerer to infer the `decision problem' instead of assuming it. We now proceed to show how these models address four classic examples of question and answer pragmatics from the psycholinguistics literature.
+Our models are an effort to expand on this core idea in a probabilistic framework that also provides an inferential mechanism for the answerer to infer the `decision problem' instead of assuming it. We now proceed to show how these models address three classic examples of question and answer pragmatics from the psycholinguistics literature.
 
-\section{Four case studies}
+\section{Three case studies}
 
 \subsection{Clark (1979), Experiment 4}
 
@@ -240,13 +240,13 @@ We take the world state to be the true current time. Unlike in the previous two 
 \end{figure}
 
 
-\subsection{Clark (1979): Experiment 5}
-
-Our final scenario is a critical test for the questioner component of our model: if our RSA model is correct, the questioner's choice of utterance itself should guide a pragmatic answerer's inferences about likely underlying goals. In a follow-up to the first experiment we modeled in this paper, \citeA{Clark79_IndirectSpeechActs} tested the inferences the merchant made about the questioner's goals on the basis of their question utterance, without hearing an explicit context sentence. The goal of the questioner was to find out all the kinds of credit cards the merchant accepted, and they could ask questions at different levels of specificity, e.g. ``Do you accept Master Charge cards?'' or ``Do you accept credit cards?'' or ``Do you accept any kinds of credit cards?'' He found that as the noun used in the question became less specific, literal \emph{yes/no} responses were less likely and the alternative (over-informative) response \emph{We accept x, y, z cards.} were preferred.
-
-We have also not yet implemented this model, but the plan is to represent a world state as an object mapping each possible kind of credit card (Visa, Discover, MasterCard) to a boolean value representing whether the establishment will accept that card. There are four possible goals: learning whether or not the establishment accepts (1) Visa, (2) Discover, (3) MasterCard, or (4) learning the exact list of cards that the establishment accepts. The set of answers includes ``yes,'' ``no,'' and all possible lists of the three cards listed above, with ``yes'' and ``no'' slightly preferred for their lower cost. Because there is now a decision between different questions that the questioner must entertain, we must also specify a \emph{questioner} prior, which we set to uniform for simplicity. 
-
-This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. However, we have not yet shown that the \emph{questioner} behavior matches that of humans. Indeed, the questioner has been largely neglected in studies of answering \cite<but see, e.g.,>{Potts12_CardsDialogueCorpus}, even though, as our opening example illustrates, the choice of question is important for understanding answers. In the next section we introduce an experimental paradigm that allows us to jointly explore quantitative behavior of both questioners and answerers. 
+%\subsection{Clark (1979): Experiment 5}
+%
+%Our final scenario is a critical test for the questioner component of our model: if our RSA model is correct, the questioner's choice of utterance itself should guide a pragmatic answerer's inferences about likely underlying goals. In a follow-up to the first experiment we modeled in this paper, \citeA{Clark79_IndirectSpeechActs} tested the inferences the merchant made about the questioner's goals on the basis of their question utterance, without hearing an explicit context sentence. The goal of the questioner was to find out all the kinds of credit cards the merchant accepted, and they could ask questions at different levels of specificity, e.g. ``Do you accept Master Charge cards?'' or ``Do you accept credit cards?'' or ``Do you accept any kinds of credit cards?'' He found that as the noun used in the question became less specific, literal \emph{yes/no} responses were less likely and the alternative (over-informative) response \emph{We accept x, y, z cards.} were preferred.
+%
+%We have also not yet implemented this model, but the plan is to represent a world state as an object mapping each possible kind of credit card (Visa, Discover, MasterCard) to a boolean value representing whether the establishment will accept that card. There are four possible goals: learning whether or not the establishment accepts (1) Visa, (2) Discover, (3) MasterCard, or (4) learning the exact list of cards that the establishment accepts. The set of answers includes ``yes,'' ``no,'' and all possible lists of the three cards listed above, with ``yes'' and ``no'' slightly preferred for their lower cost. Because there is now a decision between different questions that the questioner must entertain, we must also specify a \emph{questioner} prior, which we set to uniform for simplicity. 
+%
+%This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. However, we have not yet shown that the \emph{questioner} behavior matches that of humans. Indeed, the questioner has been largely neglected in studies of answering \cite<but see, e.g.,>{Potts12_CardsDialogueCorpus}, even though, as our opening example illustrates, the choice of question is important for understanding answers. In the next section we introduce an experimental paradigm that allows us to jointly explore quantitative behavior of both questioners and answerers. 
 
 %\vspace{-1em}
 
@@ -440,8 +440,18 @@ In experiment 4, we test the generality of our model by expanding the stimulus s
 \subsubsection{Participants} We recruited 199 participants
 from Amazon's Mechanical Turk to participate in this task. Fifty participants were excluded due to a server crash that terminated the task before completion. Two additional participants were excluded because they were not non-native English speakers. This left 74 unique completed games.
 
-\subsubsection{Stimuli \& Procedure} A set of twelve items were created by crossing four domains (animals, plants, places, and artifacts) with three hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{hierarchyStructures}). For each item, there was a set of four goal objects in $\mathcal{G}$, which appeared on the wheel for the questioners, four question labels in $\mathcal{Q}$ that the questioner could use to ask about their assigned goal, and four answers in $\mathcal{A}$ corresponding to the four items in $\mathcal{G}$ that appear on the wheel.\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \url{https://github.com/hawkrobe/Q\_and\_A/blob/master/MultiExperiment2/stimuliLabels.pdf}} 
 
+\subsubsection{Stimuli \& Procedure} A set of twelve items were created by crossing four domains (animals, plants, places, and artifacts) with three hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}). For each item, there was a set of four goal objects in $\mathcal{G}$, which appeared on the wheel for the questioners, four question labels in $\mathcal{Q}$ that the questioner could use to ask about their assigned goal, and four answers in $\mathcal{A}$ corresponding to the four items in $\mathcal{G}$ that appear on the wheel.\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \url{https://github.com/hawkrobe/Q\_and\_A/blob/master/MultiExperiment2/stimuliLabels.pdf}} 
+
+	\begin{figure}[t!]
+\begin{center}
+\includegraphics[scale = .3]{hierarchyStructureExamples}
+\end{center}
+\vspace{-.5cm}
+\caption{Example of each type of hierarchy used in Experiment 4. The bottom row served as the answer space, and the labels in the questioner space highlighted in red. }
+\vspace{-.1cm}
+\label{fig:hierarchyStructures}
+\end{figure}
 The procedure was the same as Experiment 3 with two major modifications. First, we addressed an asymmetry in the task: the answerer watched the questioner move words, but the questioner only saw template text responses in response. In pilot work, we found that answerers were more likely to believe they were playing with a  human partner than questioners. To bring questioner and answerer beliefs closer together, we changed the mechanism by which the answerer responds. Instead of clicking on a gate and clicking the `send,' button, we supplied a ``Reveal Box.'' When the answerer was ready to reveal a gate, they would click and drag the object they wanted to reveal into this box. The questioner watched as the outline of the gate moved, in real time, and saw the image as soon as the answerer dropped it in the box. 
 
 	\begin{figure}[t!]
@@ -460,17 +470,41 @@ Second, we noticed that some players began exploiting the freedom of the ``quest
 The resulting questioner and answerer interfaces are displayed in Figure \ref{fig:exp4views}.  Each participant provided one response for each of the twelve items, presented in random order. 
 
 \subsubsection{Results}
-%\red{check for effect of Q/A block order.}
+
+First, we note that there was high correlation in response probabilities across domains for both questioners and answerers (see Table \ref{table:experiment4correlations}). Thus, in examining the results below we will collapse across domains for simplicity of analysis. Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below. 
+
+Next, we step through the response patterns for each hierarchy type. For concreteness, we will report results in terms of the `animal' domain instead of the abstract goal, question, and answer labels that all domains are mapped onto. In the `branching' hierarchy, we find that \dots
+
+
+
+\begin{table}[b]
+\centering
+\begin{tabular}{ p{1.5cm} | r | r | r | r |||||| r | r | r | r |}
+& \multicolumn{4}{c||||||}{Questioners} & \multicolumn{4}{c}{Answerers} \\
+&             animal &     place &     plant &  artifact &            animal &     place &     plant &  artifact \\
+\hline
+animal &   1.00 &  0.91 & 0.94 & 0.94 & 1.00 & 0.78 & 0.92 &  0.97 \\
+\hline
+place &    0.91 &  1.00 & 0.96 & 0.95 & 0.78 & 1.00 &  0.78 & 0.78 \\
+\hline
+plant &    0.94 & 0.96 & 1.00 & 0.97 & 0.92  & 0.78 &  1.00 & 0.91\\
+\hline
+artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
+\end{tabular}
+\\[1.5pt]
+\caption{Inter-domain correlations in Experiment 4} 
+\label{table:experiment4correlations}
+\end{table}
 
 \begin{figure}[t!]
 \begin{center}
-\includegraphics[scale = .4]{Exp3PragmaticQuestioner.pdf}
-\includegraphics[scale = .4]{Exp3PragmaticAnswerer.pdf}
+\includegraphics[scale = .4]{Exp4QuestResults.pdf}
+\includegraphics[scale = .4]{Exp4AnsResults.pdf}
 \end{center}
 \vspace{-.5cm}
-\caption{Exp.~3 results and model fits, for the best-performing questioenr (left) and answerer (right) models.}
+\caption{Exp.~4 results and model fits, for the best-performing questioenr (left) and answerer (right) models, collapsing over the different domains}
 \vspace{-.1cm}
-\label{fig:exp3res}
+\label{fig:exp4res}
 \end{figure}
 
 \subsubsection{Model comparison}
@@ -478,22 +512,42 @@ The resulting questioner and answerer interfaces are displayed in Figure \ref{fi
 %
 \begin{figure}[t!]
 \begin{center}
-\includegraphics[scale=.75]{Exp3ModelFits.pdf}
+\includegraphics[scale=.55]{Exp4QuestFits.jpeg}
+\includegraphics[scale=.55]{Exp4AnsFits.jpeg}
 \end{center}
 \vspace{-.5cm}
-\caption{Full space of models, and their correlations with the data from Exp.~1. Questioner models in the first row reason about the answerers directly below them, and the pragmatic answerer reasons about the explicit questioner.}
-\label{fig:Exp3ModelSpace}
+\caption{Full space of models, and their correlations with the data from Exp.~4, broken down by item and type.}
+\label{fig:Exp4ModelSpace}
 \vspace{-.15cm}
 \end{figure}
 %
 
+Model comparison was conducted in the same way as in Experiment 1 and 3. However, to avoid the overfitting and number of free parameters resulting from separately fitting rationality parameters for each item, we pool together data from all hierarchy structures and domains and use the single rationality parameter for each model that jointly optimizes model-data correlations across all items. 
+
+These model-data fits, broken down by model level and hierarchy structure, are displayed in Figure \ref{fig:Exp4ModelSpace}. We can immediately rule out the literal answerer and literal questioner, which predict a uniform distribution of responses. We also find that the explicit answerer models fit the data significantly worse than the pragmatic answerer model in all hierarchy structures, with $r = 0.67$ compared to $r = 0.96$ in the `branching' hierarchy, $r = 0.44$ compared to $r = 0.92$ in the `equivocal' hierarchy, and $r = 0.68$ compared with $r = 0.86$ in the `overlapping' hierarchy, respectively. 
+
+
+
+Turning to the questioner predictions, we again find that both explicit and pragmatic models provide excellent but essentially indistinguishable fits, with $r = 0.97$ compared with $0.98$ in the `branching' hierarchy, $r = 0.90$ compared with $r = 0.90$ in the `equivocal hierarchy', and $r = 0.95$ compared with $0.94$ in the `overlapping' hierarchy, respectively. 
+
+However, because we designed the overlapping structure to provide a critical test for the questioner models, it is not the overall correlation we are interested in, it is the particular distribution of responses to ``G2'' (the ``house cat'' in the animal domain). Since ``house cat'' is not available as a question, the explicit model (as well as the heuristic strategy discussed above) predicts that the two parents, ``pet'' and ``cat'' will be equally likely. This happens because the explicit answerer would be equally likely to reveal the location of the house cat in response to ``pet'' and ``cat,'' which each have two children. The pragmatic questioner model, however, predicts that ``cat'' will be preferred over ``pet'', because the other child of ``cat'' -- the lion -- is pragmatically blocked by the pragmatic answerer. When the pragmatic answerer hears ``cat'' they reason that if the questioner's underlying goal were the ``lion'' they would have \emph{said} lion; because they didn't, they must mean the other cat. Thus, we have a pair of sharply distinguishable predictions: the explicit model predicts that ``pet'' and ``cat'' will be equally likely and the pragmatic model predicts an asymmetry where ``cat'' is the preferred label. In Figure \ref{fig:Exp4ZoomedIn}, we zoom in on this critical condition and display both models' predictions next to the empirical data. We see clearly that the pragmatic model makes the correct prediction: a chi-squared test with the explicit questioner predictions as the baseline probabilities rejects the null, $\chi^2(3) = 29.231, p < 0.001$.
+
+
 \subsubsection{Discussion}
 
-We replicated the results of experiment 1 in a real-time, interactive setting. Again, we found that both explicit and pragmatic questioner models provide an excellent fit to questioner behavior, and that the pragmatic answerer accounts for the data significantly better than the explicit answerer both quantitatively and qualitatively. In addition, the full, interactive game was designed to be more natural and less confusing to participants than the drop-down menu design from experiments 1 and 2. Because players received constant feedback from their partner, this task was framed as inherently social, and because answerers watched as questioners moved words to form questions, there was a convincing mechanism for people to believe they were playing with another human. This addresses some concerns raised with experiments 1 and 2. 
+We have again replicated the results of Experiments 1 and 3, and shown that these results generalize to a wider range of domains and hierarchy structures. Additionally, we were finally able to distinguish between the pragmatic and explicit questioner models, finding that the pragmatic model is necessary to account for the data. The ``place'' domain that we flagged as a potential outlier earlier in the results is the only domain that does not show the pattern of responses predicted by the pragmatic questioner model. This is likely due to the choice of images displayed to participants: the two ``parent'' nodes of the critical goal are ``bar'' and ``restaurant,'' and we represented the intersection of these two categories as a hotel lobby. However, the image we chose placed emphasis in the bar in the hotel, which may have biased participants toward the ``bar'' response instead of the ``restaurant response'' predicted by the pragmatic model. 
 
-Note that so far we have used the same animal hierarchy for the stimulus set in all our experiments, providing only 16 points of comparison between our models and empirical data. Furthermore, there exists a heuristic strategy for selecting questions given goals in the hierarchy structure we have been using which produces the same pattern of responses without requiring any social inference. Suppose questioners saw their goal on a given trial and ruled out labels that do not apply (e.g. a `cat' is neither a `dalmatian' nor a `dog'), then picked the most specific of the remaining labels (`pet' picks out a smaller set of objects than `animal').  
- 
-In experiment 4, we test the generality of our model by expanding the stimulus set to encompass multiple stimulus domains and multiple hierarchy structures. This addresses the potential concern that the behavioral patterns we have been modeling are specific to the set of animals we decided to use or the tree-like hierarchy in which they were embedded. We also took care to include one simple but critical hierarchy structure where (1) the explicit and pragmatic questioner models make different predictions and (2) the heuristic strategy cannot explain these predictions. 
+%
+\begin{figure}[t!]
+\begin{center}
+\includegraphics[scale=.55]{exp4ZoomedIn.jpeg}
+\end{center}
+\vspace{-.5cm}
+\caption{Full space of models, and their correlations with the data from Exp.~4, broken down by item and type.}
+\label{fig:Exp4ZoomedIn}
+\vspace{-.15cm}
+\end{figure}
+%
 
 
 \section{General discussion}
@@ -502,16 +556,14 @@ In experiment 4, we test the generality of our model by expanding the stimulus s
 Perhaps the most important formal advance of the models considered here is to move the Rational Speech Act framework beyond interpretation of single utterances (in context), to consider the dynamics of simple dialogs (albeit consisting of a single question and its answer). 
 Doing so requires replacing the immediate motive to convey true information with the more distant motive to provoke useful information from one's interlocutor. On the answerer side, sophisticated inference was required to account for the implicit interests of the questioner. This provides a useful connection to current game-theoretic and decision-theoretic models \cite{VogelBodoiaPottsJurafsky13_GricePOMDP, VanRooy03_QuestioningDecisionProblems}, which also emphasize the importance of goals and speaker beliefs in communication but emphasize less the complex interplay of inference between questioner and answerer.
 
-We have presented evidence that answerer behavior is best described by a pragmatic model that \emph{does} reason about questioner intentions, using the question utterance as a signal. The superiority of pragmatic answerer predictions over the other answerer models was robust. Questioner behavior in Exp.~2, however, seemed to be much more dependent on experience. 
-In another version of Exp.~1, we did not emphasize certain aspects of the game in the instructions, such as the fact that the answerer knows about the restricted answer set, which might prompt perspective-taking. 
-Our data in this pilot experiment appeared to contain a mixture of explicit and pragmatic answerers and questioners (though other confounds were present in this version).
-%These instructions reflect essential assumptions of the model and without these instructions, questioner behavior shifted more toward that predicted by the explicit model. 
-%Indeed, it appears that our sample contained a mixture of explicit and pragmatic questioners. 
-Overall, it will be important to explore the mixture of explicit- and pragmatic-questioning across a larger range of situations:
-these issues may be a product of our artificial game paradigm, or they may be reflective of real tendencies in language use, raising novel questions about audience design in question-answer behavior.
+We have presented evidence that answerer behavior is best described by a pragmatic model that \emph{does} reason about questioner intentions, using the question utterance as a signal. Our study provides a next step for previous intention-based linguistic accounts by concretely specifying how an answerer may make such inferences via Bayesian conditioning. The superiority of pragmatic answerer predictions over the other answerer models was robust across all experiments. 
 
+Questioner behavior in Exp.~2, however, seemed to be much more dependent on experience. In another version of Exp.~1, we did not emphasize certain aspects of the game in the instructions, such as the fact that the answerer knows about the restricted answer set, which might prompt perspective-taking. 
+Our data in this pilot experiment appeared to contain a mixture of explicit and pragmatic answerers and questioners (though other confounds were present in this version). We found the interactive, multi-player version of the task, used in Exp.~3 and Exp.~4 to be more robust to these minor variations. We also found that at least in certain scenarios like the overlapping hierarchy condition of Exp~.4, questioners systematically relied on higher-order pragmatic reasoning about what inferences an answerer would make about their own underlying goals when deciding what question to ask. Note that this behavior also could not be explained by the heuristic strategy raised in the earlier experiments: if questioners just ruled out labels that did not apply (e.g. ``lion''), they would have no mechanism for deciding between the two equally-good parent labels (``pet'' and ``cat'') to pick out their goal. It will ultimately be important to explore the mixture of explicit- and pragmatic-questioning across an even larger range of situations: these issues may be a product of our artificial game paradigm, or they may be reflective of real tendencies in language use, raising novel questions about audience design in question-answer behavior.
 
-While the artificiality of our question-answer game may distance the behavior of participants from the natural use of language, there are also some benefits to this design. In particular, it is easy in this setting to control the exact space of questions, goals, and answers. While the restrictions on question space may seem peculiar, it is directly motivated by conversational scenarios in everyday usage which feature restrictions on the set of things one can ask about, due to politeness, salience, time cost, and other factors. In future work, we will explore the extent to which the proposed model can scale up to real-time, multiplayer games, extended dialogues, and other more naturalistic language settings. To deal with dialogues lasting longer than a single exchange, for instance, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate.
+One additional consideration is the apparent failure of any of our models to capture questioner behavior in the ``equivocal'' hierarchy. All models we considered predicted that there would be no preference between the ``fish'' and ``pet'' labels when attempting to find an object at the intersection of these labels (e.g. the ``goldfish''). In fact, nearly all participants chose the label ``fish!'' We expect that this is due to prior beliefs about \emph{label fitness}: for any object-label pair, we can measure how willing a typical language user would be to apply the label to the object. While technically the goldfish is both a fish and a pet, it is much more likely to be called a ``fish'' in a vacuum. In future work, we intend to extend our model to allow for \emph{mixtures} of QUDs, such that the interpretation of a question word takes label fitness into account.
+
+While the artificiality of our question-answer game may distance the behavior of participants from the natural use of language, there are also some benefits to this design. In particular, it is easy in this setting to control the exact space of questions, goals, and answers. While the restrictions on question space may seem peculiar, it is directly motivated by conversational scenarios in everyday usage which feature restrictions on the set of things one can ask about, due to politeness, salience, time cost, and other factors. In future work, we will explore the extent to which the proposed model can scale up to extended dialogues, and other more naturalistic language settings. To deal with dialogues lasting longer than a single exchange, for instance, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate.
 
 Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_Animacy}. Experiments in psycholinguistics have shown that this expertise extends to speech acts.  Behind every question lies a goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). These wildly different intentions seem to warrant different kinds of answers%, even if the explicit question is expressed using the same words
 . By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity.  % If questions themselves are informative, we must ask them carefully.
