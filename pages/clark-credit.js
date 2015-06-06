@@ -1,13 +1,3 @@
----
-layout: page
-title: Clark (1979): Experiment 4
-status: current
----
-
-We'll set up the mention-some problem below, using the same structure as our other models
-
-~~~~
-
 ///fold:
 var identity = function(x){return x;};
 
@@ -359,5 +349,3 @@ var world = {
 print(pragmaticAnswerer(creditCardsQuestion, world))
 
 print(pragmaticAnswerer(masterCardQuestion, world))
-
-~~~~

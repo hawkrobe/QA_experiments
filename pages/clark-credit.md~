@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Clark (1979): Experiment 4
+title: Mention-some Questions
 status: current
 ---
 
@@ -359,5 +359,3 @@ var world = {
 print(pragmaticAnswerer(creditCardsQuestion, world))
 
 print(pragmaticAnswerer(masterCardQuestion, world))
-
-~~~~
