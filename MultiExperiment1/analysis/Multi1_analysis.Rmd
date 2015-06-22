@@ -8,7 +8,7 @@ Set wd
 ```{r}
 library(knitr)
 opts_knit$set(root.dir = '/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment3/')
-setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment3/")
+setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/MultiExperiment1//")
 library(tidyr)
 library(plyr)
 library(dplyr)
@@ -211,6 +211,15 @@ answer_plots = (ggplot(all_ans, aes(x = model_prob, y = emp_prob))
 answer_plots               
 ```
 
+Also use the cocor package to compute whether one model has a significantly better correlation with the data than another...
+
+```{r}
+empSet = subset(all_ans, model_level == "pragmatic")$emp_prob
+expSet = subset(all_ans, model_level == "explicit")$model_prob
+pragSet = subset(all_ans, model_level == "pragmatic")$model_prob
+cocor(~ empirical + expModel | empirical + pragModel, data.frame(empirical = empSet, expModel = expSet, pragModel = pragSet))
+```
+
 Now we import the literal questioner fits and tidy them up to eventually be joined
 
 ```{r}
@@ -282,6 +291,15 @@ question_plots = (ggplot(all_qs, aes(x = model_prob, y = emp_prob))
                                        summarise(correlation = paste("r =",  round(cor(emp_prob, model_prob), 2))))$correlation)))
 question_plots               
 #dev.off()
+```
+
+Compare questioner fit correlations
+
+```{r}
+empSet = subset(all_qs, model_level == "pragmatic")$emp_prob
+expSet = subset(all_qs, model_level == "explicit")$model_prob
+pragSet = subset(all_qs, model_level == "pragmatic")$model_prob
+cocor(~ empirical + expModel | empirical + pragModel, data.frame(empirical = empSet, expModel = expSet, pragModel = pragSet))
 ```
 
 Put these next to each other

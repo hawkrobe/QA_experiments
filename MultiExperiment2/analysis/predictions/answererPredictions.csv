@@ -1,4 +1,4 @@
-type,modelLevel,question,rationality,response,modelProb
+type,modelLevel,utterance,rationality,response,modelProb
 branching,literal,Q1,1.0,A4,0.25
 branching,literal,Q1,1.0,A3,0.25
 branching,literal,Q1,1.0,A2,0.25
