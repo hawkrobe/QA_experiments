@@ -16,7 +16,7 @@ var negate = function(predicate){
     return !predicate(x);
   };
 };
-
+  
 var condition = function(x){
   var score = x ? 0 : -Infinity;
   factor(score);
@@ -199,9 +199,11 @@ var pragmaticAnswerer = function(context, question, trueWorld){
 
 var world = "3:34"
 console.log(appointmentContext, timeQuestion, "true time = ", world);
-qa.printERP(pragmaticAnswerer(appointmentContext, timeQuestion, world));
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world)
+qa.writeERP(erp, ["3:34"], "far.csv");
 
 var world = "3:54"
 console.log(appointmentContext, timeQuestion, "true time = ", world);
-qa.printERP(pragmaticAnswerer(appointmentContext, timeQuestion, world));
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world)
+qa.writeERP(erp, [world], "near.csv");
 
