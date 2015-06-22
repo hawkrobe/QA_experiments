@@ -43,9 +43,9 @@ var allFalse = function(boolList) {
 // var buyWhiskeyContext = "I'd like to buy some whiskey.";
 // var spendFiveDollarsContext = "I only have $5 to spend.";
 
-var distances = [1,3]//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+var distances = [1,3];//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-var cafes = ['cafe1', 'cafe2', 'cafe3', 'cafe4']
+var cafes = ['cafe1', 'cafe2', 'cafe3', 'cafe4'];
 var touristContext = "I'm new in town.";
 var businesspersonContext = "I'm trying to set up a newspaper distribution business.";
 
