@@ -326,7 +326,7 @@ var pragmaticAnswerer = cache(function(question, trueWorld, rationality){
   var qudNodePosterior = Enumerate(function(){
     var qudNode = qudNodePrior();
     var q_erp = explicitQuestioner(qudNode, rationality);
-    factor(q_erp.score([], question));
+    factor(q_erp.score([], question) * 4);
     return qudNode;
   });
   return Enumerate(function(){
@@ -389,17 +389,18 @@ var pragmaticQuestioner = cache(function(qud_node, rationality) {
 
 var main = function(){
 
-  var rationalityPs = _.range(1, 10, .1)
+  var rationalityPs = _.range(1, 20, 1)
 
-  var conditions = [{filename: "branchingQuestioners.csv", gameObj : condition1},
-                    {filename: "overlappingQuestioners.csv", gameObj: condition2},
-                    {filename: "equivocalQuestioners.csv", gameObj: condition3}]
+  var conditions = [//{gameObj: condition1, type : "branching"},
+                    //{gameObj: condition2, type : "overlapping"},
+                    {gameObj: condition3, type : "equivocal"}]
+  var fileName = "questionerPredictions.raw.csv"                    
+  qa.writeCSV([["modelLevel", "goal", "rationality", "response", "modelProb"]], fileName)
 
   map(function(expCond) {
     // Set up file
-    var fileName = expCond.filename
-    qa.writeCSV([["modelLevel", "goal", "rationality", "response", "modelProb"]], fileName)
     var model = QAmodel(expCond.gameObj)
+
     map(function(rationality) {
       // Set up r to be nice
       var r = rationality.toFixed(1)
@@ -407,25 +408,28 @@ var main = function(){
 
       map(function(qudNode) {
         // // get relevant parameters
-        // var world = expCond.gameObj.exampleWorld
-        // var questions = expCond.gameObj.questionSpace
+
         var litQ = model.litQ
         var erp = litQ(qudNode, r)
-        var label = ["literal", "G:" + qudNode, r]
+        var label = [expCond.type, "literal", "G" + expCond.type.slice(0,1) + ":" + qudNode, r]
         console.log(label)
-        qa.writeERP(erp, label, fileName)
+        qa.printERP(erp)
+//        qa.writeERP(erp, label, fileName)
 
         var pragQ = model.pragQ
         var erp = pragQ(qudNode, r)
-        var label = ["pragmatic", "G:" + qudNode, r]
+        var label = [expCond.type, "pragmatic", "G" + expCond.type.slice(0,1) + ":" + qudNode, r]
         console.log(label)
-        qa.writeERP(erp, label, fileName)
+        qa.printERP(erp)
+//        qa.writeERP(erp, label, fileName)
 
         var expQ = model.expQ
         var erp = expQ(qudNode, r)
-        var label = ["explicit", "G:" + qudNode, r]
+        var label = [expCond.type, "explicit", "G" + expCond.type.slice(0,1) + ":" + qudNode, r]
         console.log(label)
-        qa.writeERP(erp, label, fileName)
+        qa.printERP(erp)
+
+//        qa.writeERP(erp, label, fileName)
       }, model.qudSpace)
     }, rationalityPs)
   }, conditions)
