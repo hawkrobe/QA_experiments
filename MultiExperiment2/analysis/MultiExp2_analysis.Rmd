@@ -132,22 +132,18 @@ d_a = d %>%
 
 # Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
 d_a = d_a %>% 
-      right_join(expand.grid(domain = levels(d_a$domain),
+      full_join(expand.grid(domain = levels(d_a$domain),
                              type = levels(d_a$type), 
                              response  = levels(d_a$response),
                              utterance = levels(d_a$utterance))) %>%
-      do(mutate(., count = ifelse(is.na(count), 0, count))) %>%
-      do(mutate(., group_size = ifelse(is.na(group_size), 0, group_size))) %>%
-      do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb))) 
-
-# And compute confidence intervals
-utterance_levels = unique(d_a$utterance)
-cis = rbind(multinomialCI(subset(d_a, utterance == utterance_levels[1])$count, .05),
-            multinomialCI(subset(d_a, utterance == utterance_levels[2])$count, .05),
-            multinomialCI(subset(d_a, utterance == utterance_levels[3])$count, .05),
-            multinomialCI(subset(d_a, utterance == utterance_levels[4])$count, .05))
-colnames(cis) <- c("lower_ci", "upper_ci")
-d_a = cbind(d_a, cis)
+       do(mutate(., count = ifelse(is.na(count), 0, count),
+                    countp1 = ifelse(is.na(count), .25, count + .25))) %>%
+       do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb))) %>%
+       do(mutate(., group_size = ifelse(is.na(group_size), 0, group_size))) %>%
+       # compute confidence intervals
+       group_by(domain, type, utterance) %>% 
+       do(mutate(., lower_ci = multinomialCI(countp1, 0.05)[,1], 
+                    upper_ci = multinomialCI(countp1, 0.05)[,2]))
 ```
 
 How well do the different domains correlate?
