@@ -81,38 +81,82 @@ mapWordsToNodes <- function(d) {
 }
 
 d <- mapWordsToNodes(d)
+
+rsq <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  pseudocount <- runif(1, max = .25)
+  c <- d %>% 
+       group_by(domain, type, goal, response) %>% 
+       summarize(count = n()) %>%
+       right_join(expand.grid(response = levels(d$response),
+                              type = levels(factor(d$type)),
+                              domain = levels(factor(d$domain)),
+                              goal = levels(factor(d$goal)))) %>% 
+       do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
+                    empProb = countp1 / sum(countp1)))
+  print(c)
+  return(c$empProb)
+} 
+
+getLowerCI <- function(data, R) {
+
+    bootObj <- boot(data = data, statistic = rsq, R = R)
+    G1CI = boot.ci(bootObj, index = 1, type = "perc")$percent[4]
+    G2CI = boot.ci(bootObj, index = 2, type = "perc")$percent[4]
+    G3CI = boot.ci(bootObj, index = 3, type = "perc")$percent[4]
+    G4CI = boot.ci(bootObj, index = 4, type = "perc")$percent[4]
+    lower_ci = c(G1CI,G2CI,G3CI,G4CI)
+    cat("bootstraped CI to be", lower_ci)
+#  }
+  outputData = data %>% group_by(domain, type, goal, response) %>% 
+       summarize(count = n()) %>%
+       right_join(expand.grid(response = levels(data$response),
+                              type = levels(factor(data$type)),
+                              domain = levels(factor(data$domain)),
+                              goal = levels(factor(data$goal)))) %>% 
+       do(mutate(., count = ifelse(is.na(count), 0, count),
+                    empProb = count / sum(count)))
+  outputData$lower_ci = lower_ci
+  print(outputData)
+  return(outputData)
+}
+
 ```
 
 Tidy up questioner data...
 
 ```{r}
-d_q_temp = d %>% 
+preSummarizedQs = d %>% 
       mutate(response = ordered(questionNodes, levels = c("Q1", "Q2", "Q3", "Q4"))) %>%
       mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
       group_by(domain, type, goal) %>%
       mutate(group_size = n()) %>%
-      group_by(domain, type, goal, response) %>% # collapse over participants
-      summarize(count = n(), empProb = n() / mean(group_size), group_size = mean(group_size))%>%
-      select(goal, type, response, count, group_size, empProb)
+      select(goal, type, response, group_size)
 
-# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
-d_q = d_q_temp %>%
-      right_join(expand.grid(domain = levels(d_q_temp$domain),
-                             type = levels(d_q_temp$type),
-                             response = levels(d_q_temp$response),
-                             goal = levels(d_q_temp$goal))) %>%
-      do(mutate(., count = ifelse(is.na(count), 0, count))) %>%
-      do(mutate(., group_size = ifelse(is.na(group_size), 0, group_size))) %>%
-      do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb)))
+bootObj = preSummarizedQs %>% group_by(domain, type, goal) %>% 
+      do(getLowerCI(data = ., 5))
 
-# get confidence intervals in the stupidest way possible...
-# qud_levels = unique(d_q$goal)
-# cis = rbind(multinomialCI(subset(d_q, goal == qud_levels[1])$count, .05),
-#             multinomialCI(subset(d_q, goal == qud_levels[2])$count, .05),
-#             multinomialCI(subset(d_q, goal == qud_levels[3])$count, .05),
-#             multinomialCI(subset(d_q, goal == qud_levels[4])$count, .05))
-# colnames(cis) <- c("lower_ci", "upper_ci")
-# d_q = cbind(d_q, cis)
+
+# d_q_temp = preSummarizedQs %>%
+#       group_by(domain, type, goal, response) %>% # collapse over participants
+#       summarize(count = n(), empProb = n() / mean(group_size), group_size = mean(group_size))%>%
+#       select(goal, type, response, count, group_size, empProb)
+# 
+# # Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
+# d_q = d_q_temp %>%
+#       right_join(expand.grid(domain = levels(d_q_temp$domain),
+#                              type = levels(d_q_temp$type),
+#                              response = levels(d_q_temp$response),
+#                              goal = levels(d_q_temp$goal))) %>%
+#       do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb))) %>%
+#       do(mutate(., count = ifelse(is.na(count), 0, count),
+#                    countp1 = ifelse(is.na(count), .25, count + .25))) %>%         
+#       do(mutate(., group_size = ifelse(is.na(group_size), 0, group_size))) #%>%
+#        # compute confidence intervals
+# 
+
+#      do(mutate(., lower_ci = multinomialCI(countp1, 0.05)[,1], 
+#                    upper_ci = multinomialCI(countp1, 0.05)[,2]))
 ```
 
 Tidy up answerer data...
@@ -350,13 +394,13 @@ plottableA = collapsed_a %>% inner_join(pragModelPreds, by = c('utterance', 'typ
   select(utterance, type, response, emperical, model) %>%
   gather(src, prob, emperical, model)
 
-pdf('exp4AnsResults.pdf')
+#pdf('exp4AnsResults.pdf')
 qplot(x = response, y = prob, fill = src,
       data = plottableA, 
       facets = type ~ utterance, 
       main = "Pragmatic Answerer",
       geom = 'bar', stat = 'identity', position = 'dodge')
-dev.off()
+#dev.off()
 ```
 Now, plot for answerer model:
 
