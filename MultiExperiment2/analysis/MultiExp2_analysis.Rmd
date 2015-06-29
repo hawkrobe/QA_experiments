@@ -63,7 +63,6 @@ In order to compare different items in a convenient way, we're going to map the 
 
 
 ```{r}
-
 source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
 mapWordsToNodes <- function(d) {
   answerNodes = c()
@@ -81,10 +80,15 @@ mapWordsToNodes <- function(d) {
 }
 
 d <- mapWordsToNodes(d)
+```
 
-rsq <- function(data, indices) {
+We're also going to estimate empirical probabilities for each response, conditioned on the domain, type, and goal of the trial. To get confidence intervals for these estimates, we'll use the bootstrap.
+
+```{r}
+# called a bunch of times on questioner data set to bootstrap CI
+Qprobs <- function(data, indices) {
   d <- data[indices,] # allows boot to select sample 
-  pseudocount <- runif(1, max = .25)
+  pseudocount <- 0#runif(1, max = .25)
   c <- d %>% 
        group_by(domain, type, goal, response) %>% 
        summarize(count = n()) %>%
@@ -93,101 +97,107 @@ rsq <- function(data, indices) {
                               domain = levels(factor(d$domain)),
                               goal = levels(factor(d$goal)))) %>% 
        do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
+                    count = ifelse(is.na(count), 0, count),
                     empProb = countp1 / sum(countp1)))
-  print(c)
+  return(c$empProb)
+}
+
+# called a bunch of times on answerer data set to bootstrap CI
+Aprobs <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  pseudocount <- 0#runif(1, max = .25)
+  c <- d %>% 
+       group_by(domain, type, utterance, response) %>% 
+       summarize(count = n()) %>%
+       right_join(expand.grid(response = levels(d$response),
+                              type = levels(factor(d$type)),
+                              domain = levels(factor(d$domain)),
+                              utterance = levels(factor(d$utterance)))) %>% 
+       do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
+                    count = ifelse(is.na(count), 0, count),
+                    empProb = countp1 / sum(countp1)))  
   return(c$empProb)
 } 
 
-getLowerCI <- function(data, R) {
+## This function takes a raw questioner data set ('q') or an answerer dataset ('a')
+## and estimates the emperical probability of each response, along with 
+## bootstrapped confidence intervals
+##
+## Note that this currently does not collapse over any aspect of the experiment.
+## If we want to do that in the future, will just group by fewer things before 
+## summarizing
+getProbsAndCIs <- function(data, QorA, R) {
+  if(QorA == "q") {
+    tempData <- data %>% group_by(domain, type, goal, response) %>% 
+         summarize(count = n()) %>%
+         right_join(expand.grid(response = levels(data$response),
+                                type = levels(factor(data$type)),
+                                domain = levels(factor(data$domain)),
+                                goal = levels(factor(data$goal)))) 
+  } else if(QorA == "a") {
+    tempData <- data %>% group_by(domain, type, utterance, response) %>% 
+         summarize(count = n()) %>%
+         right_join(expand.grid(response = levels(data$response),
+                                type = levels(factor(data$type)),
+                                domain = levels(factor(data$domain)),
+                                utterance = levels(factor(data$utterance)))) 
+  } else {
+    stop(cat("Did not specify Q or A:", QorA))
+  }
+  
+  outputData <- tempData %>% 
+     do(mutate(., count = ifelse(is.na(count), 0, count),
+                  empProb = count / sum(count),
+                  groupSize = sum(count)))
 
-    bootObj <- boot(data = data, statistic = rsq, R = R)
-    G1CI = boot.ci(bootObj, index = 1, type = "perc")$percent[4]
-    G2CI = boot.ci(bootObj, index = 2, type = "perc")$percent[4]
-    G3CI = boot.ci(bootObj, index = 3, type = "perc")$percent[4]
-    G4CI = boot.ci(bootObj, index = 4, type = "perc")$percent[4]
-    lower_ci = c(G1CI,G2CI,G3CI,G4CI)
-    cat("bootstraped CI to be", lower_ci)
-#  }
-  outputData = data %>% group_by(domain, type, goal, response) %>% 
-       summarize(count = n()) %>%
-       right_join(expand.grid(response = levels(data$response),
-                              type = levels(factor(data$type)),
-                              domain = levels(factor(data$domain)),
-                              goal = levels(factor(data$goal)))) %>% 
-       do(mutate(., count = ifelse(is.na(count), 0, count),
-                    empProb = count / sum(count)))
+  # Get confidence intervals
+  bootObj <- ifelse(QorA == "q", boot(data, Qprobs, R = R), 
+                    boot(data,Aprobs, R=R))
+  upper_ci <- c()
+  lower_ci <- c()
+  for(i in 1:4) {
+    lower = boot.ci(bootObj, index = i, type = "perc")$percent[4]
+    upper = boot.ci(bootObj, index = i, type = "perc")$percent[5]
+    if(is.null(lower) | is.null(upper)) {
+      lower = outputData$empProb[i]
+      upper = outputData$empProb[i]
+    }
+    lower_ci = append(lower_ci, lower)
+    upper_ci = append(upper_ci, upper)
+  }
+  cat("bootstraped lower CI to be", lower_ci)
+  cat("bootstraped upper CI to be", upper_ci)
+
   outputData$lower_ci = lower_ci
+  outputData$upper_ci = upper_ci
+
   print(outputData)
   return(outputData)
 }
-
 ```
 
 Tidy up questioner data...
 
 ```{r}
-preSummarizedQs = d %>% 
-      mutate(response = ordered(questionNodes, levels = c("Q1", "Q2", "Q3", "Q4"))) %>%
+d_q = d %>% 
+      mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
       mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
       group_by(domain, type, goal) %>%
-      mutate(group_size = n()) %>%
-      select(goal, type, response, group_size)
-
-bootObj = preSummarizedQs %>% group_by(domain, type, goal) %>% 
-      do(getLowerCI(data = ., 5))
-
-
-# d_q_temp = preSummarizedQs %>%
-#       group_by(domain, type, goal, response) %>% # collapse over participants
-#       summarize(count = n(), empProb = n() / mean(group_size), group_size = mean(group_size))%>%
-#       select(goal, type, response, count, group_size, empProb)
-# 
-# # Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
-# d_q = d_q_temp %>%
-#       right_join(expand.grid(domain = levels(d_q_temp$domain),
-#                              type = levels(d_q_temp$type),
-#                              response = levels(d_q_temp$response),
-#                              goal = levels(d_q_temp$goal))) %>%
-#       do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb))) %>%
-#       do(mutate(., count = ifelse(is.na(count), 0, count),
-#                    countp1 = ifelse(is.na(count), .25, count + .25))) %>%         
-#       do(mutate(., group_size = ifelse(is.na(group_size), 0, group_size))) #%>%
-#        # compute confidence intervals
-# 
-
-#      do(mutate(., lower_ci = multinomialCI(countp1, 0.05)[,1], 
-#                    upper_ci = multinomialCI(countp1, 0.05)[,2]))
+      do(getProbsAndCIs(data = ., QorA = 'q', R = 5)) %>%
+      select(goal, type, response, domain, count,
+             groupSize, lower_ci, upper_ci, empProb)
 ```
 
 Tidy up answerer data...
 
 ```{r}
 d_a = d %>% 
-      mutate(response = ordered(answerNodes,
-                                levels=c("A1","A2","A3","A4"))) %>%
-      mutate(utterance = ordered(questionNodes,
-                                 levels = c("Q1", "Q2", "Q3", "Q4"))) %>%
+      mutate(response = ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
+      mutate(utterance = ordered(questionNodes,levels = c("Q1","Q2","Q3","Q4"))) %>%
       group_by(domain, type, utterance) %>%
-      mutate(group_size = n()) %>%
-      group_by(domain, type, utterance, response) %>% # collapse over participants
-      summarize(count = n(), empProb = n() / mean(group_size),
-                group_size = mean(group_size))%>%
-      select(domain, type, utterance, response, group_size, empProb, count)
-
-# Hadley Wickham hasn't fixed summarize to take drop = F yet, so we have to re-insert rows with p = 0
-d_a = d_a %>% 
-      full_join(expand.grid(domain = levels(d_a$domain),
-                             type = levels(d_a$type), 
-                             response  = levels(d_a$response),
-                             utterance = levels(d_a$utterance))) %>%
-       do(mutate(., count = ifelse(is.na(count), 0, count),
-                    countp1 = ifelse(is.na(count), .25, count + .25))) %>%
-       do(mutate(., empProb = ifelse(is.na(empProb), 0, empProb))) %>%
-       do(mutate(., group_size = ifelse(is.na(group_size), 0, group_size))) %>%
-       # compute confidence intervals
-       group_by(domain, type, utterance) %>% 
-       do(mutate(., lower_ci = multinomialCI(countp1, 0.05)[,1], 
-                    upper_ci = multinomialCI(countp1, 0.05)[,2]))
+      do(getProbsAndCIs(data = ., QorA = 'a', R = 5)) %>%
+      select(utterance, type, response, domain, count,
+             groupSize, lower_ci, upper_ci, empProb)
 ```
 
 How well do the different domains correlate?
