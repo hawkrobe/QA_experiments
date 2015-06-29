@@ -12,6 +12,7 @@ node_modules
 *.synctex.gz
 cogsci_qa.pdf
 writing/2015/fyp-report/FYP.pdf
+writing/2015/cogsci-revision/cogsci_qa_revision.pdf
 *.ipynb
 *.sublime-project
 *.sublime-workspace
