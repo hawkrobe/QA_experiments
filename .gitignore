@@ -9,6 +9,7 @@ node_modules
 *.bbl
 *.blg
 *.log
+*.fff
 *.synctex.gz
 cogsci_qa.pdf
 writing/2015/fyp-report/FYP.pdf
