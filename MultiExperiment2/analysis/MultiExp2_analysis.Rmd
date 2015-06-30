@@ -14,7 +14,8 @@ library(plyr)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
-library(MultinomialCI)
+#library(MultinomialCI)
+library(boot)
 ```
 
 Experiment data analysis
@@ -85,48 +86,12 @@ d <- mapWordsToNodes(d)
 We're also going to estimate empirical probabilities for each response, conditioned on the domain, type, and goal of the trial. To get confidence intervals for these estimates, we'll use the bootstrap.
 
 ```{r}
-# called a bunch of times on questioner data set to bootstrap CI
-Qprobs <- function(data, indices) {
-  d <- data[indices,] # allows boot to select sample 
-  pseudocount <- 0#runif(1, max = .25)
-  c <- d %>% 
-       group_by(domain, type, goal, response) %>% 
-       summarize(count = n()) %>%
-       right_join(expand.grid(response = levels(d$response),
-                              type = levels(factor(d$type)),
-                              domain = levels(factor(d$domain)),
-                              goal = levels(factor(d$goal)))) %>% 
-       do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
-                    count = ifelse(is.na(count), 0, count),
-                    empProb = countp1 / sum(countp1)))
-  return(c$empProb)
-}
-
-# called a bunch of times on answerer data set to bootstrap CI
-Aprobs <- function(data, indices) {
-  d <- data[indices,] # allows boot to select sample 
-  pseudocount <- 0#runif(1, max = .25)
-  c <- d %>% 
-       group_by(domain, type, utterance, response) %>% 
-       summarize(count = n()) %>%
-       right_join(expand.grid(response = levels(d$response),
-                              type = levels(factor(d$type)),
-                              domain = levels(factor(d$domain)),
-                              utterance = levels(factor(d$utterance)))) %>% 
-       do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
-                    count = ifelse(is.na(count), 0, count),
-                    empProb = countp1 / sum(countp1)))  
-  return(c$empProb)
-} 
-
 ## This function takes a raw questioner data set ('q') or an answerer dataset ('a')
-## and estimates the emperical probability of each response, along with 
-## bootstrapped confidence intervals
+## and estimates the emperical probability of each response
 ##
 ## Note that this currently does not collapse over any aspect of the experiment.
-## If we want to do that in the future, will just group by fewer things before 
-## summarizing
-getProbsAndCIs <- function(data, QorA, R) {
+## Below, the function getProbsAndCIs does so.
+getProbs <- function(data, QorA, R) {
   if(QorA == "q") {
     tempData <- data %>% group_by(domain, type, goal, response) %>% 
          summarize(count = n()) %>%
@@ -149,29 +114,6 @@ getProbsAndCIs <- function(data, QorA, R) {
      do(mutate(., count = ifelse(is.na(count), 0, count),
                   empProb = count / sum(count),
                   groupSize = sum(count)))
-
-  # Get confidence intervals
-  bootObj <- ifelse(QorA == "q", boot(data, Qprobs, R = R), 
-                    boot(data,Aprobs, R=R))
-  upper_ci <- c()
-  lower_ci <- c()
-  for(i in 1:4) {
-    lower = boot.ci(bootObj, index = i, type = "perc")$percent[4]
-    upper = boot.ci(bootObj, index = i, type = "perc")$percent[5]
-    if(is.null(lower) | is.null(upper)) {
-      lower = outputData$empProb[i]
-      upper = outputData$empProb[i]
-    }
-    lower_ci = append(lower_ci, lower)
-    upper_ci = append(upper_ci, upper)
-  }
-  cat("bootstraped lower CI to be", lower_ci)
-  cat("bootstraped upper CI to be", upper_ci)
-
-  outputData$lower_ci = lower_ci
-  outputData$upper_ci = upper_ci
-
-  print(outputData)
   return(outputData)
 }
 ```
@@ -183,9 +125,9 @@ d_q = d %>%
       mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
       mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
       group_by(domain, type, goal) %>%
-      do(getProbsAndCIs(data = ., QorA = 'q', R = 5)) %>%
+      do(getProbs(data = ., QorA = 'q')) %>%
       select(goal, type, response, domain, count,
-             groupSize, lower_ci, upper_ci, empProb)
+             groupSize, empProb)
 ```
 
 Tidy up answerer data...
@@ -195,9 +137,9 @@ d_a = d %>%
       mutate(response = ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
       mutate(utterance = ordered(questionNodes,levels = c("Q1","Q2","Q3","Q4"))) %>%
       group_by(domain, type, utterance) %>%
-      do(getProbsAndCIs(data = ., QorA = 'a', R = 5)) %>%
+      do(getProbs(data = ., QorA = 'a')) %>%
       select(utterance, type, response, domain, count,
-             groupSize, lower_ci, upper_ci, empProb)
+             groupSize, empProb)
 ```
 
 How well do the different domains correlate?
@@ -349,13 +291,13 @@ question_plots
 
 Put these next to each other
 ```{r}
-pdf("model_fits_grid.pdf")
-grid.newpage()
-grid.draw(rbind(ggplotGrob(question_plots), ggplotGrob(answer_plots), size="last"))
-grid.draw(textGrob("Empirical probability", rot = 90, vjust = 1, 
-                   x = unit(0.01, "npc"), y = unit(0.5, "npc"),
-                   gp=gpar(fontsize=20)))
-dev.off()
+# pdf("model_fits_grid.pdf")
+# grid.newpage()
+# grid.draw(rbind(ggplotGrob(question_plots), ggplotGrob(answer_plots), size="last"))
+# grid.draw(textGrob("Empirical probability", rot = 90, vjust = 1, 
+#                    x = unit(0.01, "npc"), y = unit(0.5, "npc"),
+#                    gp=gpar(fontsize=20)))
+# dev.off()
 ```
 
 Model + data bar plots
@@ -364,88 +306,171 @@ Model + data bar plots
 Plot for pragmatic questioner. These bar graphs will help show what our model is getting right and what it's getting wrong.
 
 ```{r}
+# called a bunch of times on questioner data set to bootstrap CI
+Qprobs <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  pseudocount <- 0#runif(1, max = .25)
+  c <- d %>% 
+       group_by(type, goal, response) %>% 
+       summarize(count = n()) %>%
+       right_join(expand.grid(response = levels(d$response),
+                              type = levels(factor(d$type)),
+                              goal = levels(factor(d$goal)))) %>% 
+       do(mutate(., countp1 = ifelse(is.na(count), 
+                                     pseudocount, count + pseudocount),
+                    count = ifelse(is.na(count), 0, count),
+                   empProb = countp1 / sum(countp1)))
+  return(c$empProb)
+}
+
+# called a bunch of times on answerer data set to bootstrap CI
+Aprobs <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  pseudocount <- 0#runif(1, max = .25)
+  c <- d %>% 
+       group_by(type, utterance, response) %>% 
+       summarize(count = n()) %>%
+       right_join(expand.grid(response = levels(d$response),
+                              type = levels(factor(d$type)),
+                              utterance = levels(factor(d$utterance)))) %>% 
+       do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
+                    count = ifelse(is.na(count), 0, count),
+                    empProb = countp1 / sum(countp1)))  
+  return(c$empProb)
+} 
+
+## This function takes a raw questioner data set ('q') or an answerer dataset ('a')
+## and estimates the emperical probability of each response, along with 
+## bootstrapped confidence intervals
+##
+## Note that this currently does not collapse over any aspect of the experiment.
+## If we want to do that in the future, will just group by fewer things before 
+## summarizing
+getProbsAndCIs <- function(data, QorA, R) {
+  if(QorA == "q") {
+    tempData <- data %>% group_by(type, goal, response) %>% 
+         summarize(count = n()) %>%
+         right_join(expand.grid(response = levels(data$response),
+                                type = levels(factor(data$type)),
+                                goal = levels(factor(data$goal)))) 
+  } else if(QorA == "a") {
+    tempData <- data %>% group_by(type, utterance, response) %>% 
+         summarize(count = n()) %>%
+         right_join(expand.grid(response = levels(data$response),
+                                type = levels(factor(data$type)),
+                                utterance = levels(factor(data$utterance)))) 
+  } else {
+    stop(cat("Did not specify Q or A:", QorA))
+  }
+  
+  outputData <- tempData %>% 
+     do(mutate(., count = ifelse(is.na(count), 0, count),
+                  empProb = count / sum(count),
+                  groupSize = sum(count)))
+
+  print(outputData)
+  # Get confidence intervals
+  print(QorA)
+  if(QorA == "q") {
+    bootObj <-  boot(data = data,statistic = Qprobs,R=R)
+  } else {
+    bootObj <-  boot(data = data,statistic = Aprobs,R=R)
+  }
+
+  print(bootObj)
+  upper_ci <- c()
+  lower_ci <- c()
+  for(i in 1:4) {
+    lower = boot.ci(bootObj, index = i, type = "perc")$percent[4]
+    upper = boot.ci(bootObj, index = i, type = "perc")$percent[5]
+    if(is.null(lower) | is.null(upper)) {
+      lower = outputData$empProb[i]
+      upper = outputData$empProb[i]
+    }
+    lower_ci = append(lower_ci, lower)
+    upper_ci = append(upper_ci, upper)
+  }
+
+  outputData$lower_ci = lower_ci
+  outputData$upper_ci = upper_ci
+
+  return(outputData)
+}
+```
+
+```{r}
 # first, average over domains
-collapsed_q = d_q %>% 
-  group_by(goal, type, response) %>% 
-  summarize(emperical = sum(count)/sum(group_size)) %>%
-  do(mutate(., emperical = ifelse(is.nan(emperical), 0, emperical)))
+collapsed_q <- d %>% 
+    mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
+    mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
+    group_by(type, goal) %>%
+    do(getProbsAndCIs(data = ., QorA = 'q', R = 10)) %>%
+    mutate(empirical = empProb) %>%
+    select(goal, type, response, count, lower_ci, upper_ci,
+           groupSize, empirical)
+
 pragModelPreds = questFits %>% 
   group_by(goal, type, modelLevel, response) %>% 
   summarize(model = mean(modelProb)) %>% 
   filter(modelLevel == "pragmatic")
 
 plottableQ = collapsed_q %>% inner_join(pragModelPreds, by = c('goal', 'type', 'response')) %>%
-  select(goal, type, response, emperical, model) %>%
-  gather(src, prob, emperical, model)
+  select(goal, type, response, empirical, model, lower_ci, upper_ci) %>%
+  gather(src, prob, empirical, model) %>% 
+  do(mutate(., lower_ci = ifelse(src == "model", prob, lower_ci))) %>%
+  do(mutate(., upper_ci = ifelse(src == "model", prob, upper_ci)))
 
-pdf('exp4QuestResults.pdf')
-qplot(x = response, y = prob, fill = src,
-      data = plottableQ, 
-      facets = type ~ goal, 
-      main = "Pragmatic Questioner",
-      geom = 'bar', stat = 'identity', position = 'dodge')
-dev.off()
+#pdf('exp4QuestResults.pdf')
+dodge <- position_dodge(width=0.9)
+g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
+      + geom_bar(position = dodge, stat = "identity") 
+      + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                      position = dodge, width = .25)
+      + facet_grid(type ~ goal)
+      + ggtitle("Pragmatic Questioner"))
+g
+#dev.off()
 
 ```
 
 
 ```{r}
 # first, average over domains
-collapsed_a = d_a %>% 
-  group_by(utterance, type, response) %>% 
-  summarize(emperical = sum(count)/sum(group_size)) %>%
-  do(mutate(., emperical = ifelse(is.nan(emperical), 0, emperical)))
+collapsed_a <- d %>% 
+    mutate(response = ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
+    mutate(utterance = ordered(questionNodes,levels = c("Q1","Q2","Q3","Q4"))) %>%
+    group_by(type, utterance) %>%
+    do(getProbsAndCIs(data = ., QorA = 'a', R = 10)) %>%
+    mutate(empirical = empProb) %>%
+    select(utterance, type, response, count, lower_ci, upper_ci,
+           groupSize, empirical)
+
 pragModelPreds = ansFits %>% 
   group_by(utterance, type, modelLevel, response) %>% 
   summarize(model = mean(modelProb)) %>% 
   filter(modelLevel == "pragmatic")
 
-plottableA = collapsed_a %>% inner_join(pragModelPreds, by = c('utterance', 'type', 'response')) %>%
-  select(utterance, type, response, emperical, model) %>%
-  gather(src, prob, emperical, model)
+plottableA = collapsed_a %>% 
+  inner_join(pragModelPreds, by = c('utterance','type','response')) %>%
+  select(utterance, type, response, empirical, model, lower_ci, upper_ci) %>%
+  gather(src, prob, empirical, model) %>% 
+  do(mutate(., lower_ci = ifelse(src == "model", prob, lower_ci))) %>%
+  do(mutate(., upper_ci = ifelse(src == "model", prob, upper_ci)))
 
-#pdf('exp4AnsResults.pdf')
-qplot(x = response, y = prob, fill = src,
-      data = plottableA, 
-      facets = type ~ utterance, 
-      main = "Pragmatic Answerer",
-      geom = 'bar', stat = 'identity', position = 'dodge')
+#pdf('exp4QuestResults.pdf')
+dodge <- position_dodge(width=0.9)
+g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
+      + geom_bar(position = dodge, stat = "identity") 
+      + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                      position = dodge, width = .25)
+      + facet_grid(type ~ utterance)
+      + ggtitle("Pragmatic Answerer"))
+g
 #dev.off()
 ```
 Now, plot for answerer model:
 
-```{r}
-fitted_data = (prag_ans_fits %>% rename(model_prob = pragmatic_prob)) 
-plot_title = "Pragmatic_Answerer"
-#fitted_data = (exp_ans_fits %>% rename(model_prob = explicit_prob)) 
-#plot_title = "Explicit_Answerer"
 
-new_labels = as.factor(sapply(X = fitted_data$utterance, FUN = function(v) {return(paste("utterance:", v))}))
-fitted_data$facet_label = ordered(new_labels, 
-                              levels = c("utterance: dalmatian", "utterance: dog", 
-                                         "utterance: pet","utterance: animal"))
-a_comparison <- fitted_data %>% 
-  select(utterance, response, emp_prob, upper_ci, lower_ci, model_prob, facet_label) %>%
-  rename(empirical = emp_prob, model = model_prob) %>%
-  gather(src, prob, empirical, model) 
-
-a_comparison[a_comparison$src == "model",]$upper_ci = a_comparison[a_comparison$src == "model",]$prob
-a_comparison[a_comparison$src == "model",]$lower_ci = a_comparison[a_comparison$src == "model",]$prob
-name = paste(plot_title, ".pdf", sep = '')
-pdf(name)
-dodge <- position_dodge(width=0.9)
-g4<-(ggplot(a_comparison, aes(x=response, y = prob, fill=src)) 
-     + geom_bar(stat='identity', position=position_dodge())
-     + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci), 
-                    position=dodge, width = .25)
-     + scale_fill_grey()
-     + theme_bw(base_size = 20)
-     + ggtitle(plot_title)
-     + theme(axis.text.x = element_text(angle=90, vjust=1))
-     + facet_wrap(~facet_label))
-g4
-dev.off()
-```
 
 quick plots
 
