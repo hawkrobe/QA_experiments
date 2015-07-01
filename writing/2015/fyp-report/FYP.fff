@@ -1,12 +1,10 @@
 \begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .4]{pragmatic_questioner.pdf}
-\includegraphics[scale = .4]{pragmatic_answerer.pdf}
+  \begin{center}
+\includegraphics[scale = .37]{creditCardPlot.jpeg}
 \end{center}
-\vspace{-.5cm}
-\caption{Exp.~1 results, compared with the predictions of the best-performing model  for questioner (left) and answerer (right).  The explicit and pragmatic questioner models do not make different predictions in this task, but the pragmatic answerer better accounts for the qualitative patterns in the response data than the explicit answerer.}
-\vspace{-.1cm}
-\label{fig:exp1res}
+\vspace{-.25cm}
+\caption{Results for our computational experiments replicating Clark (1979), Experiment 4. M stands for the ``MasterCard'' answer, D stands for the ``Diner's Club'' answer, and $M+D$ stands for the answer mentioning both. Note that we give an over-informative answer to ``Do you accept any kinds of credit card?'' in the left panel, but a literal `yes'/`no' answer to ``Do you accept MasterCard?'' in the right panel.}
+\label{fig:creditCardExperimentResults}
 \end{figure*}
 \efloatseparator
  
