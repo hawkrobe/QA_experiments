@@ -306,7 +306,7 @@ Model + data bar plots
 Plot for pragmatic questioner. These bar graphs will help show what our model is getting right and what it's getting wrong.
 
 ```{r}
-# called a bunch of times on questioner data set to bootstrap CI
+ # called a bunch of times on questioner data set to bootstrap CI
 Qprobs <- function(data, indices) {
   d <- data[indices,] # allows boot to select sample 
   pseudocount <- 0#runif(1, max = .25)
@@ -404,7 +404,7 @@ collapsed_q <- d %>%
     mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
     mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
     group_by(type, goal) %>%
-    do(getProbsAndCIs(data = ., QorA = 'q', R = 10)) %>%
+    do(getProbsAndCIs(data = ., QorA = 'q', R = 1000)) %>%
     mutate(empirical = empProb) %>%
     select(goal, type, response, count, lower_ci, upper_ci,
            groupSize, empirical)
@@ -417,10 +417,11 @@ pragModelPreds = questFits %>%
 plottableQ = collapsed_q %>% inner_join(pragModelPreds, by = c('goal', 'type', 'response')) %>%
   select(goal, type, response, empirical, model, lower_ci, upper_ci) %>%
   gather(src, prob, empirical, model) %>% 
-  do(mutate(., lower_ci = ifelse(src == "model", prob, lower_ci))) %>%
-  do(mutate(., upper_ci = ifelse(src == "model", prob, upper_ci)))
+  do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
+  do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
 
-#pdf('exp4QuestResults.pdf')
+png('../writing/2015/fyp-report/exp4QuestResults.png',
+     width = 2000, height=1000,res = 300, pointsize = 12)
 dodge <- position_dodge(width=0.9)
 g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
       + geom_bar(position = dodge, stat = "identity") 
@@ -429,7 +430,7 @@ g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
       + facet_grid(type ~ goal)
       + ggtitle("Pragmatic Questioner"))
 g
-#dev.off()
+dev.off()
 
 ```
 
@@ -440,7 +441,7 @@ collapsed_a <- d %>%
     mutate(response = ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
     mutate(utterance = ordered(questionNodes,levels = c("Q1","Q2","Q3","Q4"))) %>%
     group_by(type, utterance) %>%
-    do(getProbsAndCIs(data = ., QorA = 'a', R = 10)) %>%
+    do(getProbsAndCIs(data = ., QorA = 'a', R = 1000)) %>%
     mutate(empirical = empProb) %>%
     select(utterance, type, response, count, lower_ci, upper_ci,
            groupSize, empirical)
@@ -454,10 +455,12 @@ plottableA = collapsed_a %>%
   inner_join(pragModelPreds, by = c('utterance','type','response')) %>%
   select(utterance, type, response, empirical, model, lower_ci, upper_ci) %>%
   gather(src, prob, empirical, model) %>% 
-  do(mutate(., lower_ci = ifelse(src == "model", prob, lower_ci))) %>%
-  do(mutate(., upper_ci = ifelse(src == "model", prob, upper_ci)))
+  do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
+  do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
 
-#pdf('exp4QuestResults.pdf')
+png('../writing/2015/fyp-report/exp4AnsResults.png',
+     width = 2000, height=1000,res = 300, pointsize = 12)
+
 dodge <- position_dodge(width=0.9)
 g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
       + geom_bar(position = dodge, stat = "identity") 
@@ -466,7 +469,7 @@ g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
       + facet_grid(type ~ utterance)
       + ggtitle("Pragmatic Answerer"))
 g
-#dev.off()
+dev.off()
 ```
 Now, plot for answerer model:
 
@@ -500,41 +503,52 @@ qplot(x = response, y = empProb, fill = domain,
 zoom in on overlapping condition
 
 ```{r}
-
-collapsed_q = d_q %>% 
-  group_by(goal,response,type) %>%
-  filter(type == "overlapping") %>%
-  filter(domain != "places") %>%
-  summarize(total = sum(count)) %>%
-  group_by(goal) %>%
-  mutate(group_size = sum(total)) %>%
-  ungroup() %>%
-  mutate(emperical = total/group_size) %>%
-  do(mutate(., emperical = ifelse(is.nan(emperical), 0, emperical)))
-pragModelPreds = questFits %>% 
+collapsed_q <- d %>% 
+    mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
+    mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
+    group_by(goal,type) %>%
+    filter(type == "overlapping") %>%
     filter(domain != "places") %>%
+    do(getProbsAndCIs(data = ., QorA = 'q', R = 1000)) %>%
+    mutate(empirical = empProb) %>%
+    select(goal, type, response, count, lower_ci, upper_ci,
+           groupSize, empirical)
+
+pragModelPreds = questFits %>% 
+  filter(domain != "places") %>%
   group_by(goal, type, modelLevel, response) %>% 
   summarize(pragmaticModel = mean(modelProb)) %>% 
   filter(modelLevel == "pragmatic")
+
 expModelPreds = questFits %>% 
   filter(domain != "places") %>%
   group_by(goal, type, modelLevel, response) %>% 
   summarize(explicitModel = mean(modelProb)) %>% 
   filter(modelLevel == "explicit")
+expModelPreds %>% filter(type == "overlapping")
 
 plottableQ = collapsed_q %>% 
   inner_join(pragModelPreds, by = c('goal', 'type', 'response')) %>%
   inner_join(expModelPreds, by = c('goal', 'type', 'response')) %>%
-  select(goal, type, response, emperical, pragmaticModel, explicitModel) %>%
-  gather(src, prob, emperical, pragmaticModel, explicitModel) %>%
-  filter(goal == "G2")
+  select(goal, type, response, lower_ci, upper_ci,
+         empirical, pragmaticModel, explicitModel) %>%
+  gather(src, prob, empirical, pragmaticModel, explicitModel) %>%
+  filter(goal == "G2") %>%
+  do(mutate(., lower_ci = ifelse(src %in% c("pragmaticModel", "explicitModel"), 
+                                 NA, lower_ci))) %>%
+  do(mutate(., upper_ci = ifelse(src %in% c("pragmaticModel", "explicitModel"),
+                                 NA, upper_ci)))
 
-(qplot(x = response, y = prob, fill = src,
-      data = plottableQ, 
-      facets = type ~ goal, 
-      main = "Overlapping model comparison",
-      geom = 'bar', stat = 'identity', position = 'dodge')
+png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
+     width = 2000, height=1000,res = 300, pointsize = 16)
+
+(ggplot(plottableQ, aes(x = response, y = prob, fill = src))
+ + geom_bar(position = dodge, stat= 'identity')
+ + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                 position = dodge, width =.25)
  + geom_hline(yintercept = 0.48)
- + theme_bw())
-
+ + ggtitle("Overlapping model comparison")
+ + theme_bw()
+ + scale_fill_manual(values = c("#B2DF8A", "#A6CEE3", "#62A0CA")))
+dev.off()
 ```
