@@ -434,6 +434,7 @@ dev.off()
 
 ```
 
+Answerer predictions + empirical data
 
 ```{r}
 # first, average over domains
@@ -471,34 +472,6 @@ g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
 g
 dev.off()
 ```
-Now, plot for answerer model:
-
-
-
-quick plots
-
-```{r}
-qplot(x = response, y = emp_prob,
-      data = subset(d_a, domain == "places" & type == "overlapping"), 
-      facets = type ~ utterance, 
-      geom = 'bar', stat = 'identity', position = 'dodge')
-```
-
-full answer
-
-```{r}
-qplot(x = response, y = emp_prob, fill = domain,
-      data = d_a, facets = type ~ utterance, 
-      geom = 'bar', stat = 'identity',  position = 'dodge')
-```
-
-full question
-
-```{r}
-qplot(x = response, y = empProb, fill = domain,
-      data = d_q, facets = type ~ goal, 
-      geom = 'bar', stat = 'identity',  position = 'dodge')
-```
 
 zoom in on overlapping condition
 
@@ -511,7 +484,7 @@ collapsed_q <- d %>%
     filter(domain != "places") %>%
     do(getProbsAndCIs(data = ., QorA = 'q', R = 1000)) %>%
     mutate(empirical = empProb) %>%
-    select(goal, type, response, count, lower_ci, upper_ci,
+    select(goal, type, response, count, lower_ci, upper_ci, group_size,
            groupSize, empirical)
 
 pragModelPreds = questFits %>% 
@@ -525,12 +498,11 @@ expModelPreds = questFits %>%
   group_by(goal, type, modelLevel, response) %>% 
   summarize(explicitModel = mean(modelProb)) %>% 
   filter(modelLevel == "explicit")
-expModelPreds %>% filter(type == "overlapping")
 
 plottableQ = collapsed_q %>% 
   inner_join(pragModelPreds, by = c('goal', 'type', 'response')) %>%
   inner_join(expModelPreds, by = c('goal', 'type', 'response')) %>%
-  select(goal, type, response, lower_ci, upper_ci,
+  select(goal, type, response, lower_ci, upper_ci, groupSize,
          empirical, pragmaticModel, explicitModel) %>%
   gather(src, prob, empirical, pragmaticModel, explicitModel) %>%
   filter(goal == "G2") %>%
@@ -551,4 +523,15 @@ png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
  + theme_bw()
  + scale_fill_manual(values = c("#B2DF8A", "#A6CEE3", "#62A0CA")))
 dev.off()
+```
+
+Actually do statistical test to show that they're different...
+
+```{r}
+empiricalProbs = subset(plottableQ, 
+                        plottableQ$src == "empirical" &
+                        plottableQ$type == "overlapping" & 
+                        plottableQ$goal == "G2")
+empiricalProbs
+testStat = $prob
 ```
