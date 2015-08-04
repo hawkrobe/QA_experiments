@@ -161,8 +161,95 @@ corData_a = data.frame(animal = col1, place = col2, plant = col3, artifact = col
 cor(corData_a)
 ```
 
+Chi-squared tests
+-----------------
 
+Questioners first:
 
+```{r}
+overall_distribution = (d_q %>% group_by(goal, type, response) %>% summarize(count = sum(count)))
+overall_distribution
+test_G1_q = chisq.test(subset(overall_distribution, 
+                              goal == "G1" & type == "branching")$count) 
+test_G1_q
+test_G2_q = chisq.test(subset(overall_distribution, 
+                              goal == "G2"& type == "branching")$count)
+test_G2_q
+test_G3_q = chisq.test(subset(overall_distribution, 
+                              goal == "G3"& type == "branching")$count)
+test_G3_q
+test_G4_q = chisq.test(subset(overall_distribution, 
+                              goal == "G4"& type == "branching")$count)
+test_G4_q
+
+# Equivocal
+test_G1_q = chisq.test(subset(overall_distribution, 
+                              goal == "G1" & type == "equivocal" 
+                              & (response %in% c("Q1", "Q2")))$count)
+test_G1_q
+test_G4_q = chisq.test(subset(overall_distribution, 
+                              goal == "G4" & type == "equivocal" 
+                              & (response %in% c("Q1", "Q2")))$count)
+test_G4_q
+# Examine domain-level effects
+(d_q %>% 
+   group_by(goal, domain, type, response) %>% 
+   summarize(count = sum(count))) %>% 
+   filter(type == "equivocal" 
+          & goal %in% c("G2", "G3") 
+          & response %in% c("Q1", "Q2")) %>% 
+   group_by(domain, response) %>% 
+   summarize(count = sum(count)))
+
+chisq.test(subset(overall_distribution, 
+                              goal == "G1" & type == "overlapping")$count) 
+chisq.test(subset(overall_distribution, 
+                              goal == "G2"& type == "overlapping")$count)
+chisq.test(subset(overall_distribution, 
+                              goal == "G3"& type == "overlapping")$count)
+chisq.test(subset(overall_distribution, 
+                              goal == "G4"& type == "overlapping")$count)
+```
+
+Now for answerers:
+
+```{r}
+overall_distribution = (d_a %>% group_by(utterance, type, response) %>% summarize(count = sum(count)))
+overall_distribution
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q1"& type == "branching")$count) 
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q2"& type == "branching")$count)
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q3"& type == "branching")$count)
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q4"& type == "branching")$count)
+
+# Equivocal
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q1" & type == "equivocal")$count)
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q2" & type == "equivocal")$count)
+# Examine domain-level effects
+(d_q %>% 
+   group_by(goal, domain, type, response) %>% 
+   summarize(count = sum(count))) %>% 
+   filter(type == "equivocal" 
+          & goal %in% c("G2", "G3") 
+          & response %in% c("Q1", "Q2")) %>% 
+   group_by(domain, response) %>% 
+   summarize(count = sum(count)))
+
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q1"& type == "overlapping")$count) 
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q2"& type == "overlapping")$count)
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q3"& type == "overlapping")$count)
+chisq.test(subset(overall_distribution, 
+                  utterance == "Q4"& type == "overlapping")$count)
+
+```
 Fitting rationality parameters
 ------------------------------
 
@@ -481,10 +568,10 @@ collapsed_q <- d %>%
     mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
     group_by(goal,type) %>%
     filter(type == "overlapping") %>%
-    filter(domain != "places") %>%
+#    filter(domain != "places") %>%
     do(getProbsAndCIs(data = ., QorA = 'q', R = 1000)) %>%
     mutate(empirical = empProb) %>%
-    select(goal, type, response, count, lower_ci, upper_ci, group_size,
+    select(goal, type, response, count, lower_ci, upper_ci, 
            groupSize, empirical)
 
 pragModelPreds = questFits %>% 
