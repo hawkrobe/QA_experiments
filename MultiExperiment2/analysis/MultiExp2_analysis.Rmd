@@ -30,7 +30,7 @@ mturk = read.csv("./data/MultiExp2_compiled-mturk.csv",
                  sep=',', header= TRUE) %>%
   mutate(gameID = Answer.id) %>%
   select(workerid, gameID)
-d = read.csv("./data/MultiExp2_compiled-trials.csv",  
+d = read.csv("./data/MultiExp2_compiled-trials_clean.csv",  
              sep = ',', header = TRUE) %>%
   right_join(mturk, by = 'workerid')
 ```
