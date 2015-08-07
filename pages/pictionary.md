@@ -42,7 +42,7 @@ var makeSplines = function(n, splines){
 
 var randomSketch = makeSplines(5, []);
 var generatedImg = Draw(70, 70, true);
-drawCurves(generatedImage, randomSketch);
+drawCurves(generatedImg, randomSketch);
 
 // Takes the name of an object you're trying to get opponent to guess
 // var sketcher = function(goalObj) {
