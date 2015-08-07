@@ -117,6 +117,10 @@ DrawObject.prototype.newPoint = function(x, y){
     return new this.paper.Point(x, y);
 };
 
+DrawObject.prototype.newCurve = function(point1, point2, point3, point4) {
+  return new this.paper.Curve(point1, point2, point3, point4);
+};
+  
 DrawObject.prototype.circle = function(x, y, radius, stroke, fill){
     var point = this.newPoint(x, y);
     var circle = new this.paper.Path.Circle(point, radius || 50);
@@ -139,6 +143,20 @@ DrawObject.prototype.line = function(x1, y1, x2, y2, strokeWidth, opacity, color
     path.moveTo(x1, y1);
     path.lineTo(this.newPoint(x2, y2));
     this.redraw();
+};
+
+DrawObject.prototype.drawSpline = function(startX, startY, mid1X, mid1Y,
+					   mid2X, mid2Y, endX, endY){
+  var myPath = new Path();
+  myPath.strokeColor = 'black';
+  myPath.add(new Point(startX, startY));
+  myPath.add(new Point(mid1X, mid1Y));
+  myPath.add(new Point(mid2X, mid2Y));
+  myPath.add(new Point(endX, endY));
+
+  myPath.smooth();
+
+  this.redraw();
 };
 
 DrawObject.prototype.redraw = function(){
