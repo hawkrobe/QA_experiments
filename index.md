@@ -20,23 +20,6 @@ This set of notes contains work-in-progress on modelling question and answer beh
     {% endif %}
   {% endif %}
 {% endfor %}
-<!--
-- Work in progress
-{% for p in sorted_pages %}
-  {% if p.layout == 'page' %}
-    {% if p.status == 'wip' %}
-  - [{{ p.title }}]({{ site.baseurl }}{{ p.url }})
-    {% endif %}
-  {% endif %}
-{% endfor %} 
-- Outdated pages
-{% for p in sorted_pages %}
-  {% if p.layout == 'page' %}
-    {% if p.status == 'old' %}
-  - [{{ p.title }}]({{ site.baseurl }}{{ p.url }})
-    {% endif %}
-  {% endif %}
-{% endfor %}
 
 ### Other notes
 
@@ -47,5 +30,3 @@ This set of notes contains work-in-progress on modelling question and answer beh
     {% endif %}
   {% endif %}
 {% endfor %}
-- Old paper draft: [CoarseToFine.pdf]({{ site.baseurl }}/docs/CoarseToFine.pdf)
--->

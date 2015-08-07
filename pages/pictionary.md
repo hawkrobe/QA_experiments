@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Playing Pictionary with RSA (Rational Sketch Act) model
-status: current
+status: other
 ---
 
 We obviously want to make a robot that can play pictionary with another robot.
