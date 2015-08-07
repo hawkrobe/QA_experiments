@@ -31,20 +31,28 @@ var makeSplines = function(n, splines){
   var endX = randomInteger(50) + 10;
   var endY = randomInteger(50) + 10;
   var newSplines = splines.concat([[startX, startY, mid1X, mid1Y,
-		                    mid2X, mid2Y, endX, endY]]);
+                                    mid2X, mid2Y, endX, endY]]);
   // Repeat until you have the desired number
   return (n==1) ? newSplines : makeSplines(n-1, newSplines);
 };
 
-// Takes the name of an object you're trying to get opponent to guess
-var drawer = function(goalObj) {
-  var splineParams = makeSplines(1, [], 0); // Sample a curve
-  var generatedImg = Draw(70, 70, true);    // Generate a sketch from the curve
-  drawCurves(generatedImage, splineParams);
-  var guessDist = guesser(generatedImage);  // Query the CNN for its guess
-  factor(guessDist.score([], goalObj));     // Score the curve based on guess
-  return splineParams;
-};
+// Note: the sketcher won't be functional until we define the 'guesser',
+// which requires API calls to our CNN. In the meantime, check out these
+// random sketches!
 
-ParticleFilter(drawer("chair"), 1000);
+var randomSketch = makeSplines(5, []);
+var generatedImg = Draw(70, 70, true);
+drawCurves(generatedImage, randomSketch);
+
+// Takes the name of an object you're trying to get opponent to guess
+// var sketcher = function(goalObj) {
+//   var splineParams = makeSplines(1, [], 0); // Sample a curve
+//   var generatedImg = Draw(70, 70, true);    // Generate a sketch from the curve
+//   drawCurves(generatedImage, splineParams);
+//   var guessDist = guesser(generatedImage);  // Query the CNN for its guess
+//   factor(guessDist.score([], goalObj));     // Score the curve based on guess
+//   return splineParams;
+// };
+
+// ParticleFilter(sketcher("chair"), 1000);
 ~~~~
