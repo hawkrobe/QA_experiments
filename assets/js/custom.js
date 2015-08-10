@@ -159,6 +159,37 @@ DrawObject.prototype.drawSpline = function(startX, startY, mid1X, mid1Y,
   this.redraw();
 };
 
+function getGuessScore (s, k, a, drawObj, goalItem) {
+  var raster = new drawObj.paper.Raster(drawObj.canvas);
+  raster.visible = false;
+  var dataStr = raster.toDataURL(); // converts to Base 64
+  dataStr = dataStr.replace('data:image/png;base64,',''); // clean string
+  var json = raster.exportJSON({asString : true});
+  var current_data = {imgData: dataStr,
+		      json: json,
+		      colname:'graphcomm_explore_splines',
+		      dbname:'splines',
+		      trialNum: 1
+		     };
+  $.ajax({
+    type: 'GET',
+    url: 'http://18.93.15.28:9919/saveimage',
+    dataType: 'jsonp',
+    traditional: true,
+    contentType: 'application/json; charset=utf-8',
+    data: current_data,
+    success: function(msg) {
+      var expVals = _.map(msg.margins, function(logProb){
+	return Math.exp(logProb);});
+      var repackagedOutput =  _.object(_.zip(msg.guesses, expVals));
+      var trampoline = k(s, repackagedOutput[goalItem]);
+      while (trampoline){
+	trampoline = trampoline();
+      }
+    }
+  });
+};
+
 DrawObject.prototype.redraw = function(){
     this.paper.view.draw();
 };
