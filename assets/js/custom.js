@@ -145,13 +145,11 @@ DrawObject.prototype.line = function(x1, y1, x2, y2, strokeWidth, opacity, color
     this.redraw();
 };
 
-DrawObject.prototype.drawSpline = function(startX, startY, mid1X, mid1Y,
-					   mid2X, mid2Y, endX, endY){
+DrawObject.prototype.drawSpline = function(startX, startY, midX, midY, endX, endY){
   var myPath = this.newPath();
   myPath.strokeColor = 'black';
   myPath.add(this.newPoint(startX, startY));
-  myPath.add(this.newPoint(mid1X, mid1Y));
-  myPath.add(this.newPoint(mid2X, mid2Y));
+  myPath.add(this.newPoint(midX, midY));
   myPath.add(this.newPoint(endX, endY));
 
   myPath.smooth();
