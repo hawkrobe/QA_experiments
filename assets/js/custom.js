@@ -179,9 +179,8 @@ function getGuessScore (s, k, a, drawObj, goalItem) {
     contentType: 'application/json; charset=utf-8',
     data: current_data,
     success: function(msg) {
-      var expVals = _.map(msg.margins, function(logProb){
-	return Math.exp(logProb);});
-      var repackagedOutput =  _.object(_.zip(msg.guesses, expVals));
+      console.log(msg);
+      var repackagedOutput =  _.object(_.zip(msg.guesses, msg.margins));
       var trampoline = k(s, repackagedOutput[goalItem]);
       while (trampoline){
 	trampoline = trampoline();
