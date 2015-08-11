@@ -113,6 +113,7 @@ In order to choose a question that results in useful information, the questioner
 More formally, suppose there is a set of world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$.
 These sets are taken to be in common ground between the questioner and the answerer.
 An informational goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about; this is similar to the notion of a question-under-discussion \cite{Roberts96_InformationStructureDiscourse}.
+\todo{ndg: somewhere (discussion?) explore whether this notion of goals is enough.}
 We will use the notation $P_{g}(w)$ to indicate the probability $\hat{P}(g(w))$ of the $g$-relevant aspect of $w$ under the projected distribution 
 $\hat{P}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$.
 \todo[inline]{ndg: i think we should revise this notation... e.g. if $P(w)$ is a distribution on $\mathcal{W}$ then write $\widehat{P^g}(w)$ for the probability of $g(w)$ under the projected distribution: $\hat{P}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$ (which is a distribution over the image $g(\mathcal{W})$).
@@ -129,8 +130,9 @@ The \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a 
 $$ 
 P(q|g) \propto e^{\E{P(w^*)}{\KL{P_g(w|q, w^*)}{P_g(w)}} - C(q)} 
 $$
+\todo[inline]{ndg: hmm... i think this isn't quite right: as defined $P_g$ isn't a distribution (on W). i think what we want is the KL of the g-projections of each distribution on W. this then raises a question about whether the KLs for different goals are comparable in the right way -- e.g. smaller g-images have less capacity for information gain -- is this right?}
 %
-It trades off the cost of asking a question, $C(q)$, and expected information gain. The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the prior distribution over $g$-relevant worlds, $P_g(w)$, and the posterior distribution one would expect after asking a question $q$ whose answer reflected true world state $w^*$:
+It trades off the cost of asking a question, $C(q)$, and expected information gain. The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the ($g$-relevant) prior distribution, $P_g(w)$, and the posterior distribution one would expect after asking a question $q$ whose answer reflected true world state $w^*$:
 %
 $$ P_g(w|q, w^*) = \sum_{a \in \mathcal{A}} P_g(w |q, a) P(a| q, w^*)$$
 %
@@ -138,7 +140,9 @@ $$ P_g(w|q, w^*) = \sum_{a \in \mathcal{A}} P_g(w |q, a) P(a| q, w^*)$$
 %to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. 
 This distribution has two components: 
 First, it depends on $P(a | q, w^*)$, a model of the answerer which we will explore shortly.
-Second, it depends on (the goal projection of) $P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs.
+Second, it depends on (the goal projection of) 
+\todo[inline]{ndg: I don't think we want the goal projection here. we want the distribution over worlds, in order to get a posterior distribution on worlds. we will then project along g in the KL operator above.... (note: need to check against implementation.)}
+$P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs.
 
 To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign questions a semantic meaning.
 We assume that a question is an informational goal that projects from worlds to the answer set $\mathcal{A}$.
@@ -148,7 +152,7 @@ This is equivalent to the more common partition semantics of \citeA{GroenendijkS
 %The explicit question can be assigned a literal meaning which is a projection from worlds to answer values (this is equivalent to the common partition semantics of questions \cite{gronendijk}).
 % likelihood of a world given a question and an answer.
 %For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
-The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair\footnote{We should also have a semantic evaluation function that maps an answer utterance to its value in $\mathcal{A}$. For clarity we assume this is a trivial mapping and suppress it.}:
+The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair\footnote{In a complete language understanding model we would also have a semantic evaluation function that maps an answer utterance to its value in $\mathcal{A}$. For clarity we assume this is a trivial mapping and suppress it.}:
 %
 $$P(w | q, a) \propto P(w) \delta_{q(w)=a}$$
 
@@ -168,7 +172,7 @@ The \textbf{explicit answerer} additionally evaluates answers with respect to ho
 $$P(a | q, w^*) \propto P(a) P_q(w^* | q, a) $$
 This uses the question utterance itself as a projection operator on the world state.
 
-The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the informational goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which underlying goals $g$ are likely given that a question $q$ was asked, and chooses answers that are good on average:
+The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the questioner's goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which underlying goals $g$ are likely given that a question $q$ was asked, and chooses answers that are good on average:
 %% FIXME: restrict to truthful answers
 %
 $$
@@ -178,6 +182,8 @@ Reasoning backwards from questions to goals is a simple Bayesian inversion of th
 $$
 P(g|q) \propto P(q|g)P(g)
 $$
+\todo[inline]{ndg: need to say here that we could depend on a sophisticated questioner model here, but we use the simplest(?) one for simplicity....}
+
 
 For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $.
 %
@@ -186,11 +192,13 @@ This concludes our specification of the model space, giving a set of three answe
 
 \subsection{Related models}
 
+\todo[inline]{ndg: i wonder if we should move this to a section on background just after the intro, that has a subsection for experimental work and one (this) for formal models? we can use that to set up our model.... need a clearer explanation of why van rooij isn't enough / why it needs to be merged into the RSA framework.}
+
 The above probabilistic model of question and answer behavior bears some resemblance to recent decision theoretic \cite{VogelBodoiaPottsJurafsky13_GricePOMDP} and game theoretic \cite{Franke13_GameTheoryPragmatics} models of pragmatic reasoning in language use. In particular, all these approaches emphasize \emph{inference} about a partner's underlying mental state. In this respect, these theories contrast with the interactive alignment model \cite{PickeringGarrod04_BBS_Dialogue} and competing dynamical systems models of dialogue \cite<e.g.>{FusaroliTylen15_Synergy}, where coordination occurs through a low-level process of priming and adjusting to a partner's syntactic, lexical, and phonological choices. 
 
 While there is a growing literature on dialogue models in general, far less attention has been devoted to the specifics of question and answer dynamics \emph{per se}. The primary theoretical work in this area derives from formal linguistic theories, which focused on the notion of informativeness. In Groenendijk and Stokhof's\citeyear{GroenendijkStokhof84_SemanticsOfQuestions} foundational work on question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others \cite{Ginzburg95_ResolvingQuestions} have pointed out, this predicts that wh-questions like ``Where can I buy an Italian newspaper?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location. Clearly, this is not the case: a single nearby location would suffice. These theories also cannot account for contextual variation in what counts as a useful answer.
 
-More recent theories have tried to fix these problems by introducing some consideration of the questioner's goals. \citeA{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals as a decision problem faced by the questioner. A useful answer under this decision theoretic account is one that maximizes the expected value of the questioner's decision problem. A useful question is one that induces a sufficiently fine-grained partition, optimally distinguishing the worlds relevant to the decision problem. While this framework elegantly accounts for the context-dependence and relevance-maximization of question and answer behavior, it assumes that the questioner's decision problem is known a priori by the answerer. If this were the case, the act of asking questions would seem irrelevant: why wouldn't the answerer directly tell the questioner which action to take?
+More recent theories have tried to fix these problems by introducing some consideration of the questioner's goals. \citeA{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals as a decision problem faced by the questioner. A useful answer under this decision theoretic account is one that maximizes the expected value of the questioner's decision problem. A useful question is one that induces a sufficiently fine-grained partition, optimally distinguishing the worlds relevant to the decision problem. While this framework elegantly accounts for the context-dependence and relevance-maximization of question and answer behavior, it assumes that the questioner's decision problem is known a priori by the answerer. \todo{ndg: check.} If this were the case, the act of asking questions would seem irrelevant: why wouldn't the answerer directly tell the questioner which action to take?
 
 Our models are an effort to expand on this core idea in a probabilistic framework, which also provides a mechanism for the answerer to \emph{infer} the `decision problem.' The RSA framework has already been applied to account for diverse pragmatic phenomena including scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman14_Adjectives}, non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords} and irony \cite{KaoGoodman15_IronyCogSci}, and acquisition \cite{FrankGoodman14_InferringWordMeanings}. Our model situates question-answer behavior within this unifying view of language understanding as social inference, allowing us to formulate and evaluate competing hypotheses about what that inference entails. We now proceed to show how our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature.
 
