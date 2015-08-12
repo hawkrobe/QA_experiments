@@ -1,3 +1,0 @@
-var model = function() {
-  return uniform(3, 5);
-};

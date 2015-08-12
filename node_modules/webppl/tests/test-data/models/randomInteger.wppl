@@ -1,3 +1,0 @@
-var model = function() {
-  return randomInteger(5);
-};

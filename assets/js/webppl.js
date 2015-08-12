@@ -122,9 +122,11 @@ function amdefine(module, requireFn) {
                 });
 
                 //Wait for next tick to call back the require call.
-                process.nextTick(function () {
-                    callback.apply(null, deps);
-                });
+                if (callback) {
+                    process.nextTick(function () {
+                        callback.apply(null, deps);
+                    });
+                }
             }
         }
 
@@ -300,8 +302,8 @@ function amdefine(module, requireFn) {
 
 module.exports = amdefine;
 
-}).call(this,require('_process'),"/../webppl/node_modules/amdefine/amdefine.js")
-},{"_process":120,"path":119}],2:[function(require,module,exports){
+}).call(this,require('_process'),"/node_modules/webppl/node_modules/amdefine/amdefine.js")
+},{"_process":130,"path":129}],2:[function(require,module,exports){
 var types = require("../lib/types");
 var Type = types.Type;
 var def = Type.def;
@@ -1086,6 +1088,7 @@ var def = types.Type.def;
 var or = types.Type.or;
 var builtin = types.builtInTypes;
 var isString = builtin.string;
+var isNumber = builtin.number;
 var isBoolean = builtin.boolean;
 var defaults = require("../lib/shared").defaults;
 
@@ -1196,6 +1199,12 @@ def("VoidTypeAnnotation")
 def("NumberTypeAnnotation")
   .bases("Type");
 
+def("NumberLiteralTypeAnnotation")
+  .bases("Type")
+  .build("value", "raw")
+  .field("value", isNumber)
+  .field("raw", isString);
+
 def("StringTypeAnnotation")
   .bases("Type");
 
@@ -1207,6 +1216,12 @@ def("StringLiteralTypeAnnotation")
 
 def("BooleanTypeAnnotation")
   .bases("Type");
+
+def("BooleanLiteralTypeAnnotation")
+  .bases("Type")
+  .build("value", "raw")
+  .field("value", isBoolean)
+  .field("raw", isString);
 
 def("TypeAnnotation")
   .bases("Node")
@@ -1600,7 +1615,7 @@ function objectsAreEquivalent(a, b, problemPath) {
 
 module.exports = astNodesAreEquivalent;
 
-},{"../main":15,"assert":112}],9:[function(require,module,exports){
+},{"../main":15,"assert":122}],9:[function(require,module,exports){
 var assert = require("assert");
 var types = require("./types");
 var n = types.namedTypes;
@@ -2051,7 +2066,7 @@ function cleanUpIfStatementAfterPrune(ifStatement) {
 
 module.exports = NodePath;
 
-},{"./path":11,"./scope":12,"./types":14,"assert":112,"util":122}],10:[function(require,module,exports){
+},{"./path":11,"./scope":12,"./types":14,"assert":122,"util":132}],10:[function(require,module,exports){
 var assert = require("assert");
 var types = require("./types");
 var NodePath = require("./node-path");
@@ -2423,7 +2438,7 @@ sharedContextProtoMethods.abort = function abort() {
 
 module.exports = PathVisitor;
 
-},{"./node-path":9,"./types":14,"assert":112}],11:[function(require,module,exports){
+},{"./node-path":9,"./types":14,"assert":122}],11:[function(require,module,exports){
 var assert = require("assert");
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
@@ -2773,7 +2788,7 @@ Pp.replace = function replace(replacement) {
 
 module.exports = Path;
 
-},{"./types":14,"assert":112}],12:[function(require,module,exports){
+},{"./types":14,"assert":122}],12:[function(require,module,exports){
 var assert = require("assert");
 var types = require("./types");
 var Type = types.Type;
@@ -3061,7 +3076,7 @@ Sp.getGlobalScope = function() {
 
 module.exports = Scope;
 
-},{"./node-path":9,"./types":14,"assert":112}],13:[function(require,module,exports){
+},{"./node-path":9,"./types":14,"assert":122}],13:[function(require,module,exports){
 var types = require("../lib/types");
 var Type = types.Type;
 var builtin = types.builtInTypes;
@@ -3585,7 +3600,7 @@ Dp.build = function(/* param1, param2, ... */) {
     // Every buildable type will have its "type" field filled in
     // automatically. This includes types that are not subtypes of Node,
     // like SourceLocation, but that seems harmless (TODO?).
-    self.field("type", self.typeName, function() { return self.typeName });
+    self.field("type", isString, function() { return self.typeName });
 
     // Override Dp.buildable for this Def instance.
     Object.defineProperty(self, "buildable", { value: true });
@@ -3677,6 +3692,13 @@ function getBuilderName(typeName) {
         }
     });
 }
+exports.getBuilderName = getBuilderName;
+
+function getStatementBuilderName(typeName) {
+    typeName = getBuilderName(typeName);
+    return typeName.replace(/(Expression)?$/, "Statement");
+}
+exports.getStatementBuilderName = getStatementBuilderName;
 
 // The reason fields are specified using .field(...) instead of an object
 // literal syntax is somewhat subtle: the object literal syntax would
@@ -3785,8 +3807,31 @@ Dp.finalize = function() {
 
         // A linearization of the inheritance hierarchy.
         populateSupertypeList(this.typeName, this.supertypeList);
+
+        if (this.buildable && this.supertypeList.lastIndexOf("Expression") >= 0) {
+            wrapExpressionBuilderWithStatement(this.typeName);
+        }
     }
 };
+
+// Adds an additional builder for Expression subtypes
+// that wraps the built Expression in an ExpressionStatements.
+function wrapExpressionBuilderWithStatement(typeName) {
+    var wrapperName = getStatementBuilderName(typeName);
+
+    // skip if the builder already exists
+    if (builders[wrapperName]) return;
+
+    // the builder function to wrap with builders.ExpressionStatement
+    var wrapped = builders[getBuilderName(typeName)];
+
+    // skip if there is nothing to wrap
+    if (!wrapped) return;
+
+    builders[wrapperName] = function() {
+        return builders.expressionStatement(wrapped.apply(builders, arguments));
+    };
+}
 
 function populateSupertypeList(typeName, list) {
     list.length = 0;
@@ -3836,7 +3881,7 @@ exports.finalize = function() {
     });
 };
 
-},{"assert":112}],15:[function(require,module,exports){
+},{"assert":122}],15:[function(require,module,exports){
 var types = require("./lib/types");
 
 // This core module of AST types captures ES5 as it is parsed today by
@@ -9914,7 +9959,7 @@ module.exports={
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/estools/escodegen.git"
+    "url": "git+ssh://git@github.com/estools/escodegen.git"
   },
   "dependencies": {
     "estraverse": "^1.9.1",
@@ -10612,7 +10657,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"escope":70,"estraverse":75,"esutils":78}],35:[function(require,module,exports){
+},{"escope":70,"estraverse":77,"esutils":80}],35:[function(require,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -10802,7 +10847,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"../package.json":79,"./annotate-directive":33,"./common":34,"./options":38,"./pass":39,"esshorten":71}],36:[function(require,module,exports){
+},{"../package.json":81,"./annotate-directive":33,"./common":34,"./options":38,"./pass":39,"esshorten":73}],36:[function(require,module,exports){
 /*
   Copyright (C) 2012 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -16017,7 +16062,8 @@ module.exports={
     function defaultOptions() {
         return {
             optimistic: false,
-            directive: false
+            directive: false,
+            ecmaVersion: 5
         };
     }
 
@@ -16050,14 +16096,14 @@ module.exports={
      * @class Reference
      */
     function Reference(ident, scope, flag, writeExpr, maybeImplicitGlobal) {
-        /** 
+        /**
          * Identifier syntax node.
-         * @member {esprima#Identifier} Reference#identifier 
+         * @member {esprima#Identifier} Reference#identifier
          */
         this.identifier = ident;
-        /** 
+        /**
          * Reference to the enclosing Scope.
-         * @member {Scope} Reference#from 
+         * @member {Scope} Reference#from
          */
         this.from = scope;
         /**
@@ -16066,45 +16112,45 @@ module.exports={
          * @member {boolean} Reference#tainted
          */
         this.tainted = false;
-        /** 
+        /**
          * The variable this reference is resolved with.
-         * @member {Variable} Reference#resolved 
+         * @member {Variable} Reference#resolved
          */
         this.resolved = null;
-        /** 
+        /**
          * The read-write mode of the reference. (Value is one of {@link
          * Reference.READ}, {@link Reference.RW}, {@link Reference.WRITE}).
-         * @member {number} Reference#flag 
+         * @member {number} Reference#flag
          * @private
          */
         this.flag = flag;
         if (this.isWrite()) {
-            /** 
+            /**
              * If reference is writeable, this is the tree being written to it.
-             * @member {esprima#Node} Reference#writeExpr 
+             * @member {esprima#Node} Reference#writeExpr
              */
             this.writeExpr = writeExpr;
         }
-        /** 
+        /**
          * Whether the Reference might refer to a global variable.
-         * @member {boolean} Reference#__maybeImplicitGlobal 
+         * @member {boolean} Reference#__maybeImplicitGlobal
          * @private
          */
         this.__maybeImplicitGlobal = maybeImplicitGlobal;
     }
 
-    /** 
-     * @constant Reference.READ 
+    /**
+     * @constant Reference.READ
      * @private
      */
     Reference.READ = 0x1;
-    /** 
-     * @constant Reference.WRITE 
+    /**
+     * @constant Reference.WRITE
      * @private
      */
     Reference.WRITE = 0x2;
-    /** 
-     * @constant Reference.RW 
+    /**
+     * @constant Reference.RW
      * @private
      */
     Reference.RW = 0x3;
@@ -16169,9 +16215,9 @@ module.exports={
      * @class Variable
      */
     function Variable(name, scope) {
-        /**  
+        /**
          * The variable name, as given in the source code.
-         * @member {String} Variable#name 
+         * @member {String} Variable#name
          */
         this.name = name;
         /**
@@ -16209,9 +16255,9 @@ module.exports={
          * @member {boolean} Variable#stack
          */
         this.stack = true;
-        /** 
+        /**
          * Reference to the enclosing Scope.
-         * @member {Scope} Variable#scope 
+         * @member {Scope} Variable#scope
          */
         this.scope = scope;
     }
@@ -16897,13 +16943,17 @@ module.exports={
                     break;
 
                 case Syntax.ObjectExpression:
+                    for (i = 0; i < node.properties.length; i++) {
+                        if (node.properties[i].kind === 'init') {
+                            currentScope.__referencing(node.properties[i].value);
+                        }
+                    }
                     break;
 
                 case Syntax.Program:
                     break;
 
                 case Syntax.Property:
-                    currentScope.__referencing(node.value);
                     break;
 
                 case Syntax.ReturnStatement:
@@ -16991,7 +17041,7 @@ module.exports={
     }
 
     /** @name module:escope.version */
-    exports.version = '1.0.1';
+    exports.version = '1.0.3';
     /** @name module:escope.Reference */
     exports.Reference = Reference;
     /** @name module:escope.Variable */
@@ -17005,7 +17055,912 @@ module.exports={
 }, this));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"estraverse":75}],71:[function(require,module,exports){
+},{"estraverse":71}],71:[function(require,module,exports){
+/*
+  Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
+  Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/*jslint vars:false, bitwise:true*/
+/*jshint indent:4*/
+/*global exports:true*/
+(function clone(exports) {
+    'use strict';
+
+    var Syntax,
+        isArray,
+        VisitorOption,
+        VisitorKeys,
+        objectCreate,
+        objectKeys,
+        BREAK,
+        SKIP,
+        REMOVE;
+
+    function ignoreJSHintError() { }
+
+    isArray = Array.isArray;
+    if (!isArray) {
+        isArray = function isArray(array) {
+            return Object.prototype.toString.call(array) === '[object Array]';
+        };
+    }
+
+    function deepCopy(obj) {
+        var ret = {}, key, val;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                val = obj[key];
+                if (typeof val === 'object' && val !== null) {
+                    ret[key] = deepCopy(val);
+                } else {
+                    ret[key] = val;
+                }
+            }
+        }
+        return ret;
+    }
+
+    function shallowCopy(obj) {
+        var ret = {}, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                ret[key] = obj[key];
+            }
+        }
+        return ret;
+    }
+    ignoreJSHintError(shallowCopy);
+
+    // based on LLVM libc++ upper_bound / lower_bound
+    // MIT License
+
+    function upperBound(array, func) {
+        var diff, len, i, current;
+
+        len = array.length;
+        i = 0;
+
+        while (len) {
+            diff = len >>> 1;
+            current = i + diff;
+            if (func(array[current])) {
+                len = diff;
+            } else {
+                i = current + 1;
+                len -= diff + 1;
+            }
+        }
+        return i;
+    }
+
+    function lowerBound(array, func) {
+        var diff, len, i, current;
+
+        len = array.length;
+        i = 0;
+
+        while (len) {
+            diff = len >>> 1;
+            current = i + diff;
+            if (func(array[current])) {
+                i = current + 1;
+                len -= diff + 1;
+            } else {
+                len = diff;
+            }
+        }
+        return i;
+    }
+    ignoreJSHintError(lowerBound);
+
+    objectCreate = Object.create || (function () {
+        function F() { }
+
+        return function (o) {
+            F.prototype = o;
+            return new F();
+        };
+    })();
+
+    objectKeys = Object.keys || function (o) {
+        var keys = [], key;
+        for (key in o) {
+            keys.push(key);
+        }
+        return keys;
+    };
+
+    function extend(to, from) {
+        var keys = objectKeys(from), key, i, len;
+        for (i = 0, len = keys.length; i < len; i += 1) {
+            key = keys[i];
+            to[key] = from[key];
+        }
+        return to;
+    }
+
+    Syntax = {
+        AssignmentExpression: 'AssignmentExpression',
+        AssignmentPattern: 'AssignmentPattern',
+        ArrayExpression: 'ArrayExpression',
+        ArrayPattern: 'ArrayPattern',
+        ArrowFunctionExpression: 'ArrowFunctionExpression',
+        AwaitExpression: 'AwaitExpression', // CAUTION: It's deferred to ES7.
+        BlockStatement: 'BlockStatement',
+        BinaryExpression: 'BinaryExpression',
+        BreakStatement: 'BreakStatement',
+        CallExpression: 'CallExpression',
+        CatchClause: 'CatchClause',
+        ClassBody: 'ClassBody',
+        ClassDeclaration: 'ClassDeclaration',
+        ClassExpression: 'ClassExpression',
+        ComprehensionBlock: 'ComprehensionBlock',  // CAUTION: It's deferred to ES7.
+        ComprehensionExpression: 'ComprehensionExpression',  // CAUTION: It's deferred to ES7.
+        ConditionalExpression: 'ConditionalExpression',
+        ContinueStatement: 'ContinueStatement',
+        DebuggerStatement: 'DebuggerStatement',
+        DirectiveStatement: 'DirectiveStatement',
+        DoWhileStatement: 'DoWhileStatement',
+        EmptyStatement: 'EmptyStatement',
+        ExportAllDeclaration: 'ExportAllDeclaration',
+        ExportDefaultDeclaration: 'ExportDefaultDeclaration',
+        ExportNamedDeclaration: 'ExportNamedDeclaration',
+        ExportSpecifier: 'ExportSpecifier',
+        ExpressionStatement: 'ExpressionStatement',
+        ForStatement: 'ForStatement',
+        ForInStatement: 'ForInStatement',
+        ForOfStatement: 'ForOfStatement',
+        FunctionDeclaration: 'FunctionDeclaration',
+        FunctionExpression: 'FunctionExpression',
+        GeneratorExpression: 'GeneratorExpression',  // CAUTION: It's deferred to ES7.
+        Identifier: 'Identifier',
+        IfStatement: 'IfStatement',
+        ImportDeclaration: 'ImportDeclaration',
+        ImportDefaultSpecifier: 'ImportDefaultSpecifier',
+        ImportNamespaceSpecifier: 'ImportNamespaceSpecifier',
+        ImportSpecifier: 'ImportSpecifier',
+        Literal: 'Literal',
+        LabeledStatement: 'LabeledStatement',
+        LogicalExpression: 'LogicalExpression',
+        MemberExpression: 'MemberExpression',
+        MethodDefinition: 'MethodDefinition',
+        ModuleSpecifier: 'ModuleSpecifier',
+        NewExpression: 'NewExpression',
+        ObjectExpression: 'ObjectExpression',
+        ObjectPattern: 'ObjectPattern',
+        Program: 'Program',
+        Property: 'Property',
+        RestElement: 'RestElement',
+        ReturnStatement: 'ReturnStatement',
+        SequenceExpression: 'SequenceExpression',
+        SpreadElement: 'SpreadElement',
+        SwitchStatement: 'SwitchStatement',
+        SwitchCase: 'SwitchCase',
+        TaggedTemplateExpression: 'TaggedTemplateExpression',
+        TemplateElement: 'TemplateElement',
+        TemplateLiteral: 'TemplateLiteral',
+        ThisExpression: 'ThisExpression',
+        ThrowStatement: 'ThrowStatement',
+        TryStatement: 'TryStatement',
+        UnaryExpression: 'UnaryExpression',
+        UpdateExpression: 'UpdateExpression',
+        VariableDeclaration: 'VariableDeclaration',
+        VariableDeclarator: 'VariableDeclarator',
+        WhileStatement: 'WhileStatement',
+        WithStatement: 'WithStatement',
+        YieldExpression: 'YieldExpression'
+    };
+
+    VisitorKeys = {
+        AssignmentExpression: ['left', 'right'],
+        AssignmentPattern: ['left', 'right'],
+        ArrayExpression: ['elements'],
+        ArrayPattern: ['elements'],
+        ArrowFunctionExpression: ['params', 'defaults', 'rest', 'body'],
+        AwaitExpression: ['argument'], // CAUTION: It's deferred to ES7.
+        BlockStatement: ['body'],
+        BinaryExpression: ['left', 'right'],
+        BreakStatement: ['label'],
+        CallExpression: ['callee', 'arguments'],
+        CatchClause: ['param', 'body'],
+        ClassBody: ['body'],
+        ClassDeclaration: ['id', 'superClass', 'body'],
+        ClassExpression: ['id', 'superClass', 'body'],
+        ComprehensionBlock: ['left', 'right'],  // CAUTION: It's deferred to ES7.
+        ComprehensionExpression: ['blocks', 'filter', 'body'],  // CAUTION: It's deferred to ES7.
+        ConditionalExpression: ['test', 'consequent', 'alternate'],
+        ContinueStatement: ['label'],
+        DebuggerStatement: [],
+        DirectiveStatement: [],
+        DoWhileStatement: ['body', 'test'],
+        EmptyStatement: [],
+        ExportAllDeclaration: ['source'],
+        ExportDefaultDeclaration: ['declaration'],
+        ExportNamedDeclaration: ['declaration', 'specifiers', 'source'],
+        ExportSpecifier: ['exported', 'local'],
+        ExpressionStatement: ['expression'],
+        ForStatement: ['init', 'test', 'update', 'body'],
+        ForInStatement: ['left', 'right', 'body'],
+        ForOfStatement: ['left', 'right', 'body'],
+        FunctionDeclaration: ['id', 'params', 'defaults', 'rest', 'body'],
+        FunctionExpression: ['id', 'params', 'defaults', 'rest', 'body'],
+        GeneratorExpression: ['blocks', 'filter', 'body'],  // CAUTION: It's deferred to ES7.
+        Identifier: [],
+        IfStatement: ['test', 'consequent', 'alternate'],
+        ImportDeclaration: ['specifiers', 'source'],
+        ImportDefaultSpecifier: ['local'],
+        ImportNamespaceSpecifier: ['local'],
+        ImportSpecifier: ['imported', 'local'],
+        Literal: [],
+        LabeledStatement: ['label', 'body'],
+        LogicalExpression: ['left', 'right'],
+        MemberExpression: ['object', 'property'],
+        MethodDefinition: ['key', 'value'],
+        ModuleSpecifier: [],
+        NewExpression: ['callee', 'arguments'],
+        ObjectExpression: ['properties'],
+        ObjectPattern: ['properties'],
+        Program: ['body'],
+        Property: ['key', 'value'],
+        RestElement: [ 'argument' ],
+        ReturnStatement: ['argument'],
+        SequenceExpression: ['expressions'],
+        SpreadElement: ['argument'],
+        SwitchStatement: ['discriminant', 'cases'],
+        SwitchCase: ['test', 'consequent'],
+        TaggedTemplateExpression: ['tag', 'quasi'],
+        TemplateElement: [],
+        TemplateLiteral: ['quasis', 'expressions'],
+        ThisExpression: [],
+        ThrowStatement: ['argument'],
+        TryStatement: ['block', 'handlers', 'handler', 'guardedHandlers', 'finalizer'],
+        UnaryExpression: ['argument'],
+        UpdateExpression: ['argument'],
+        VariableDeclaration: ['declarations'],
+        VariableDeclarator: ['id', 'init'],
+        WhileStatement: ['test', 'body'],
+        WithStatement: ['object', 'body'],
+        YieldExpression: ['argument']
+    };
+
+    // unique id
+    BREAK = {};
+    SKIP = {};
+    REMOVE = {};
+
+    VisitorOption = {
+        Break: BREAK,
+        Skip: SKIP,
+        Remove: REMOVE
+    };
+
+    function Reference(parent, key) {
+        this.parent = parent;
+        this.key = key;
+    }
+
+    Reference.prototype.replace = function replace(node) {
+        this.parent[this.key] = node;
+    };
+
+    Reference.prototype.remove = function remove() {
+        if (isArray(this.parent)) {
+            this.parent.splice(this.key, 1);
+            return true;
+        } else {
+            this.replace(null);
+            return false;
+        }
+    };
+
+    function Element(node, path, wrap, ref) {
+        this.node = node;
+        this.path = path;
+        this.wrap = wrap;
+        this.ref = ref;
+    }
+
+    function Controller() { }
+
+    // API:
+    // return property path array from root to current node
+    Controller.prototype.path = function path() {
+        var i, iz, j, jz, result, element;
+
+        function addToPath(result, path) {
+            if (isArray(path)) {
+                for (j = 0, jz = path.length; j < jz; ++j) {
+                    result.push(path[j]);
+                }
+            } else {
+                result.push(path);
+            }
+        }
+
+        // root node
+        if (!this.__current.path) {
+            return null;
+        }
+
+        // first node is sentinel, second node is root element
+        result = [];
+        for (i = 2, iz = this.__leavelist.length; i < iz; ++i) {
+            element = this.__leavelist[i];
+            addToPath(result, element.path);
+        }
+        addToPath(result, this.__current.path);
+        return result;
+    };
+
+    // API:
+    // return type of current node
+    Controller.prototype.type = function () {
+        var node = this.current();
+        return node.type || this.__current.wrap;
+    };
+
+    // API:
+    // return array of parent elements
+    Controller.prototype.parents = function parents() {
+        var i, iz, result;
+
+        // first node is sentinel
+        result = [];
+        for (i = 1, iz = this.__leavelist.length; i < iz; ++i) {
+            result.push(this.__leavelist[i].node);
+        }
+
+        return result;
+    };
+
+    // API:
+    // return current node
+    Controller.prototype.current = function current() {
+        return this.__current.node;
+    };
+
+    Controller.prototype.__execute = function __execute(callback, element) {
+        var previous, result;
+
+        result = undefined;
+
+        previous  = this.__current;
+        this.__current = element;
+        this.__state = null;
+        if (callback) {
+            result = callback.call(this, element.node, this.__leavelist[this.__leavelist.length - 1].node);
+        }
+        this.__current = previous;
+
+        return result;
+    };
+
+    // API:
+    // notify control skip / break
+    Controller.prototype.notify = function notify(flag) {
+        this.__state = flag;
+    };
+
+    // API:
+    // skip child nodes of current node
+    Controller.prototype.skip = function () {
+        this.notify(SKIP);
+    };
+
+    // API:
+    // break traversals
+    Controller.prototype['break'] = function () {
+        this.notify(BREAK);
+    };
+
+    // API:
+    // remove node
+    Controller.prototype.remove = function () {
+        this.notify(REMOVE);
+    };
+
+    Controller.prototype.__initialize = function(root, visitor) {
+        this.visitor = visitor;
+        this.root = root;
+        this.__worklist = [];
+        this.__leavelist = [];
+        this.__current = null;
+        this.__state = null;
+        this.__fallback = visitor.fallback === 'iteration';
+        this.__keys = VisitorKeys;
+        if (visitor.keys) {
+            this.__keys = extend(objectCreate(this.__keys), visitor.keys);
+        }
+    };
+
+    function isNode(node) {
+        if (node == null) {
+            return false;
+        }
+        return typeof node === 'object' && typeof node.type === 'string';
+    }
+
+    function isProperty(nodeType, key) {
+        return (nodeType === Syntax.ObjectExpression || nodeType === Syntax.ObjectPattern) && 'properties' === key;
+    }
+
+    Controller.prototype.traverse = function traverse(root, visitor) {
+        var worklist,
+            leavelist,
+            element,
+            node,
+            nodeType,
+            ret,
+            key,
+            current,
+            current2,
+            candidates,
+            candidate,
+            sentinel;
+
+        this.__initialize(root, visitor);
+
+        sentinel = {};
+
+        // reference
+        worklist = this.__worklist;
+        leavelist = this.__leavelist;
+
+        // initialize
+        worklist.push(new Element(root, null, null, null));
+        leavelist.push(new Element(null, null, null, null));
+
+        while (worklist.length) {
+            element = worklist.pop();
+
+            if (element === sentinel) {
+                element = leavelist.pop();
+
+                ret = this.__execute(visitor.leave, element);
+
+                if (this.__state === BREAK || ret === BREAK) {
+                    return;
+                }
+                continue;
+            }
+
+            if (element.node) {
+
+                ret = this.__execute(visitor.enter, element);
+
+                if (this.__state === BREAK || ret === BREAK) {
+                    return;
+                }
+
+                worklist.push(sentinel);
+                leavelist.push(element);
+
+                if (this.__state === SKIP || ret === SKIP) {
+                    continue;
+                }
+
+                node = element.node;
+                nodeType = element.wrap || node.type;
+                candidates = this.__keys[nodeType];
+                if (!candidates) {
+                    if (this.__fallback) {
+                        candidates = objectKeys(node);
+                    } else {
+                        throw new Error('Unknown node type ' + nodeType + '.');
+                    }
+                }
+
+                current = candidates.length;
+                while ((current -= 1) >= 0) {
+                    key = candidates[current];
+                    candidate = node[key];
+                    if (!candidate) {
+                        continue;
+                    }
+
+                    if (isArray(candidate)) {
+                        current2 = candidate.length;
+                        while ((current2 -= 1) >= 0) {
+                            if (!candidate[current2]) {
+                                continue;
+                            }
+                            if (isProperty(nodeType, candidates[current])) {
+                                element = new Element(candidate[current2], [key, current2], 'Property', null);
+                            } else if (isNode(candidate[current2])) {
+                                element = new Element(candidate[current2], [key, current2], null, null);
+                            } else {
+                                continue;
+                            }
+                            worklist.push(element);
+                        }
+                    } else if (isNode(candidate)) {
+                        worklist.push(new Element(candidate, key, null, null));
+                    }
+                }
+            }
+        }
+    };
+
+    Controller.prototype.replace = function replace(root, visitor) {
+        function removeElem(element) {
+            var i,
+                key,
+                nextElem,
+                parent;
+
+            if (element.ref.remove()) {
+                // When the reference is an element of an array.
+                key = element.ref.key;
+                parent = element.ref.parent;
+
+                // If removed from array, then decrease following items' keys.
+                i = worklist.length;
+                while (i--) {
+                    nextElem = worklist[i];
+                    if (nextElem.ref && nextElem.ref.parent === parent) {
+                        if  (nextElem.ref.key < key) {
+                            break;
+                        }
+                        --nextElem.ref.key;
+                    }
+                }
+            }
+        }
+
+        var worklist,
+            leavelist,
+            node,
+            nodeType,
+            target,
+            element,
+            current,
+            current2,
+            candidates,
+            candidate,
+            sentinel,
+            outer,
+            key;
+
+        this.__initialize(root, visitor);
+
+        sentinel = {};
+
+        // reference
+        worklist = this.__worklist;
+        leavelist = this.__leavelist;
+
+        // initialize
+        outer = {
+            root: root
+        };
+        element = new Element(root, null, null, new Reference(outer, 'root'));
+        worklist.push(element);
+        leavelist.push(element);
+
+        while (worklist.length) {
+            element = worklist.pop();
+
+            if (element === sentinel) {
+                element = leavelist.pop();
+
+                target = this.__execute(visitor.leave, element);
+
+                // node may be replaced with null,
+                // so distinguish between undefined and null in this place
+                if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
+                    // replace
+                    element.ref.replace(target);
+                }
+
+                if (this.__state === REMOVE || target === REMOVE) {
+                    removeElem(element);
+                }
+
+                if (this.__state === BREAK || target === BREAK) {
+                    return outer.root;
+                }
+                continue;
+            }
+
+            target = this.__execute(visitor.enter, element);
+
+            // node may be replaced with null,
+            // so distinguish between undefined and null in this place
+            if (target !== undefined && target !== BREAK && target !== SKIP && target !== REMOVE) {
+                // replace
+                element.ref.replace(target);
+                element.node = target;
+            }
+
+            if (this.__state === REMOVE || target === REMOVE) {
+                removeElem(element);
+                element.node = null;
+            }
+
+            if (this.__state === BREAK || target === BREAK) {
+                return outer.root;
+            }
+
+            // node may be null
+            node = element.node;
+            if (!node) {
+                continue;
+            }
+
+            worklist.push(sentinel);
+            leavelist.push(element);
+
+            if (this.__state === SKIP || target === SKIP) {
+                continue;
+            }
+
+            nodeType = element.wrap || node.type;
+            candidates = this.__keys[nodeType];
+            if (!candidates) {
+                if (this.__fallback) {
+                    candidates = objectKeys(node);
+                } else {
+                    throw new Error('Unknown node type ' + nodeType + '.');
+                }
+            }
+
+            current = candidates.length;
+            while ((current -= 1) >= 0) {
+                key = candidates[current];
+                candidate = node[key];
+                if (!candidate) {
+                    continue;
+                }
+
+                if (isArray(candidate)) {
+                    current2 = candidate.length;
+                    while ((current2 -= 1) >= 0) {
+                        if (!candidate[current2]) {
+                            continue;
+                        }
+                        if (isProperty(nodeType, candidates[current])) {
+                            element = new Element(candidate[current2], [key, current2], 'Property', new Reference(candidate, current2));
+                        } else if (isNode(candidate[current2])) {
+                            element = new Element(candidate[current2], [key, current2], null, new Reference(candidate, current2));
+                        } else {
+                            continue;
+                        }
+                        worklist.push(element);
+                    }
+                } else if (isNode(candidate)) {
+                    worklist.push(new Element(candidate, key, null, new Reference(node, key)));
+                }
+            }
+        }
+
+        return outer.root;
+    };
+
+    function traverse(root, visitor) {
+        var controller = new Controller();
+        return controller.traverse(root, visitor);
+    }
+
+    function replace(root, visitor) {
+        var controller = new Controller();
+        return controller.replace(root, visitor);
+    }
+
+    function extendCommentRange(comment, tokens) {
+        var target;
+
+        target = upperBound(tokens, function search(token) {
+            return token.range[0] > comment.range[0];
+        });
+
+        comment.extendedRange = [comment.range[0], comment.range[1]];
+
+        if (target !== tokens.length) {
+            comment.extendedRange[1] = tokens[target].range[0];
+        }
+
+        target -= 1;
+        if (target >= 0) {
+            comment.extendedRange[0] = tokens[target].range[1];
+        }
+
+        return comment;
+    }
+
+    function attachComments(tree, providedComments, tokens) {
+        // At first, we should calculate extended comment ranges.
+        var comments = [], comment, len, i, cursor;
+
+        if (!tree.range) {
+            throw new Error('attachComments needs range information');
+        }
+
+        // tokens array is empty, we attach comments to tree as 'leadingComments'
+        if (!tokens.length) {
+            if (providedComments.length) {
+                for (i = 0, len = providedComments.length; i < len; i += 1) {
+                    comment = deepCopy(providedComments[i]);
+                    comment.extendedRange = [0, tree.range[0]];
+                    comments.push(comment);
+                }
+                tree.leadingComments = comments;
+            }
+            return tree;
+        }
+
+        for (i = 0, len = providedComments.length; i < len; i += 1) {
+            comments.push(extendCommentRange(deepCopy(providedComments[i]), tokens));
+        }
+
+        // This is based on John Freeman's implementation.
+        cursor = 0;
+        traverse(tree, {
+            enter: function (node) {
+                var comment;
+
+                while (cursor < comments.length) {
+                    comment = comments[cursor];
+                    if (comment.extendedRange[1] > node.range[0]) {
+                        break;
+                    }
+
+                    if (comment.extendedRange[1] === node.range[0]) {
+                        if (!node.leadingComments) {
+                            node.leadingComments = [];
+                        }
+                        node.leadingComments.push(comment);
+                        comments.splice(cursor, 1);
+                    } else {
+                        cursor += 1;
+                    }
+                }
+
+                // already out of owned node
+                if (cursor === comments.length) {
+                    return VisitorOption.Break;
+                }
+
+                if (comments[cursor].extendedRange[0] > node.range[1]) {
+                    return VisitorOption.Skip;
+                }
+            }
+        });
+
+        cursor = 0;
+        traverse(tree, {
+            leave: function (node) {
+                var comment;
+
+                while (cursor < comments.length) {
+                    comment = comments[cursor];
+                    if (node.range[1] < comment.extendedRange[0]) {
+                        break;
+                    }
+
+                    if (node.range[1] === comment.extendedRange[0]) {
+                        if (!node.trailingComments) {
+                            node.trailingComments = [];
+                        }
+                        node.trailingComments.push(comment);
+                        comments.splice(cursor, 1);
+                    } else {
+                        cursor += 1;
+                    }
+                }
+
+                // already out of owned node
+                if (cursor === comments.length) {
+                    return VisitorOption.Break;
+                }
+
+                if (comments[cursor].extendedRange[0] > node.range[1]) {
+                    return VisitorOption.Skip;
+                }
+            }
+        });
+
+        return tree;
+    }
+
+    exports.version = require('./package.json').version;
+    exports.Syntax = Syntax;
+    exports.traverse = traverse;
+    exports.replace = replace;
+    exports.attachComments = attachComments;
+    exports.VisitorKeys = VisitorKeys;
+    exports.VisitorOption = VisitorOption;
+    exports.Controller = Controller;
+    exports.cloneEnvironment = function () { return clone({}); };
+
+    return exports;
+}(exports));
+/* vim: set sw=4 ts=4 et tw=80 : */
+
+},{"./package.json":72}],72:[function(require,module,exports){
+module.exports={
+  "name": "estraverse",
+  "description": "ECMAScript JS AST traversal functions",
+  "homepage": "https://github.com/estools/estraverse",
+  "main": "estraverse.js",
+  "version": "2.0.0",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "maintainers": [
+    {
+      "name": "constellation",
+      "email": "utatane.tea@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/estools/estraverse.git"
+  },
+  "devDependencies": {
+    "chai": "^2.1.1",
+    "coffee-script": "^1.8.0",
+    "espree": "^1.11.0",
+    "gulp": "^3.8.10",
+    "gulp-bump": "^0.2.2",
+    "gulp-filter": "^2.0.0",
+    "gulp-git": "^1.0.1",
+    "gulp-tag-version": "^1.2.1",
+    "jshint": "^2.5.6",
+    "mocha": "^2.1.0"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/estools/estraverse/raw/master/LICENSE.BSD"
+    }
+  ],
+  "scripts": {
+    "test": "npm run-script lint && npm run-script unit-test",
+    "lint": "jshint estraverse.js",
+    "unit-test": "mocha --compilers coffee:coffee-script/register"
+  },
+  "gitHead": "d8bc726f126817cc03c7a4e751528edb19db0ffb",
+  "bugs": {
+    "url": "https://github.com/estools/estraverse/issues"
+  },
+  "_id": "estraverse@2.0.0",
+  "_shasum": "5ae46963243600206674ccb24a09e16674fcdca1",
+  "_from": "estraverse@>=2.0.0 <3.0.0",
+  "_npmVersion": "2.0.0-alpha-5",
+  "_npmUser": {
+    "name": "constellation",
+    "email": "utatane.tea@gmail.com"
+  },
+  "dist": {
+    "shasum": "5ae46963243600206674ccb24a09e16674fcdca1",
+    "tarball": "http://registry.npmjs.org/estraverse/-/estraverse-2.0.0.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/estraverse/-/estraverse-2.0.0.tgz",
+  "readme": "ERROR: No README data found!"
+}
+
+},{}],73:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -17297,9 +18252,9 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"../package.json":74,"./map":72,"./utility":73,"escope":70,"estraverse":75,"esutils":78}],72:[function(require,module,exports){
+},{"../package.json":76,"./map":74,"./utility":75,"escope":70,"estraverse":77,"esutils":80}],74:[function(require,module,exports){
 arguments[4][37][0].apply(exports,arguments)
-},{"dup":37}],73:[function(require,module,exports){
+},{"dup":37}],75:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -17410,7 +18365,7 @@ arguments[4][37][0].apply(exports,arguments)
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],74:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports={
   "name": "esshorten",
   "description": "Shorten (mangle) names in JavaScript code",
@@ -17430,7 +18385,7 @@ module.exports={
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/Constellation/esshorten.git"
+    "url": "git+ssh://git@github.com/Constellation/esshorten.git"
   },
   "dependencies": {
     "estraverse": "~1.5.0",
@@ -17473,10 +18428,11 @@ module.exports={
     "email": "utatane.tea@gmail.com"
   },
   "_shasum": "6f0c22ae6cc3119da0b18b835813e8f26c1abacc",
-  "_resolved": "https://registry.npmjs.org/esshorten/-/esshorten-1.1.0.tgz"
+  "_resolved": "https://registry.npmjs.org/esshorten/-/esshorten-1.1.0.tgz",
+  "readme": "ERROR: No README data found!"
 }
 
-},{}],75:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -18167,7 +19123,7 @@ module.exports={
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],76:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -18259,7 +19215,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],77:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -18378,7 +19334,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./code":76}],78:[function(require,module,exports){
+},{"./code":78}],80:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -18412,7 +19368,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./code":76,"./keyword":77}],79:[function(require,module,exports){
+},{"./code":78,"./keyword":79}],81:[function(require,module,exports){
 module.exports={
   "name": "esmangle",
   "description": "ECMAScript code mangler / minifier",
@@ -18436,7 +19392,7 @@ module.exports={
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/Constellation/esmangle.git"
+    "url": "git+ssh://git@github.com/Constellation/esmangle.git"
   },
   "dependencies": {
     "esutils": "~ 1.0.0",
@@ -18491,21 +19447,13 @@ module.exports={
     "email": "utatane.tea@gmail.com"
   },
   "_shasum": "d9bb37b8f8eafbf4e6d4ed6b7aa2956abbd3c4c2",
-  "_resolved": "https://registry.npmjs.org/esmangle/-/esmangle-1.0.1.tgz"
+  "_resolved": "https://registry.npmjs.org/esmangle/-/esmangle-1.0.1.tgz",
+  "readme": "ERROR: No README data found!"
 }
 
-},{}],80:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 /*
-  Copyright (C) 2013 Ariya Hidayat <ariya.hidayat@gmail.com>
-  Copyright (C) 2013 Thaddee Tyl <thaddee.tyl@gmail.com>
-  Copyright (C) 2013 Mathias Bynens <mathias@qiwi.be>
-  Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
-  Copyright (C) 2012 Mathias Bynens <mathias@qiwi.be>
-  Copyright (C) 2012 Joost-Wim Boekesteijn <joost-wim@boekesteijn.nl>
-  Copyright (C) 2012 Kris Kowal <kris.kowal@cixar.com>
-  Copyright (C) 2012 Yusuke Suzuki <utatane.tea@gmail.com>
-  Copyright (C) 2012 Arpad Borsos <arpad.borsos@googlemail.com>
-  Copyright (C) 2011 Ariya Hidayat <ariya.hidayat@gmail.com>
+  Copyright (c) jQuery Foundation, Inc. and Contributors, All Rights Reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
@@ -18635,6 +19583,7 @@ module.exports={
         ExportSpecifier: 'ExportSpecifier',
         ExpressionStatement: 'ExpressionStatement',
         ForStatement: 'ForStatement',
+        ForOfStatement: 'ForOfStatement',
         ForInStatement: 'ForInStatement',
         FunctionDeclaration: 'FunctionDeclaration',
         FunctionExpression: 'FunctionExpression',
@@ -18648,6 +19597,7 @@ module.exports={
         LabeledStatement: 'LabeledStatement',
         LogicalExpression: 'LogicalExpression',
         MemberExpression: 'MemberExpression',
+        MetaProperty: 'MetaProperty',
         MethodDefinition: 'MethodDefinition',
         NewExpression: 'NewExpression',
         ObjectExpression: 'ObjectExpression',
@@ -18672,7 +19622,8 @@ module.exports={
         VariableDeclaration: 'VariableDeclaration',
         VariableDeclarator: 'VariableDeclarator',
         WhileStatement: 'WhileStatement',
-        WithStatement: 'WithStatement'
+        WithStatement: 'WithStatement',
+        YieldExpression: 'YieldExpression'
     };
 
     PlaceHolders = {
@@ -18693,6 +19644,7 @@ module.exports={
         UnterminatedRegExp: 'Invalid regular expression: missing /',
         InvalidLHSInAssignment: 'Invalid left-hand side in assignment',
         InvalidLHSInForIn: 'Invalid left-hand side in for-in',
+        InvalidLHSInForLoop: 'Invalid left-hand side in for-loop',
         MultipleDefaultsInSwitch: 'More than one default clause in switch statement',
         NoCatchOrFinally: 'Missing catch or finally after try',
         UnknownLabel: 'Undefined label \'%0\'',
@@ -18724,13 +19676,17 @@ module.exports={
         NoAsAfterImportNamespace: 'Unexpected token',
         InvalidModuleSpecifier: 'Unexpected token',
         IllegalImportDeclaration: 'Unexpected token',
-        IllegalExportDeclaration: 'Unexpected token'
+        IllegalExportDeclaration: 'Unexpected token',
+        DuplicateBinding: 'Duplicate binding %0'
     };
 
-    // See also tools/generate-unicode-regex.py.
+    // See also tools/generate-unicode-regex.js.
     Regex = {
-        NonAsciiIdentifierStart: new RegExp('[\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B2\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58\u0C59\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D60\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19C1-\u19C7\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2E2F\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]'),
-        NonAsciiIdentifierPart: new RegExp('[\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0300-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u0483-\u0487\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u05D0-\u05EA\u05F0-\u05F2\u0610-\u061A\u0620-\u0669\u066E-\u06D3\u06D5-\u06DC\u06DF-\u06E8\u06EA-\u06FC\u06FF\u0710-\u074A\u074D-\u07B1\u07C0-\u07F5\u07FA\u0800-\u082D\u0840-\u085B\u08A0-\u08B2\u08E4-\u0963\u0966-\u096F\u0971-\u0983\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BC-\u09C4\u09C7\u09C8\u09CB-\u09CE\u09D7\u09DC\u09DD\u09DF-\u09E3\u09E6-\u09F1\u0A01-\u0A03\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A59-\u0A5C\u0A5E\u0A66-\u0A75\u0A81-\u0A83\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABC-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AD0\u0AE0-\u0AE3\u0AE6-\u0AEF\u0B01-\u0B03\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3C-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B56\u0B57\u0B5C\u0B5D\u0B5F-\u0B63\u0B66-\u0B6F\u0B71\u0B82\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD0\u0BD7\u0BE6-\u0BEF\u0C00-\u0C03\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C58\u0C59\u0C60-\u0C63\u0C66-\u0C6F\u0C81-\u0C83\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBC-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CDE\u0CE0-\u0CE3\u0CE6-\u0CEF\u0CF1\u0CF2\u0D01-\u0D03\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D-\u0D44\u0D46-\u0D48\u0D4A-\u0D4E\u0D57\u0D60-\u0D63\u0D66-\u0D6F\u0D7A-\u0D7F\u0D82\u0D83\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DE6-\u0DEF\u0DF2\u0DF3\u0E01-\u0E3A\u0E40-\u0E4E\u0E50-\u0E59\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB9\u0EBB-\u0EBD\u0EC0-\u0EC4\u0EC6\u0EC8-\u0ECD\u0ED0-\u0ED9\u0EDC-\u0EDF\u0F00\u0F18\u0F19\u0F20-\u0F29\u0F35\u0F37\u0F39\u0F3E-\u0F47\u0F49-\u0F6C\u0F71-\u0F84\u0F86-\u0F97\u0F99-\u0FBC\u0FC6\u1000-\u1049\u1050-\u109D\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u135D-\u135F\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1714\u1720-\u1734\u1740-\u1753\u1760-\u176C\u176E-\u1770\u1772\u1773\u1780-\u17D3\u17D7\u17DC\u17DD\u17E0-\u17E9\u180B-\u180D\u1810-\u1819\u1820-\u1877\u1880-\u18AA\u18B0-\u18F5\u1900-\u191E\u1920-\u192B\u1930-\u193B\u1946-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u19D0-\u19D9\u1A00-\u1A1B\u1A20-\u1A5E\u1A60-\u1A7C\u1A7F-\u1A89\u1A90-\u1A99\u1AA7\u1AB0-\u1ABD\u1B00-\u1B4B\u1B50-\u1B59\u1B6B-\u1B73\u1B80-\u1BF3\u1C00-\u1C37\u1C40-\u1C49\u1C4D-\u1C7D\u1CD0-\u1CD2\u1CD4-\u1CF6\u1CF8\u1CF9\u1D00-\u1DF5\u1DFC-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u200C\u200D\u203F\u2040\u2054\u2071\u207F\u2090-\u209C\u20D0-\u20DC\u20E1\u20E5-\u20F0\u2102\u2107\u210A-\u2113\u2115\u2119-\u211D\u2124\u2126\u2128\u212A-\u212D\u212F-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D7F-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2DE0-\u2DFF\u2E2F\u3005-\u3007\u3021-\u302F\u3031-\u3035\u3038-\u303C\u3041-\u3096\u3099\u309A\u309D-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA62B\uA640-\uA66F\uA674-\uA67D\uA67F-\uA69D\uA69F-\uA6F1\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA827\uA840-\uA873\uA880-\uA8C4\uA8D0-\uA8D9\uA8E0-\uA8F7\uA8FB\uA900-\uA92D\uA930-\uA953\uA960-\uA97C\uA980-\uA9C0\uA9CF-\uA9D9\uA9E0-\uA9FE\uAA00-\uAA36\uAA40-\uAA4D\uAA50-\uAA59\uAA60-\uAA76\uAA7A-\uAAC2\uAADB-\uAADD\uAAE0-\uAAEF\uAAF2-\uAAF6\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABEA\uABEC\uABED\uABF0-\uABF9\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE00-\uFE0F\uFE20-\uFE2D\uFE33\uFE34\uFE4D-\uFE4F\uFE70-\uFE74\uFE76-\uFEFC\uFF10-\uFF19\uFF21-\uFF3A\uFF3F\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]')
+        // ECMAScript 6/Unicode v7.0.0 NonAsciiIdentifierStart:
+        NonAsciiIdentifierStart: /[\xAA\xB5\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0370-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386\u0388-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u05D0-\u05EA\u05F0-\u05F2\u0620-\u064A\u066E\u066F\u0671-\u06D3\u06D5\u06E5\u06E6\u06EE\u06EF\u06FA-\u06FC\u06FF\u0710\u0712-\u072F\u074D-\u07A5\u07B1\u07CA-\u07EA\u07F4\u07F5\u07FA\u0800-\u0815\u081A\u0824\u0828\u0840-\u0858\u08A0-\u08B2\u0904-\u0939\u093D\u0950\u0958-\u0961\u0971-\u0980\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BD\u09CE\u09DC\u09DD\u09DF-\u09E1\u09F0\u09F1\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A59-\u0A5C\u0A5E\u0A72-\u0A74\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABD\u0AD0\u0AE0\u0AE1\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3D\u0B5C\u0B5D\u0B5F-\u0B61\u0B71\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BD0\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D\u0C58\u0C59\u0C60\u0C61\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBD\u0CDE\u0CE0\u0CE1\u0CF1\u0CF2\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D\u0D4E\u0D60\u0D61\u0D7A-\u0D7F\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0E01-\u0E30\u0E32\u0E33\u0E40-\u0E46\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB0\u0EB2\u0EB3\u0EBD\u0EC0-\u0EC4\u0EC6\u0EDC-\u0EDF\u0F00\u0F40-\u0F47\u0F49-\u0F6C\u0F88-\u0F8C\u1000-\u102A\u103F\u1050-\u1055\u105A-\u105D\u1061\u1065\u1066\u106E-\u1070\u1075-\u1081\u108E\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1711\u1720-\u1731\u1740-\u1751\u1760-\u176C\u176E-\u1770\u1780-\u17B3\u17D7\u17DC\u1820-\u1877\u1880-\u18A8\u18AA\u18B0-\u18F5\u1900-\u191E\u1950-\u196D\u1970-\u1974\u1980-\u19AB\u19C1-\u19C7\u1A00-\u1A16\u1A20-\u1A54\u1AA7\u1B05-\u1B33\u1B45-\u1B4B\u1B83-\u1BA0\u1BAE\u1BAF\u1BBA-\u1BE5\u1C00-\u1C23\u1C4D-\u1C4F\u1C5A-\u1C7D\u1CE9-\u1CEC\u1CEE-\u1CF1\u1CF5\u1CF6\u1D00-\u1DBF\u1E00-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u2071\u207F\u2090-\u209C\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CEE\u2CF2\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D80-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u3005-\u3007\u3021-\u3029\u3031-\u3035\u3038-\u303C\u3041-\u3096\u309B-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA61F\uA62A\uA62B\uA640-\uA66E\uA67F-\uA69D\uA6A0-\uA6EF\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA801\uA803-\uA805\uA807-\uA80A\uA80C-\uA822\uA840-\uA873\uA882-\uA8B3\uA8F2-\uA8F7\uA8FB\uA90A-\uA925\uA930-\uA946\uA960-\uA97C\uA984-\uA9B2\uA9CF\uA9E0-\uA9E4\uA9E6-\uA9EF\uA9FA-\uA9FE\uAA00-\uAA28\uAA40-\uAA42\uAA44-\uAA4B\uAA60-\uAA76\uAA7A\uAA7E-\uAAAF\uAAB1\uAAB5\uAAB6\uAAB9-\uAABD\uAAC0\uAAC2\uAADB-\uAADD\uAAE0-\uAAEA\uAAF2-\uAAF4\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABE2\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D\uFB1F-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE70-\uFE74\uFE76-\uFEFC\uFF21-\uFF3A\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDE80-\uDE9C\uDEA0-\uDED0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF75\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00\uDE10-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE4\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC03-\uDC37\uDC83-\uDCAF\uDCD0-\uDCE8\uDD03-\uDD26\uDD50-\uDD72\uDD76\uDD83-\uDDB2\uDDC1-\uDDC4\uDDDA\uDE00-\uDE11\uDE13-\uDE2B\uDEB0-\uDEDE\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3D\uDF5D-\uDF61]|\uD805[\uDC80-\uDCAF\uDCC4\uDCC5\uDCC7\uDD80-\uDDAE\uDE00-\uDE2F\uDE44\uDE80-\uDEAA]|\uD806[\uDCA0-\uDCDF\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDED0-\uDEED\uDF00-\uDF2F\uDF40-\uDF43\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50\uDF93-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB]|\uD83A[\uDC00-\uDCC4]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]/,
+
+        // ECMAScript 6/Unicode v7.0.0 NonAsciiIdentifierPart:
+        NonAsciiIdentifierPart: /[\xAA\xB5\xB7\xBA\xC0-\xD6\xD8-\xF6\xF8-\u02C1\u02C6-\u02D1\u02E0-\u02E4\u02EC\u02EE\u0300-\u0374\u0376\u0377\u037A-\u037D\u037F\u0386-\u038A\u038C\u038E-\u03A1\u03A3-\u03F5\u03F7-\u0481\u0483-\u0487\u048A-\u052F\u0531-\u0556\u0559\u0561-\u0587\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7\u05D0-\u05EA\u05F0-\u05F2\u0610-\u061A\u0620-\u0669\u066E-\u06D3\u06D5-\u06DC\u06DF-\u06E8\u06EA-\u06FC\u06FF\u0710-\u074A\u074D-\u07B1\u07C0-\u07F5\u07FA\u0800-\u082D\u0840-\u085B\u08A0-\u08B2\u08E4-\u0963\u0966-\u096F\u0971-\u0983\u0985-\u098C\u098F\u0990\u0993-\u09A8\u09AA-\u09B0\u09B2\u09B6-\u09B9\u09BC-\u09C4\u09C7\u09C8\u09CB-\u09CE\u09D7\u09DC\u09DD\u09DF-\u09E3\u09E6-\u09F1\u0A01-\u0A03\u0A05-\u0A0A\u0A0F\u0A10\u0A13-\u0A28\u0A2A-\u0A30\u0A32\u0A33\u0A35\u0A36\u0A38\u0A39\u0A3C\u0A3E-\u0A42\u0A47\u0A48\u0A4B-\u0A4D\u0A51\u0A59-\u0A5C\u0A5E\u0A66-\u0A75\u0A81-\u0A83\u0A85-\u0A8D\u0A8F-\u0A91\u0A93-\u0AA8\u0AAA-\u0AB0\u0AB2\u0AB3\u0AB5-\u0AB9\u0ABC-\u0AC5\u0AC7-\u0AC9\u0ACB-\u0ACD\u0AD0\u0AE0-\u0AE3\u0AE6-\u0AEF\u0B01-\u0B03\u0B05-\u0B0C\u0B0F\u0B10\u0B13-\u0B28\u0B2A-\u0B30\u0B32\u0B33\u0B35-\u0B39\u0B3C-\u0B44\u0B47\u0B48\u0B4B-\u0B4D\u0B56\u0B57\u0B5C\u0B5D\u0B5F-\u0B63\u0B66-\u0B6F\u0B71\u0B82\u0B83\u0B85-\u0B8A\u0B8E-\u0B90\u0B92-\u0B95\u0B99\u0B9A\u0B9C\u0B9E\u0B9F\u0BA3\u0BA4\u0BA8-\u0BAA\u0BAE-\u0BB9\u0BBE-\u0BC2\u0BC6-\u0BC8\u0BCA-\u0BCD\u0BD0\u0BD7\u0BE6-\u0BEF\u0C00-\u0C03\u0C05-\u0C0C\u0C0E-\u0C10\u0C12-\u0C28\u0C2A-\u0C39\u0C3D-\u0C44\u0C46-\u0C48\u0C4A-\u0C4D\u0C55\u0C56\u0C58\u0C59\u0C60-\u0C63\u0C66-\u0C6F\u0C81-\u0C83\u0C85-\u0C8C\u0C8E-\u0C90\u0C92-\u0CA8\u0CAA-\u0CB3\u0CB5-\u0CB9\u0CBC-\u0CC4\u0CC6-\u0CC8\u0CCA-\u0CCD\u0CD5\u0CD6\u0CDE\u0CE0-\u0CE3\u0CE6-\u0CEF\u0CF1\u0CF2\u0D01-\u0D03\u0D05-\u0D0C\u0D0E-\u0D10\u0D12-\u0D3A\u0D3D-\u0D44\u0D46-\u0D48\u0D4A-\u0D4E\u0D57\u0D60-\u0D63\u0D66-\u0D6F\u0D7A-\u0D7F\u0D82\u0D83\u0D85-\u0D96\u0D9A-\u0DB1\u0DB3-\u0DBB\u0DBD\u0DC0-\u0DC6\u0DCA\u0DCF-\u0DD4\u0DD6\u0DD8-\u0DDF\u0DE6-\u0DEF\u0DF2\u0DF3\u0E01-\u0E3A\u0E40-\u0E4E\u0E50-\u0E59\u0E81\u0E82\u0E84\u0E87\u0E88\u0E8A\u0E8D\u0E94-\u0E97\u0E99-\u0E9F\u0EA1-\u0EA3\u0EA5\u0EA7\u0EAA\u0EAB\u0EAD-\u0EB9\u0EBB-\u0EBD\u0EC0-\u0EC4\u0EC6\u0EC8-\u0ECD\u0ED0-\u0ED9\u0EDC-\u0EDF\u0F00\u0F18\u0F19\u0F20-\u0F29\u0F35\u0F37\u0F39\u0F3E-\u0F47\u0F49-\u0F6C\u0F71-\u0F84\u0F86-\u0F97\u0F99-\u0FBC\u0FC6\u1000-\u1049\u1050-\u109D\u10A0-\u10C5\u10C7\u10CD\u10D0-\u10FA\u10FC-\u1248\u124A-\u124D\u1250-\u1256\u1258\u125A-\u125D\u1260-\u1288\u128A-\u128D\u1290-\u12B0\u12B2-\u12B5\u12B8-\u12BE\u12C0\u12C2-\u12C5\u12C8-\u12D6\u12D8-\u1310\u1312-\u1315\u1318-\u135A\u135D-\u135F\u1369-\u1371\u1380-\u138F\u13A0-\u13F4\u1401-\u166C\u166F-\u167F\u1681-\u169A\u16A0-\u16EA\u16EE-\u16F8\u1700-\u170C\u170E-\u1714\u1720-\u1734\u1740-\u1753\u1760-\u176C\u176E-\u1770\u1772\u1773\u1780-\u17D3\u17D7\u17DC\u17DD\u17E0-\u17E9\u180B-\u180D\u1810-\u1819\u1820-\u1877\u1880-\u18AA\u18B0-\u18F5\u1900-\u191E\u1920-\u192B\u1930-\u193B\u1946-\u196D\u1970-\u1974\u1980-\u19AB\u19B0-\u19C9\u19D0-\u19DA\u1A00-\u1A1B\u1A20-\u1A5E\u1A60-\u1A7C\u1A7F-\u1A89\u1A90-\u1A99\u1AA7\u1AB0-\u1ABD\u1B00-\u1B4B\u1B50-\u1B59\u1B6B-\u1B73\u1B80-\u1BF3\u1C00-\u1C37\u1C40-\u1C49\u1C4D-\u1C7D\u1CD0-\u1CD2\u1CD4-\u1CF6\u1CF8\u1CF9\u1D00-\u1DF5\u1DFC-\u1F15\u1F18-\u1F1D\u1F20-\u1F45\u1F48-\u1F4D\u1F50-\u1F57\u1F59\u1F5B\u1F5D\u1F5F-\u1F7D\u1F80-\u1FB4\u1FB6-\u1FBC\u1FBE\u1FC2-\u1FC4\u1FC6-\u1FCC\u1FD0-\u1FD3\u1FD6-\u1FDB\u1FE0-\u1FEC\u1FF2-\u1FF4\u1FF6-\u1FFC\u200C\u200D\u203F\u2040\u2054\u2071\u207F\u2090-\u209C\u20D0-\u20DC\u20E1\u20E5-\u20F0\u2102\u2107\u210A-\u2113\u2115\u2118-\u211D\u2124\u2126\u2128\u212A-\u2139\u213C-\u213F\u2145-\u2149\u214E\u2160-\u2188\u2C00-\u2C2E\u2C30-\u2C5E\u2C60-\u2CE4\u2CEB-\u2CF3\u2D00-\u2D25\u2D27\u2D2D\u2D30-\u2D67\u2D6F\u2D7F-\u2D96\u2DA0-\u2DA6\u2DA8-\u2DAE\u2DB0-\u2DB6\u2DB8-\u2DBE\u2DC0-\u2DC6\u2DC8-\u2DCE\u2DD0-\u2DD6\u2DD8-\u2DDE\u2DE0-\u2DFF\u3005-\u3007\u3021-\u302F\u3031-\u3035\u3038-\u303C\u3041-\u3096\u3099-\u309F\u30A1-\u30FA\u30FC-\u30FF\u3105-\u312D\u3131-\u318E\u31A0-\u31BA\u31F0-\u31FF\u3400-\u4DB5\u4E00-\u9FCC\uA000-\uA48C\uA4D0-\uA4FD\uA500-\uA60C\uA610-\uA62B\uA640-\uA66F\uA674-\uA67D\uA67F-\uA69D\uA69F-\uA6F1\uA717-\uA71F\uA722-\uA788\uA78B-\uA78E\uA790-\uA7AD\uA7B0\uA7B1\uA7F7-\uA827\uA840-\uA873\uA880-\uA8C4\uA8D0-\uA8D9\uA8E0-\uA8F7\uA8FB\uA900-\uA92D\uA930-\uA953\uA960-\uA97C\uA980-\uA9C0\uA9CF-\uA9D9\uA9E0-\uA9FE\uAA00-\uAA36\uAA40-\uAA4D\uAA50-\uAA59\uAA60-\uAA76\uAA7A-\uAAC2\uAADB-\uAADD\uAAE0-\uAAEF\uAAF2-\uAAF6\uAB01-\uAB06\uAB09-\uAB0E\uAB11-\uAB16\uAB20-\uAB26\uAB28-\uAB2E\uAB30-\uAB5A\uAB5C-\uAB5F\uAB64\uAB65\uABC0-\uABEA\uABEC\uABED\uABF0-\uABF9\uAC00-\uD7A3\uD7B0-\uD7C6\uD7CB-\uD7FB\uF900-\uFA6D\uFA70-\uFAD9\uFB00-\uFB06\uFB13-\uFB17\uFB1D-\uFB28\uFB2A-\uFB36\uFB38-\uFB3C\uFB3E\uFB40\uFB41\uFB43\uFB44\uFB46-\uFBB1\uFBD3-\uFD3D\uFD50-\uFD8F\uFD92-\uFDC7\uFDF0-\uFDFB\uFE00-\uFE0F\uFE20-\uFE2D\uFE33\uFE34\uFE4D-\uFE4F\uFE70-\uFE74\uFE76-\uFEFC\uFF10-\uFF19\uFF21-\uFF3A\uFF3F\uFF41-\uFF5A\uFF66-\uFFBE\uFFC2-\uFFC7\uFFCA-\uFFCF\uFFD2-\uFFD7\uFFDA-\uFFDC]|\uD800[\uDC00-\uDC0B\uDC0D-\uDC26\uDC28-\uDC3A\uDC3C\uDC3D\uDC3F-\uDC4D\uDC50-\uDC5D\uDC80-\uDCFA\uDD40-\uDD74\uDDFD\uDE80-\uDE9C\uDEA0-\uDED0\uDEE0\uDF00-\uDF1F\uDF30-\uDF4A\uDF50-\uDF7A\uDF80-\uDF9D\uDFA0-\uDFC3\uDFC8-\uDFCF\uDFD1-\uDFD5]|\uD801[\uDC00-\uDC9D\uDCA0-\uDCA9\uDD00-\uDD27\uDD30-\uDD63\uDE00-\uDF36\uDF40-\uDF55\uDF60-\uDF67]|\uD802[\uDC00-\uDC05\uDC08\uDC0A-\uDC35\uDC37\uDC38\uDC3C\uDC3F-\uDC55\uDC60-\uDC76\uDC80-\uDC9E\uDD00-\uDD15\uDD20-\uDD39\uDD80-\uDDB7\uDDBE\uDDBF\uDE00-\uDE03\uDE05\uDE06\uDE0C-\uDE13\uDE15-\uDE17\uDE19-\uDE33\uDE38-\uDE3A\uDE3F\uDE60-\uDE7C\uDE80-\uDE9C\uDEC0-\uDEC7\uDEC9-\uDEE6\uDF00-\uDF35\uDF40-\uDF55\uDF60-\uDF72\uDF80-\uDF91]|\uD803[\uDC00-\uDC48]|\uD804[\uDC00-\uDC46\uDC66-\uDC6F\uDC7F-\uDCBA\uDCD0-\uDCE8\uDCF0-\uDCF9\uDD00-\uDD34\uDD36-\uDD3F\uDD50-\uDD73\uDD76\uDD80-\uDDC4\uDDD0-\uDDDA\uDE00-\uDE11\uDE13-\uDE37\uDEB0-\uDEEA\uDEF0-\uDEF9\uDF01-\uDF03\uDF05-\uDF0C\uDF0F\uDF10\uDF13-\uDF28\uDF2A-\uDF30\uDF32\uDF33\uDF35-\uDF39\uDF3C-\uDF44\uDF47\uDF48\uDF4B-\uDF4D\uDF57\uDF5D-\uDF63\uDF66-\uDF6C\uDF70-\uDF74]|\uD805[\uDC80-\uDCC5\uDCC7\uDCD0-\uDCD9\uDD80-\uDDB5\uDDB8-\uDDC0\uDE00-\uDE40\uDE44\uDE50-\uDE59\uDE80-\uDEB7\uDEC0-\uDEC9]|\uD806[\uDCA0-\uDCE9\uDCFF\uDEC0-\uDEF8]|\uD808[\uDC00-\uDF98]|\uD809[\uDC00-\uDC6E]|[\uD80C\uD840-\uD868\uD86A-\uD86C][\uDC00-\uDFFF]|\uD80D[\uDC00-\uDC2E]|\uD81A[\uDC00-\uDE38\uDE40-\uDE5E\uDE60-\uDE69\uDED0-\uDEED\uDEF0-\uDEF4\uDF00-\uDF36\uDF40-\uDF43\uDF50-\uDF59\uDF63-\uDF77\uDF7D-\uDF8F]|\uD81B[\uDF00-\uDF44\uDF50-\uDF7E\uDF8F-\uDF9F]|\uD82C[\uDC00\uDC01]|\uD82F[\uDC00-\uDC6A\uDC70-\uDC7C\uDC80-\uDC88\uDC90-\uDC99\uDC9D\uDC9E]|\uD834[\uDD65-\uDD69\uDD6D-\uDD72\uDD7B-\uDD82\uDD85-\uDD8B\uDDAA-\uDDAD\uDE42-\uDE44]|\uD835[\uDC00-\uDC54\uDC56-\uDC9C\uDC9E\uDC9F\uDCA2\uDCA5\uDCA6\uDCA9-\uDCAC\uDCAE-\uDCB9\uDCBB\uDCBD-\uDCC3\uDCC5-\uDD05\uDD07-\uDD0A\uDD0D-\uDD14\uDD16-\uDD1C\uDD1E-\uDD39\uDD3B-\uDD3E\uDD40-\uDD44\uDD46\uDD4A-\uDD50\uDD52-\uDEA5\uDEA8-\uDEC0\uDEC2-\uDEDA\uDEDC-\uDEFA\uDEFC-\uDF14\uDF16-\uDF34\uDF36-\uDF4E\uDF50-\uDF6E\uDF70-\uDF88\uDF8A-\uDFA8\uDFAA-\uDFC2\uDFC4-\uDFCB\uDFCE-\uDFFF]|\uD83A[\uDC00-\uDCC4\uDCD0-\uDCD6]|\uD83B[\uDE00-\uDE03\uDE05-\uDE1F\uDE21\uDE22\uDE24\uDE27\uDE29-\uDE32\uDE34-\uDE37\uDE39\uDE3B\uDE42\uDE47\uDE49\uDE4B\uDE4D-\uDE4F\uDE51\uDE52\uDE54\uDE57\uDE59\uDE5B\uDE5D\uDE5F\uDE61\uDE62\uDE64\uDE67-\uDE6A\uDE6C-\uDE72\uDE74-\uDE77\uDE79-\uDE7C\uDE7E\uDE80-\uDE89\uDE8B-\uDE9B\uDEA1-\uDEA3\uDEA5-\uDEA9\uDEAB-\uDEBB]|\uD869[\uDC00-\uDED6\uDF00-\uDFFF]|\uD86D[\uDC00-\uDF34\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1D]|\uD87E[\uDC00-\uDE1D]|\uDB40[\uDD00-\uDDEF]/
     };
 
     // Ensure the condition is true, otherwise throw an error.
@@ -18780,27 +19736,33 @@ module.exports={
         };
     }
 
-    // 7.2 White Space
+    // ECMA-262 11.2 White Space
 
     function isWhiteSpace(ch) {
         return (ch === 0x20) || (ch === 0x09) || (ch === 0x0B) || (ch === 0x0C) || (ch === 0xA0) ||
             (ch >= 0x1680 && [0x1680, 0x180E, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x202F, 0x205F, 0x3000, 0xFEFF].indexOf(ch) >= 0);
     }
 
-    // 7.3 Line Terminators
+    // ECMA-262 11.3 Line Terminators
 
     function isLineTerminator(ch) {
         return (ch === 0x0A) || (ch === 0x0D) || (ch === 0x2028) || (ch === 0x2029);
     }
 
-    // 7.6 Identifier Names and Identifiers
+    // ECMA-262 11.6 Identifier Names and Identifiers
+
+    function fromCodePoint(cp) {
+        return (cp < 0x10000) ? String.fromCharCode(cp) :
+            String.fromCharCode(0xD800 + ((cp - 0x10000) >> 10)) +
+            String.fromCharCode(0xDC00 + ((cp - 0x10000) & 1023));
+    }
 
     function isIdentifierStart(ch) {
         return (ch === 0x24) || (ch === 0x5F) ||  // $ (dollar) and _ (underscore)
             (ch >= 0x41 && ch <= 0x5A) ||         // A..Z
             (ch >= 0x61 && ch <= 0x7A) ||         // a..z
             (ch === 0x5C) ||                      // \ (backslash)
-            ((ch >= 0x80) && Regex.NonAsciiIdentifierStart.test(String.fromCharCode(ch)));
+            ((ch >= 0x80) && Regex.NonAsciiIdentifierStart.test(fromCodePoint(ch)));
     }
 
     function isIdentifierPart(ch) {
@@ -18809,10 +19771,10 @@ module.exports={
             (ch >= 0x61 && ch <= 0x7A) ||         // a..z
             (ch >= 0x30 && ch <= 0x39) ||         // 0..9
             (ch === 0x5C) ||                      // \ (backslash)
-            ((ch >= 0x80) && Regex.NonAsciiIdentifierPart.test(String.fromCharCode(ch)));
+            ((ch >= 0x80) && Regex.NonAsciiIdentifierPart.test(fromCodePoint(ch)));
     }
 
-    // 7.6.1.2 Future Reserved Words
+    // ECMA-262 11.6.2.2 Future Reserved Words
 
     function isFutureReservedWord(id) {
         switch (id) {
@@ -18825,8 +19787,6 @@ module.exports={
             return false;
         }
     }
-
-    // 11.6.2.2 Future Reserved Words
 
     function isStrictModeReservedWord(id) {
         switch (id) {
@@ -18849,7 +19809,7 @@ module.exports={
         return id === 'eval' || id === 'arguments';
     }
 
-    // 7.6.1.1 Keywords
+    // ECMA-262 11.6.2.1 Keywords
 
     function isKeyword(id) {
 
@@ -18884,7 +19844,7 @@ module.exports={
         }
     }
 
-    // 7.4 Comments
+    // ECMA-262 11.4 Comments
 
     function addComment(type, value, start, end, loc) {
         var comment;
@@ -19083,7 +20043,7 @@ module.exports={
     }
 
     function scanUnicodeCodePointEscape() {
-        var ch, code, cu1, cu2;
+        var ch, code;
 
         ch = source[index];
         code = 0;
@@ -19105,52 +20065,75 @@ module.exports={
             throwUnexpectedToken();
         }
 
-        // UTF-16 Encoding
-        if (code <= 0xFFFF) {
-            return String.fromCharCode(code);
-        }
-        cu1 = ((code - 0x10000) >> 10) + 0xD800;
-        cu2 = ((code - 0x10000) & 1023) + 0xDC00;
-        return String.fromCharCode(cu1, cu2);
+        return fromCodePoint(code);
     }
 
-    function getEscapedIdentifier() {
-        var ch, id;
+    function codePointAt(i) {
+        var cp, first, second;
 
-        ch = source.charCodeAt(index++);
-        id = String.fromCharCode(ch);
+        cp = source.charCodeAt(i);
+        if (cp >= 0xD800 && cp <= 0xDBFF) {
+            second = source.charCodeAt(i + 1);
+            if (second >= 0xDC00 && second <= 0xDFFF) {
+                first = cp;
+                cp = (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
+            }
+        }
+
+        return cp;
+    }
+
+    function getComplexIdentifier() {
+        var cp, ch, id;
+
+        cp = codePointAt(index);
+        id = fromCodePoint(cp);
+        index += id.length;
 
         // '\u' (U+005C, U+0075) denotes an escaped character.
-        if (ch === 0x5C) {
+        if (cp === 0x5C) {
             if (source.charCodeAt(index) !== 0x75) {
                 throwUnexpectedToken();
             }
             ++index;
-            ch = scanHexEscape('u');
-            if (!ch || ch === '\\' || !isIdentifierStart(ch.charCodeAt(0))) {
-                throwUnexpectedToken();
+            if (source[index] === '{') {
+                ++index;
+                ch = scanUnicodeCodePointEscape();
+            } else {
+                ch = scanHexEscape('u');
+                cp = ch.charCodeAt(0);
+                if (!ch || ch === '\\' || !isIdentifierStart(cp)) {
+                    throwUnexpectedToken();
+                }
             }
             id = ch;
         }
 
         while (index < length) {
-            ch = source.charCodeAt(index);
-            if (!isIdentifierPart(ch)) {
+            cp = codePointAt(index);
+            if (!isIdentifierPart(cp)) {
                 break;
             }
-            ++index;
-            id += String.fromCharCode(ch);
+            ch = fromCodePoint(cp);
+            id += ch;
+            index += ch.length;
 
             // '\u' (U+005C, U+0075) denotes an escaped character.
-            if (ch === 0x5C) {
+            if (cp === 0x5C) {
                 id = id.substr(0, id.length - 1);
                 if (source.charCodeAt(index) !== 0x75) {
                     throwUnexpectedToken();
                 }
                 ++index;
-                ch = scanHexEscape('u');
-                if (!ch || ch === '\\' || !isIdentifierPart(ch.charCodeAt(0))) {
-                    throwUnexpectedToken();
+                if (source[index] === '{') {
+                    ++index;
+                    ch = scanUnicodeCodePointEscape();
+                } else {
+                    ch = scanHexEscape('u');
+                    cp = ch.charCodeAt(0);
+                    if (!ch || ch === '\\' || !isIdentifierPart(cp)) {
+                        throwUnexpectedToken();
+                    }
                 }
                 id += ch;
             }
@@ -19168,7 +20151,11 @@ module.exports={
             if (ch === 0x5C) {
                 // Blackslash (U+005C) marks Unicode escape sequence.
                 index = start;
-                return getEscapedIdentifier();
+                return getComplexIdentifier();
+            } else if (ch >= 0xD800 && ch < 0xDFFF) {
+                // Need to handle surrogate pairs.
+                index = start;
+                return getComplexIdentifier();
             }
             if (isIdentifierPart(ch)) {
                 ++index;
@@ -19186,7 +20173,7 @@ module.exports={
         start = index;
 
         // Backslash (U+005C) starts an escaped character.
-        id = (source.charCodeAt(index) === 0x5C) ? getEscapedIdentifier() : getIdentifier();
+        id = (source.charCodeAt(index) === 0x5C) ? getComplexIdentifier() : getIdentifier();
 
         // There is no keyword or literal with only one character.
         // Thus, it must be an identifier.
@@ -19213,7 +20200,7 @@ module.exports={
     }
 
 
-    // 7.7 Punctuators
+    // ECMA-262 11.7 Punctuators
 
     function scanPunctuator() {
         var token, str;
@@ -19313,7 +20300,7 @@ module.exports={
         return token;
     }
 
-    // 7.8.3 Numeric Literals
+    // ECMA-262 11.8.3 Numeric Literals
 
     function scanHexLiteral(start) {
         var number = '';
@@ -19517,7 +20504,7 @@ module.exports={
         };
     }
 
-    // 7.8.4 String Literals
+    // ECMA-262 11.8.4 String Literals
 
     function scanStringLiteral() {
         var str = '', quote, start, ch, unescaped, octToDec, octal = false;
@@ -19572,7 +20559,9 @@ module.exports={
                         break;
                     case '8':
                     case '9':
-                        throw throwUnexpectedToken();
+                        str += ch;
+                        tolerateUnexpectedToken();
+                        break;
 
                     default:
                         if (isOctalDigit(ch)) {
@@ -19613,6 +20602,8 @@ module.exports={
             end: index
         };
     }
+
+    // ECMA-262 11.8.6 Template Literal Lexical Components
 
     function scanTemplate() {
         var cooked = '', ch, start, rawOffset, terminated, head, tail, restore, unescaped;
@@ -19736,29 +20727,40 @@ module.exports={
         };
     }
 
+    // ECMA-262 11.8.5 Regular Expression Literals
+
     function testRegExp(pattern, flags) {
-        var tmp = pattern;
+        // The BMP character to use as a replacement for astral symbols when
+        // translating an ES6 "u"-flagged pattern to an ES5-compatible
+        // approximation.
+        // Note: replacing with '\uFFFF' enables false positives in unlikely
+        // scenarios. For example, `[\u{1044f}-\u{10440}]` is an invalid
+        // pattern that would not be detected by this substitution.
+        var astralSubstitute = '\uFFFF',
+            tmp = pattern;
 
         if (flags.indexOf('u') >= 0) {
-            // Replace each astral symbol and every Unicode escape sequence
-            // that possibly represents an astral symbol or a paired surrogate
-            // with a single ASCII symbol to avoid throwing on regular
-            // expressions that are only valid in combination with the `/u`
-            // flag.
-            // Note: replacing with the ASCII symbol `x` might cause false
-            // negatives in unlikely scenarios. For example, `[\u{61}-b]` is a
-            // perfectly valid pattern that is equivalent to `[a-b]`, but it
-            // would be replaced by `[x-b]` which throws an error.
             tmp = tmp
-                .replace(/\\u\{([0-9a-fA-F]+)\}/g, function ($0, $1) {
-                    if (parseInt($1, 16) <= 0x10FFFF) {
-                        return 'x';
+                // Replace every Unicode escape sequence with the equivalent
+                // BMP character or a constant ASCII code point in the case of
+                // astral symbols. (See the above note on `astralSubstitute`
+                // for more information.)
+                .replace(/\\u\{([0-9a-fA-F]+)\}|\\u([a-fA-F0-9]{4})/g, function ($0, $1, $2) {
+                    var codePoint = parseInt($1 || $2, 16);
+                    if (codePoint > 0x10FFFF) {
+                        throwUnexpectedToken(null, Messages.InvalidRegExp);
                     }
-                    throwUnexpectedToken(null, Messages.InvalidRegExp);
+                    if (codePoint <= 0xFFFF) {
+                        return String.fromCharCode(codePoint);
+                    }
+                    return astralSubstitute;
                 })
+                // Replace each paired surrogate with a single ASCII symbol to
+                // avoid throwing on regular expressions that are only valid in
+                // combination with the "u" flag.
                 .replace(
-                    /\\u([a-fA-F0-9]{4})|[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
-                    'x'
+                    /[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
+                    astralSubstitute
                 );
         }
 
@@ -20025,7 +21027,7 @@ module.exports={
     }
 
     function advance() {
-        var ch, token;
+        var cp, token;
 
         if (index >= length) {
             return {
@@ -20037,9 +21039,9 @@ module.exports={
             };
         }
 
-        ch = source.charCodeAt(index);
+        cp = source.charCodeAt(index);
 
-        if (isIdentifierStart(ch)) {
+        if (isIdentifierStart(cp)) {
             token = scanIdentifier();
             if (strict && isStrictModeReservedWord(token.value)) {
                 token.type = Token.Keyword;
@@ -20048,37 +21050,45 @@ module.exports={
         }
 
         // Very common: ( and ) and ;
-        if (ch === 0x28 || ch === 0x29 || ch === 0x3B) {
+        if (cp === 0x28 || cp === 0x29 || cp === 0x3B) {
             return scanPunctuator();
         }
 
         // String literal starts with single quote (U+0027) or double quote (U+0022).
-        if (ch === 0x27 || ch === 0x22) {
+        if (cp === 0x27 || cp === 0x22) {
             return scanStringLiteral();
         }
 
         // Dot (.) U+002E can also start a floating-point number, hence the need
         // to check the next character.
-        if (ch === 0x2E) {
+        if (cp === 0x2E) {
             if (isDecimalDigit(source.charCodeAt(index + 1))) {
                 return scanNumericLiteral();
             }
             return scanPunctuator();
         }
 
-        if (isDecimalDigit(ch)) {
+        if (isDecimalDigit(cp)) {
             return scanNumericLiteral();
         }
 
         // Slash (/) U+002F can also start a regex.
-        if (extra.tokenize && ch === 0x2F) {
+        if (extra.tokenize && cp === 0x2F) {
             return advanceSlash();
         }
 
         // Template literals start with ` (U+0060) for template head
         // or } (U+007D) for template middle or template tail.
-        if (ch === 0x60 || (ch === 0x7D && state.curlyStack[state.curlyStack.length - 1] === '${')) {
+        if (cp === 0x60 || (cp === 0x7D && state.curlyStack[state.curlyStack.length - 1] === '${')) {
             return scanTemplate();
+        }
+
+        // Possible identifier start in a surrogate pair.
+        if (cp >= 0xD800 && cp < 0xDFFF) {
+            cp = codePointAt(index);
+            if (isIdentifierStart(cp)) {
+                return scanIdentifier();
+            }
         }
 
         return scanPunctuator();
@@ -20229,17 +21239,25 @@ module.exports={
             }
 
             // Eating the stack.
-            if (last) {
-                while (last && last.range[0] >= this.range[0]) {
-                    lastChild = last;
-                    last = bottomRight.pop();
-                }
+            while (last && last.range[0] >= this.range[0]) {
+                lastChild = bottomRight.pop();
+                last = bottomRight[bottomRight.length - 1];
             }
 
             if (lastChild) {
-                if (lastChild.leadingComments && lastChild.leadingComments[lastChild.leadingComments.length - 1].range[1] <= this.range[0]) {
-                    this.leadingComments = lastChild.leadingComments;
-                    lastChild.leadingComments = undefined;
+                if (lastChild.leadingComments) {
+                    leadingComments = [];
+                    for (i = lastChild.leadingComments.length - 1; i >= 0; --i) {
+                        comment = lastChild.leadingComments[i];
+                        if (comment.range[1] <= this.range[0]) {
+                            leadingComments.unshift(comment);
+                            lastChild.leadingComments.splice(i, 1);
+                        }
+                    }
+
+                    if (!lastChild.leadingComments.length) {
+                        lastChild.leadingComments = undefined;
+                    }
                 }
             } else if (extra.leadingComments.length > 0) {
                 leadingComments = [];
@@ -20442,6 +21460,15 @@ module.exports={
             return this;
         },
 
+        finishForOfStatement: function (left, right, body) {
+            this.type = Syntax.ForOfStatement;
+            this.left = left;
+            this.right = right;
+            this.body = body;
+            this.finish();
+            return this;
+        },
+
         finishForInStatement: function (left, right, body) {
             this.type = Syntax.ForInStatement;
             this.left = left;
@@ -20452,25 +21479,25 @@ module.exports={
             return this;
         },
 
-        finishFunctionDeclaration: function (id, params, defaults, body) {
+        finishFunctionDeclaration: function (id, params, defaults, body, generator) {
             this.type = Syntax.FunctionDeclaration;
             this.id = id;
             this.params = params;
             this.defaults = defaults;
             this.body = body;
-            this.generator = false;
+            this.generator = generator;
             this.expression = false;
             this.finish();
             return this;
         },
 
-        finishFunctionExpression: function (id, params, defaults, body) {
+        finishFunctionExpression: function (id, params, defaults, body, generator) {
             this.type = Syntax.FunctionExpression;
             this.id = id;
             this.params = params;
             this.defaults = defaults;
             this.body = body;
-            this.generator = false;
+            this.generator = generator;
             this.expression = false;
             this.finish();
             return this;
@@ -20515,6 +21542,14 @@ module.exports={
             this.type = Syntax.MemberExpression;
             this.computed = accessor === '[';
             this.object = object;
+            this.property = property;
+            this.finish();
+            return this;
+        },
+
+        finishMetaProperty: function (meta, property) {
+            this.type = Syntax.MetaProperty;
+            this.meta = meta;
             this.property = property;
             this.finish();
             return this;
@@ -20778,6 +21813,14 @@ module.exports={
             this.type = Syntax.ImportDeclaration;
             this.specifiers = specifiers;
             this.source = src;
+            this.finish();
+            return this;
+        },
+
+        finishYieldExpression: function (argument, delegate) {
+            this.type = Syntax.YieldExpression;
+            this.argument = argument;
+            this.delegate = delegate;
             this.finish();
             return this;
         }
@@ -21063,7 +22106,9 @@ module.exports={
         return result;
     }
 
-    function parseArrayPattern() {
+    // ECMA-262 13.3.3 Destructuring Binding Patterns
+
+    function parseArrayPattern(params) {
         var node = new Node(), elements = [], rest, restNode;
         expect('[');
 
@@ -21075,11 +22120,12 @@ module.exports={
                 if (match('...')) {
                     restNode = new Node();
                     lex();
-                    rest = parseVariableIdentifier();
+                    params.push(lookahead);
+                    rest = parseVariableIdentifier(params);
                     elements.push(restNode.finishRestElement(rest));
                     break;
                 } else {
-                    elements.push(parsePatternWithDefault());
+                    elements.push(parsePatternWithDefault(params));
                 }
                 if (!match(']')) {
                     expect(',');
@@ -21093,34 +22139,38 @@ module.exports={
         return node.finishArrayPattern(elements);
     }
 
-    function parsePropertyPattern() {
-        var node = new Node(), key, computed = match('['), init;
+    function parsePropertyPattern(params) {
+        var node = new Node(), key, keyToken, computed = match('['), init;
         if (lookahead.type === Token.Identifier) {
+            keyToken = lookahead;
             key = parseVariableIdentifier();
             if (match('=')) {
+                params.push(keyToken);
                 lex();
                 init = parseAssignmentExpression();
+
                 return node.finishProperty(
                     'init', key, false,
-                    new WrappingNode(key).finishAssignmentPattern(key, init), false, false);
+                    new WrappingNode(keyToken).finishAssignmentPattern(key, init), false, false);
             } else if (!match(':')) {
+                params.push(keyToken);
                 return node.finishProperty('init', key, false, key, false, true);
             }
         } else {
-            key = parseObjectPropertyKey();
+            key = parseObjectPropertyKey(params);
         }
         expect(':');
-        init = parsePatternWithDefault();
+        init = parsePatternWithDefault(params);
         return node.finishProperty('init', key, computed, init, false, false);
     }
 
-    function parseObjectPattern() {
+    function parseObjectPattern(params) {
         var node = new Node(), properties = [];
 
         expect('{');
 
         while (!match('}')) {
-            properties.push(parsePropertyPattern());
+            properties.push(parsePropertyPattern(params));
             if (!match('}')) {
                 expect(',');
             }
@@ -21131,31 +22181,33 @@ module.exports={
         return node.finishObjectPattern(properties);
     }
 
-    function parsePattern() {
-        if (lookahead.type === Token.Identifier) {
-            return parseVariableIdentifier();
-        } else if (match('[')) {
-            return parseArrayPattern();
+    function parsePattern(params) {
+        if (match('[')) {
+            return parseArrayPattern(params);
         } else if (match('{')) {
-            return parseObjectPattern();
+            return parseObjectPattern(params);
         }
-        throwUnexpectedToken(lookahead);
+        params.push(lookahead);
+        return parseVariableIdentifier();
     }
 
-    function parsePatternWithDefault() {
-        var startToken = lookahead, pattern, right;
-        pattern = parsePattern();
+    function parsePatternWithDefault(params) {
+        var startToken = lookahead, pattern, previousAllowYield, right;
+        pattern = parsePattern(params);
         if (match('=')) {
             lex();
+            previousAllowYield = state.allowYield;
+            state.allowYield = true;
             right = isolateCoverGrammar(parseAssignmentExpression);
+            state.allowYield = previousAllowYield;
             pattern = new WrappingNode(startToken).finishAssignmentPattern(pattern, right);
         }
         return pattern;
     }
 
-    // 11.1.4 Array Initialiser
+    // ECMA-262 12.2.5 Array Initializer
 
-    function parseArrayInitialiser() {
+    function parseArrayInitializer() {
         var elements = [], node = new Node(), restSpread;
 
         expect('[');
@@ -21188,9 +22240,9 @@ module.exports={
         return node.finishArrayExpression(elements);
     }
 
-    // 11.1.5 Object Initialiser
+    // ECMA-262 12.2.6 Object Initializer
 
-    function parsePropertyFunction(node, paramInfo) {
+    function parsePropertyFunction(node, paramInfo, isGenerator) {
         var previousStrict, body;
 
         isAssignmentTarget = isBindingElement = false;
@@ -21206,14 +22258,20 @@ module.exports={
         }
 
         strict = previousStrict;
-        return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body);
+        return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body, isGenerator);
     }
 
     function parsePropertyMethodFunction() {
-        var params, method, node = new Node();
+        var params, method, node = new Node(),
+            previousAllowYield = state.allowYield;
 
+        state.allowYield = false;
         params = parseParams();
-        method = parsePropertyFunction(node, params);
+        state.allowYield = previousAllowYield;
+
+        state.allowYield = false;
+        method = parsePropertyFunction(node, params, false);
+        state.allowYield = previousAllowYield;
 
         return method;
     }
@@ -21271,7 +22329,8 @@ module.exports={
     // In order to avoid back tracking, it returns `null` if the position is not a MethodDefinition and the caller
     // is responsible to visit other options.
     function tryParseMethodDefinition(token, key, computed, node) {
-        var value, options, methodNode;
+        var value, options, methodNode, params,
+            previousAllowYield = state.allowYield;
 
         if (token.type === Token.Identifier) {
             // check for `get` and `set`;
@@ -21282,13 +22341,17 @@ module.exports={
                 methodNode = new Node();
                 expect('(');
                 expect(')');
+
+                state.allowYield = false;
                 value = parsePropertyFunction(methodNode, {
                     params: [],
                     defaults: [],
                     stricted: null,
                     firstRestricted: null,
                     message: null
-                });
+                }, false);
+                state.allowYield = previousAllowYield;
+
                 return node.finishProperty('get', key, computed, value, false, false);
             } else if (token.value === 'set' && lookaheadPropertyName()) {
                 computed = match('[');
@@ -21306,19 +22369,38 @@ module.exports={
                 if (match(')')) {
                     tolerateUnexpectedToken(lookahead);
                 } else {
+                    state.allowYield = false;
                     parseParam(options);
+                    state.allowYield = previousAllowYield;
                     if (options.defaultCount === 0) {
                         options.defaults = [];
                     }
                 }
                 expect(')');
 
-                value = parsePropertyFunction(methodNode, options);
+                state.allowYield = false;
+                value = parsePropertyFunction(methodNode, options, false);
+                state.allowYield = previousAllowYield;
+
                 return node.finishProperty('set', key, computed, value, false, false);
             }
+        } else if (token.type === Token.Punctuator && token.value === '*' && lookaheadPropertyName()) {
+            computed = match('[');
+            key = parseObjectPropertyKey();
+            methodNode = new Node();
+
+            state.allowYield = true;
+            params = parseParams();
+            state.allowYield = previousAllowYield;
+
+            state.allowYield = false;
+            value = parsePropertyFunction(methodNode, params, true);
+            state.allowYield = previousAllowYield;
+
+            return node.finishProperty('init', key, computed, value, true, false);
         }
 
-        if (match('(')) {
+        if (key && match('(')) {
             value = parsePropertyMethodFunction();
             return node.finishProperty('init', key, computed, value, true, false);
         }
@@ -21327,32 +22409,33 @@ module.exports={
         return null;
     }
 
-    function checkProto(key, computed, hasProto) {
-        if (computed === false && (key.type === Syntax.Identifier && key.name === '__proto__' ||
-            key.type === Syntax.Literal && key.value === '__proto__')) {
-            if (hasProto.value) {
-                tolerateError(Messages.DuplicateProtoProperty);
-            } else {
-                hasProto.value = true;
-            }
-        }
-    }
-
     function parseObjectProperty(hasProto) {
-        var token = lookahead, node = new Node(), computed, key, maybeMethod, value;
+        var token = lookahead, node = new Node(), computed, key, maybeMethod, proto, value;
 
         computed = match('[');
-        key = parseObjectPropertyKey();
+        if (match('*')) {
+            lex();
+        } else {
+            key = parseObjectPropertyKey();
+        }
         maybeMethod = tryParseMethodDefinition(token, key, computed, node);
-
         if (maybeMethod) {
-            checkProto(maybeMethod.key, maybeMethod.computed, hasProto);
-            // finished
             return maybeMethod;
         }
 
-        // init property or short hand property.
-        checkProto(key, computed, hasProto);
+        if (!key) {
+            throwUnexpectedToken(lookahead);
+        }
+
+        // Check for duplicated __proto__
+        if (!computed) {
+            proto = (key.type === Syntax.Identifier && key.name === '__proto__') ||
+                (key.type === Syntax.Literal && key.value === '__proto__');
+            if (hasProto.value && proto) {
+                tolerateError(Messages.DuplicateProtoProperty);
+            }
+            hasProto.value |= proto;
+        }
 
         if (match(':')) {
             lex();
@@ -21374,7 +22457,7 @@ module.exports={
         throwUnexpectedToken(lookahead);
     }
 
-    function parseObjectInitialiser() {
+    function parseObjectInitializer() {
         var properties = [], hasProto = {value: false}, node = new Node();
 
         expect('{');
@@ -21428,6 +22511,8 @@ module.exports={
         }
     }
 
+    // ECMA-262 12.2.9 Template Literals
+
     function parseTemplateElement(option) {
         var node, token;
 
@@ -21457,10 +22542,10 @@ module.exports={
         return node.finishTemplateLiteral(quasis, expressions);
     }
 
-    // 11.1.6 The Grouping Operator
+    // ECMA-262 12.2.10 The Grouping Operator
 
     function parseGroupExpression() {
-        var expr, expressions, startToken, i;
+        var expr, expressions, startToken, i, params = [];
 
         expect('(');
 
@@ -21471,13 +22556,14 @@ module.exports={
             }
             return {
                 type: PlaceHolders.ArrowParameterPlaceHolder,
-                params: []
+                params: [],
+                rawParams: []
             };
         }
 
         startToken = lookahead;
         if (match('...')) {
-            expr = parseRestElement();
+            expr = parseRestElement(params);
             expect(')');
             if (!match('=>')) {
                 expect('=>');
@@ -21505,7 +22591,7 @@ module.exports={
                     if (!isBindingElement) {
                         throwUnexpectedToken(lookahead);
                     }
-                    expressions.push(parseRestElement());
+                    expressions.push(parseRestElement(params));
                     expect(')');
                     if (!match('=>')) {
                         expect('=>');
@@ -21530,6 +22616,13 @@ module.exports={
         expect(')');
 
         if (match('=>')) {
+            if (expr.type === Syntax.Identifier && expr.name === 'yield') {
+                return {
+                    type: PlaceHolders.ArrowParameterPlaceHolder,
+                    params: [expr]
+                };
+            }
+
             if (!isBindingElement) {
                 throwUnexpectedToken(lookahead);
             }
@@ -21552,7 +22645,7 @@ module.exports={
     }
 
 
-    // 11.1 Primary Expressions
+    // ECMA-262 12.2 Primary Expressions
 
     function parsePrimaryExpression() {
         var type, token, expr, node;
@@ -21563,17 +22656,20 @@ module.exports={
         }
 
         if (match('[')) {
-            return inheritCoverGrammar(parseArrayInitialiser);
+            return inheritCoverGrammar(parseArrayInitializer);
         }
 
         if (match('{')) {
-            return inheritCoverGrammar(parseObjectInitialiser);
+            return inheritCoverGrammar(parseObjectInitializer);
         }
 
         type = lookahead.type;
         node = new Node();
 
         if (type === Token.Identifier) {
+            if (sourceType === 'module' && lookahead.value === 'await') {
+                tolerateUnexpectedToken(lookahead);
+            }
             expr = node.finishIdentifier(lex().value);
         } else if (type === Token.StringLiteral || type === Token.NumericLiteral) {
             isAssignmentTarget = isBindingElement = false;
@@ -21582,6 +22678,9 @@ module.exports={
             }
             expr = node.finishLiteral(lex());
         } else if (type === Token.Keyword) {
+            if (!strict && state.allowYield && matchKeyword('yield')) {
+                return parseNonComputedProperty();
+            }
             isAssignmentTarget = isBindingElement = false;
             if (matchKeyword('function')) {
                 return parseFunctionExpression();
@@ -21624,16 +22723,23 @@ module.exports={
         return expr;
     }
 
-    // 11.2 Left-Hand-Side Expressions
+    // ECMA-262 12.3 Left-Hand-Side Expressions
 
     function parseArguments() {
-        var args = [];
+        var args = [], expr;
 
         expect('(');
 
         if (!match(')')) {
             while (startIndex < length) {
-                args.push(isolateCoverGrammar(parseAssignmentExpression));
+                if (match('...')) {
+                    expr = new Node();
+                    lex();
+                    expr.finishSpreadElement(isolateCoverGrammar(parseAssignmentExpression));
+                } else {
+                    expr = isolateCoverGrammar(parseAssignmentExpression);
+                }
+                args.push(expr);
                 if (match(')')) {
                     break;
                 }
@@ -21676,10 +22782,24 @@ module.exports={
         return expr;
     }
 
+    // ECMA-262 12.3.3 The new Operator
+
     function parseNewExpression() {
         var callee, args, node = new Node();
 
         expectKeyword('new');
+
+        if (match('.')) {
+            lex();
+            if (lookahead.type === Token.Identifier && lookahead.value === 'target') {
+                if (state.inFunctionBody) {
+                    lex();
+                    return node.finishMetaProperty('new', 'target');
+                }
+            }
+            throwUnexpectedToken(lookahead);
+        }
+
         callee = isolateCoverGrammar(parseLeftHandSideExpression);
         args = match('(') ? parseArguments() : [];
 
@@ -21687,6 +22807,8 @@ module.exports={
 
         return node.finishNewExpression(callee, args);
     }
+
+    // ECMA-262 12.3.4 Function Calls
 
     function parseLeftHandSideExpressionAllowCall() {
         var quasi, expr, args, property, startToken, previousAllowIn = state.allowIn;
@@ -21733,6 +22855,8 @@ module.exports={
         return expr;
     }
 
+    // ECMA-262 12.3 Left-Hand-Side Expressions
+
     function parseLeftHandSideExpression() {
         var quasi, expr, property, startToken;
         assert(state.allowIn, 'callee of new expression always allow in keyword.');
@@ -21771,7 +22895,7 @@ module.exports={
         return expr;
     }
 
-    // 11.3 Postfix Expressions
+    // ECMA-262 12.4 Postfix Expressions
 
     function parsePostfixExpression() {
         var expr, token, startToken = lookahead;
@@ -21780,7 +22904,7 @@ module.exports={
 
         if (!hasLineTerminator && lookahead.type === Token.Punctuator) {
             if (match('++') || match('--')) {
-                // 11.3.1, 11.3.2
+                // ECMA-262 11.3.1, 11.3.2
                 if (strict && expr.type === Syntax.Identifier && isRestrictedWord(expr.name)) {
                     tolerateError(Messages.StrictLHSPostfix);
                 }
@@ -21799,7 +22923,7 @@ module.exports={
         return expr;
     }
 
-    // 11.4 Unary Operators
+    // ECMA-262 12.5 Unary Operators
 
     function parseUnaryExpression() {
         var token, expr, startToken;
@@ -21810,7 +22934,7 @@ module.exports={
             startToken = lookahead;
             token = lex();
             expr = inheritCoverGrammar(parseUnaryExpression);
-            // 11.4.4, 11.4.5
+            // ECMA-262 11.4.4, 11.4.5
             if (strict && expr.type === Syntax.Identifier && isRestrictedWord(expr.name)) {
                 tolerateError(Messages.StrictLHSPrefix);
             }
@@ -21913,13 +23037,13 @@ module.exports={
         return prec;
     }
 
-    // 11.5 Multiplicative Operators
-    // 11.6 Additive Operators
-    // 11.7 Bitwise Shift Operators
-    // 11.8 Relational Operators
-    // 11.9 Equality Operators
-    // 11.10 Binary Bitwise Operators
-    // 11.11 Binary Logical Operators
+    // ECMA-262 12.6 Multiplicative Operators
+    // ECMA-262 12.7 Additive Operators
+    // ECMA-262 12.8 Bitwise Shift Operators
+    // ECMA-262 12.9 Relational Operators
+    // ECMA-262 12.10 Equality Operators
+    // ECMA-262 12.11 Binary Bitwise Operators
+    // ECMA-262 12.12 Binary Logical Operators
 
     function parseBinaryExpression() {
         var marker, markers, expr, token, prec, stack, right, operator, left, i;
@@ -21975,7 +23099,7 @@ module.exports={
     }
 
 
-    // 11.12 Conditional Operator
+    // ECMA-262 12.13 Conditional Operator
 
     function parseConditionalExpression() {
         var expr, previousAllowIn, consequent, alternate, startToken;
@@ -21999,7 +23123,7 @@ module.exports={
         return expr;
     }
 
-    // [ES6] 14.2 Arrow Function
+    // ECMA-262 14.2 Arrow Function Definitions
 
     function parseConciseBody() {
         if (match('{')) {
@@ -22026,6 +23150,8 @@ module.exports={
                     checkPatternParam(options, param.elements[i]);
                 }
             }
+            break;
+        case Syntax.YieldExpression:
             break;
         default:
             assert(param.type === Syntax.ObjectPattern, 'Invalid type');
@@ -22061,6 +23187,15 @@ module.exports={
             switch (param.type) {
             case Syntax.AssignmentPattern:
                 params[i] = param.left;
+                if (param.right.type === Syntax.YieldExpression) {
+                    if (param.right.argument) {
+                        throwUnexpectedToken(lookahead);
+                    }
+                    param.right.type = Syntax.Identifier;
+                    param.right.name = 'yield';
+                    delete param.right.argument;
+                    delete param.right.delegate;
+                }
                 defaults.push(param.right);
                 ++defaultCount;
                 checkPatternParam(options, param.left);
@@ -22070,6 +23205,15 @@ module.exports={
                 params[i] = param;
                 defaults.push(null);
                 break;
+            }
+        }
+
+        if (strict || !state.allowYield) {
+            for (i = 0, len = params.length; i < len; i += 1) {
+                param = params[i];
+                if (param.type === Syntax.YieldExpression) {
+                    throwUnexpectedToken(lookahead);
+                }
             }
         }
 
@@ -22092,13 +23236,16 @@ module.exports={
     }
 
     function parseArrowFunctionExpression(options, node) {
-        var previousStrict, body;
+        var previousStrict, previousAllowYield, body;
 
         if (hasLineTerminator) {
             tolerateUnexpectedToken(lookahead);
         }
         expect('=>');
+
         previousStrict = strict;
+        previousAllowYield = state.allowYield;
+        state.allowYield = true;
 
         body = parseConciseBody();
 
@@ -22110,17 +23257,50 @@ module.exports={
         }
 
         strict = previousStrict;
+        state.allowYield = previousAllowYield;
 
         return node.finishArrowFunctionExpression(options.params, options.defaults, body, body.type !== Syntax.BlockStatement);
     }
 
-    // 11.13 Assignment Operators
+    // ECMA-262 14.4 Yield expression
+
+    function parseYieldExpression() {
+        var argument, expr, delegate, previousAllowYield;
+
+        argument = null;
+        expr = new Node();
+
+        expectKeyword('yield');
+
+        if (!hasLineTerminator) {
+            previousAllowYield = state.allowYield;
+            state.allowYield = false;
+            delegate = match('*');
+            if (delegate) {
+                lex();
+                argument = parseAssignmentExpression();
+            } else {
+                if (!match(';') && !match('}') && !match(')') && lookahead.type !== Token.EOF) {
+                    argument = parseAssignmentExpression();
+                }
+            }
+            state.allowYield = previousAllowYield;
+        }
+
+        return expr.finishYieldExpression(argument, delegate);
+    }
+
+    // ECMA-262 12.14 Assignment Operators
 
     function parseAssignmentExpression() {
         var token, expr, right, list, startToken;
 
         startToken = lookahead;
         token = lookahead;
+
+        if (!state.allowYield && matchKeyword('yield')) {
+            return parseYieldExpression();
+        }
 
         expr = parseConditionalExpression();
 
@@ -22141,7 +23321,7 @@ module.exports={
                 tolerateError(Messages.InvalidLHSInAssignment);
             }
 
-            // 11.13.1
+            // ECMA-262 11.13.1
             if (strict && expr.type === Syntax.Identifier && isRestrictedWord(expr.name)) {
                 tolerateUnexpectedToken(token, Messages.StrictLHSAssignment);
             }
@@ -22161,7 +23341,7 @@ module.exports={
         return expr;
     }
 
-    // 11.14 Comma Operator
+    // ECMA-262 12.15 Comma Operator
 
     function parseExpression() {
         var expr, startToken = lookahead, expressions;
@@ -22185,7 +23365,7 @@ module.exports={
         return expr;
     }
 
-    // 12.1 Block
+    // ECMA-262 13.2 Block
 
     function parseStatementListItem() {
         if (lookahead.type === Token.Keyword) {
@@ -22237,30 +23417,38 @@ module.exports={
         return node.finishBlockStatement(block);
     }
 
-    // 12.2 Variable Statement
+    // ECMA-262 13.3.2 Variable Statement
 
     function parseVariableIdentifier() {
         var token, node = new Node();
 
         token = lex();
 
-        if (token.type !== Token.Identifier) {
+        if (token.type === Token.Keyword && token.value === 'yield') {
+            if (strict) {
+                tolerateUnexpectedToken(token, Messages.StrictReservedWord);
+            } if (!state.allowYield) {
+                throwUnexpectedToken(token);
+            }
+        } else if (token.type !== Token.Identifier) {
             if (strict && token.type === Token.Keyword && isStrictModeReservedWord(token.value)) {
                 tolerateUnexpectedToken(token, Messages.StrictReservedWord);
             } else {
                 throwUnexpectedToken(token);
             }
+        } else if (sourceType === 'module' && token.type === Token.Identifier && token.value === 'await') {
+            tolerateUnexpectedToken(token);
         }
 
         return node.finishIdentifier(token.value);
     }
 
     function parseVariableDeclaration() {
-        var init = null, id, node = new Node();
+        var init = null, id, node = new Node(), params = [];
 
-        id = parsePattern();
+        id = parsePattern(params);
 
-        // 12.2.1
+        // ECMA-262 12.2.1
         if (strict && isRestrictedWord(id.name)) {
             tolerateError(Messages.StrictVarName);
         }
@@ -22301,18 +23489,20 @@ module.exports={
         return node.finishVariableDeclaration(declarations);
     }
 
+    // ECMA-262 13.3.1 Let and Const Declarations
+
     function parseLexicalBinding(kind, options) {
-        var init = null, id, node = new Node();
+        var init = null, id, node = new Node(), params = [];
 
-        id = parsePattern();
+        id = parsePattern(params);
 
-        // 12.2.1
+        // ECMA-262 12.2.1
         if (strict && id.type === Syntax.Identifier && isRestrictedWord(id.name)) {
             tolerateError(Messages.StrictVarName);
         }
 
         if (kind === 'const') {
-            if (!matchKeyword('in')) {
+            if (!matchKeyword('in') && !matchContextualKeyword('of')) {
                 expect('=');
                 init = isolateCoverGrammar(parseAssignmentExpression);
             }
@@ -22351,7 +23541,7 @@ module.exports={
         return node.finishLexicalDeclaration(declarations, kind);
     }
 
-    function parseRestElement() {
+    function parseRestElement(params) {
         var param, node = new Node();
 
         lex();
@@ -22359,6 +23549,8 @@ module.exports={
         if (match('{')) {
             throwError(Messages.ObjectPatternAsRestParameter);
         }
+
+        params.push(lookahead);
 
         param = parseVariableIdentifier();
 
@@ -22373,14 +23565,14 @@ module.exports={
         return node.finishRestElement(param);
     }
 
-    // 12.3 Empty Statement
+    // ECMA-262 13.4 Empty Statement
 
     function parseEmptyStatement(node) {
         expect(';');
         return node.finishEmptyStatement();
     }
 
-    // 12.4 Expression Statement
+    // ECMA-262 12.4 Expression Statement
 
     function parseExpressionStatement(node) {
         var expr = parseExpression();
@@ -22388,7 +23580,7 @@ module.exports={
         return node.finishExpressionStatement(expr);
     }
 
-    // 12.5 If statement
+    // ECMA-262 13.6 If statement
 
     function parseIfStatement(node) {
         var test, consequent, alternate;
@@ -22413,7 +23605,7 @@ module.exports={
         return node.finishIfStatement(test, consequent, alternate);
     }
 
-    // 12.6 Iteration Statements
+    // ECMA-262 13.7 Iteration Statements
 
     function parseDoWhileStatement(node) {
         var body, test, oldInIteration;
@@ -22464,10 +23656,11 @@ module.exports={
     }
 
     function parseForStatement(node) {
-        var init, initSeq, initStartToken, test, update, left, right, kind, declarations,
+        var init, forIn, initSeq, initStartToken, test, update, left, right, kind, declarations,
             body, oldInIteration, previousAllowIn = state.allowIn;
 
         init = test = update = null;
+        forIn = true;
 
         expectKeyword('for');
 
@@ -22489,6 +23682,12 @@ module.exports={
                     left = init;
                     right = parseExpression();
                     init = null;
+                } else if (init.declarations.length === 1 && init.declarations[0].init === null && matchContextualKeyword('of')) {
+                    lex();
+                    left = init;
+                    right = parseAssignmentExpression();
+                    init = null;
+                    forIn = false;
                 } else {
                     expect(';');
                 }
@@ -22506,6 +23705,13 @@ module.exports={
                     left = init;
                     right = parseExpression();
                     init = null;
+                } else if (declarations.length === 1 && declarations[0].init === null && matchContextualKeyword('of')) {
+                    init = init.finishLexicalDeclaration(declarations, kind);
+                    lex();
+                    left = init;
+                    right = parseAssignmentExpression();
+                    init = null;
+                    forIn = false;
                 } else {
                     consumeSemicolon();
                     init = init.finishLexicalDeclaration(declarations, kind);
@@ -22526,6 +23732,17 @@ module.exports={
                     left = init;
                     right = parseExpression();
                     init = null;
+                } else if (matchContextualKeyword('of')) {
+                    if (!isAssignmentTarget) {
+                        tolerateError(Messages.InvalidLHSInForLoop);
+                    }
+
+                    lex();
+                    reinterpretExpressionAsPattern(init);
+                    left = init;
+                    right = parseAssignmentExpression();
+                    init = null;
+                    forIn = false;
                 } else {
                     if (match(',')) {
                         initSeq = [init];
@@ -22563,10 +23780,11 @@ module.exports={
 
         return (typeof left === 'undefined') ?
                 node.finishForStatement(init, test, update, body) :
-                node.finishForInStatement(left, right, body);
+                forIn ? node.finishForInStatement(left, right, body) :
+                    node.finishForOfStatement(left, right, body);
     }
 
-    // 12.7 The continue statement
+    // ECMA-262 13.8 The continue statement
 
     function parseContinueStatement(node) {
         var label = null, key;
@@ -22610,7 +23828,7 @@ module.exports={
         return node.finishContinueStatement(label);
     }
 
-    // 12.8 The break statement
+    // ECMA-262 13.9 The break statement
 
     function parseBreakStatement(node) {
         var label = null, key;
@@ -22654,7 +23872,7 @@ module.exports={
         return node.finishBreakStatement(label);
     }
 
-    // 12.9 The return statement
+    // ECMA-262 13.10 The return statement
 
     function parseReturnStatement(node) {
         var argument = null;
@@ -22690,7 +23908,7 @@ module.exports={
         return node.finishReturnStatement(argument);
     }
 
-    // 12.10 The with statement
+    // ECMA-262 13.11 The with statement
 
     function parseWithStatement(node) {
         var object, body;
@@ -22712,7 +23930,7 @@ module.exports={
         return node.finishWithStatement(object, body);
     }
 
-    // 12.10 The swith statement
+    // ECMA-262 13.12 The switch statement
 
     function parseSwitchCase() {
         var test, consequent = [], statement, node = new Node();
@@ -22782,7 +24000,7 @@ module.exports={
         return node.finishSwitchStatement(discriminant, cases);
     }
 
-    // 12.13 The throw statement
+    // ECMA-262 13.14 The throw statement
 
     function parseThrowStatement(node) {
         var argument;
@@ -22800,10 +24018,10 @@ module.exports={
         return node.finishThrowStatement(argument);
     }
 
-    // 12.14 The try statement
+    // ECMA-262 13.15 The try statement
 
     function parseCatchClause() {
-        var param, body, node = new Node();
+        var param, params = [], paramMap = {}, key, i, body, node = new Node();
 
         expectKeyword('catch');
 
@@ -22812,9 +24030,16 @@ module.exports={
             throwUnexpectedToken(lookahead);
         }
 
-        param = parsePattern();
+        param = parsePattern(params);
+        for (i = 0; i < params.length; i++) {
+            key = '$' + params[i].value;
+            if (Object.prototype.hasOwnProperty.call(paramMap, key)) {
+                tolerateError(Messages.DuplicateBinding, params[i].value);
+            }
+            paramMap[key] = true;
+        }
 
-        // 12.14.1
+        // ECMA-262 12.14.1
         if (strict && isRestrictedWord(param.name)) {
             tolerateError(Messages.StrictCatchVariable);
         }
@@ -22847,7 +24072,7 @@ module.exports={
         return node.finishTryStatement(block, handler, finalizer);
     }
 
-    // 12.15 The debugger statement
+    // ECMA-262 13.16 The debugger statement
 
     function parseDebuggerStatement(node) {
         expectKeyword('debugger');
@@ -22857,7 +24082,7 @@ module.exports={
         return node.finishDebuggerStatement();
     }
 
-    // 12 Statements
+    // 13 Statements
 
     function parseStatement() {
         var type = lookahead.type,
@@ -22922,7 +24147,7 @@ module.exports={
 
         expr = parseExpression();
 
-        // 12.12 Labelled Statements
+        // ECMA-262 12.12 Labelled Statements
         if ((expr.type === Syntax.Identifier) && match(':')) {
             lex();
 
@@ -22942,7 +24167,7 @@ module.exports={
         return node.finishExpressionStatement(expr);
     }
 
-    // 13 Function Definition
+    // ECMA-262 14.1 Function Definition
 
     function parseFunctionSourceElements() {
         var statement, body = [], token, directive, firstRestricted,
@@ -23025,7 +24250,7 @@ module.exports={
                 options.firstRestricted = param;
                 options.message = Messages.StrictReservedWord;
             } else if (Object.prototype.hasOwnProperty.call(options.paramSet, key)) {
-                options.firstRestricted = param;
+                options.stricted = param;
                 options.message = Messages.StrictParamDupe;
             }
         }
@@ -23033,19 +24258,21 @@ module.exports={
     }
 
     function parseParam(options) {
-        var token, param, def;
+        var token, param, params = [], i, def;
 
         token = lookahead;
         if (token.value === '...') {
-            param = parseRestElement();
+            param = parseRestElement(params);
             validateParam(options, param.argument, param.argument.name);
             options.params.push(param);
             options.defaults.push(null);
             return false;
         }
 
-        param = parsePatternWithDefault();
-        validateParam(options, token, token.value);
+        param = parsePatternWithDefault(params);
+        for (i = 0; i < params.length; i++) {
+            validateParam(options, params[i], params[i].value);
+        }
 
         if (param.type === Syntax.AssignmentPattern) {
             def = param.right;
@@ -23097,9 +24324,18 @@ module.exports={
     }
 
     function parseFunctionDeclaration(node, identifierIsOptional) {
-        var id = null, params = [], defaults = [], body, token, stricted, tmp, firstRestricted, message, previousStrict;
+        var id = null, params = [], defaults = [], body, token, stricted, tmp, firstRestricted, message, previousStrict,
+            isGenerator, previousAllowYield;
+
+        previousAllowYield = state.allowYield;
 
         expectKeyword('function');
+
+        isGenerator = match('*');
+        if (isGenerator) {
+            lex();
+        }
+
         if (!identifierIsOptional || !match('(')) {
             token = lookahead;
             id = parseVariableIdentifier();
@@ -23118,6 +24354,7 @@ module.exports={
             }
         }
 
+        state.allowYield = !isGenerator;
         tmp = parseParams(firstRestricted);
         params = tmp.params;
         defaults = tmp.defaults;
@@ -23127,6 +24364,7 @@ module.exports={
             message = tmp.message;
         }
 
+
         previousStrict = strict;
         body = parseFunctionSourceElements();
         if (strict && firstRestricted) {
@@ -23135,20 +24373,31 @@ module.exports={
         if (strict && stricted) {
             tolerateUnexpectedToken(stricted, message);
         }
-        strict = previousStrict;
 
-        return node.finishFunctionDeclaration(id, params, defaults, body);
+        strict = previousStrict;
+        state.allowYield = previousAllowYield;
+
+        return node.finishFunctionDeclaration(id, params, defaults, body, isGenerator);
     }
 
     function parseFunctionExpression() {
         var token, id = null, stricted, firstRestricted, message, tmp,
-            params = [], defaults = [], body, previousStrict, node = new Node();
+            params = [], defaults = [], body, previousStrict, node = new Node(),
+            isGenerator, previousAllowYield;
+
+        previousAllowYield = state.allowYield;
 
         expectKeyword('function');
 
+        isGenerator = match('*');
+        if (isGenerator) {
+            lex();
+        }
+
+        state.allowYield = !isGenerator;
         if (!match('(')) {
             token = lookahead;
-            id = parseVariableIdentifier();
+            id = (!strict && !isGenerator && matchKeyword('yield')) ? parseNonComputedProperty() : parseVariableIdentifier();
             if (strict) {
                 if (isRestrictedWord(token.value)) {
                     tolerateUnexpectedToken(token, Messages.StrictFunctionName);
@@ -23182,10 +24431,12 @@ module.exports={
             tolerateUnexpectedToken(stricted, message);
         }
         strict = previousStrict;
+        state.allowYield = previousAllowYield;
 
-        return node.finishFunctionExpression(id, params, defaults, body);
+        return node.finishFunctionExpression(id, params, defaults, body, isGenerator);
     }
 
+    // ECMA-262 14.5 Class Definitions
 
     function parseClassBody() {
         var classBody, token, isStatic, hasConstructor = false, body, method, computed, key;
@@ -23202,16 +24453,24 @@ module.exports={
                 token = lookahead;
                 isStatic = false;
                 computed = match('[');
-                key = parseObjectPropertyKey();
-                if (key.name === 'static' && lookaheadPropertyName()) {
-                    token = lookahead;
-                    isStatic = true;
-                    computed = match('[');
+                if (match('*')) {
+                    lex();
+                } else {
                     key = parseObjectPropertyKey();
+                    if (key.name === 'static' && (lookaheadPropertyName() || match('*'))) {
+                        token = lookahead;
+                        isStatic = true;
+                        computed = match('[');
+                        if (match('*')) {
+                            lex();
+                        } else {
+                            key = parseObjectPropertyKey();
+                        }
+                    }
                 }
                 method = tryParseMethodDefinition(token, key, computed, method);
                 if (method) {
-                    method['static'] = isStatic;
+                    method['static'] = isStatic; // jscs:ignore requireDotNotation
                     if (method.kind === 'init') {
                         method.kind = 'method';
                     }
@@ -23285,8 +24544,7 @@ module.exports={
         return classNode.finishClassExpression(id, superClass, classBody);
     }
 
-    // Modules grammar from:
-    // people.mozilla.org/~jorendorff/es6-draft.html
+    // ECMA-262 15.2 Modules
 
     function parseModuleSpecifier() {
         var node = new Node();
@@ -23296,6 +24554,8 @@ module.exports={
         }
         return node.finishLiteral(lex());
     }
+
+    // ECMA-262 15.2.3 Exports
 
     function parseExportSpecifier() {
         var exported, local, node = new Node(), def;
@@ -23335,11 +24595,15 @@ module.exports={
         }
 
         expect('{');
-        if (!match('}')) {
-            do {
-                isExportFromIdentifier = isExportFromIdentifier || matchKeyword('default');
-                specifiers.push(parseExportSpecifier());
-            } while (match(',') && lex());
+        while (!match('}')) {
+            isExportFromIdentifier = isExportFromIdentifier || matchKeyword('default');
+            specifiers.push(parseExportSpecifier());
+            if (!match('}')) {
+                expect(',');
+                if (match('}')) {
+                    break;
+                }
+            }
         }
         expect('}');
 
@@ -23392,9 +24656,9 @@ module.exports={
         // export default [];
         // export default (1 + 2);
         if (match('{')) {
-            expression = parseObjectInitialiser();
+            expression = parseObjectInitializer();
         } else if (match('[')) {
-            expression = parseArrayInitialiser();
+            expression = parseArrayInitializer();
         } else {
             expression = parseAssignmentExpression();
         }
@@ -23436,6 +24700,8 @@ module.exports={
         return parseExportNamedDeclaration(node);
     }
 
+    // ECMA-262 15.2.2 Imports
+
     function parseImportSpecifier() {
         // import {<foo as bar>} ...;
         var local, imported, node = new Node();
@@ -23453,10 +24719,14 @@ module.exports={
         var specifiers = [];
         // {foo, bar as bas}
         expect('{');
-        if (!match('}')) {
-            do {
-                specifiers.push(parseImportSpecifier());
-            } while (match(',') && lex());
+        while (!match('}')) {
+            specifiers.push(parseImportSpecifier());
+            if (!match('}')) {
+                expect(',');
+                if (match('}')) {
+                    break;
+                }
+            }
         }
         expect('}');
         return specifiers;
@@ -23486,56 +24756,57 @@ module.exports={
     }
 
     function parseImportDeclaration() {
-        var specifiers, src, node = new Node();
+        var specifiers = [], src, node = new Node();
 
         if (state.inFunctionBody) {
             throwError(Messages.IllegalImportDeclaration);
         }
 
         expectKeyword('import');
-        specifiers = [];
 
         if (lookahead.type === Token.StringLiteral) {
-            // covers:
             // import 'foo';
             src = parseModuleSpecifier();
-            consumeSemicolon();
-            return node.finishImportDeclaration(specifiers, src);
-        }
+        } else {
 
-        if (!matchKeyword('default') && isIdentifierName(lookahead)) {
-            // covers:
-            // import foo
-            // import foo, ...
-            specifiers.push(parseImportDefaultSpecifier());
-            if (match(',')) {
-                lex();
+            if (match('{')) {
+                // import {bar}
+                specifiers = specifiers.concat(parseNamedImports());
+            } else if (match('*')) {
+                // import * as foo
+                specifiers.push(parseImportNamespaceSpecifier());
+            } else if (isIdentifierName(lookahead) && !matchKeyword('default')) {
+                // import foo
+                specifiers.push(parseImportDefaultSpecifier());
+                if (match(',')) {
+                    lex();
+                    if (match('*')) {
+                        // import foo, * as foo
+                        specifiers.push(parseImportNamespaceSpecifier());
+                    } else if (match('{')) {
+                        // import foo, {bar}
+                        specifiers = specifiers.concat(parseNamedImports());
+                    } else {
+                        throwUnexpectedToken(lookahead);
+                    }
+                }
+            } else {
+                throwUnexpectedToken(lex());
             }
-        }
-        if (match('*')) {
-            // covers:
-            // import foo, * as foo
-            // import * as foo
-            specifiers.push(parseImportNamespaceSpecifier());
-        } else if (match('{')) {
-            // covers:
-            // import foo, {bar}
-            // import {bar}
-            specifiers = specifiers.concat(parseNamedImports());
+
+            if (!matchContextualKeyword('from')) {
+                throwError(lookahead.value ?
+                        Messages.UnexpectedToken : Messages.MissingFromClause, lookahead.value);
+            }
+            lex();
+            src = parseModuleSpecifier();
         }
 
-        if (!matchContextualKeyword('from')) {
-            throwError(lookahead.value ?
-                    Messages.UnexpectedToken : Messages.MissingFromClause, lookahead.value);
-        }
-        lex();
-        src = parseModuleSpecifier();
         consumeSemicolon();
-
         return node.finishImportDeclaration(specifiers, src);
     }
 
-    // 14 Program
+    // ECMA-262 15.1 Scripts
 
     function parseScriptBody() {
         var statement, body = [], token, directive, firstRestricted;
@@ -23633,6 +24904,7 @@ module.exports={
         lookahead = null;
         state = {
             allowIn: true,
+            allowYield: true,
             labelSet: {},
             inFunctionBody: false,
             inIteration: false,
@@ -23721,6 +24993,7 @@ module.exports={
         lookahead = null;
         state = {
             allowIn: true,
+            allowYield: true,
             labelSet: {},
             inFunctionBody: false,
             inIteration: false,
@@ -23786,7 +25059,7 @@ module.exports={
     }
 
     // Sync with *.json manifests.
-    exports.version = '2.2.0';
+    exports.version = '2.5.0';
 
     exports.tokenize = tokenize;
 
@@ -23817,7 +25090,7 @@ module.exports={
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],81:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -24005,6 +25278,7 @@ module.exports={
         LabeledStatement: 'LabeledStatement',
         LogicalExpression: 'LogicalExpression',
         MemberExpression: 'MemberExpression',
+        MetaProperty: 'MetaProperty',
         MethodDefinition: 'MethodDefinition',
         ModuleSpecifier: 'ModuleSpecifier',
         NewExpression: 'NewExpression',
@@ -24016,7 +25290,7 @@ module.exports={
         ReturnStatement: 'ReturnStatement',
         SequenceExpression: 'SequenceExpression',
         SpreadElement: 'SpreadElement',
-        SuperExpression: 'SuperExpression',
+        Super: 'Super',
         SwitchStatement: 'SwitchStatement',
         SwitchCase: 'SwitchCase',
         TaggedTemplateExpression: 'TaggedTemplateExpression',
@@ -24078,6 +25352,7 @@ module.exports={
         LabeledStatement: ['label', 'body'],
         LogicalExpression: ['left', 'right'],
         MemberExpression: ['object', 'property'],
+        MetaProperty: ['meta', 'property'],
         MethodDefinition: ['key', 'value'],
         ModuleSpecifier: [],
         NewExpression: ['callee', 'arguments'],
@@ -24089,7 +25364,7 @@ module.exports={
         ReturnStatement: ['argument'],
         SequenceExpression: ['expressions'],
         SpreadElement: ['argument'],
-        SuperExpression: ['super'],
+        Super: [],
         SwitchStatement: ['discriminant', 'cases'],
         SwitchCase: ['test', 'consequent'],
         TaggedTemplateExpression: ['tag', 'quasi'],
@@ -24660,13 +25935,13 @@ module.exports={
 }(exports));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./package.json":82}],82:[function(require,module,exports){
+},{"./package.json":84}],84:[function(require,module,exports){
 module.exports={
   "name": "estraverse",
   "description": "ECMAScript JS AST traversal functions",
   "homepage": "https://github.com/estools/estraverse",
   "main": "estraverse.js",
-  "version": "3.1.0",
+  "version": "4.1.0",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -24682,7 +25957,7 @@ module.exports={
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/estools/estraverse.git"
+    "url": "git+ssh://git@github.com/estools/estraverse.git"
   },
   "devDependencies": {
     "chai": "^2.1.1",
@@ -24707,28 +25982,29 @@ module.exports={
     "lint": "jshint estraverse.js",
     "unit-test": "mocha --compilers coffee:coffee-script/register"
   },
-  "gitHead": "166ebbe0a8d45ceb2391b6f5ef5d1bab6bfb267a",
+  "gitHead": "347d52996336719b5910c7ffb5ff3ea8ecb87cf3",
   "bugs": {
     "url": "https://github.com/estools/estraverse/issues"
   },
-  "_id": "estraverse@3.1.0",
-  "_shasum": "15e28a446b8b82bc700ccc8b96c78af4da0d6cba",
-  "_from": "estraverse@>=3.1.0 <4.0.0",
-  "_npmVersion": "2.0.0-alpha-5",
+  "_id": "estraverse@4.1.0",
+  "_shasum": "40f23a76092041be6467d7f235c933b670766e05",
+  "_from": "estraverse@>=4.1.0 <5.0.0",
+  "_npmVersion": "2.8.3",
+  "_nodeVersion": "1.8.1",
   "_npmUser": {
     "name": "constellation",
     "email": "utatane.tea@gmail.com"
   },
   "dist": {
-    "shasum": "15e28a446b8b82bc700ccc8b96c78af4da0d6cba",
-    "tarball": "http://registry.npmjs.org/estraverse/-/estraverse-3.1.0.tgz"
+    "shasum": "40f23a76092041be6467d7f235c933b670766e05",
+    "tarball": "http://registry.npmjs.org/estraverse/-/estraverse-4.1.0.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/estraverse/-/estraverse-3.1.0.tgz",
+  "_resolved": "https://registry.npmjs.org/estraverse/-/estraverse-4.1.0.tgz",
   "readme": "ERROR: No README data found!"
 }
 
-},{}],83:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 /**
  *  Copyright (c) 2014-2015, Facebook, Inc.
  *  All rights reserved.
@@ -25469,7 +26745,7 @@ module.exports={
   var src_Math__imul =
     typeof Math.imul === 'function' && Math.imul(0xffffffff, 2) === -2 ?
     Math.imul :
-    function imul(a, b) {
+    function src_Math__imul(a, b) {
       a = a | 0; // int
       b = b | 0; // int
       var c = a & 0xffff;
@@ -26029,19 +27305,24 @@ module.exports={
 
     // begin or end will be NaN if they were provided as negative numbers and
     // this iterable's size is unknown. In that case, cache first so there is
-    // a known size.
+    // a known size and these do not resolve to NaN.
     if (resolvedBegin !== resolvedBegin || resolvedEnd !== resolvedEnd) {
       return sliceFactory(iterable.toSeq().cacheResult(), begin, end, useKeys);
     }
 
-    var sliceSize = resolvedEnd - resolvedBegin;
-    if (sliceSize < 0) {
-      sliceSize = 0;
+    // Note: resolvedEnd is undefined when the original sequence's length is
+    // unknown and this slice did not supply an end and should contain all
+    // elements after resolvedBegin.
+    // In that case, resolvedSize will be NaN and sliceSize will remain undefined.
+    var resolvedSize = resolvedEnd - resolvedBegin;
+    var sliceSize;
+    if (resolvedSize === resolvedSize) {
+      sliceSize = resolvedSize < 0 ? 0 : resolvedSize;
     }
 
     var sliceSeq = makeSequence(iterable);
 
-    sliceSeq.size = sliceSize === 0 ? sliceSize : iterable.size && sliceSize || undefined;
+    sliceSeq.size = sliceSize;
 
     if (!useKeys && isSeq(iterable) && sliceSize >= 0) {
       sliceSeq.get = function (index, notSetValue) {
@@ -26073,11 +27354,11 @@ module.exports={
     };
 
     sliceSeq.__iteratorUncached = function(type, reverse) {
-      if (sliceSize && reverse) {
+      if (sliceSize !== 0 && reverse) {
         return this.cacheResult().__iterator(type, reverse);
       }
       // Don't bother instantiating parent iterator if taking 0.
-      var iterator = sliceSize && iterable.__iterator(type, reverse);
+      var iterator = sliceSize !== 0 && iterable.__iterator(type, reverse);
       var skipped = 0;
       var iterations = 0;
       return new src_Iterator__Iterator(function()  {
@@ -26573,7 +27854,13 @@ module.exports={
     };
 
     src_Map__Map.prototype.mergeIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
-      return this.updateIn(keyPath, emptyMap(), function(m ) {return m.merge.apply(m, iters)});
+      return this.updateIn(
+        keyPath,
+        emptyMap(),
+        function(m ) {return typeof m.merge === 'function' ?
+          m.merge.apply(m, iters) :
+          iters[iters.length - 1]}
+      );
     };
 
     src_Map__Map.prototype.mergeDeep = function(/*...iters*/) {
@@ -26585,7 +27872,13 @@ module.exports={
     };
 
     src_Map__Map.prototype.mergeDeepIn = function(keyPath) {var iters = SLICE$0.call(arguments, 1);
-      return this.updateIn(keyPath, emptyMap(), function(m ) {return m.mergeDeep.apply(m, iters)});
+      return this.updateIn(
+        keyPath,
+        emptyMap(),
+        function(m ) {return typeof m.mergeDeep === 'function' ?
+          m.mergeDeep.apply(m, iters) :
+          iters[iters.length - 1]}
+      );
     };
 
     src_Map__Map.prototype.sort = function(comparator) {
@@ -27748,7 +29041,7 @@ module.exports={
     var newLevel = list._level;
     var newRoot = list._root;
 
-    // New origin might require creating a higher root.
+    // New origin might need creating a higher root.
     var offsetShift = 0;
     while (newOrigin + offsetShift < 0) {
       newRoot = new VNode(newRoot && newRoot.array.length ? [undefined, newRoot] : [], owner);
@@ -27765,7 +29058,7 @@ module.exports={
     var oldTailOffset = getTailOffset(oldCapacity);
     var newTailOffset = getTailOffset(newCapacity);
 
-    // New size might require creating a higher root.
+    // New size might need creating a higher root.
     while (newTailOffset >= 1 << (newLevel + SHIFT)) {
       newRoot = new VNode(newRoot && newRoot.array.length ? [newRoot] : [], owner);
       newLevel += SHIFT;
@@ -29204,6 +30497,7 @@ module.exports={
     },
 
     isSuperset: function(iter) {
+      iter = typeof iter.isSubset === 'function' ? iter : Iterable(iter);
       return iter.isSubset(this);
     },
 
@@ -29638,7 +30932,7 @@ module.exports={
   return Immutable;
 
 }));
-},{}],84:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -34066,7 +35360,7 @@ numeric.svd= function svd(A) {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],85:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 /**
  * Expose `PriorityQueue`.
  */
@@ -34240,7 +35534,7 @@ PriorityQueue.prototype._swap = function(a, b) {
   this._elements[b] = aux;
 };
 
-},{}],86:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -35790,7 +37084,7 @@ PriorityQueue.prototype._swap = function(a, b) {
   }
 }.call(this));
 
-},{}],87:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 'use strict';
 
 var traverse = require('estraverse').traverse;
@@ -35863,7 +37157,7 @@ exports.isHeapRef = function(node) {
 };
 
 
-},{"estraverse":81,"immutable":83}],88:[function(require,module,exports){
+},{"estraverse":83,"immutable":85}],90:[function(require,module,exports){
 'use strict';
 
 var assert = require('assert');
@@ -36348,7 +37642,7 @@ module.exports = {
   analyze: analyzeMain
 };
 
-},{"../syntax":104,"./analyze-refs":87,"./match":90,"./match-lang":89,"./parser-combinator":91,"assert":112,"ast-types":15,"escodegen":16,"estraverse":81,"immutable":83}],89:[function(require,module,exports){
+},{"../syntax":112,"./analyze-refs":89,"./match":92,"./match-lang":91,"./parser-combinator":93,"assert":122,"ast-types":15,"escodegen":16,"estraverse":83,"immutable":85}],91:[function(require,module,exports){
 'use strict';
 var types = require('ast-types').namedTypes;
 
@@ -36459,7 +37753,7 @@ module.exports = {
   userCall: destructUserCall
 }
 
-},{"ast-types":15}],90:[function(require,module,exports){
+},{"ast-types":15}],92:[function(require,module,exports){
 'use strict';
 
 function clause(destructor, success) {
@@ -36488,7 +37782,7 @@ module.exports = {
   match: match
 };
 
-},{}],91:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 'use strict';
 
 function finish() {
@@ -36641,7 +37935,67 @@ module.exports = {
   not: not
 };
 
-},{}],92:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
+(function (global){
+// Entry point for browserify.
+
+'use strict';
+
+
+var esprima = require('esprima');
+var escodegen = require('escodegen');
+
+var webppl = require('./main');
+var optimize = require('./transforms/optimize').optimize;
+var naming = require('./transforms/naming').naming;
+var thunkify = require('./syntax').thunkify;
+var cps = require('./transforms/cps').cps;
+var analyze = require('./analysis/main').analyze;
+
+// This is populated by the bundle.js browserify transform.
+var packages = [];
+
+// Load JS and headers from packages.
+packages.forEach(function(pkg) {
+  console.log('package ' + pkg.name + ' loaded.');
+  if (pkg.js) { global[pkg.js.identifier] = pkg.js.path; }
+  pkg.headers.forEach(webppl.requireHeaderWrapper);
+});
+
+var wpplExtra = packages.map(function(pkg) { return pkg.wppl.join(';'); }).join(';');
+
+function run(code, k, verbose) {
+  return webppl.run(wpplExtra + code, k, verbose);
+}
+
+function compile(code, verbose) {
+  return webppl.compile(wpplExtra + code, verbose);
+}
+
+function webpplCPS(code) {
+  var programAst = esprima.parse(code);
+  var newProgramAst = optimize(cps(thunkify(programAst)));
+  return escodegen.generate(newProgramAst);
+}
+
+function webpplNaming(code) {
+  var programAst = esprima.parse(code);
+  var newProgramAst = naming(thunkify(programAst));
+  return escodegen.generate(newProgramAst);
+}
+
+global.webppl = {
+  run: run,
+  compile: compile,
+  cps: webpplCPS,
+  naming: webpplNaming,
+  analyze: analyze
+};
+
+console.log('webppl loaded.');
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./analysis/main":90,"./main":110,"./syntax":112,"./transforms/cps":114,"./transforms/naming":116,"./transforms/optimize":117,"escodegen":16,"esprima":82}],95:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // ERPs
 //
@@ -36668,6 +38022,7 @@ module.exports = {
 var numeric = require('numeric');
 var _ = require('underscore');
 var util = require('./util.js');
+var assert = require('assert');
 
 var LOG_2PI = 1.8378770664093453;
 
@@ -36680,6 +38035,37 @@ function ERP(sampler, scorer, auxParams) {
       this[key] = auxParams[key];
     }
   }
+}
+
+ERP.prototype.isContinuous = function() {
+  return !this.support
+}
+
+ERP.prototype.MAP = function() {
+  if (this.support === undefined)
+    throw 'Cannot compute MAP for ERP without support!'
+  var supp = this.support([]);
+  var mapEst = {val: undefined, prob: 0};
+  for (var i = 0, l = supp.length; i < l; i++) {
+    var sp = supp[i];
+    var sc = Math.exp(this.score([], sp))
+    if (sc > mapEst.prob) mapEst = {val: sp, prob: sc};
+  }
+  this.MAP = function() {return mapEst};
+  return mapEst;
+};
+
+ERP.prototype.entropy = function() {
+  if (this.support === undefined)
+    throw 'Cannot compute entropy for ERP without support!'
+  var supp = this.support([]);
+  var e = 0;
+  for (var i = 0, l = supp.length; i < l; i++) {
+    var lp = this.score([], supp[i]);
+    e -= Math.exp(lp) * lp;
+  }
+  this.entropy = function() {return e};
+  return e;
 }
 
 var uniformERP = new ERP(
@@ -36702,7 +38088,7 @@ var bernoulliERP = new ERP(
       return val;
     },
     function flipScore(params, val) {
-      if (val != true && val != false) {
+      if (val !== true && val !== false) {
         return -Infinity;
       }
       var weight = params[0];
@@ -36727,7 +38113,7 @@ var randomIntegerERP = new ERP(
     },
     function randomIntegerScore(params, val) {
       var stop = params[0];
-      var inSupport = (val == Math.floor(val)) && (0 <= val) && (val < stop);
+      var inSupport = (val === Math.floor(val)) && (0 <= val) && (val < stop);
       return inSupport ? -Math.log(stop) : -Infinity;
     },
     {
@@ -36762,9 +38148,11 @@ var gaussianERP = new ERP(gaussianSample, gaussianScore);
 function multivariateGaussianSample(params) {
   var mu = params[0];
   var cov = params[1];
-  var xs = mu.map(function() {return gaussianSample([0, 1])});
+  var xs = mu.map(function() {return gaussianSample([0, 1]);});
   var svd = numeric.svd(cov);
-  var scaledV = numeric.transpose(svd.V).map(function(x) {return numeric.mul(numeric.sqrt(svd.S), x)});
+  var scaledV = numeric.transpose(svd.V).map(function(x) {
+    return numeric.mul(numeric.sqrt(svd.S), x);
+  });
   xs = numeric.dot(xs, numeric.transpose(scaledV));
   return numeric.add(xs, mu);
 }
@@ -36788,7 +38176,7 @@ var discreteERP = new ERP(
     function discreteScore(params, val) {
       var probs = util.normalizeArray(params[0]);
       var stop = probs.length;
-      var inSupport = (val == Math.floor(val)) && (0 <= val) && (val < stop);
+      var inSupport = (val === Math.floor(val)) && (0 <= val) && (val < stop);
       return inSupport ? Math.log(probs[val]) : -Infinity;
     },
     {
@@ -37073,21 +38461,23 @@ function multinomialSample(theta) {
 
 // Make a discrete ERP from a {val: prob, etc.} object (unormalized).
 function makeMarginalERP(marginal) {
-
+  assert.ok(_.size(marginal) > 0);
   // Normalize distribution:
-  var norm = 0;
+  var norm = -Infinity;
   var supp = [];
   for (var v in marginal) {if (marginal.hasOwnProperty(v)) {
-    var d = marginal[v]
-    norm += d.prob;
+    var d = marginal[v];
+    norm = util.logsumexp([norm, d.prob]);
     supp.push(d.val);
   }}
   var mapEst = {val: undefined, prob: 0};
   for (v in marginal) {if (marginal.hasOwnProperty(v)) {
-    var dd = marginal[v]
-    var nprob = dd.prob / norm;
-    if (nprob > mapEst.prob) mapEst = {val: dd.val, prob: nprob};
-    marginal[v].prob = nprob;
+    var dd = marginal[v];
+    var nprob = dd.prob - norm;
+    var nprobS = Math.exp(nprob)
+    if (nprobS > mapEst.prob)
+      mapEst = {val: dd.val, prob: nprobS};
+    marginal[v].prob = nprobS;
   }}
 
   // Make an ERP from marginal:
@@ -37098,7 +38488,8 @@ function makeMarginalERP(marginal) {
         for (var i in marginal) {if (marginal.hasOwnProperty(i)) {
           probAccum += marginal[i].prob;
           // FIXME: if x=0 returns i=0, but this isn't right if theta[0]==0...
-          if (probAccum >= x) return marginal[i].val;
+          if (probAccum >= x)
+            return marginal[i].val;
         }}
         return marginal[i].val;
       },
@@ -37107,35 +38498,69 @@ function makeMarginalERP(marginal) {
         return lk ? Math.log(lk.prob) : -Infinity;
       },
       {
-        support:
-            function(params) {
-              return supp;
-            }
+        support: function(params) {
+          return supp;
+        }
       }
       );
 
-  dist.MAP = mapEst;
+  dist.MAP = function() {return mapEst};
   return dist;
 }
 
-var makeDeltaERP = function(v) {
-  var stringifiedValue = JSON.stringify(v);
+// note: ps is expected to be normalized
+var makeCategoricalERP = function(ps, vs, extraParams) {
+  var dist = {};
+  var auxParams = {};
+  vs.forEach(function(v, i) {dist[JSON.stringify(v)] = {val: v, prob: ps[i]}})
+  auxParams['support'] = function categoricalSupport(params) {return vs};
+  if (extraParams) {
+    _.each(extraParams, function(v, k) {auxParams[k] = v;})
+  }
+  var categoricalSample = vs.length === 1 ?
+      function(params) { return vs[0]; } :
+      function(params) { return vs[multinomialSample(ps)]; };
   return new ERP(
-      function deltaSample(params) {
-        return v;
+      categoricalSample,
+      function categoricalScore(params, val) {
+        var lk = dist[JSON.stringify(val)];
+        return lk ? Math.log(lk.prob) : -Infinity;
       },
-      function deltaScore(params, val) {
-        if (JSON.stringify(val) === stringifiedValue) {
-          return 0;
-        } else {
+      auxParams
+  );
+};
+
+// Make a parameterized ERP that selects among multiple (unparameterized) ERPs
+var makeMultiplexERP = function(vs, erps) {
+  var stringifiedVals = vs.map(JSON.stringify);
+  var selectERP = function(params) {
+    var stringifiedV = JSON.stringify(params[0]);
+    var i = _.indexOf(stringifiedVals, stringifiedV);
+    if (i === -1) {
+      return undefined;
+    } else {
+      return erps[i];
+    }
+  };
+  return new ERP(
+      function multiplexSample(params) {
+        var erp = selectERP(params);
+        assert.notEqual(erp, undefined);
+        return erp.sample();
+      },
+      function multiplexScore(params, val) {
+        var erp = selectERP(params);
+        if (erp === undefined) {
           return -Infinity;
+        } else {
+          return erp.score([], val);
         }
       },
       {
-        support:
-            function deltaSupport(params) {
-              return [v];
-            }
+        support: function multiplexSupport(params) {
+          var erp = selectERP(params);
+          return erp.support();
+        }
       }
   );
 };
@@ -37156,10 +38581,447 @@ module.exports = {
   randomIntegerERP: randomIntegerERP,
   uniformERP: uniformERP,
   makeMarginalERP: makeMarginalERP,
-  makeDeltaERP: makeDeltaERP
+  makeCategoricalERP: makeCategoricalERP,
+  makeMultiplexERP: makeMultiplexERP
 };
 
-},{"./util.js":111,"numeric":84,"underscore":86}],93:[function(require,module,exports){
+},{"./util.js":121,"assert":122,"numeric":86,"underscore":88}],96:[function(require,module,exports){
+/**
+ * @license jahashtable, a JavaScript implementation of a hash table. It creates a single constructor function called
+ * Hashtable in the global scope.
+ *
+ * http://www.timdown.co.uk/jshashtable/
+ * Copyright %%build:year%% Tim Down.
+ * Version: %%build:version%%
+ * Build date: %%build:date%%
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var FUNCTION = 'function', STRING = 'string', UNDEFINED = undefined;
+
+// // Require Array.prototype.splice, Object.prototype.hasOwnProperty and encodeURIComponent. In environments not
+// // having these (e.g. IE <= 5), we bail out now and leave Hashtable null.
+// if (typeof encodeURIComponent == UNDEFINED ||
+//         Array.prototype.splice === UNDEFINED ||
+//         Object.prototype.hasOwnProperty === UNDEFINED) {
+//     return null;
+// }
+
+function toStr(obj) {
+  return (typeof obj == STRING) ? obj : '' + obj;
+}
+
+function hashObject(obj) {
+  var hashCode;
+  if (typeof obj == STRING) {
+    return obj;
+  } else if (typeof obj.hashCode == FUNCTION) {
+    // Check the hashCode method really has returned a string
+    hashCode = obj.hashCode();
+    return (typeof hashCode == STRING) ? hashCode : hashObject(hashCode);
+  } else {
+    return toStr(obj);
+  }
+}
+
+function merge(o1, o2) {
+  for (var i in o2) {
+    if (o2.hasOwnProperty(i)) {
+      o1[i] = o2[i];
+    }
+  }
+}
+
+function equals_fixedValueHasEquals(fixedValue, variableValue) {
+  return fixedValue.equals(variableValue);
+}
+
+function equals_fixedValueNoEquals(fixedValue, variableValue) {
+  return (typeof variableValue.equals == FUNCTION) ?
+      variableValue.equals(fixedValue) : (fixedValue === variableValue);
+}
+
+function createKeyValCheck(kvStr) {
+  return function(kv) {
+    if (kv === null) {
+      throw new Error('null is not a valid ' + kvStr);
+    } else if (kv === UNDEFINED) {
+      throw new Error(kvStr + ' must not be undefined');
+    }
+  };
+}
+
+var checkKey = createKeyValCheck('key'), checkValue = createKeyValCheck('value');
+
+/*----------------------------------------------------------------------------------------------------------------*/
+
+function Bucket(hash, firstKey, firstValue, equalityFunction) {
+  this[0] = hash;
+  this.entries = [];
+  this.addEntry(firstKey, firstValue);
+
+  if (equalityFunction !== null) {
+    this.getEqualityFunction = function() {
+      return equalityFunction;
+    };
+  }
+}
+
+var EXISTENCE = 0, ENTRY = 1, ENTRY_INDEX_AND_VALUE = 2;
+
+function createBucketSearcher(mode) {
+  return function(key) {
+    var i = this.entries.length, entry, equals = this.getEqualityFunction(key);
+    while (i--) {
+      entry = this.entries[i];
+      if (equals(key, entry[0])) {
+        switch (mode) {
+          case EXISTENCE:
+            return true;
+          case ENTRY:
+            return entry;
+          case ENTRY_INDEX_AND_VALUE:
+            return [i, entry[1]];
+        }
+      }
+    }
+    return false;
+  };
+}
+
+function createBucketLister(entryProperty) {
+  return function(aggregatedArr) {
+    var startIndex = aggregatedArr.length;
+    for (var i = 0, entries = this.entries, len = entries.length; i < len; ++i) {
+      aggregatedArr[startIndex + i] = entries[i][entryProperty];
+    }
+  };
+}
+
+Bucket.prototype = {
+  getEqualityFunction: function(searchValue) {
+    return (typeof searchValue.equals == FUNCTION) ? equals_fixedValueHasEquals : equals_fixedValueNoEquals;
+  },
+
+  getEntryForKey: createBucketSearcher(ENTRY),
+
+  getEntryAndIndexForKey: createBucketSearcher(ENTRY_INDEX_AND_VALUE),
+
+  removeEntryForKey: function(key) {
+    var result = this.getEntryAndIndexForKey(key);
+    if (result) {
+      this.entries.splice(result[0], 1);
+      return result[1];
+    }
+    return null;
+  },
+
+  addEntry: function(key, value) {
+    this.entries.push([key, value]);
+  },
+
+  keys: createBucketLister(0),
+
+  values: createBucketLister(1),
+
+  getEntries: function(destEntries) {
+    var startIndex = destEntries.length;
+    for (var i = 0, entries = this.entries, len = entries.length; i < len; ++i) {
+      // Clone the entry stored in the bucket before adding to array
+      destEntries[startIndex + i] = entries[i].slice(0);
+    }
+  },
+
+  containsKey: createBucketSearcher(EXISTENCE),
+
+  containsValue: function(value) {
+    var entries = this.entries, i = entries.length;
+    while (i--) {
+      if (value === entries[i][1]) {
+        return true;
+      }
+    }
+    return false;
+  }
+};
+
+/*----------------------------------------------------------------------------------------------------------------*/
+
+// Supporting functions for searching hashtable buckets
+
+function searchBuckets(buckets, hash) {
+  var i = buckets.length, bucket;
+  while (i--) {
+    bucket = buckets[i];
+    if (hash === bucket[0]) {
+      return i;
+    }
+  }
+  return null;
+}
+
+function getBucketForHash(bucketsByHash, hash) {
+  var bucket = bucketsByHash[hash];
+
+  // Check that this is a genuine bucket and not something inherited from the bucketsByHash's prototype
+  return (bucket && (bucket instanceof Bucket)) ? bucket : null;
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+
+function Hashtable() {
+  var buckets = [];
+  var bucketsByHash = {};
+  var properties = {
+    replaceDuplicateKey: true,
+    hashCode: hashObject,
+    equals: null
+  };
+  var size = 0;
+  var biggestBucket = null;
+
+  var arg0 = arguments[0], arg1 = arguments[1];
+  if (arg1 !== UNDEFINED) {
+    properties.hashCode = arg0;
+    properties.equals = arg1;
+  } else if (arg0 !== UNDEFINED) {
+    merge(properties, arg0);
+  }
+
+  var hashCode = properties.hashCode, equals = properties.equals;
+
+  this.properties = properties;
+
+  this.put = function(key, value) {
+    checkKey(key);
+    checkValue(value);
+    var hash = hashCode(key), bucket, bucketEntry, oldValue = null;
+
+    // Check if a bucket exists for the bucket key
+    bucket = getBucketForHash(bucketsByHash, hash);
+    if (bucket) {
+      // Check this bucket to see if it already contains this key
+      bucketEntry = bucket.getEntryForKey(key);
+      if (bucketEntry) {
+        // This bucket entry is the current mapping of key to value, so replace the old value.
+        // Also, we optionally replace the key so that the latest key is stored.
+        if (properties.replaceDuplicateKey) {
+          bucketEntry[0] = key;
+        }
+        oldValue = bucketEntry[1];
+        bucketEntry[1] = value;
+      } else {
+        // The bucket does not contain an entry for this key, so add one
+        bucket.addEntry(key, value);
+        size++;
+        if (biggestBucket === null || bucket.entries.length > biggestBucket.entries.length)
+          biggestBucket = bucket;
+      }
+    } else {
+      // No bucket exists for the key, so create one and put our key/value mapping in
+      bucket = new Bucket(hash, key, value, equals);
+      buckets.push(bucket);
+      bucketsByHash[hash] = bucket;
+      size++;
+      if (biggestBucket === null || bucket.entries.length > biggestBucket.entries.length)
+        biggestBucket = bucket;
+    }
+    return oldValue;
+  };
+
+  this.get = function(key) {
+    checkKey(key);
+
+    var hash = hashCode(key);
+
+    // Check if a bucket exists for the bucket key
+    var bucket = getBucketForHash(bucketsByHash, hash);
+    if (bucket) {
+      // Check this bucket to see if it contains this key
+      var bucketEntry = bucket.getEntryForKey(key);
+      if (bucketEntry) {
+        // This bucket entry is the current mapping of key to value, so return the value.
+        return bucketEntry[1];
+      }
+    }
+    return null;
+  };
+
+  this.containsKey = function(key) {
+    checkKey(key);
+    var bucketKey = hashCode(key);
+
+    // Check if a bucket exists for the bucket key
+    var bucket = getBucketForHash(bucketsByHash, bucketKey);
+
+    return bucket ? bucket.containsKey(key) : false;
+  };
+
+  this.containsValue = function(value) {
+    checkValue(value);
+    var i = buckets.length;
+    while (i--) {
+      if (buckets[i].containsValue(value)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  this.clear = function() {
+    buckets.length = 0;
+    bucketsByHash = {};
+    size = 0;
+    biggestBucket = null;
+  };
+
+  this.isEmpty = function() {
+    return !buckets.length;
+  };
+
+  var createBucketAggregator = function(bucketFuncName) {
+    return function() {
+      var aggregated = [], i = buckets.length;
+      while (i--) {
+        buckets[i][bucketFuncName](aggregated);
+      }
+      return aggregated;
+    };
+  };
+
+  this.keys = createBucketAggregator('keys');
+  this.values = createBucketAggregator('values');
+  this.entries = createBucketAggregator('getEntries');
+
+  this.remove = function(key) {
+    checkKey(key);
+
+    var hash = hashCode(key), bucketIndex, oldValue = null;
+
+    // Check if a bucket exists for the bucket key
+    var bucket = getBucketForHash(bucketsByHash, hash);
+
+    if (bucket) {
+      // Remove entry from this bucket for this key
+      oldValue = bucket.removeEntryForKey(key);
+      if (oldValue !== null) {
+        // Entry was removed, so check if bucket is empty
+        if (bucket.entries.length == 0) {
+          // Bucket is empty, so remove it from the bucket collections
+          bucketIndex = searchBuckets(buckets, hash);
+          buckets.splice(bucketIndex, 1);
+          delete bucketsByHash[hash];
+        }
+        size--;
+        // console.log("size--");
+        if (biggestBucket === bucket) {
+          if (buckets.length === 0)
+            biggestBucket = null;
+          else {
+            biggestBucket = buckets[0];
+            var i = buckets.length;
+            while (i--) {
+                            if (buckets[i].entries.length > biggestBucket.entries.length)
+                biggestBucket = buckets[i];
+            }
+          }
+        }
+      }
+    }
+    return oldValue;
+  };
+
+  this.equals = function(hashtable) {
+    var keys, key, val, count = size;
+    if (count == hashtable.size) {
+      keys = this.keys();
+      while (count--) {
+        key = keys[count];
+        val = hashtable.get(key);
+        if (val === null || val !== this.get(key)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  };
+
+  // Simple rejection sampling approach, expected constant time
+  // http://stackoverflow.com/questions/8629447/efficiently-picking-a-random-element-from-a-chained-hash-table
+  this.getRandom = function() {
+    // console.log("SIZE: " + size);
+    var L = biggestBucket.entries.length;
+    while (true) {
+      var bi = Math.floor(Math.random() * buckets.length);
+      var bucket = buckets[bi];
+      var p = Math.floor(Math.random() * L);
+      if (p < bucket.entries.length)
+        return bucket.entries[p][1];
+    }
+  };
+}
+
+Hashtable.prototype = {
+  each: function(callback) {
+    var entries = this.entries(), i = entries.length, entry;
+    while (i--) {
+      entry = entries[i];
+      callback(entry[0], entry[1]);
+    }
+  },
+
+  putAll: function(hashtable, conflictCallback) {
+    var entries = hashtable.entries();
+    var entry, key, value, thisValue, i = entries.length;
+    var hasConflictCallback = (typeof conflictCallback == FUNCTION);
+    while (i--) {
+      entry = entries[i];
+      key = entry[0];
+      value = entry[1];
+
+      // Check for a conflict. The default behaviour is to overwrite the value for an existing key
+      if (hasConflictCallback && (thisValue = this.get(key))) {
+        value = conflictCallback(key, thisValue, value);
+      }
+      this.put(key, value);
+    }
+  },
+
+  clone: function() {
+    var clone = new Hashtable(this.properties);
+    clone.putAll(this);
+    return clone;
+  }
+};
+
+Hashtable.prototype.toQueryString = function() {
+  var entries = this.entries(), i = entries.length, entry;
+  var parts = [];
+  while (i--) {
+    entry = entries[i];
+    parts[i] = encodeURIComponent(toStr(entry[0])) + '=' + encodeURIComponent(toStr(entry[1]));
+  }
+  return parts.join('&');
+};
+
+module.exports = {
+  Hashtable: Hashtable
+};
+
+},{}],97:[function(require,module,exports){
+(function (global){
 ////////////////////////////////////////////////////////////////////
 // Inference interface
 //
@@ -37189,10 +39051,14 @@ var enumerate = require('./inference/enumerate.js');
 var particlefilter = require('./inference/particlefilter.js');
 var asyncpf = require('./inference/asyncpf.js');
 var mh = require('./inference/mh.js');
+var hashmh = require('./inference/hashmh.js');
 var pmcmc = require('./inference/pmcmc.js');
 var smc = require('./inference/smc.js');
 var variational = require('./inference/variational.js');
+var rejection = require('./inference/rejection.js');
+var incrementalmh = require('./inference/incrementalmh.js');
 var headerUtils = require('./headerUtils.js');
+var Query = require('./query.js').Query;
 
 
 module.exports = function(env) {
@@ -37209,8 +39075,14 @@ module.exports = function(env) {
     },
     exit: function(s, r) {
       return r;
+    },
+    incrementalize: function(s, cc, a, fn, args) {
+      var args = [s, cc, a].concat(args);
+      return fn.apply(global, args);
     }
   };
+
+  env.defaultCoroutine = env.coroutine;
 
   env.sample = function(s, k, a, dist, params) {
     return env.coroutine.sample(s, k, a, dist, params);
@@ -37242,10 +39114,20 @@ module.exports = function(env) {
     return env.coroutine.exit(s, retval);
   };
 
+  env.incrementalize = function(s, cc, a, fn, args) {
+    args = args || [];
+    return env.coroutine.incrementalize(s, cc, a, fn, args);
+  }
+
+  // Inference coroutines are responsible for managing this correctly.
+  env.query = new Query();
+
 
   // Exports
 
-  var exports = {};
+  var exports = {
+    _top: util.runningInBrowser() ? window : global
+  };
 
   function addExports(obj) {
     _.extend(exports, obj);
@@ -37255,7 +39137,9 @@ module.exports = function(env) {
   addExports({
     factor: env.factor,
     sample: env.sample,
-    sampleWithFactor: env.sampleWithFactor
+    sampleWithFactor: env.sampleWithFactor,
+    incrementalize: env.incrementalize,
+    query: env.query
   });
 
   // Modules we want to use from webppl
@@ -37267,8 +39151,8 @@ module.exports = function(env) {
 
   // Inference functions and header utils
   var headerModules = [
-    enumerate, particlefilter, asyncpf, mh, pmcmc,
-    smc, variational, headerUtils
+    enumerate, particlefilter, asyncpf, mh, hashmh, incrementalmh, pmcmc,
+    smc, variational, rejection, headerUtils
   ];
   headerModules.forEach(function(mod) {
     addExports(mod(env));
@@ -37281,7 +39165,8 @@ module.exports = function(env) {
 
 };
 
-},{"./erp.js":92,"./headerUtils.js":94,"./inference/asyncpf.js":95,"./inference/enumerate.js":96,"./inference/mh.js":98,"./inference/particlefilter.js":99,"./inference/pmcmc.js":100,"./inference/smc.js":101,"./inference/variational.js":102,"./util.js":111,"assert":112,"underscore":86}],94:[function(require,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./erp.js":95,"./headerUtils.js":98,"./inference/asyncpf.js":99,"./inference/enumerate.js":100,"./inference/hashmh.js":101,"./inference/incrementalmh.js":102,"./inference/mh.js":104,"./inference/particlefilter.js":105,"./inference/pmcmc.js":106,"./inference/rejection.js":107,"./inference/smc.js":108,"./inference/variational.js":109,"./query.js":111,"./util.js":121,"assert":122,"underscore":88}],98:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -37324,20 +39209,68 @@ module.exports = function(env) {
     return k(s, cf);
   }
 
+  // Stochastic caching for a wppl function.
+  // recompProb - if found in cache, recompute with this prob
+  // aggregator - when recomputing, aggregate(oldval, newval)
+  // **warning** avoid use on recursive functions
+  // **warning** aggregator should ideally be monoid because order can
+  //             be weird when f is not deterministic
+  function stochasticCache(s, k, a, f, aggregator, recompProb) {
+    var c = {};
+    var cf = function(s, k, a) {
+      var args = Array.prototype.slice.call(arguments, 3);
+      var stringedArgs = JSON.stringify(args);
+      var foundInCache = stringedArgs in c;
+      var recomp = Math.random() < recompProb;
+      if (foundInCache && !recomp) {      // return stored value
+        return k(s, c[stringedArgs]);
+      } else {                           // recompute
+        var newk = function(s, r) {
+          var prev = foundInCache ? c[stringedArgs] : null;
+          var nk = function(s, v) {
+            c[stringedArgs] = v;
+            return k(s, v);
+          };
+          if (foundInCache) {           // aggregate with prev value
+            return aggregator.apply(this, [s, nk, a].concat([prev, r]))
+          } else {                      // just return current value
+            return nk(s, r);
+          }
+        };
+        return f.apply(this, [s, newk, a].concat(args));
+      }
+    };
+    return k(s, cf);
+  }
+
   function apply(s, k, a, wpplFn, args) {
     return wpplFn.apply(global, [s, k, a].concat(args));
   }
 
+  // Annotating a function object with its lexical id and
+  //    a list of its free variable values.
+  var __uniqueid = 0;
+  var _Fn = {
+    tag: function(fn, lexid, freevarvals) {
+      fn.__lexid = lexid;
+      fn.__uniqueid = __uniqueid++;
+      fn.__freeVarVals = freevarvals;
+      return fn;
+    }
+  };
+
   return {
     display: display,
     cache: cache,
-    apply: apply
+    stochasticCache: stochasticCache,
+    apply: apply,
+    _Fn: _Fn
   };
 
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],95:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // Asynchronous Anytime SMC.
 // http://arxiv.org/abs/1407.2864
@@ -37469,7 +39402,9 @@ module.exports = function(env) {
         var totalChildren = 0;
         for (var v = 0; v < lk.length; v++) totalChildren += lk[v].mnk; // \sum M^k_n
         var minK = Math.min(this.numParticles, lk.length); // min(K_0, k-1)
-        var rnk = Math.exp(logRatio);
+        // if all previous particles have -Infinity *and* current weight is -Infinity
+        // rnk = lim(x->0) x/x = 1 => [1, wbar] = [1, -Infinity]
+        var rnk = isNaN(logRatio) ? 1 : Math.exp(logRatio);
         var clampedRnk = totalChildren <= minK ? Math.ceil(rnk) : Math.floor(rnk);
         numChildrenAndWeight = [clampedRnk, currWeight - Math.log(clampedRnk)];
       }
@@ -37508,11 +39443,12 @@ module.exports = function(env) {
     if (this.exitedParticles < this.numParticles) {
       return this.run();
     } else {
-      var dist = erp.makeMarginalERP(this.hist);
+      var dist = erp.makeMarginalERP(util.logHist(this.hist));
 
       var lastFactorIndex = this.activeParticle.factorIndex;
       var olk = this.obsWeights[lastFactorIndex];
-      dist.normalizationConstant = Math.log(olk.length) - // K_n
+      var Kn = _.reduce(olk, function(a, b) {return a + b.mnk;}, 0)
+      dist.normalizationConstant = Math.log(Kn) -         // K_n
           Math.log(this.numParticles) +                   // K_0
           olk[olk.length - 1].wbar;                       // Wbar^k_n
 
@@ -37533,6 +39469,8 @@ module.exports = function(env) {
     }
   };
 
+  AsyncPF.prototype.incrementalize = env.defaultCoroutine.incrementalize;
+
   function asyncPF(s, cc, a, wpplFn, numParticles, bufferSize) {
     return new AsyncPF(s, cc, a, wpplFn, numParticles, bufferSize).run(numParticles);
   }
@@ -37543,7 +39481,7 @@ module.exports = function(env) {
 
 };
 
-},{"../erp.js":92,"../util.js":111,"underscore":86}],96:[function(require,module,exports){
+},{"../erp.js":95,"../util.js":121,"underscore":88}],100:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // Enumeration
 //
@@ -37666,9 +39604,9 @@ module.exports = function(env) {
     var r = JSON.stringify(retval);
     if (this.score !== -Infinity) {
       if (this.marginal[r] === undefined) {
-        this.marginal[r] = {prob: 0, val: retval};
+        this.marginal[r] = {val: retval, prob: -Infinity};
       }
-      this.marginal[r].prob += Math.exp(this.score);
+      this.marginal[r].prob = util.logsumexp([this.marginal[r].prob, this.score])
     }
 
     // Increment the completed execution counter
@@ -37686,6 +39624,8 @@ module.exports = function(env) {
       return this.k(this.store, dist);
     }
   };
+
+  Enumerate.prototype.incrementalize = env.defaultCoroutine.incrementalize;
 
   //helper wraps with 'new' to make a new copy of Enumerate and set 'this' correctly..
   function enuPriority(s, cc, a, wpplFn, maxExecutions) {
@@ -37724,7 +39664,1354 @@ module.exports = function(env) {
 
 };
 
-},{"../erp.js":92,"../util.js":111,"priorityqueuejs":85,"underscore":86}],97:[function(require,module,exports){
+},{"../erp.js":95,"../util.js":121,"priorityqueuejs":87,"underscore":88}],101:[function(require,module,exports){
+////////////////////////////////////////////////////////////////////
+// Lightweight MH, storing choices in a hash table
+
+'use strict';
+
+var _ = require('underscore');
+var assert = require('assert');
+var util = require('../util.js');
+var erp = require('../erp.js');
+var Query = require('../query.js').Query;
+
+module.exports = function(env) {
+
+  function acceptProb(currScore, oldScore, currN, oldN, rvsLP, fwdLP) {
+    if (oldScore === -Infinity) { return 1; } // init
+    if (currScore === -Infinity) return 0;  // auto-reject
+    var fw = -Math.log(oldN) + fwdLP;
+    var bw = -Math.log(currN) + rvsLP;
+    var p = Math.exp(currScore - oldScore + bw - fw);
+    assert.ok(!isNaN(p));
+    var acceptance = Math.min(1, p);
+    return acceptance;
+  }
+
+  function HashMH(s, k, a, wpplFn, numIterations, opts) {
+    // Extract opts
+    var doFullRerun = opts.doFullRerun === undefined ? false : opts.doFullRerun;
+    var verbose = opts.verbose === undefined ? false : opts.verbose;
+    var justSample = opts.justSample === undefined ? false : opts.justSample;
+    var onlyMAP = opts.onlyMAP === undefined ? false : opts.onlyMAP;
+    var lag = opts.lag === undefined ? 1 : opts.lag;
+
+    this.doFullRerun = doFullRerun;
+    this.verbose = verbose;
+
+    this.k = k;
+    this.oldStore = s;
+    this.iterations = numIterations;
+
+    this.totalIterations = numIterations;
+    this.acceptedProps = 0;
+
+    this.lag = lag;
+
+    this.wpplFn = wpplFn;
+    this.s = s;
+    this.a = a;
+
+    this.onlyMAP = onlyMAP;
+    if (justSample)
+      this.returnSamps = [];
+    else
+      this.returnHist = {};
+    this.MAP = { val: undefined, score: -Infinity };
+
+    // Move old coroutine out of the way and install this as the current
+    // handler.
+    this.oldCoroutine = env.coroutine;
+    env.coroutine = this;
+  }
+
+  HashMH.prototype.run = function() {
+    this.vars = {};
+    this.varlist = [];
+    this.currScore = 0;
+    this.fwdLP = 0;
+    this.rvsLP = 0;
+    this.oldScore = -Infinity;
+    this.query = new Query();
+    env.query.clear();
+    return this.wpplFn(_.clone(this.s), env.exit, this.a);
+  };
+
+  HashMH.prototype.factor = function(s, k, a, score) {
+    this.currScore += score;
+    // Bail out early if score became -Infinity
+    if (this.currScore === -Infinity)
+      return this.exit();
+    else
+      return k(s);
+  };
+
+  HashMH.prototype.sample = function(s, cont, name, erp, params, forceSample) {
+    var prev = this.vars[name];
+
+    var reuse = ! (prev === undefined || forceSample);
+    var val = reuse ? prev.val : erp.sample(params);
+    // On proposal: bail out early if the value didn't change
+    if (forceSample && prev.val === val) {
+      this.vars = this.oldVars;
+      this.varlist = this.oldvarlist;
+      this.currScore = this.oldScore;
+      return this.exit(null, this.oldVal);
+    } else {
+      var choiceScore = erp.score(params, val);
+      var newEntry = {k: cont, name: name, erp: erp, params: params,
+        score: this.currScore, choiceScore: choiceScore,
+        val: val, reused: reuse, store: _.clone(s)};
+      this.vars[name] = newEntry;
+      // Case: we just created this choice for the first time
+      if (prev === undefined)
+        this.fwdLP += choiceScore;
+      // Case: we made a proposal to this choice
+      else if (forceSample) {
+        this.fwdLP += choiceScore;
+        this.rvsLP += prev.choiceScore;
+      }
+      // Bail out early if score became -Infinity
+      if (choiceScore === -Infinity)
+        return this.exit();
+      // Re-run from the start, if this was a proposal and we're
+      //    doing full re-runs
+      else if (forceSample && this.doFullRerun)
+        return this.wpplFn(this.s, env.exit, this.a);
+      // Otherwise, move on by invoking current continuation
+      else {
+        this.currScore += choiceScore;
+        this.varlist.push(newEntry);
+        return cont(s, val);
+      }
+    }
+  };
+
+  HashMH.prototype.isInitialized = function() {
+    return this.iterations < this.totalIterations;
+  };
+
+  HashMH.prototype.exit = function(s, val) {
+    if (this.iterations > 0) {
+      // Initialization: Keep rejection sampling until we get a trace with
+      //    non-zero probability
+      if (!this.isInitialized() && this.currScore === -Infinity) {
+        return this.run();
+      } else {
+        if (this.verbose)
+          console.log('HashMH iteration ' + (this.totalIterations - this.iterations) +
+              ' / ' + this.totalIterations);
+        this.iterations -= 1;
+
+        // Clean out any dead vars and calculate reverse LP
+        if (this.oldvarlist !== undefined && this.currScore !== -Infinity) {
+          var reached = {};
+          for (var i = this.propIdx; i < this.varlist.length; i++)
+            reached[this.varlist[i].name] = this.varlist[i];
+          for (var i = this.propIdx; i < this.oldvarlist.length; i++) {
+            var v = this.oldvarlist[i];
+            if (reached[v.name] === undefined) {
+              delete this.vars[v.name];
+              this.rvsLP += v.choiceScore;
+            }
+          }
+        }
+
+        // did we like this proposal?
+        var oldN = this.oldvarlist === undefined ? 0 : this.oldvarlist.length;
+        var acceptance = acceptProb(this.currScore, this.oldScore,
+                                    this.varlist.length, oldN,
+                                    this.rvsLP, this.fwdLP);
+        if (Math.random() >= acceptance) {
+          // if rejected, roll back trace, etc:
+          this.vars = this.oldVars;
+          this.varlist = this.oldvarlist;
+          this.currScore = this.oldScore;
+          val = this.oldVal;
+        } else {
+          this.acceptedProps++;
+          this.query.addAll(env.query);
+        }
+        env.query.clear();
+
+        // Record this sample, if lag allows for it
+        var iternum = this.totalIterations - this.iterations;
+        if (iternum % this.lag === 0) {
+          // Replace val with accumulated query, if need be.
+          if (val === env.query)
+            val = this.query.getTable();
+          // add val to hist:
+          if (!this.onlyMAP) {
+            if (this.returnSamps)
+              this.returnSamps.push({score: this.score, value: val})
+            else {
+              var stringifiedVal = JSON.stringify(val);
+              if (this.returnHist[stringifiedVal] === undefined) {
+                this.returnHist[stringifiedVal] = { prob: 0, val: val };
+              }
+              this.returnHist[stringifiedVal].prob += 1;
+            }
+          }
+          // also update the MAP
+          if (this.currScore > this.MAP.score) {
+            this.MAP.score = this.currScore;
+            this.MAP.value = val;
+          }
+        }
+
+        // make a new proposal:
+        this.propIdx = Math.floor(Math.random() * this.varlist.length);
+        var entry = this.varlist[this.propIdx];
+        this.oldVars = this.vars;
+        this.vars = _.clone(this.vars);
+        this.oldvarlist = this.varlist;
+        this.fwdLP = 0;
+        this.rvsLP = 0;
+        this.oldScore = this.currScore;
+        this.oldVal = val;
+
+        // Do we re-run from the beginning of the program, or use the continuation
+        //    at this random choice?
+        if (this.doFullRerun) {
+          this.varlist = [];
+          this.currScore = 0;
+        } else {
+          this.varlist = this.oldvarlist.slice(0, this.propIdx);
+          this.currScore = entry.score;
+        }
+        return this.sample(_.clone(entry.store), entry.k, entry.name, entry.erp, entry.params, true);
+      }
+    } else {
+      var dist;
+      if (this.returnHist)
+        dist = erp.makeMarginalERP(util.logHist(this.returnHist));
+      else
+        dist = erp.makeMarginalERP({});
+      if (this.returnSamps) {
+        if (this.onlyMAP)
+          this.returnSamps.push(this.MAP);
+        dist.samples = this.returnSamps;
+      }
+      dist.MAP = this.MAP.value;
+
+      // Reinstate previous coroutine:
+      var k = this.k;
+      env.coroutine = this.oldCoroutine;
+
+      // console.log('Acceptance ratio: ' + this.acceptedProps / this.totalIterations);
+
+      // Return by calling original continuation:
+      return k(this.oldStore, dist);
+    }
+  };
+
+  HashMH.prototype.incrementalize = env.defaultCoroutine.incrementalize;
+
+  function hashmh(s, cc, a, wpplFn, numParticles, opts) {
+    opts = opts || {};
+    return new HashMH(s, cc, a, wpplFn, numParticles, opts).run();
+  }
+
+  return {
+    HashMH: hashmh
+  };
+
+};
+
+},{"../erp.js":95,"../query.js":111,"../util.js":121,"assert":122,"underscore":88}],102:[function(require,module,exports){
+(function (global){
+////////////////////////////////////////////////////////////////////
+// Incrementalized (i.e. caching) Lightweight MH
+
+'use strict';
+
+var _ = require('underscore');
+var assert = require('assert');
+var util = require('../util.js');
+var erp = require('../erp.js');
+var Hashtable = require('../hashtable.js').Hashtable
+var Query = require('../query.js').Query;
+
+module.exports = function(env) {
+
+  // ------------------------------------------------------------------
+
+  // Debugging output
+
+  var DEBUG = 0;
+  function debuglog(debuglevel) {
+    if (DEBUG >= debuglevel) {
+      var args = Array.prototype.slice.call(arguments, 1);
+      console.log.apply(console, args);
+    }
+  }
+
+  function tabbedlog(debuglevel, depth) {
+    if (DEBUG >= debuglevel) {
+      var args = Array.prototype.slice.call(arguments, 2);
+      var pad = '';
+      for (var i = 0; i < depth; i++) pad += '  ';
+      pad += '[' + depth + '] ';
+      console.log.apply(console, [pad].concat(args));
+    }
+  }
+
+  // ------------------------------------------------------------------
+
+  // A sort of 'copy on write' system for cache nodes
+
+  function touch(node) {
+    if (!node.__snapshot) {
+      node.coroutine.touch(node);
+      node.__snapshot = { reachable: true };
+    }
+  }
+
+  function updateProperty(node, prop, val) {
+    touch(node);
+    if (!node.__snapshot[prop])
+      node.__snapshot[prop] = node[prop];
+    node[prop] = val;
+  }
+
+  function hasSnapshotForProperty(node, prop) {
+    return node.__snapshot !== undefined &&
+           node.__snapshot[prop] !== undefined;
+  }
+
+  function restoreSnapshot(node) {
+    for (var prop in node.__snapshot) {
+      node[prop] = node.__snapshot[prop];
+    }
+    node.__snapshot = undefined;
+  }
+
+  function discardSnapshot(node) {
+    node.__snapshot = undefined;
+  }
+
+  // ------------------------------------------------------------------
+
+  // A cached ERP call
+  function ERPNode(coroutine, parent, s, k, a, erp, params) {
+    this.coroutine = coroutine;
+
+    this.store = _.clone(s);
+    this.continuation = k;
+    this.address = a;
+    this.erp = erp;
+
+    this.parent = parent;
+    this.depth = parent.depth + 1;
+    this.index = parent.nextChildIdx;
+
+    this.reachable = true;
+    this.needsUpdate = false;
+
+    this.params = params;
+    this.val = erp.sample(params);
+    this.score = 0; this.rescore();
+
+    // Add this to the master list of ERP nodes
+    this.coroutine.addERP(this);
+  }
+
+  ERPNode.prototype.print = function() {
+    tabbedlog(0, this.depth, 'ERPNode', this.erp.sample.name.slice(0, -6),
+              this.params, this.val, this.reachable ? '' : '!!UNREACHABLE!!');
+  };
+
+  ERPNode.prototype.execute = function() {
+    tabbedlog(4, this.depth, 'execute ERP');
+    if (this.needsUpdate) {
+      tabbedlog(4, this.depth, 'yes, ERP params changed');
+      tabbedlog(5, this.depth, 'old params:',
+          this.__snapshot ? this.__snapshot.params : undefined,
+          'new params:', this.params);
+      this.needsUpdate = false;
+      this.rescore();
+    }
+    else {
+      tabbedlog(4, this.depth, 'no, ERP params have not changed');
+      tabbedlog(5, this.depth, 'params:', this.params);
+    }
+    return this.kontinue();
+  };
+
+  ERPNode.prototype.registerInputChanges = function(s, k, unused, params) {
+    updateProperty(this, 'store', _.clone(s));
+    updateProperty(this, 'continuation', k);
+    updateProperty(this, 'index', this.parent.nextChildIdx);
+    this.reachable = true;
+    // Check params for changes
+    for (var i = 0; i < params.length; i++)
+    {
+      if (params[i] !== this.params[i]) {
+        this.needsUpdate = true;
+        updateProperty(this, 'params', params);
+        break;
+      }
+    }
+  };
+
+  ERPNode.prototype.kontinue = function() {
+    this.parent.notifyChildExecuted(this);
+    // Call continuation
+    // Copies store, so that we maintain a pristine copy of this.store
+    return this.continuation(_.clone(this.store), this.val);
+  };
+
+  ERPNode.prototype.killDescendantLeaves = function() {
+    this.coroutine.removeERP(this);
+  };
+
+  ERPNode.prototype.propose = function() {
+    var oldval = this.val;
+    var newval = this.erp.sample(this.params);
+    tabbedlog(4, this.depth, 'proposing change to ERP.', 'oldval:', oldval, 'newval:', newval);
+    // If the value didn't change, then just bail out (we know the
+    //    the proposal will be accepted)
+    if (oldval === newval) {
+      tabbedlog(4, this.depth, "proposal didn't change value; bailing out early");
+      tabbedlog(5, this.depth, 'value:', this.val);
+      return this.coroutine.exit();
+    } else {
+      updateProperty(this, 'store', _.clone(this.store));
+      updateProperty(this, 'val', newval);
+      var oldscore = this.score;
+      this.rescore();
+      this.coroutine.rvsPropLP = oldscore;
+      this.coroutine.fwdPropLP = this.score;
+      tabbedlog(1, this.depth, 'initial rvsPropLP:', this.coroutine.rvsPropLP,
+          'initial fwdPropLP:', this.coroutine.fwdPropLP);
+      this.needsUpdate = false;
+      if (this.coroutine.doFullRerun) {
+        // Mark every node above this one as needing update, then re-run
+        //    the program from the start
+        for (var node = this.parent; node !== null; node = node.parent)
+          node.needsUpdate = true;
+        return this.coroutine.runFromStart();
+      } else {
+        this.parent.notifyChildChanged(this);
+        // Restore node stack up to this point
+        this.coroutine.restoreStackUpTo(this.parent);
+        return this.execute();
+      }
+    }
+  };
+
+  ERPNode.prototype.rescore = function() {
+    var oldscore = this.score;
+    updateProperty(this, 'score', this.erp.score(this.params, this.val));
+    this.coroutine.score += this.score - oldscore;
+    if (this.score === -Infinity) {
+      tabbedlog(4, this.depth, 'score became -Infinity; bailing out early');
+      return this.coroutine.exit();
+    }
+  };
+
+  // ------------------------------------------------------------------
+
+  // A cached factor call
+  function FactorNode(coroutine, parent, s, k, a, unused, args) {
+    this.coroutine = coroutine;
+
+    this.store = s;
+    this.continuation = k;
+    this.address = a;
+
+    this.parent = parent;
+    this.depth = parent.depth + 1;
+    this.index = parent.nextChildIdx;
+
+    this.reachable = true;
+
+    this.rescore(0, args[0]);
+
+    tabbedlog(3, this.depth, 'new factor');
+  }
+
+  FactorNode.prototype.print = function() {
+    tabbedlog(0, this.depth, 'FactorNode', this.reachable ? '' : '!!UNREACHABLE!!');
+  };
+
+  FactorNode.prototype.execute = function() {
+    // Bail out early if we know proposal will be rejected
+    if (this.score === -Infinity) {
+      tabbedlog(4, this.depth, 'score became -Infinity; bailing out early');
+      return this.coroutine.exit();
+    } else {
+      return this.kontinue();
+    }
+  };
+
+  FactorNode.prototype.registerInputChanges = function(s, k, unused, args) {
+    updateProperty(this, 'store', s);
+    updateProperty(this, 'continuation', k);
+    updateProperty(this, 'index', this.parent.nextChildIdx);
+    this.reachable = true;
+    if (this.score !== args[0])
+      this.rescore(this.score, args[0]);
+  };
+
+  FactorNode.prototype.kontinue = function() {
+    this.parent.notifyChildExecuted(this);
+    return this.continuation(this.store);
+  };
+
+  FactorNode.prototype.killDescendantLeaves = function() {
+    tabbedlog(3, this.depth, 'kill factor', this.address);
+    this.coroutine.score -= this.score;
+  }
+
+  FactorNode.prototype.rescore = function(oldscore, score) {
+    updateProperty(this, 'score', score);
+    this.coroutine.score += score - oldscore;
+  };
+
+  // ------------------------------------------------------------------
+
+  // Comparing two stores for shallow equality
+  function storesEqual(s1, s2) {
+    var prop;
+    for (prop in s1) {
+      if (s1[prop] !== s2[prop])
+        return false;
+    }
+    for (prop in s2) {
+      if (s1[prop] !== s2[prop])
+        return false;
+    }
+    return true;
+  }
+
+  // Checks whether two function are equivalent
+  var fnEquivCache = {};
+  function fnsEqual(f1, f2) {
+    // If the two functions are literally the same closure, then of course
+    //    they are equivalent.
+    if (f1 === f2) return true;
+    // Otherwise, they're equivalent if they come from the same source location
+    //    and the values of the variables they close over are the same.
+    // We cache this check, because situations often arise where we're checking
+    //    the same pair of functions over and over again.
+    if (f1.__lexid === f2.__lexid) {
+      var key = JSON.stringify([f1.__uniqueid, f2.__uniqueid]);
+      var val = fnEquivCache[key];
+      if (val === undefined) {
+        val = true;
+        for (var i = 0; i < f1.__freeVarVals.length; i++) {
+          var v1 = f1.__freeVarVals[i];
+          var v2 = f2.__freeVarVals[i];
+          // If they're both functions, recursively apply this check
+          var eq = (_.isFunction(v1) && _.isFunction(v2)) ? fnsEqual(v1, v2) : v1 === v2;
+          if (!eq) {
+            val = false;
+            break;
+          }
+        }
+        fnEquivCache[key] = val;
+      }
+      return val;
+    }
+    return false;
+  }
+
+  // A cached, general WebPPL function call
+  function FunctionNode(coroutine, parent, s, k, a, fn, args) {
+    this.coroutine = coroutine;
+
+    this.continuation = k;
+    this.address = a;
+    this.func = fn;
+
+    this.parent = parent;
+    this.depth = parent ? parent.depth + 1 : 0;
+    this.index = parent ? parent.nextChildIdx : undefined;
+    this.children = [];
+    this.nextChildIdx = 0;
+
+    this.reachable = true;
+    this.needsUpdate = true;
+
+    this.inStore = _.clone(s);
+    this.args = args;
+
+    this.initialized = false;
+    this.retval = undefined;
+    this.outStore = null;
+  }
+
+  FunctionNode.prototype.print = function() {
+    tabbedlog(0, this.depth, 'FunctionNode', this.args, this.retval,
+              this.reachable ? '' : '!!UNREACHABLE!!');
+    for (var i = 0; i < this.children.length; i++)
+      this.children[i].print();
+  };
+
+  FunctionNode.prototype.execute = function() {
+    tabbedlog(4, this.depth, 'execute function');
+    if (this.needsUpdate) {
+      if (this.initialized)
+        this.coroutine.cacheAdapter.registerMiss(this);
+      tabbedlog(4, this.depth, 'yes, function args changed; executing');
+      tabbedlog(5, this.depth, 'old args:', this.__snapshot ? this.__snapshot.args : undefined, 'new args:', this.args);
+      this.needsUpdate = false;
+      // Keep track of program stack
+      this.coroutine.nodeStack.push(this);
+      // Reset nextChildIdx
+      this.nextChildIdx = 0;
+      // Mark all children as unreachable; execution will then determine which
+      //    ones are actually reachable
+      var nchildren = this.children.length;
+      for (var i = 0; i < nchildren; i++) {
+        touch(this.children[i]);
+        this.children[i].reachable = false;
+      }
+      tabbedlog(4, this.depth, 'Children marked unreachable on execute:', nchildren);
+      // Preserve reference to coroutine object so
+      //    continuation can refer to it.
+      var coroutine = this.coroutine;
+      // Also preserve references to this node's continuation and address.
+      // We need these to bypass the cache 'on-exit' processing stuff and just
+      //    invoke the original continuation if and when nodes with this address
+      //    stop being cached (by the cache adapter).
+      var continuation = this.continuation;
+      var address = this.address;
+      // Record the fact that we entered this function.
+      this.entered = true;
+      return this.func.apply(global, [
+        this.inStore,
+        function(s, retval) {
+          // If we've stopped caching nodes with this address, just immediately continue
+          if (!coroutine.cacheAdapter.shouldCache(address)) return continuation(s, retval);
+          // Recover a reference to 'this'
+          var that = coroutine.nodeStack.pop();
+          tabbedlog(4, that.depth, 'continue from function');
+          that.initialized = true;
+          // Clear out any children that have become unreachable
+          var newchildren = [];
+          var nchildren = that.children.length;
+          var ii = 0;
+          for (var i = 0; i < nchildren; i++) {
+            var child = that.children[i];
+            if (!child.reachable)
+              child.killDescendantLeaves();
+            else {
+              updateProperty(child, 'index', ii++);
+              newchildren.push(child);
+            }
+          }
+          updateProperty(that, 'children', newchildren);
+          // If the return value and output store haven't changed, then we can bail early.
+          // We can only do this if this call is returning from a change somewhere below it
+          //    (i.e. that.entered == false). Otherwise, we need to keep running.
+          if (!that.entered && that.retval === retval && storesEqual(that.outStore, s)) {
+            tabbedlog(4, that.depth, 'bailing b/c function return val not changed');
+            tabbedlog(5, that.depth, 'return val:', retval);
+            coroutine.cacheAdapter.registerHit(that);
+            return coroutine.exit();
+          }
+          if (!that.entered && that.parent !== null)
+            that.parent.notifyChildChanged(that);
+          if (!that.entered)
+            coroutine.cacheAdapter.registerMiss(that);
+          that.entered = false;
+          tabbedlog(4, that.depth, 'function return val has changed, or cannot bail');
+          tabbedlog(5, that.depth, 'old ret val:', that.retval, 'new ret val:', retval);
+          // Update output values
+          updateProperty(that, 'retval', retval);
+          updateProperty(that, 'outStore', _.clone(s));
+          // Continue execution
+          return that.kontinue();
+        },
+        this.address
+      ].concat(this.args));
+    } else {
+      this.coroutine.cacheAdapter.registerHit(this);
+      tabbedlog(4, this.depth, 'no, function args have not changed; continuing');
+      tabbedlog(5, this.depth, 'args:', this.args);
+      return this.kontinue();
+    }
+  };
+
+  FunctionNode.prototype.registerInputChanges = function(s, k, fn, args) {
+    updateProperty(this, 'continuation', k);
+    if (this.parent) updateProperty(this, 'index', this.parent.nextChildIdx);
+    this.reachable = true;
+    // Check fn for changes
+    if (!fnsEqual(fn, this.func)) {
+      this.needsUpdate = true;
+      updateProperty(this, 'func', fn);
+    }
+    // Check args for changes
+    if (this.args.length !== args.length) {
+      this.needsUpdate = true;
+      updateProperty(this, 'args', args);
+    } else {
+      var i = args.length;
+      for (var i = 0; i < args.length; i++)
+      {
+        if (args[i] !== this.args[i]) {
+          this.needsUpdate = true;
+          updateProperty(this, 'args', args);
+          break;
+        }
+      }
+    }
+    // Check store for changes
+    if (!storesEqual(this.store, s)) {
+      this.needsUpdate = true;
+      updateProperty(this, 'inStore', _.clone(s));
+    }
+  };
+
+  FunctionNode.prototype.killDescendantLeaves = function() {
+    tabbedlog(3, this.depth, 'kill function (and all descendant leaves)', this.address);
+    var stack = [this];
+    while (stack.length > 0) {
+      var node = stack.pop();
+      if (node.score !== undefined) node.killDescendantLeaves();
+      else {
+        var n = node.children.length;
+        while (n--) stack.push(node.children[n]);
+      }
+    }
+  };
+
+  FunctionNode.prototype.kontinue = function() {
+    if (this.parent !== null)
+      this.parent.notifyChildExecuted(this);
+    // Call continuation
+    // Copies outStore, so we maintain a pristine record of it.
+    return this.continuation(_.clone(this.outStore), this.retval);
+  };
+
+  FunctionNode.prototype.notifyChildExecuted = function(child) {
+    this.nextChildIdx = child.index + 1;
+  };
+
+  FunctionNode.prototype.notifyChildChanged = function(child) {
+    // Children later in the execution order may become unreachable due
+    //    to this change, so we mark them all as unreachable and see which
+    //    ones we hit.
+    var nchildren = this.children.length;
+    var totalmarked = 0;
+    for (var i = child.index + 1; i < nchildren; i++) {
+      touch(this.children[i]);
+      this.children[i].reachable = false;
+      totalmarked++;
+    }
+    tabbedlog(4, this.depth, 'Children marked unreachable on child change:', totalmarked);
+  };
+
+  // Called by the cache adapter when it determines that this node isn't giving
+  //    good enough cache efficiency and should be removed from the cache.
+  FunctionNode.prototype.removeFromCache = function() {
+    // First, verify that this node actually *is* in the cache (i.e. hasn't
+    //    already been removed via rejection), otherwise the subsequent ops
+    //    ops we perform will screw things up.
+    if (this.parent.children[this.index] === this) {
+      // Correct the various metadata on the children of this node.
+      var n = this.children.length;
+      for (var i = 0; i < n; i++) {
+        var child = this.children[i];
+        child.parent = this.parent;
+        child.index = this.index + i;
+        // Recursively adjust depth of all descendants
+        var stack = [child];
+        while (stack.length > 0) {
+          var node = stack.pop();
+          node.depth--;
+          if (node.children) {
+            var nn = node.children.length;
+            while (nn--) stack.push(node.children[nn]);
+          }
+        }
+      }
+      // Correct the indices of the subsequent siblings of this node, to
+      //    account for the children that are about to be moved up.
+      for (var i = this.index + 1; i < this.parent.children.length; i++) {
+        this.parent.children[i].index = i + n - 1;
+      }
+      // Remove this and move up this.children into this.parent.children
+      this.children.unshift(this.index, 1);
+      Array.prototype.splice.apply(this.parent.children, this.children);
+    }
+  }
+
+  // ------------------------------------------------------------------
+
+  // Abstraction representing a master list of ERPs
+  // (lets us abstract over whether we're using an array or a hash table)
+
+  function ArrayERPMasterList() {
+    this.erpNodes = [];
+  }
+
+  ArrayERPMasterList.prototype.size = function() { return this.erpNodes.length; }
+      ArrayERPMasterList.prototype.oldSize = function() {
+    return this.oldErpNodes === undefined ? undefined : this.oldErpNodes.length;
+  }
+
+  ArrayERPMasterList.prototype.addERP = function(node) {
+    this.erpNodes.push(node);
+  };
+
+  ArrayERPMasterList.prototype.removeERP = function(node) {
+    // Set it up to be removed as a post-process
+    touch(node);
+    node.reachable = false;
+  };
+
+  ArrayERPMasterList.prototype.preProposal = function() {
+    this.oldErpNodes = this.erpNodes.slice();
+  };
+
+  ArrayERPMasterList.prototype.postProposal = function() {
+    this.erpNodes = _.filter(this.erpNodes, function(node) {
+      return node.reachable;
+    });
+  };
+
+  ArrayERPMasterList.prototype.getRandom = function() {
+    var idx = Math.floor(Math.random() * this.erpNodes.length);
+    return this.erpNodes[idx];
+  };
+
+  ArrayERPMasterList.prototype.restoreOnReject = function() {
+    this.erpNodes = this.oldErpNodes;
+  };
+
+
+  function HashtableERPMasterList() {
+    this.erpNodeMap = new Hashtable();
+    this.erpsAdded = [];
+    this.erpsRemoved = [];
+    this.numErps = 0;
+  }
+
+  HashtableERPMasterList.prototype.size = function() { return this.numErps; }
+      HashtableERPMasterList.prototype.oldSize = function() { return this.oldNumErps; }
+
+      HashtableERPMasterList.prototype.addERP = function(node) {
+    this.erpNodeMap.put(node.address, node);
+    this.erpsAdded.push(node);
+    this.numErps++;
+    // this.checkConsistency("addERP");
+  };
+
+  HashtableERPMasterList.prototype.removeERP = function(node) {
+    this.erpNodeMap.remove(node.address);
+    this.erpsRemoved.push(node);
+    this.numErps--;
+    // this.checkConsistency("removeERP");
+  };
+
+  HashtableERPMasterList.prototype.preProposal = function() {
+    this.oldNumErps = this.numErps;
+    this.erpsAdded = [];
+    this.erpsRemoved = [];
+  };
+
+  HashtableERPMasterList.prototype.postProposal = function() {};
+
+  HashtableERPMasterList.prototype.getRandom = function() { return this.erpNodeMap.getRandom(); }
+
+      HashtableERPMasterList.prototype.restoreOnReject = function() {
+    // this.checkConsistency("restoreOnReject");
+    this.numErps = this.oldNumErps;
+    var n = this.erpsAdded.length;
+    while (n--) {
+      var node = this.erpsAdded[n];
+      this.erpNodeMap.remove(node.address);
+    }
+    n = this.erpsRemoved.length;
+    while (n--) {
+      var node = this.erpsRemoved[n];
+      this.erpNodeMap.put(node.address, node);
+    }
+  };
+
+  // For debugging
+  HashtableERPMasterList.prototype.checkConsistency = function(tag) {
+    for (var i = 0; i < this.erpsAdded.length; i++) {
+      var addr = this.erpsAdded[i].address;
+      if (!this.erpNodeMap.get(addr))
+        throw "WTF - hash table doesn't contain node " + addr + ' that we added (' + tag + ')';
+    }
+    for (var i = 0; i < this.erpsRemoved.length; i++) {
+      var addr = this.erpsRemoved[i].address;
+      if (this.erpNodeMap.get(addr))
+        throw 'WTF - hash table contains node ' + addr + ' that we removed (' + tag + ')';
+    }
+  };
+
+  // ------------------------------------------------------------------
+
+  // Tracks statistics on how the cache is performing, so we can make
+  //    decisions about when to stop caching certain functions
+  function CacheAdapter(minHitRate, fuseLength, iterFuseLength) {
+    this.minHitRate = minHitRate;
+    this.fuseLength = fuseLength;
+    this.iterFuseLength = iterFuseLength;
+    this.addrToId = {};
+    this.stats = {};
+    this.idsToRemove = {};
+    this.hasIdsToRemove = false;
+  }
+
+  CacheAdapter.prototype.id = function(addr) {
+    var id = this.addrToId[addr];
+    if (id === undefined) {
+      var arr = addr.split('_');
+      id = arr[arr.length - 1];
+      this.addrToId[addr] = id;
+    }
+    return id;
+  }
+
+  CacheAdapter.prototype.getStats = function(addr) {
+    var id = this.id(addr);
+    var stats = this.stats[id];
+    if (stats === undefined) {
+      stats = {shouldCache: true, hits: 0, total: 0};
+      this.stats[id] = stats;
+    }
+    return stats;
+  }
+
+  CacheAdapter.prototype.shouldCache = function(addr) {
+    return this.getStats(addr).shouldCache;
+  };
+
+  CacheAdapter.prototype.registerHit = function(node) {
+    var stats = this.getStats(node.address);
+    stats.hits++;
+    stats.total++;
+    if (node.parent !== null &&   // Can't remove the cache root
+        (node.coroutine.totalIterations - node.coroutine.iterations) > this.iterFuseLength &&
+        stats.total >= this.fuseLength && stats.hits / stats.total < this.minHitRate) {
+      this.idsToRemove[this.id(node.address)] = true;
+      this.hasIdsToRemove = true;
+    }
+  };
+
+  CacheAdapter.prototype.registerMiss = function(node) {
+    var stats = this.getStats(node.address);
+    stats.total++;
+    if (node.parent !== null &&   // Can't remove the cache root
+        (node.coroutine.totalIterations - node.coroutine.iterations) > this.iterFuseLength &&
+        stats.total >= this.fuseLength && stats.hits / stats.total < this.minHitRate) {
+      this.idsToRemove[this.id(node.address)] = true;
+      this.hasIdsToRemove = true;
+    }
+  }
+
+  CacheAdapter.prototype.adapt = function(cacheRoot) {
+    if (this.hasIdsToRemove) {
+      for (var id in this.idsToRemove) {
+        var s = this.stats[id];
+        debuglog(5, 'Cache adapter removing nodes w/ id', id, 'hit rate:', s.hits / s.total);
+        this.stats[id].shouldCache = false;
+      }
+      // Traverse cache and remove all nodes with this id
+      var stack = [cacheRoot];
+      while (stack.length > 0) {
+        var node = stack.pop();
+        if (node.children !== undefined) {
+          var n = node.children.length;
+          while (n--) stack.push(node.children[n]);
+        }
+        if (this.idsToRemove[this.id(node.address)]) {
+          node.removeFromCache();
+        }
+      }
+      this.idsToRemove = {};
+      this.hasIdsToRemove = false;
+      if (DEBUG >= 6) {
+        debuglog(6, '=== Post-adaptation cache status ===');
+        cacheRoot.print();
+      }
+    }
+  };
+
+  CacheAdapter.prototype.report = function() {
+    for (var id in this.stats) {
+      console.log(id, ':', this.stats[id]);
+    }
+  };
+
+  // ------------------------------------------------------------------
+
+  function IncrementalMH(s, k, a, wpplFn, numIterations, opts) {
+    // Extract options
+    var dontAdapt = opts.dontAdapt === undefined ? false : opts.dontAdapt;
+    var debuglevel = opts.debuglevel === undefined ? 0 : opts.debuglevel;
+    var verbose = opts.verbose === undefined ? false : opts.verbose;
+    var justSample = opts.justSample === undefined ? false : opts.justSample;
+    var doFullRerun = opts.doFullRerun === undefined ? false : opts.doFullRerun;
+    var onlyMAP = opts.onlyMAP === undefined ? false : opts.onlyMAP;
+    var minHitRate = opts.cacheMinHitRate === undefined ? 0.00000001 : opts.cacheMinHitRate;
+    var fuseLength = opts.cacheFuseLength === undefined ? 50 : opts.cacheFuseLength;
+    var lag = opts.lag === undefined ? 1 : opts.lag;
+    var iterFuseLength = opts.cacheIterFuseLength === undefined ? 10 : opts.cacheIterFuseLength;
+
+    // Doing a full re-run doesn't really jive with the heuristic we use for adaptive
+    //    caching, so disable adaptation in this case.
+    if (doFullRerun)
+      dontAdapt = true;
+
+    DEBUG = debuglevel;
+    this.verbose = verbose;
+
+    this.k = k;
+    this.oldStore = s;
+    this.iterations = numIterations;
+    this.wpplFn = wpplFn;
+    this.s = s;
+    this.a = a;
+
+    this.onlyMAP = onlyMAP;
+    if (justSample)
+      this.returnSamps = [];
+    else
+      this.returnHist = {};
+    this.MAP = { val: undefined, score: -Infinity };
+    this.totalIterations = numIterations;
+    this.acceptedProps = 0;
+    this.lag = lag;
+
+    this.doFullRerun = doFullRerun;
+
+    this.doAdapt = !dontAdapt;
+    this.cacheAdapter = new CacheAdapter(minHitRate, fuseLength, iterFuseLength);
+
+    // Move old coroutine out of the way and install this as the current
+    // handler.
+    this.oldCoroutine = env.coroutine;
+    env.coroutine = this;
+  }
+
+  IncrementalMH.prototype.run = function() {
+    this.cacheRoot = null;
+    this.erpMasterList = new HashtableERPMasterList();
+    // this.erpMasterList = new ArrayERPMasterList();
+    this.touchedNodes = [];
+    this.score = 0;
+    this.fwdPropLP = 0;
+    this.rvsPropLP = 0;
+    this.query = new Query();
+    env.query.clear();
+    debuglog(1, '-------------------------------------');
+    debuglog(1, 'RUN FROM START');
+    return this.runFromStart();
+  };
+
+  IncrementalMH.prototype.runFromStart = function() {
+    this.nodeStack = [];
+    // Cache the top-level function, so that we always have a valid
+    //    cache root.
+    return this.incrementalize(this.s, env.exit, this.a, this.wpplFn, []);
+  };
+
+  IncrementalMH.prototype.factor = function(s, k, a, score) {
+    return this.cachelookup(FactorNode, s, k, a, null, [score]).execute();
+  };
+
+  IncrementalMH.prototype.sample = function(s, k, a, erp, params, name) {
+    var n = this.cachelookup(ERPNode, s, k, a, erp, params);
+    n.name = name;
+    return n.execute();
+  };
+
+  // A node should call this on itself if it makes some change to itself.
+  IncrementalMH.prototype.touch = function(node) {
+    this.touchedNodes.push(node);
+  };
+
+  function acceptProb(currScore, oldScore, currN, oldN, rvsPropLP, fwdPropLP) {
+    if (oldScore === undefined) { return 1; } // init
+    if (currScore === -Infinity) return 0;  // auto-reject
+    debuglog(1, 'currScore:', currScore, 'oldScore', oldScore);
+    debuglog(1, 'rvsPropLP:', rvsPropLP, 'fwdPropLP:', fwdPropLP);
+    var fw = -Math.log(oldN) + fwdPropLP;
+    var bw = -Math.log(currN) + rvsPropLP;
+    var p = Math.exp(currScore - oldScore + bw - fw);
+    assert.ok(!isNaN(p));
+    var acceptance = Math.min(1, p);
+    return acceptance;
+  }
+
+  // Returns true if we've successfully rejection initialized.
+  IncrementalMH.prototype.isInitialized = function() {
+    return this.iterations < this.totalIterations;
+  }
+
+  IncrementalMH.prototype.exit = function() {
+    if (this.iterations > 0) {
+      // Initialization: Keep rejection sampling until we get a trace with
+      //    non-zero probability
+      if (!this.isInitialized() && this.score === -Infinity) {
+        return this.run();
+      } else {
+        debuglog(1, 'iteration', (this.totalIterations - this.iterations));
+        if (this.verbose)
+          console.log('IncrementalMH iteration ' + (this.totalIterations - this.iterations) +
+              ' / ' + this.totalIterations);
+        // Continue proposing as normal
+        this.iterations--;
+
+        this.erpMasterList.postProposal();
+
+        debuglog(2, 'Num vars:', this.erpMasterList.size());
+        debuglog(2, 'Touched nodes:', this.touchedNodes.length);
+
+        // Accept/reject the current proposal
+        var acceptance = acceptProb(this.score, this.oldScore,
+                                    this.erpMasterList.size(), this.erpMasterList.oldSize(),
+                                    this.rvsPropLP, this.fwdPropLP);
+        debuglog(1, 'num vars:', this.erpMasterList.size(), 'old num vars:', this.erpMasterList.oldSize());
+        debuglog(1, 'acceptance prob:', acceptance);
+        if (Math.random() >= acceptance) {
+          debuglog(1, 'REJECT');
+          this.score = this.oldScore;
+          var n = this.touchedNodes.length;
+          while (n--) restoreSnapshot(this.touchedNodes[n]);
+          this.erpMasterList.restoreOnReject();
+        }
+        else {
+          debuglog(1, 'ACCEPT');
+          var n = this.touchedNodes.length;
+          while (n--) discardSnapshot(this.touchedNodes[n]);
+          this.acceptedProps++;
+          this.query.addAll(env.query);
+        }
+        env.query.clear();
+
+        var val = this.cacheRoot.retval;
+        debuglog(1, 'return val:', val);
+
+        // Record this sample, if lag allows for it
+        var iternum = this.totalIterations - this.iterations;
+        if (iternum % this.lag === 0) {
+          // Replace val with accumulated query, if need be.
+          if (val === env.query)
+            val = this.query.getTable();
+          // add val to hist:
+          if (!this.onlyMAP) {
+            if (this.returnSamps)
+              this.returnSamps.push({score: this.score, value: val})
+            else {
+              var stringifiedVal = JSON.stringify(val);
+              if (this.returnHist[stringifiedVal] === undefined) {
+                this.returnHist[stringifiedVal] = { prob: 0, val: val };
+              }
+              this.returnHist[stringifiedVal].prob += 1;
+            }
+          }
+          // also update the MAP
+          if (this.score > this.MAP.score) {
+            this.MAP.score = this.score;
+            this.MAP.value = val;
+          }
+        }
+
+        if (DEBUG >= 6) {
+          debuglog(6, '=== Cache status ===');
+          this.cacheRoot.print();
+        }
+
+        // this.checkReachabilityConsistency();
+
+        if (this.doAdapt)
+          this.cacheAdapter.adapt(this.cacheRoot);
+
+        // Prepare to make a new proposal
+        this.oldScore = this.score;
+        this.erpMasterList.preProposal();
+        this.touchedNodes = [];
+        this.fwdPropLP = 0;
+        this.rvsPropLP = 0;
+        // Select ERP to change.
+        var propnode = this.erpMasterList.getRandom();
+        // Propose change and resume execution
+        debuglog(1, '----------------------------------------------------------------------');
+        debuglog(1, 'PROPOSAL', 'type:', propnode.erp.sample.name, 'address:', propnode.address);
+        return propnode.propose();
+      }
+    } else {
+      var dist;
+      if (this.returnHist)
+        dist = erp.makeMarginalERP(util.logHist(this.returnHist));
+      else
+        dist = erp.makeMarginalERP({});
+      if (this.returnSamps) {
+        if (this.onlyMAP)
+          this.returnSamps.push(this.MAP);
+        dist.samples = this.returnSamps;
+      }
+      dist.MAP = this.MAP.value;
+
+      // Reinstate previous coroutine:
+      var k = this.k;
+      env.coroutine = this.oldCoroutine;
+
+      if (DEBUG >= 5) {
+        console.log('Acceptance ratio: ' + this.acceptedProps / this.totalIterations);
+        this.cacheAdapter.report();
+      }
+
+      // Return by calling original continuation:
+      return k(this.oldStore, dist);
+    }
+  };
+
+  IncrementalMH.prototype.incrementalize = function(s, k, a, fn, args) {
+    if (this.cacheAdapter.shouldCache(a))
+      return this.cachelookup(FunctionNode, s, k, a, fn, args).execute();
+    else
+      return env.defaultCoroutine.incrementalize(s, k, a, fn, args);
+  };
+
+  // Returns a cache node
+  IncrementalMH.prototype.cachelookup = function(NodeType, s, k, a, fn, args) {
+    var cacheNode;
+    // If the cache is empty, then initialize it.
+    if (this.cacheRoot === null) {
+      cacheNode = new NodeType(this, null, s, k, a, fn, args);
+      this.cacheRoot = cacheNode;
+    // If the node stack is empty, then we must be looking up the root on a
+    //    re-run from start
+    } else if (this.nodeStack.length === 0) {
+      if (a !== this.cacheRoot.address) throw 'Wrong address for cache root lookup';
+      cacheNode = this.cacheRoot;
+      cacheNode.registerInputChanges(s, k, fn, args);
+    // Otherwise, do the general thing.
+    } else {
+      var currNode = this.nodeStack[this.nodeStack.length - 1];
+      tabbedlog(3, currNode.depth, 'lookup', NodeType.name, a);
+      // Look for cache node among the children of currNode
+      cacheNode = this.findNode(currNode, a);
+      if (cacheNode) {
+        // Lookup successful; check for changes to store/args and move on.
+        tabbedlog(3, currNode.depth, 'found');
+        cacheNode.registerInputChanges(s, k, fn, args);
+      } else {
+        // Lookup failed; create new node and insert it into currNode.children
+        if (DEBUG) {
+          var addrs = _.map(_.filter(currNode.children, function(node) { return node instanceof NodeType; }),
+              function(node) { return node.address; });
+          tabbedlog(3, currNode.depth, '*not* found');
+          tabbedlog(4, currNode.depth, 'options were', addrs);
+        }
+        cacheNode = new NodeType(this, currNode, s, k, a, fn, args);
+        var insertidx = currNode.nextChildIdx;
+        // Copy the children array if we don't already have a snapshot for it
+        // Kind of annoying that this somewhat breaks the abstraction of snapshots, but
+        //    I think it's worth it.
+        if (!hasSnapshotForProperty(currNode, 'children'))
+          updateProperty(currNode, 'children', currNode.children.slice());
+        currNode.children.splice(insertidx, 0, cacheNode);
+      }
+    }
+    return cacheNode;
+  };
+
+  IncrementalMH.prototype.findNode = function(parentNode, address) {
+    // If we haven't initialized yet (i.e. we're running the program for
+    //    the first time), then don't even bother looking.
+    if (!this.isInitialized()) return undefined;
+    // Need to snapshot the children array, since we perform swaps on it to keep nodes
+    //    in execution order.
+    var nodes = parentNode.children;
+    var nexti = parentNode.nextChildIdx;
+    for (var i = nexti; i < nodes.length; i++) {
+      // for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].address === address) {
+        // Keep nodes ordered according to execution order: if
+        // i !== nexti, then swap those two.
+        if (i !== nexti) {
+          // if (i < nexti) throw "WTF - cache node found *before* first possible location";
+          if (!hasSnapshotForProperty(parentNode, 'children')) {
+            nodes = nodes.slice();
+            updateProperty(parentNode, 'children', nodes);
+          }
+          var tmp = nodes[i];
+          nodes[i] = nodes[nexti];
+          nodes[nexti] = tmp;
+        }
+        return nodes[nexti];
+      }
+    }
+  };
+
+  IncrementalMH.prototype.addERP = function(node) {
+    tabbedlog(3, node.depth, 'new ERP');
+    this.erpMasterList.addERP(node);
+    this.fwdPropLP += node.score;
+  };
+
+  IncrementalMH.prototype.removeERP = function(node) {
+    tabbedlog(3, node.depth, 'kill ERP', node.address);
+    this.erpMasterList.removeERP(node);
+    this.rvsPropLP += node.score;
+    this.score -= node.score;
+  };
+
+  // Restore this.nodeStack up to the specified node
+  IncrementalMH.prototype.restoreStackUpTo = function(node) {
+    this.nodeStack = [];
+    while (node !== null) {
+      this.nodeStack.push(node);
+      node = node.parent;
+    }
+    this.nodeStack.reverse();
+  };
+
+  // For debugging purposes, mostly
+  IncrementalMH.prototype.addressInCache = function(addr) {
+    var stack = [this.cacheRoot];
+    while (stack.length > 0) {
+      var node = stack.pop();
+      if (node.address === addr)
+        return true;
+      if (node.children !== undefined)
+        for (var i = 0; i < node.children.length; i++)
+          stack.push(node.children[i]);
+    }
+    return false;
+  };
+
+  // Also for debugging
+  IncrementalMH.prototype.checkReachabilityConsistency = function() {
+    var stack = [this.cacheRoot];
+    while (stack.length > 0) {
+      var node = stack.pop();
+      if (!node.reachable) throw 'WTF - found unreachable node in cache.';
+      if (node.children !== undefined)
+        for (var i = 0; i < node.children.length; i++)
+          stack.push(node.children[i]);
+    }
+    return false;
+  };
+
+  // ------------------------------------------------------------------
+
+  function imh(s, cc, a, wpplFn, numIters, opts) {
+    opts = opts || {};
+    return new IncrementalMH(s, cc, a, wpplFn, numIters, opts).run();
+  }
+
+  return {
+    IncrementalMH: imh
+  };
+
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../erp.js":95,"../hashtable.js":96,"../query.js":111,"../util.js":121,"assert":122,"underscore":88}],103:[function(require,module,exports){
 var util = require('../../util.js');
 
 var os = require('os');
@@ -37767,7 +41054,7 @@ module.exports = {
   run: run
 };
 
-},{"../../util.js":111,"os":118}],98:[function(require,module,exports){
+},{"../../util.js":121,"os":128}],104:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // Lightweight MH
 
@@ -37777,6 +41064,7 @@ var _ = require('underscore');
 var assert = require('assert');
 var erp = require('../erp.js');
 var diagnostics = require('./mh-diagnostics/diagnostics.js')
+var logHist = require('../util.js').logHist;
 
 module.exports = function(env) {
 
@@ -37835,18 +41123,20 @@ module.exports = function(env) {
     return undefined;
   }
 
-  function acceptProb(trace, oldTrace, regenFrom, currScore, oldScore) {
+  function acceptProb(trace, oldTrace, regenFrom, currScore, oldScore, proposalBoundary) {
+    proposalBoundary = proposalBoundary || 0;
     if ((oldTrace === undefined) || oldScore === -Infinity) {
       return 1;
     } // init
-    var fw = -Math.log(oldTrace.length);
+    var fw = -Math.log(oldTrace.length - proposalBoundary);
     trace.slice(regenFrom).map(function(s) {
       fw += s.reused ? 0 : s.forwardChoiceScore;
     });
-    var bw = -Math.log(trace.length);
+    var bw = -Math.log(trace.length - proposalBoundary);
     oldTrace.slice(regenFrom).map(function(s) {
       var nc = findChoice(trace, s.name);
-      var reverseChoiceScore = (s.reverseChoiceScore !== undefined) ? s.reverseChoiceScore : s.forwardChoiceScore;
+      var reverseChoiceScore = ((nc && nc.reverseChoiceScore !== undefined) ?
+                                nc.reverseChoiceScore : s.forwardChoiceScore);
       bw += (!nc || !nc.reused) ? reverseChoiceScore : 0;
     });
     var p = Math.exp(currScore - oldScore + bw - fw);
@@ -37954,7 +41244,7 @@ module.exports = function(env) {
 
       return this.sample(_.clone(regen.store), regen.k, regen.name, regen.erp, regen.params, true);
     } else {
-      var dist = erp.makeMarginalERP(this.returnHist);
+      var dist = erp.makeMarginalERP(logHist(this.returnHist));
 
       // Reinstate previous coroutine:
       var k = this.k;
@@ -37970,6 +41260,8 @@ module.exports = function(env) {
       return k(this.oldStore, dist);
     }
   };
+
+  MH.prototype.incrementalize = env.defaultCoroutine.incrementalize;
 
   function mh(s, cc, a, wpplFn, numIterations, burn, diagnostics) {
     return new MH(s, cc, a, wpplFn, numIterations, burn, diagnostics).run();
@@ -37987,7 +41279,7 @@ module.exports = function(env) {
   };
 };
 
-},{"../erp.js":92,"./mh-diagnostics/diagnostics.js":97,"assert":112,"underscore":86}],99:[function(require,module,exports){
+},{"../erp.js":95,"../util.js":121,"./mh-diagnostics/diagnostics.js":103,"assert":122,"underscore":88}],105:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // Particle filtering
 //
@@ -38005,6 +41297,12 @@ function isActive(particle) {
 }
 
 module.exports = function(env) {
+
+  function withImportanceDist(s, k, a, erp, importanceERP) {
+    var newERP = _.clone(erp);
+    newERP.importanceERP = importanceERP;
+    return k(s, newERP);
+  }
 
   function copyParticle(particle) {
     return {
@@ -38053,7 +41351,12 @@ module.exports = function(env) {
   };
 
   ParticleFilter.prototype.sample = function(s, cc, a, erp, params) {
-    return cc(s, erp.sample(params));
+    var importanceERP = erp.importanceERP || erp;
+    var val = importanceERP.sample(params);
+    var importanceScore = importanceERP.score(params, val);
+    var choiceScore = erp.score(params, val);
+    this.currentParticle().weight += choiceScore - importanceScore;
+    return cc(s, val);
   };
 
   ParticleFilter.prototype.factor = function(s, cc, a, score) {
@@ -38081,7 +41384,6 @@ module.exports = function(env) {
     return this.currentParticle().continuation(this.currentParticle().store);
   };
 
-
   // The three functions below return -1 if there is no active particle
 
   ParticleFilter.prototype.firstActiveParticleIndex = function() {
@@ -38101,7 +41403,6 @@ module.exports = function(env) {
       return nextActiveIndex;
     }
   };
-
 
   ParticleFilter.prototype.currentParticle = function() {
     return this.particles[this.particleIndex];
@@ -38187,7 +41488,7 @@ module.exports = function(env) {
           }
           hist[k].prob += 1;
         });
-    var dist = erp.makeMarginalERP(hist);
+    var dist = erp.makeMarginalERP(util.logHist(hist));
 
     // Save estimated normalization constant in erp (average particle weight)
     dist.normalizationConstant = this.particles[0].weight;
@@ -38199,17 +41500,20 @@ module.exports = function(env) {
     return this.k(this.oldStore, dist);
   };
 
+  ParticleFilter.prototype.incrementalize = env.defaultCoroutine.incrementalize;
+
   function pf(s, cc, a, wpplFn, numParticles, strict) {
     return new ParticleFilter(s, cc, a, wpplFn, numParticles, strict === undefined ? true : strict).run();
   }
 
   return {
-    ParticleFilter: pf
+    ParticleFilter: pf,
+    withImportanceDist: withImportanceDist
   };
 
 };
 
-},{"../erp.js":92,"../util.js":111,"underscore":86}],100:[function(require,module,exports){
+},{"../erp.js":95,"../util.js":121,"underscore":88}],106:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // PMCMC
 
@@ -38399,7 +41703,7 @@ module.exports = function(env) {
         return this.activeContinuationWithStore();
 
       } else {
-        var dist = erp.makeMarginalERP(this.returnHist);
+        var dist = erp.makeMarginalERP(util.logHist(this.returnHist));
 
         // Reinstate previous coroutine:
         env.coroutine = this.oldCoroutine;
@@ -38411,6 +41715,8 @@ module.exports = function(env) {
     }
   };
 
+  PMCMC.prototype.incrementalize = env.defaultCoroutine.incrementalize;
+
   function pmc(s, cc, a, wpplFn, numParticles, numSweeps) {
     return new PMCMC(s, cc, a, wpplFn, numParticles, numSweeps).run();
   }
@@ -38421,7 +41727,99 @@ module.exports = function(env) {
 
 };
 
-},{"../erp.js":92,"underscore":86}],101:[function(require,module,exports){
+},{"../erp.js":95,"underscore":88}],107:[function(require,module,exports){
+// Rejection sampling
+//
+// maxScore: An upper bound on the total factor score per-execution.
+//
+// incremental: When true, improves efficiency by rejecting samples at factor
+// statements where possible. Requires score <= 0 for all factors across all
+// possible executions.
+
+'use strict';
+
+var erp = require('../erp.js');
+var assert = require('assert');
+
+module.exports = function(env) {
+
+  function Rejection(s, k, a, wpplFn, numSamples, maxScore, incremental) {
+    this.s = s;
+    this.k = k;
+    this.a = a;
+    this.wpplFn = wpplFn;
+    this.maxScore = maxScore === undefined ? 0 : maxScore
+    this.incremental = incremental;
+    this.hist = {};
+    this.numSamples = numSamples;
+    this.oldCoroutine = env.coroutine;
+    env.coroutine = this;
+
+    if (this.incremental) {
+      assert(this.maxScore <= 0, 'maxScore cannot be positive for incremental rejection.');
+    }
+  }
+
+  Rejection.prototype.run = function() {
+    this.scoreSoFar = 0;
+    this.threshold = this.maxScore + Math.log(Math.random());
+    return this.wpplFn(_.clone(this.s), env.exit, this.a);
+  }
+
+  Rejection.prototype.sample = function(s, k, a, erp, params) {
+    return k(s, erp.sample(params));
+  }
+
+  Rejection.prototype.factor = function(s, k, a, score) {
+    if (this.incremental) {
+      assert(score <= 0, 'Score must be <= 0 for incremental rejection.');
+    }
+    this.scoreSoFar += score;
+    // In incremental mode we can reject as soon as scoreSoFar falls below
+    // threshold. (As all future scores are assumed to be <= 0 therefore
+    // scoreSoFar can not increase.)
+    if ((this.incremental && (this.scoreSoFar <= this.threshold)) ||
+        (score === -Infinity)) {
+      // Reject.
+      return this.run();
+    } else {
+      return k(s);
+    }
+  }
+
+  Rejection.prototype.exit = function(s, retval) {
+    assert(this.scoreSoFar <= this.maxScore, 'Score exceeded upper bound.');
+
+    if (this.scoreSoFar > this.threshold) {
+      // Accept.
+      var r = JSON.stringify(retval);
+      if (this.hist[r] === undefined) {
+        this.hist[r] = { prob: 0, val: retval };
+      }
+      this.hist[r].prob += 1;
+      this.numSamples -= 1;
+    }
+
+    if (this.numSamples === 0) {
+      var dist = erp.makeMarginalERP(util.logHist(this.hist));
+      env.coroutine = this.oldCoroutine;
+      return this.k(this.s, dist);
+    } else {
+      return this.run();
+    }
+  }
+
+  function rej(s, k, a, wpplFn, numSamples, maxScore, incremental) {
+    return new Rejection(s, k, a, wpplFn, numSamples, maxScore, incremental).run();
+  }
+
+  return {
+    Rejection: rej
+  };
+
+};
+
+},{"../erp.js":95,"assert":122}],108:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // Particle filter with lightweight MH rejuvenation.
 //
@@ -38429,7 +41827,7 @@ module.exports = function(env) {
 // the synchronization / intermediate distribution points.
 // After each factor particles are rejuvenated via lightweight MH.
 //
-// If numParticles==1 this amounts to MH with an (expensive) annealed init (but only returning one sample),
+// If numParticles==1 this amounts to MH with an (expensive) annealed init
 // if rejuvSteps==0 this is a plain PF without any MH.
 
 'use strict';
@@ -38439,18 +41837,21 @@ var assert = require('assert');
 var util = require('../util.js');
 var erp = require('../erp.js');
 
+function isActive(particle) {
+  return particle.active;
+}
 
 module.exports = function(env) {
 
   var mh = require('./mh.js')(env);
 
-  var deepCopyTrace = function(trace) {
+  function deepCopyTrace(trace) {
     return trace.map(function(obj) {
       var objCopy = _.clone(obj);
       objCopy.store = _.clone(obj.store);
       return objCopy;
     });
-  };
+  }
 
   function ParticleFilterRejuv(s, k, a, wpplFn, numParticles, rejuvSteps) {
 
@@ -38480,40 +41881,39 @@ module.exports = function(env) {
         score: 0,
         value: undefined,
         trace: [],
-        store: _.clone(s)
+        store: _.clone(s),
+        active: true,
+        proposalBoundary: 0 // index of first erp to consider for mh proposals
       };
       this.particles.push(particle);
     }
-
   }
 
   ParticleFilterRejuv.prototype.run = function() {
-    return this.activeParticle().continuation(this.activeParticle().store);
+    return this.currentParticle().continuation(this.currentParticle().store);
   };
 
   ParticleFilterRejuv.prototype.sample = function(s, cc, a, erp, params) {
-
-    var val = erp.sample(params);
-    var currScore = this.activeParticle().score;
+    var importanceERP = erp.importanceERP || erp;
+    var val = importanceERP.sample(params);
+    var importanceScore = importanceERP.score(params, val);
     var choiceScore = erp.score(params, val);
-    this.activeParticle().trace.push(
-        {
-          k: cc, name: a, erp: erp, params: params,
-          score: currScore,
-          forwardChoiceScore: choiceScore,
-          val: val, reused: false,
-          store: _.clone(s)
-        });
-    this.activeParticle().score += choiceScore;
+    var currScore = this.currentParticle().score;
+    this.currentParticle().trace.push(
+        {k: cc, name: a, erp: erp, params: params,
+          score: currScore, forwardChoiceScore: importanceScore,
+          val: val, reused: false, store: _.clone(s)});
+    this.currentParticle().score += choiceScore;
+    this.currentParticle().weight += choiceScore - importanceScore;
     return cc(s, val);
   };
 
   ParticleFilterRejuv.prototype.factor = function(s, cc, a, score) {
     // Update particle weight and score
-    this.activeParticle().weight += score;
-    this.activeParticle().score += score;
-    this.activeParticle().continuation = cc;
-    this.activeParticle().store = _.clone(s);
+    this.currentParticle().weight += score;
+    this.currentParticle().score += score;
+    this.currentParticle().continuation = cc;
+    this.currentParticle().store = _.clone(s);
 
     if (this.allParticlesAdvanced()) {
       // Resample in proportion to weights
@@ -38523,33 +41923,60 @@ module.exports = function(env) {
           function(particle, i, particles, nextK) {
             // make sure mhp coroutine doesn't escape:
             assert(env.coroutine.isParticleFilterRejuvCoroutine);
-            return new MHP(
-                function(p) {
-                  particles[i] = p;
-                  return nextK();
-                },
-                particle, this.baseAddress,
-                a, this.wpplFn, this.rejuvSteps).run();
+            // if particle has finished, don't rejuvenate
+            if (!particle.active) {
+              return nextK();
+            }
+            // otherwise, rejuvenate
+            return new MHP(function(p) {particles[i] = p; return nextK();},
+                           particle, this.baseAddress, a,
+                           this.wpplFn, this.rejuvSteps).run();
           }.bind(this),
           function() {
-            this.particleIndex = 0;
-            return this.activeParticle().continuation(this.activeParticle().store);
+            // Resampling can kill all continuing particles
+            var i = this.firstActiveParticleIndex();
+            if (i === -1) {
+              return this.finish(); // All particles completed
+            } else {
+              this.particleIndex = i;
+            }
+            return this.currentParticle().continuation(this.currentParticle().store);
           }.bind(this),
           this.particles
       );
     } else {
       // Advance to the next particle
-      this.particleIndex += 1;
-      return this.activeParticle().continuation(this.activeParticle().store);
+      this.particleIndex = this.nextActiveParticleIndex();
+      return this.currentParticle().continuation(this.currentParticle().store);
     }
   };
 
-  ParticleFilterRejuv.prototype.activeParticle = function() {
+  // The three functions below return -1 if there is no active particle
+
+  ParticleFilterRejuv.prototype.firstActiveParticleIndex = function() {
+    return util.indexOfPred(this.particles, isActive);
+  };
+
+  ParticleFilterRejuv.prototype.lastActiveParticleIndex = function() {
+    return util.lastIndexOfPred(this.particles, isActive);
+  };
+
+  ParticleFilterRejuv.prototype.nextActiveParticleIndex = function() {
+    var successorIndex = this.particleIndex + 1;
+    var nextActiveIndex = util.indexOfPred(this.particles, isActive, successorIndex);
+    if (nextActiveIndex === -1) {
+      return this.firstActiveParticleIndex();  // wrap around
+    } else {
+      return nextActiveIndex;
+    }
+  };
+
+  ParticleFilterRejuv.prototype.currentParticle = function() {
     return this.particles[this.particleIndex];
   };
 
   ParticleFilterRejuv.prototype.allParticlesAdvanced = function() {
-    return ((this.particleIndex + 1) === this.particles.length);
+    return this.particleIndex === this.lastActiveParticleIndex();
   };
 
   function copyPFRParticle(particle) {
@@ -38559,12 +41986,13 @@ module.exports = function(env) {
       value: particle.value,
       score: particle.score,
       store: _.clone(particle.store),
-      trace: deepCopyTrace(particle.trace)
+      active: particle.active,
+      trace: deepCopyTrace(particle.trace),
+      proposalBoundary: particle.proposalBoundary
     };
   }
 
   ParticleFilterRejuv.prototype.resampleParticles = function() {
-
     // Residual resampling following Liu 2008; p. 72, section 3.4.4
     var m = this.particles.length;
     var W = util.logsumexp(_.map(this.particles, function(p) {
@@ -38611,33 +42039,46 @@ module.exports = function(env) {
   };
 
   ParticleFilterRejuv.prototype.exit = function(s, retval) {
-
-    this.activeParticle().value = retval;
-
+    this.currentParticle().value = retval;
+    this.currentParticle().active = false;
     // Wait for all particles to reach exit before computing
     // marginal distribution from particles
-    if (!this.allParticlesAdvanced()) {
-      this.particleIndex += 1;
-      return this.activeParticle().continuation(this.activeParticle().store);
+    var i = this.nextActiveParticleIndex();
+    if (i === -1) {
+      return this.finish();     // All particles completed
+    } else {
+      if (i < this.particleIndex) {
+        this.resampleParticles(); // Updated all particles; now wrap around
+      }
+      this.particleIndex = i;
+      return this.currentParticle().continuation(this.currentParticle().store);
     }
+  };
 
-    // Final rejuvenation:
-    var oldStore = this.oldStore;
+  ParticleFilterRejuv.prototype.finish = function() {
+    // Initialize histogram with particle values
     var hist = {};
+    this.particles.forEach(function(particle) {
+      var s = JSON.stringify(particle.value);
+      if (hist[s] === undefined) {
+        hist[s] = {prob: 0, val: particle.value};
+      }
+      hist[s].prob += 1;
+    });
+
+    // Final rejuvenation (will add values for each MH step to histogram)
+    var oldStore = this.oldStore;
     return util.cpsForEach(
         function(particle, i, particles, nextK) {
+          // no need to check for inactive particles here
           // make sure mhp coroutine doesn't escape:
           assert(env.coroutine.isParticleFilterRejuvCoroutine);
-          return new MHP(
-              function(p) {
-                particles[i] = p;
-                return nextK();
-              },
-              particle, this.baseAddress, undefined,
-              this.wpplFn, this.rejuvSteps, hist).run();
+          return new MHP(function(p) {particles[i] = p; return nextK();},
+                         particle, this.baseAddress, undefined,
+                         this.wpplFn, this.rejuvSteps, hist).run();
         }.bind(this),
         function() {
-          var dist = erp.makeMarginalERP(hist);
+          var dist = erp.makeMarginalERP(util.logHist(hist));
 
           // Save estimated normalization constant in erp (average particle weight)
           dist.normalizationConstant = this.particles[0].weight;
@@ -38654,6 +42095,7 @@ module.exports = function(env) {
 
   };
 
+  ParticleFilterRejuv.prototype.incrementalize = env.defaultCoroutine.incrementalize;
 
   ////// Lightweight MH on a particle
 
@@ -38670,6 +42112,7 @@ module.exports = function(env) {
     this.limitAddress = limitAddress;
     this.originalParticle = particle;
     this.hist = hist;
+    this.proposalBoundary = particle.proposalBoundary;
 
     // Move PF coroutine out of the way and install this as the current
     // handler.
@@ -38701,7 +42144,7 @@ module.exports = function(env) {
 
   MHP.prototype.propose = function() {
     //make a new proposal:
-    this.regenFrom = Math.floor(Math.random() * this.trace.length);
+    this.regenFrom = this.proposalBoundary + Math.floor(Math.random() * (this.trace.length - this.proposalBoundary));
     var regen = this.trace[this.regenFrom];
     this.oldTrace = deepCopyTrace(this.trace);
     this.trace = this.trace.slice(0, this.regenFrom);
@@ -38711,7 +42154,6 @@ module.exports = function(env) {
 
     return this.sample(_.clone(regen.store), regen.k, regen.name, regen.erp, regen.params, true);
   };
-
 
   MHP.prototype.exit = function(s, val) {
 
@@ -38723,7 +42165,8 @@ module.exports = function(env) {
         this.oldTrace,
         this.regenFrom,
         this.currScore,
-        this.oldScore);
+        this.oldScore,
+        this.proposalBoundary);
 
     var accepted = Math.random() < acceptance;
 
@@ -38758,7 +42201,9 @@ module.exports = function(env) {
         value: this.val,
         score: this.currScore,
         store: this.oldStore, // use store from latest accepted proposal
-        trace: this.trace
+        active: this.originalParticle.active,
+        trace: this.trace,
+        proposalBoundary: this.originalParticle.proposalBoundary
       };
 
       // Reinstate previous coroutine and return by calling original continuation:
@@ -38767,18 +42212,30 @@ module.exports = function(env) {
     }
   };
 
+  // TODO: Incrementalized version?
+  MHP.prototype.incrementalize = env.defaultCoroutine.incrementalize;
+
+  // Restrict rejuvenation to erps that come after proposal boundary
+  function setProposalBoundary(s, k, a) {
+    if (env.coroutine.isParticleFilterRejuvCoroutine) {
+      var particle = env.coroutine.currentParticle();
+      particle.proposalBoundary = particle.trace.length;
+    }
+    return k(s);
+  }
 
   function pfr(s, cc, a, wpplFn, numParticles, rejuvSteps) {
     return new ParticleFilterRejuv(s, cc, a, wpplFn, numParticles, rejuvSteps).run();
   }
 
   return {
-    ParticleFilterRejuv: pfr
+    ParticleFilterRejuv: pfr,
+    setProposalBoundary: setProposalBoundary
   };
 
 };
 
-},{"../erp.js":92,"../util.js":111,"./mh.js":98,"assert":112,"underscore":86}],102:[function(require,module,exports){
+},{"../erp.js":95,"../util.js":121,"./mh.js":104,"assert":122,"underscore":88}],109:[function(require,module,exports){
 ////////////////////////////////////////////////////////////////////
 // Simple Variational inference wrt the (pseudo)mean-field program.
 // We do stochastic gradient descent on the ERP params.
@@ -38915,6 +42372,8 @@ module.exports = function(env) {
     this.k(this.initialStore, dist);
   };
 
+  Variational.prototype.incrementalize = env.defaultCoroutine.incrementalize;
+
   function vecPlus(a, b) {
     var c = [];
     for (var i = 0; i < a.length; i++) {
@@ -38941,7 +42400,7 @@ module.exports = function(env) {
 
 };
 
-},{"../erp.js":92}],103:[function(require,module,exports){
+},{"../erp.js":95}],110:[function(require,module,exports){
 (function (global,Buffer){
 'use strict';
 
@@ -38950,6 +42409,7 @@ var types = require('ast-types');
 var build = types.builders;
 var esprima = require('esprima');
 var escodegen = require('escodegen');
+var estraverse = require('estraverse');
 
 var cps = require('./transforms/cps').cps;
 var optimize = require('./transforms/optimize').optimize;
@@ -38957,33 +42417,56 @@ var naming = require('./transforms/naming').naming;
 var store = require('./transforms/store').store;
 var varargs = require('./transforms/varargs').varargs;
 var trampoline = require('./transforms/trampoline').trampoline;
+var freevars = require('./transforms/freevars').freevars;
+var caching = require('./transforms/caching').caching;
 var thunkify = require('./syntax').thunkify;
 var analyze = require('./analysis/main').analyze;
 var util = require('./util');
-
 
 // Container for coroutine object and shared top-level
 // functions (sample, factor, exit)
 var env = {};
 
 // Make header functions globally available:
-var header = require('./header.js')(env);
-for (var prop in header) {
-  if (header.hasOwnProperty(prop)) {
-    global[prop] = header[prop];
+function requireHeader(path) { requireHeaderWrapper(require(path)); }
+function requireHeaderWrapper(wrapper) { makePropertiesGlobal(wrapper(env)); }
+
+function makePropertiesGlobal(obj) {
+  for (var prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      global[prop] = obj[prop];
+    }
   }
 }
+
+// Explicitly call require here to ensure that browserify notices that the
+// header should be bundled.
+requireHeaderWrapper(require('./header'));
 
 function concatPrograms(p0, p1) {
   return build.program(p0.body.concat(p1.body));
 }
 
-function prepare(programCode, verbose) {
+function cachingRequired(programAST) {
+  var flag = false;
+  estraverse.traverse(programAST, {
+    enter: function(node) {
+      if (node.type === 'Identifier' && node.name === 'IncrementalMH') {
+        flag = true;
+        this.break();
+      }
+    }
+  });
+  return flag;
+}
+
+function prepare(programCode, verbose, doCaching) {
   if (verbose && console.time) {
     console.time('prepare');
   }
 
   var _prepare = function(ast) {
+    // ast = freevars(ast);
     ast = thunkify(ast);
     ast = naming(ast);
     ast = cps(ast);
@@ -38992,8 +42475,11 @@ function prepare(programCode, verbose) {
   };
 
   // Parse header and program, combine, compile, and generate program
-  var headerAST = esprima.parse(Buffer("Ly8gRVJQcwoKdmFyIGZsaXAgPSBmdW5jdGlvbih0aGV0YSkgewogIHJldHVybiBzYW1wbGUoYmVybm91bGxpRVJQLCBbdGhldGFdKTsKfTsKCnZhciByYW5kb21JbnRlZ2VyID0gZnVuY3Rpb24obikgewogIHJldHVybiBzYW1wbGUocmFuZG9tSW50ZWdlckVSUCwgW25dKTsKfTsKCnZhciBkaXNjcmV0ZSA9IGZ1bmN0aW9uKG4pIHsKICByZXR1cm4gc2FtcGxlKGRpc2NyZXRlRVJQLCBbbl0pOwp9OwoKdmFyIGNhdGVnb3JpY2FsID0gZnVuY3Rpb24ocHMsIHZzKSB7CiAgcmV0dXJuIHZzW2Rpc2NyZXRlKHBzKV07Cn0KCnZhciBnYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBzaWdtYSkgewogIHJldHVybiBzYW1wbGUoZ2F1c3NpYW5FUlAsIFttdSwgc2lnbWFdKTsKfTsKCnZhciBtdWx0aXZhcmlhdGVHYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBjb3YpIHsKICByZXR1cm4gc2FtcGxlKG11bHRpdmFyaWF0ZUdhdXNzaWFuRVJQLCBbbXUsIGNvdl0pOwp9OwoKdmFyIHVuaWZvcm0gPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIHNhbXBsZSh1bmlmb3JtRVJQLCBbYSwgYl0pOwp9OwoKdmFyIHVuaWZvcm1EcmF3ID0gZnVuY3Rpb24obCkgewogIHJldHVybiBsW3NhbXBsZShyYW5kb21JbnRlZ2VyRVJQLCBbbC5sZW5ndGhdKV07Cn07Cgp2YXIgZGlyaWNobGV0ID0gZnVuY3Rpb24oYWxwaGEpIHsKICByZXR1cm4gc2FtcGxlKGRpcmljaGxldEVSUCwgYWxwaGEpOwp9OwoKdmFyIHBvaXNzb24gPSBmdW5jdGlvbihtdSwgaykgewogIHJldHVybiBzYW1wbGUocG9pc3NvbkVSUCwgW211LCBrXSk7Cn07Cgp2YXIgYmlub21pYWwgPSBmdW5jdGlvbihwLCBuKSB7CiAgcmV0dXJuIHNhbXBsZShiaW5vbWlhbEVSUCwgW3AsIG5dKTsKfTsKCnZhciBiZXRhID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBzYW1wbGUoYmV0YUVSUCwgW2EsIGJdKTsKfTsKCnZhciBleHBvbmVudGlhbCA9IGZ1bmN0aW9uKGEpIHsKICByZXR1cm4gc2FtcGxlKGV4cG9uZW50aWFsRVJQLCBbYV0pOwp9OwoKdmFyIGdhbW1hID0gZnVuY3Rpb24oc2hhcGUsIHNjYWxlKSB7CiAgcmV0dXJuIHNhbXBsZShnYW1tYUVSUCwgW3NoYXBlLCBzY2FsZV0pOwp9OwoKdmFyIGRlbHRhRVJQID0gZnVuY3Rpb24odikgewogIHJldHVybiBnbG9iYWwubWFrZURlbHRhRVJQKHYpOwp9CgovLyBYUlBzCgp2YXIgbWFrZUJldGFCZXJub3VsbGkgPSBmdW5jdGlvbihwc2V1ZG9jb3VudHMpIHsKICBnbG9iYWxTdG9yZS5CQmluZGV4ID0gMSArIChnbG9iYWxTdG9yZS5CQmluZGV4IHx8IDApOwogIHZhciBiYm5hbWUgPSAnQkInICsgZ2xvYmFsU3RvcmUuQkJpbmRleDsKICBnbG9iYWxTdG9yZVtiYm5hbWVdID0gcHNldWRvY291bnRzOwogIHJldHVybiBmdW5jdGlvbigpIHsKICAgIHZhciBwYyA9IGdsb2JhbFN0b3JlW2JibmFtZV07ICAvLyBnZXQgY3VycmVudCBzdWZmaWNpZW50IHN0YXRzCiAgICB2YXIgdmFsID0gc2FtcGxlKGJlcm5vdWxsaUVSUCwgW3BjWzBdIC8gKHBjWzBdICsgcGNbMV0pXSk7ICAvLyBzYW1wbGUgZnJvbSBwcmVkaWN0aXZlLgogICAgZ2xvYmFsU3RvcmVbYmJuYW1lXSA9IFtwY1swXSArIHZhbCwgcGNbMV0gKyAhdmFsXTsgIC8vIHVwZGF0ZSBzdWZmaWNpZW50IHN0YXRzCiAgICByZXR1cm4gdmFsOwogIH07Cn07Cgp2YXIgbWFrZURpcmljaGxldERpc2NyZXRlID0gZnVuY3Rpb24ocHNldWRvY291bnRzKSB7CiAgdmFyIGFkZENvdW50ID0gZnVuY3Rpb24oYSwgaSwgaikgewogICAgdmFyIGogPSBqIHx8IDA7CiAgICBpZiAoYS5sZW5ndGggPT09IDApIHsKICAgICAgcmV0dXJuIFtdOwogICAgfSBlbHNlIHsKICAgICAgcmV0dXJuIFthWzBdICsgKGkgPT09IGopXS5jb25jYXQoYWRkQ291bnQoYS5zbGljZSgxKSwgaSwgaiArIDEpKTsKICAgIH0KICB9OwogIGdsb2JhbFN0b3JlLkREaW5kZXggPSAxICsgKGdsb2JhbFN0b3JlLkREaW5kZXggfHwgMCk7CiAgdmFyIGRkbmFtZSA9ICdERCcgKyBnbG9iYWxTdG9yZS5ERGluZGV4OwogIGdsb2JhbFN0b3JlW2RkbmFtZV0gPSBwc2V1ZG9jb3VudHM7CiAgcmV0dXJuIGZ1bmN0aW9uKCkgewogICAgdmFyIHBjID0gZ2xvYmFsU3RvcmVbZGRuYW1lXTsgIC8vIGdldCBjdXJyZW50IHN1ZmZpY2llbnQgc3RhdHMKICAgIHZhciB2YWwgPSBzYW1wbGUoZGlzY3JldGVFUlAsIFtwY10pOyAgLy8gc2FtcGxlIGZyb20gcHJlZGljdGl2ZS4gKGRvZXNuJ3QgbmVlZCB0byBiZSBub3JtYWxpemVkLikKICAgIGdsb2JhbFN0b3JlW2RkbmFtZV0gPSBhZGRDb3VudChwYywgdmFsKTsgLy8gdXBkYXRlIHN1ZmZpY2llbnQgc3RhdHMKICAgIHJldHVybiB2YWw7CiAgfTsKfTsKCi8vIEFyaXRobWV0aWMgYW5kIG90aGVyIGZ1bmN0aW9uYWxzCgp2YXIgcGx1cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSArIGI7Cn07CnZhciBtaW51cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAtIGI7Cn07CnZhciBtdWx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhICogYjsKfTsKdmFyIGRpdiA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAvIGI7Cn07Cgp2YXIgZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgPT09IGI7Cn07CnZhciBuZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgIT0gYjsKfTsKdmFyIGx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhIDwgYjsKfTsKdmFyIGd0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID4gYjsKfTsKdmFyIGxlcSA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSA8PSBiOwp9Owp2YXIgZ2VxID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID49IGI7Cn07Cgp2YXIgaXNFdmVuID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiA9PT0gMDsKfTsKdmFyIGlzT2RkID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiAhPSAwOwp9OwoKdmFyIGlkRiA9IGZ1bmN0aW9uKHgpIHsKICByZXR1cm4geDsKfTsKdmFyIGNvbnN0RiA9IGZ1bmN0aW9uKGYpIHsKICByZXR1cm4gZnVuY3Rpb24oKSB7CiAgICByZXR1cm4gZjsKICB9Owp9Owp2YXIgZmFsc2VGID0gZnVuY3Rpb24oKSB7CiAgcmV0dXJuIGZhbHNlOwp9Owp2YXIgdHJ1ZUYgPSBmdW5jdGlvbigpIHsKICByZXR1cm4gdHJ1ZTsKfTsKCgovLyBQcm9iYWJpbGl0eSBjb21wdXRhdGlvbnMgJiBjYWxjdWxhdGlvbnMKCnZhciBleHBlY3RhdGlvbiA9IGZ1bmN0aW9uKGVycCwgZnVuYykgewogIHZhciBmID0gZnVuYyB8fCBpZEY7CiAgdmFyIHN1cHAgPSBlcnAuc3VwcG9ydChbXSk7CiAgcmV0dXJuIG1hcFJlZHVjZTEocGx1cywKICAgICAgICAgICAgICAgICAgICBmdW5jdGlvbihzKSB7CiAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gTWF0aC5leHAoZXJwLnNjb3JlKFtdLCBzKSkgKiBmKHMpOwogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgc3VwcCk7Cn07Cgp2YXIgZW50cm9weSA9IGZ1bmN0aW9uKGVycCkgewogIHZhciBzdXBwID0gZXJwLnN1cHBvcnQoW10pOwogIHJldHVybiAtbWFwUmVkdWNlMShwbHVzLAogICAgICAgICAgICAgICAgICAgICBmdW5jdGlvbihzKSB7CiAgICAgICAgICAgICAgICAgICAgICAgdmFyIGxwID0gZXJwLnNjb3JlKFtdLCBzKTsKICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gTWF0aC5leHAobHApICogbHA7CiAgICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgIHN1cHApOwp9OwoKCi8vIERhdGEgc3RydWN0dXJlcyAmIGhpZ2hlci1vcmRlciBmdW5jdGlvbnMKCnZhciBhcHBlbmQgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEuY29uY2F0KGIpOwp9Owp2YXIgY29ucyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gW2FdLmNvbmNhdChiKTsKfTsKdmFyIHNub2MgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEuY29uY2F0KFtiXSk7Cn07Cgp2YXIgZmlyc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1swXTsKfTsKdmFyIHNlY29uZCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzWzFdOwp9Owp2YXIgdGhpcmQgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1syXTsKfTsKdmFyIGZvdXJ0aCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzWzNdOwp9Owp2YXIgc2Vjb25kTGFzdCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzW3hzLmxlbmd0aCAtIDJdOwp9Owp2YXIgbGFzdCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzW3hzLmxlbmd0aCAtIDFdOwp9Owp2YXIgcmVzdCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzLnNsaWNlKDEpOwp9OwoKdmFyIG1hcCA9IGZ1bmN0aW9uKGZuLCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyBbXSA6IFtmbihhclswXSldLmNvbmNhdChtYXAoZm4sIGFyLnNsaWNlKDEpKSk7Cn07Cgp2YXIgbWFwMiA9IGZ1bmN0aW9uKGYsIGwxLCBsMikgewogIHJldHVybiAobDEubGVuZ3RoID09PSAwIHx8IGwyLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgICBbXSA6CiAgICAgICAgICBbZihsMVswXSwgbDJbMF0pXS5jb25jYXQobWFwMihmLCBsMS5zbGljZSgxKSwgbDIuc2xpY2UoMSkpKSk7Cn07Cgp2YXIgbWFwTiA9IGZ1bmN0aW9uKGYsIG4pIHsKICB2YXIgZm4gPSBmdW5jdGlvbihpLCBfYWNjKSB7cmV0dXJuIGkgPT09IG4gPyBfYWNjIDogZm4oaSArIDEsIHNub2MoX2FjYywgZihpKSkpfTsKICByZXR1cm4gZm4oMCwgW10pOwp9Cgp2YXIgbWFwSW5kZXhlZCA9IGZ1bmN0aW9uKGYsIGwpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihscywgaSwgX2FjYykgewogICAgcmV0dXJuIGxzLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgX2FjYyA6CiAgICAgICAgZm4ocmVzdChscyksIGkgKyAxLCBzbm9jKF9hY2MsIGYoaSwgZmlyc3QobHMpKSkpCiAgfTsKICByZXR1cm4gZm4obCwgMCwgW10pOwp9Cgp2YXIgX3JpbmdBcm91bmQgPSBmdW5jdGlvbihsLCBuKSB7CiAgcmV0dXJuIGwuc2xpY2UobikuY29uY2F0KGwuc2xpY2UoMCwgbikpOwp9OwoKdmFyIHJpbmdGb3J3YXJkID0gZnVuY3Rpb24obCwgbikgewogIHJldHVybiBfcmluZ0Fyb3VuZChsLCBuID09PSB1bmRlZmluZWQgPyAtMSA6IC1uKTsKfTsKCnZhciByaW5nQmFja3dhcmQgPSBmdW5jdGlvbihsLCBuKSB7CiAgcmV0dXJuIF9yaW5nQXJvdW5kKGwsIG4gfHwgMSk7Cn07Cgp2YXIgbWFwUGFpcnMyID0gZnVuY3Rpb24oZiwgbDEsIGwyKSB7CiAgdmFyIHJlcyA9IG1hcChmdW5jdGlvbihhKSB7CiAgICByZXR1cm4gbWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgcmV0dXJuIGYoYSwgYik7CiAgICB9LCBsMikKICB9LCBsMSk7CiAgcmV0dXJuIFtdLmNvbmNhdC5hcHBseShbXSwgcmVzKTsgLy8gZmxhdHRlbgp9OwoKdmFyIG1hcFBhaXJzQyA9IGZ1bmN0aW9uKGYsIGwpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihsMSwgbDIsIGFjYykgewogICAgcmV0dXJuIChsMi5sZW5ndGggPT09IDAgPyBhY2MgOgogICAgICAgICAgICBmbihsMS5zbGljZSgxKSwKICAgICAgICAgICAgICAgbDIuc2xpY2UoMSksCiAgICAgICAgICAgICAgIGFjYy5jb25jYXQobWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgICAgICAgICAgICByZXR1cm4gZihsMVswXSwgYik7CiAgICAgICAgICAgICAgIH0sIGwyKSkpCiAgICApOwogIH07CiAgcmV0dXJuIGZuKGwsIGwuc2xpY2UoMSksIFtdKTsKfTsKCnZhciBtYXBQYWlyc05DID0gZnVuY3Rpb24oZiwgbCkgewogIHZhciByZXMgPSBtYXBQYWlyczIoZnVuY3Rpb24oYSwgYikgewogICAgcmV0dXJuIGEgPT09IGIgPyB1bmRlZmluZWQgOiBmKGEsIGIpOwogIH0sIGwsIGwpOwogIHJldHVybiByZW1vdmUodW5kZWZpbmVkLCByZXMpOwp9OwoKdmFyIHJlZHVjZSA9IGZ1bmN0aW9uKGZuLCBpbml0LCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyBpbml0IDogZm4oYXJbMF0sIHJlZHVjZShmbiwgaW5pdCwgYXIuc2xpY2UoMSkpKTsKfTsKCnZhciBtYXBSZWR1Y2UgPSBmdW5jdGlvbihmLCBpbml0LCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGluaXQpLAogICAgICAgICAgICAgICAgYXIpOwp9OwoKdmFyIG1hcFJlZHVjZTEgPSBmdW5jdGlvbihmLCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGFyW2FyLmxlbmd0aCAtIDFdKSwKICAgICAgICAgICAgICAgIGFyLnNsaWNlKDAsIC0xKSk7Cn07Cgp2YXIgc3VtID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UocGx1cywgMCwgbCk7Cn07CnZhciBwcm9kdWN0ID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UobXVsdCwgMSwgbCk7Cn07Cgp2YXIgbGlzdE1lYW4gPSBmdW5jdGlvbihsKSB7CiAgcmV0dXJuIHJlZHVjZShwbHVzLCAwLCBsKSAvIGwubGVuZ3RoOwp9Owp2YXIgbGlzdFZhciA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgdmFyIG11ID0gbXUgfHwgbGlzdE1lYW4obCk7CiAgcmV0dXJuIG1hcFJlZHVjZTEocGx1cywgZnVuY3Rpb24oYSkgewogICAgcmV0dXJuIChhIC0gbXUpICogKGEgLSBtdSk7CiAgfSwgbCkgLyBsLmxlbmd0aDsKfTsKdmFyIGxpc3RTdGRldiA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgcmV0dXJuIE1hdGguc3FydChsaXN0VmFyKGwsIG11KSk7Cn07Cgp2YXIgYWxsID0gZnVuY3Rpb24ocCwgbCkgewogIHJldHVybiBtYXBSZWR1Y2UxKGZ1bmN0aW9uKGEsIGIpIHsKICAgIHJldHVybiBhICYmIGI7CiAgfSwgcCwgbCk7Cn07CnZhciBhbnkgPSBmdW5jdGlvbihwLCBsKSB7CiAgcmV0dXJuIG1hcFJlZHVjZTEoZnVuY3Rpb24oYSwgYikgewogICAgcmV0dXJuIGEgfHwgYjsKICB9LCBwLCBsKTsKfTsKCnZhciB6aXAgPSBmdW5jdGlvbih4cywgeXMpIHsKICByZXR1cm4geHMubGVuZ3RoID09PSAwID8KICAgICAgW10gOgogICAgICBbW3hzWzBdLCB5c1swXV1dLmNvbmNhdCh6aXAoeHMuc2xpY2UoMSksIHlzLnNsaWNlKDEpKSk7Cn07Cgp2YXIgZmlsdGVyID0gZnVuY3Rpb24oZm4sIGFyKSB7CiAgcmV0dXJuIGFyLmxlbmd0aCA9PT0gMCA/CiAgICAgIFtdIDoKICAgICAgYXBwZW5kKGZuKGFyWzBdKSA/IFthclswXV0gOiBbXSwgZmlsdGVyKGZuLCBhci5zbGljZSgxKSkpOwp9OwoKdmFyIGZpbmQgPSBmdW5jdGlvbihmLCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyB1bmRlZmluZWQgOiAoZihhclswXSkgPyBhclswXSA6IGZpbmQoZiwgYXIuc2xpY2UoMSkpKTsKfTsKCnZhciByZW1vdmUgPSBmdW5jdGlvbihhLCBhcikgewogIHJldHVybiBmaWx0ZXIoZnVuY3Rpb24oZSkgewogICAgcmV0dXJuIGEgIT0gZTsKICB9LCBhcik7Cn07Cgp2YXIgaW5zZXJ0QXQgPSBmdW5jdGlvbihhciwgaSwgeCkgewogIHJldHVybiBhci5zbGljZSgwLCBpKS5jb25jYXQoW3hdKS5jb25jYXQoYXIuc2xpY2UoaSkpOwp9Cgp2YXIgcmVtb3ZlQXQgPSBmdW5jdGlvbihhciwgaSkgewogIHJldHVybiBhci5zbGljZSgwLCBpKS5jb25jYXQoYXIuc2xpY2UoaSArIDEpKTsKfQoKdmFyIHJlcGxhY2VBdCA9IGZ1bmN0aW9uKGFyLCBpLCB4KSB7CiAgcmV0dXJuIGFyLnNsaWNlKDAsIGkpLmNvbmNhdChbeF0pLmNvbmNhdChhci5zbGljZShpICsgMSkpOwp9Cgp2YXIgZHJvcCA9IGZ1bmN0aW9uKG4sIGFyKSB7CiAgcmV0dXJuIG4gPiBhci5sZW5ndGggPyBbXSA6IGFyLnNsaWNlKG4pOwp9Owp2YXIgdGFrZSA9IGZ1bmN0aW9uKG4sIGFyKSB7CiAgcmV0dXJuIG4gPj0gYXIubGVuZ3RoID8gYXIgOiBhci5zbGljZSgwLCBuKTsKfTsKdmFyIGRyb3BXaGlsZSA9IGZ1bmN0aW9uKHAsIGFyKSB7CiAgcmV0dXJuIHAoYXJbMF0pID8gZHJvcFdoaWxlKHAsIGFyLnNsaWNlKDEpKSA6IGFyOwp9Owp2YXIgdGFrZVdoaWxlID0gZnVuY3Rpb24ocCwgYXIpIHsKICByZXR1cm4gcChhclswXSkgPyBjb25zKGFyWzBdLCB0YWtlV2hpbGUocCwgYXIuc2xpY2UoMSkpKSA6IFtdOwp9OwoKdmFyIGluZGV4T2YgPSBmdW5jdGlvbih4LCB4cykgewogIC8vIHByb3RvdHlwZSBtZXRob2QgZG9lc24ndCByZXR1cm4gZmFsc3kgdmFsdWUgaWYgbm90IGZvdW5kCiAgdmFyIGkgPSB4cy5pbmRleE9mKHgpOwogIHJldHVybiBpIDwgMCA/IHVuZGVmaW5lZCA6IGkKfTsKCnZhciBtaW5XaXRoID0gZnVuY3Rpb24oZiwgYXIpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihfYXIsIF9iZXN0KSB7CiAgICBpZiAoX2FyLmxlbmd0aCA9PT0gMCkgewogICAgICByZXR1cm4gX2Jlc3Q7CiAgICB9IGVsc2UgaWYgKF9hclswXVsxXSA8IF9iZXN0WzFdKSB7CiAgICAgIHJldHVybiBmbihfYXIuc2xpY2UoMSksIF9hclswXSk7CiAgICB9IGVsc2UgewogICAgICByZXR1cm4gZm4oX2FyLnNsaWNlKDEpLCBfYmVzdCk7CiAgICB9CiAgfTsKICByZXR1cm4gZm4oemlwKGFyLCBtYXAoZiwgYXIpKSwgW0luZmluaXR5LCBJbmZpbml0eV0pOwp9OwoKdmFyIG1heFdpdGggPSBmdW5jdGlvbihmLCBhcikgewogIHZhciBmbiA9IGZ1bmN0aW9uKF9hciwgX2Jlc3QpIHsKICAgIGlmIChfYXIubGVuZ3RoID09PSAwKSB7CiAgICAgIHJldHVybiBfYmVzdDsKICAgIH0gZWxzZSBpZiAoX2FyWzBdWzFdID4gX2Jlc3RbMV0pIHsKICAgICAgcmV0dXJuIGZuKF9hci5zbGljZSgxKSwgX2FyWzBdKTsKICAgIH0gZWxzZSB7CiAgICAgIHJldHVybiBmbihfYXIuc2xpY2UoMSksIF9iZXN0KTsKICAgIH0KICB9OwogIHJldHVybiBmbih6aXAoYXIsIG1hcChmLCBhcikpLCBbLUluZmluaXR5LCAtSW5maW5pdHldKTsKfTsKCnZhciBzcGFuID0gZnVuY3Rpb24ocCwgYXIpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihhciwgX3RzLCBfZnMpIHsKICAgIHJldHVybiAoYXIubGVuZ3RoID09PSAwID8KICAgICAgICAgICAgW190cywgX2ZzXSA6CiAgICAgICAgICAgIChwKGFyWzBdKSA/CiAgICAgICAgICAgICBmbihhci5zbGljZSgxKSwgc25vYyhfdHMsIGFyWzBdKSwgX2ZzKSA6CiAgICAgICAgICAgICBmbihhci5zbGljZSgxKSwgX3RzLCBzbm9jKF9mcywgYXJbMF0pKSkpOwogIH07CiAgcmV0dXJuIGZuKGFyLCBbXSwgW10pOwp9OwoKdmFyIGdyb3VwQnkgPSBmdW5jdGlvbihjbXAsIGFyKSB7CiAgaWYgKGFyLmxlbmd0aCA9PT0gMCkgewogICAgcmV0dXJuIFtdOwogIH0gZWxzZSB7CiAgICB2YXIgeCA9IGFyWzBdOwogICAgdmFyIHNwID0gc3BhbihmdW5jdGlvbihiKSB7IHJldHVybiBjbXAoeCwgYik7IH0sIGFyLnNsaWNlKDEpKTsKICAgIHJldHVybiBbY29ucyh4LCBzcFswXSldLmNvbmNhdChncm91cEJ5KGNtcCwgc3BbMV0pKTsKICB9Cn07Cgp2YXIgcmVwZWF0ID0gZnVuY3Rpb24obiwgZm4pIHsKICByZXR1cm4gbiA9PT0gMCA/IFtdIDogYXBwZW5kKHJlcGVhdChuIC0gMSwgZm4pLCBbZm4obiAtIDEpXSk7Cn07Cgp2YXIgcHVzaCA9IGZ1bmN0aW9uKHhzLCB4KSB7CiAgcmV0dXJuIHhzLmNvbmNhdChbeF0pOwp9OwoKdmFyIGNvbXBvc2UgPSBmdW5jdGlvbihmLCBnKSB7CiAgcmV0dXJuIGZ1bmN0aW9uKHgpIHsKICAgIHJldHVybiBmKGcoeCkpOwogIH07Cn07Cgp2YXIgZXZlcnlPdGhlciA9IGZ1bmN0aW9uKGwpIHsKICByZXR1cm4gbC5sZW5ndGggPD0gMSA/IGwgOiBbbFswXV0uY29uY2F0KGV2ZXJ5T3RoZXIobC5zbGljZSgyKSkpOwp9OwoKdmFyIF9tZXJnZSA9IGZ1bmN0aW9uKGwxLCBsMiwgcHJlZCwga2V5KSB7CiAgcmV0dXJuIChsMS5sZW5ndGggPT09IDAgPwogICAgICAgICAgbDIgOgogICAgICAgICAgKGwyLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgICAgbDEgOgogICAgICAgICAgIChwcmVkKGtleShsMVswXSksIGtleShsMlswXSkpID8KICAgICAgICAgICAgW2wxWzBdXS5jb25jYXQoX21lcmdlKGwxLnNsaWNlKDEpLCBsMiwgcHJlZCwga2V5KSkgOgogICAgICAgICAgICBbbDJbMF1dLmNvbmNhdChfbWVyZ2UobDEsIGwyLnNsaWNlKDEpLCBwcmVkLCBrZXkpKSkpKTsKfTsKCnZhciBfc29ydCA9IGZ1bmN0aW9uKGwsIHByZWQsIGtleSkgewogIHJldHVybiAoKGwubGVuZ3RoIDw9IDEpID8KICAgICAgICAgIGwgOgogICAgICAgICAgX21lcmdlKF9zb3J0KGV2ZXJ5T3RoZXIobCksIHByZWQsIGtleSksCiAgICAgICAgICAgICAgICAgX3NvcnQoZXZlcnlPdGhlcihsLnNsaWNlKDEpKSwgcHJlZCwga2V5KSwKICAgICAgICAgICAgICAgICBwcmVkLAogICAgICAgICAgICAgICAgIGtleSkpOwp9OwoKdmFyIHNvcnQgPSBmdW5jdGlvbihsLCBwcmVkLCBrZXkpIHsKICByZXR1cm4gX3NvcnQobCwgKHByZWQgfHwgbHQpLCAoa2V5IHx8IGlkRikpOwp9OwoKdmFyIHNvcnRPbiA9IGZ1bmN0aW9uKGwsIGtleSwgcHJlZCkgewogIHJldHVybiBfc29ydChsLCAocHJlZCB8fCBsdCksIGtleSk7Cn07Cg==","base64"));
+  var headerAST = esprima.parse(Buffer("Ly8gRVJQcwoKdmFyIGZsaXAgPSBmdW5jdGlvbih0aGV0YSkgewogIHJldHVybiBzYW1wbGUoYmVybm91bGxpRVJQLCBbdGhldGFdKTsKfTsKCnZhciByYW5kb21JbnRlZ2VyID0gZnVuY3Rpb24obikgewogIHJldHVybiBzYW1wbGUocmFuZG9tSW50ZWdlckVSUCwgW25dKTsKfTsKCnZhciBkaXNjcmV0ZSA9IGZ1bmN0aW9uKG4pIHsKICByZXR1cm4gc2FtcGxlKGRpc2NyZXRlRVJQLCBbbl0pOwp9OwoKdmFyIGNhdGVnb3JpY2FsID0gZnVuY3Rpb24ocHMsIHZzKSB7CiAgcmV0dXJuIHZzW2Rpc2NyZXRlKHBzKV07Cn0KCnZhciBnYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBzaWdtYSkgewogIHJldHVybiBzYW1wbGUoZ2F1c3NpYW5FUlAsIFttdSwgc2lnbWFdKTsKfTsKCnZhciBtdWx0aXZhcmlhdGVHYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBjb3YpIHsKICByZXR1cm4gc2FtcGxlKG11bHRpdmFyaWF0ZUdhdXNzaWFuRVJQLCBbbXUsIGNvdl0pOwp9OwoKdmFyIHVuaWZvcm0gPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIHNhbXBsZSh1bmlmb3JtRVJQLCBbYSwgYl0pOwp9OwoKdmFyIHVuaWZvcm1EcmF3ID0gZnVuY3Rpb24obCkgewogIHJldHVybiBsW3NhbXBsZShyYW5kb21JbnRlZ2VyRVJQLCBbbC5sZW5ndGhdKV07Cn07Cgp2YXIgZGlyaWNobGV0ID0gZnVuY3Rpb24oYWxwaGEpIHsKICByZXR1cm4gc2FtcGxlKGRpcmljaGxldEVSUCwgYWxwaGEpOwp9OwoKdmFyIHBvaXNzb24gPSBmdW5jdGlvbihtdSwgaykgewogIHJldHVybiBzYW1wbGUocG9pc3NvbkVSUCwgW211LCBrXSk7Cn07Cgp2YXIgYmlub21pYWwgPSBmdW5jdGlvbihwLCBuKSB7CiAgcmV0dXJuIHNhbXBsZShiaW5vbWlhbEVSUCwgW3AsIG5dKTsKfTsKCnZhciBiZXRhID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBzYW1wbGUoYmV0YUVSUCwgW2EsIGJdKTsKfTsKCnZhciBleHBvbmVudGlhbCA9IGZ1bmN0aW9uKGEpIHsKICByZXR1cm4gc2FtcGxlKGV4cG9uZW50aWFsRVJQLCBbYV0pOwp9OwoKdmFyIGdhbW1hID0gZnVuY3Rpb24oc2hhcGUsIHNjYWxlKSB7CiAgcmV0dXJuIHNhbXBsZShnYW1tYUVSUCwgW3NoYXBlLCBzY2FsZV0pOwp9OwoKdmFyIGRlbHRhRVJQID0gZnVuY3Rpb24odikgewogIHJldHVybiBfdG9wLm1ha2VDYXRlZ29yaWNhbEVSUChbMS4wXSwgW3ZdKTsKfTsKCnZhciBjYXRlZ29yaWNhbEVSUCA9IGZ1bmN0aW9uKHBzLCB2cywgZXh0cmFQYXJhbXMpIHsKICByZXR1cm4gX3RvcC5tYWtlQ2F0ZWdvcmljYWxFUlAocHMsIHZzLCBleHRyYVBhcmFtcyk7Cn07Cgp2YXIgbXVsdGlwbGV4RVJQID0gZnVuY3Rpb24odnMsIGVycHMpIHsKICByZXR1cm4gX3RvcC5tYWtlTXVsdGlwbGV4RVJQKHZzLCBlcnBzKTsKfTsKCi8vIFhSUHMKCnZhciBtYWtlQmV0YUJlcm5vdWxsaSA9IGZ1bmN0aW9uKHBzZXVkb2NvdW50cykgewogIGdsb2JhbFN0b3JlLkJCaW5kZXggPSAxICsgKGdsb2JhbFN0b3JlLkJCaW5kZXggfHwgMCk7CiAgdmFyIGJibmFtZSA9ICdCQicgKyBnbG9iYWxTdG9yZS5CQmluZGV4OwogIGdsb2JhbFN0b3JlW2JibmFtZV0gPSBwc2V1ZG9jb3VudHM7CiAgcmV0dXJuIGZ1bmN0aW9uKCkgewogICAgdmFyIHBjID0gZ2xvYmFsU3RvcmVbYmJuYW1lXTsgIC8vIGdldCBjdXJyZW50IHN1ZmZpY2llbnQgc3RhdHMKICAgIHZhciB2YWwgPSBzYW1wbGUoYmVybm91bGxpRVJQLCBbcGNbMF0gLyAocGNbMF0gKyBwY1sxXSldKTsgIC8vIHNhbXBsZSBmcm9tIHByZWRpY3RpdmUuCiAgICBnbG9iYWxTdG9yZVtiYm5hbWVdID0gW3BjWzBdICsgdmFsLCBwY1sxXSArICF2YWxdOyAgLy8gdXBkYXRlIHN1ZmZpY2llbnQgc3RhdHMKICAgIHJldHVybiB2YWw7CiAgfTsKfTsKCnZhciBtYWtlRGlyaWNobGV0RGlzY3JldGUgPSBmdW5jdGlvbihwc2V1ZG9jb3VudHMpIHsKICB2YXIgYWRkQ291bnQgPSBmdW5jdGlvbihhLCBpLCBqKSB7CiAgICB2YXIgaiA9IGogfHwgMDsKICAgIGlmIChhLmxlbmd0aCA9PT0gMCkgewogICAgICByZXR1cm4gW107CiAgICB9IGVsc2UgewogICAgICByZXR1cm4gW2FbMF0gKyAoaSA9PT0gaildLmNvbmNhdChhZGRDb3VudChhLnNsaWNlKDEpLCBpLCBqICsgMSkpOwogICAgfQogIH07CiAgZ2xvYmFsU3RvcmUuRERpbmRleCA9IDEgKyAoZ2xvYmFsU3RvcmUuRERpbmRleCB8fCAwKTsKICB2YXIgZGRuYW1lID0gJ0REJyArIGdsb2JhbFN0b3JlLkREaW5kZXg7CiAgZ2xvYmFsU3RvcmVbZGRuYW1lXSA9IHBzZXVkb2NvdW50czsKICByZXR1cm4gZnVuY3Rpb24oKSB7CiAgICB2YXIgcGMgPSBnbG9iYWxTdG9yZVtkZG5hbWVdOyAgLy8gZ2V0IGN1cnJlbnQgc3VmZmljaWVudCBzdGF0cwogICAgdmFyIHZhbCA9IHNhbXBsZShkaXNjcmV0ZUVSUCwgW3BjXSk7ICAvLyBzYW1wbGUgZnJvbSBwcmVkaWN0aXZlLiAoZG9lc24ndCBuZWVkIHRvIGJlIG5vcm1hbGl6ZWQuKQogICAgZ2xvYmFsU3RvcmVbZGRuYW1lXSA9IGFkZENvdW50KHBjLCB2YWwpOyAvLyB1cGRhdGUgc3VmZmljaWVudCBzdGF0cwogICAgcmV0dXJuIHZhbDsKICB9Owp9OwoKLy8gcHV0IGhlcmUgYmVjYXVzZSBsaWZ0Rm4gaXMgYSB3cHBsLXRyYW5zZm9ybWVkIGZuCnZhciBsaWZ0RVJQID0gZnVuY3Rpb24oZXJwLCBsaWZ0Rm4pIHsKICB2YXIgYXVnbWVudGVkU3VwcG9ydCA9IG1hcChmdW5jdGlvbihiYXNlRW50aXR5KSB7CiAgICB2YXIgYmFzZUVudGl0eVNjb3JlID0gZXJwLnNjb3JlKFtdLCBiYXNlRW50aXR5KTsKICAgIHZhciBsaWZ0ZWRTdXBwb3J0ID0gbGlmdEZuKGJhc2VFbnRpdHkpOwogICAgcmV0dXJuIHsKICAgICAgazogSlNPTi5zdHJpbmdpZnkobGlmdGVkU3VwcG9ydCksCiAgICAgIHZzOiBbYmFzZUVudGl0eV0sCiAgICAgIHBzOiBbYmFzZUVudGl0eVNjb3JlXSwKICAgICAgbGlmdGVkU3VwcG9ydDogbGlmdGVkU3VwcG9ydCwKICAgICAgYWdncmVnYXRlU2NvcmU6IGJhc2VFbnRpdHlTY29yZQogICAgfTsKICB9LCBlcnAuc3VwcG9ydCgpKTsKICB2YXIgZXFDbGFzc2VzID0gZ3JvdXBCeShmdW5jdGlvbihlLCBmKSB7cmV0dXJuIGUuayA9PT0gZi5rfSwgYXVnbWVudGVkU3VwcG9ydCk7CiAgdmFyIGVxQ2xhc3Nlc1N0cnVjdHVyZWQgPSBtYXAoZnVuY3Rpb24oZXFDbGFzcykgewogICAgcmV0dXJuIFtlcUNsYXNzWzBdLmssCiAgICAgICAgICAgIG1hcFJlZHVjZTEoZnVuY3Rpb24oYSwgYikgewogICAgICAgICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICAgICB2czogYS52cy5jb25jYXQoYi52cyksCiAgICAgICAgICAgICAgICBwczogYS5wcy5jb25jYXQoYi5wcyksCiAgICAgICAgICAgICAgICBsaWZ0ZWRTdXBwb3J0OiBhLmxpZnRlZFN1cHBvcnQsCiAgICAgICAgICAgICAgICBhZ2dyZWdhdGVTY29yZTogdXRpbC5sb2dzdW1leHAoW2EuYWdncmVnYXRlU2NvcmUsIGIuYWdncmVnYXRlU2NvcmVdKQogICAgICAgICAgICAgIH07CiAgICAgICAgICAgIH0sIGlkRiwgZXFDbGFzcyldCiAgfSwgZXFDbGFzc2VzKTsKICB2YXIgdnMgPSBtYXAoZnVuY3Rpb24oZSkge3JldHVybiBlWzFdLmxpZnRlZFN1cHBvcnR9LCBlcUNsYXNzZXNTdHJ1Y3R1cmVkKTsKICB2YXIgcHMgPSBtYXAoZnVuY3Rpb24oZSkge3JldHVybiBNYXRoLmV4cChlWzFdLmFnZ3JlZ2F0ZVNjb3JlKX0sIGVxQ2xhc3Nlc1N0cnVjdHVyZWQpOwogIHJldHVybiBjYXRlZ29yaWNhbEVSUChwcywgdnMsIHtiYXNlRVJQRW50cmllczogXy5vYmplY3QoZXFDbGFzc2VzU3RydWN0dXJlZCl9KTsKfTsKCi8vIEFyaXRobWV0aWMgYW5kIG90aGVyIGZ1bmN0aW9uYWxzCgp2YXIgcGx1cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSArIGI7Cn07CnZhciBtaW51cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAtIGI7Cn07CnZhciBtdWx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhICogYjsKfTsKdmFyIGRpdiA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAvIGI7Cn07Cgp2YXIgYW5kID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhICYmIGIKfQp2YXIgb3IgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgfHwgYgp9Cgp2YXIgZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgPT09IGI7Cn07CnZhciBuZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgIT0gYjsKfTsKdmFyIGx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhIDwgYjsKfTsKdmFyIGd0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID4gYjsKfTsKdmFyIGxlcSA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSA8PSBiOwp9Owp2YXIgZ2VxID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID49IGI7Cn07Cgp2YXIgaXNFdmVuID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiA9PT0gMDsKfTsKdmFyIGlzT2RkID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiAhPSAwOwp9OwoKdmFyIGlkRiA9IGZ1bmN0aW9uKHgpIHsKICByZXR1cm4geDsKfTsKdmFyIGNvbnN0RiA9IGZ1bmN0aW9uKGYpIHsKICByZXR1cm4gZnVuY3Rpb24oKSB7CiAgICByZXR1cm4gZjsKICB9Owp9Owp2YXIgZmFsc2VGID0gZnVuY3Rpb24oKSB7CiAgcmV0dXJuIGZhbHNlOwp9Owp2YXIgdHJ1ZUYgPSBmdW5jdGlvbigpIHsKICByZXR1cm4gdHJ1ZTsKfTsKCgovLyBQcm9iYWJpbGl0eSBjb21wdXRhdGlvbnMgJiBjYWxjdWxhdGlvbnMKCnZhciBNQVAgPSBmdW5jdGlvbihlcnApIHsKICByZXR1cm4gZXJwLk1BUCgpOwp9OwoKdmFyIGV4cGVjdGF0aW9uID0gZnVuY3Rpb24oZXJwLCBmdW5jKSB7CiAgdmFyIGYgPSBmdW5jIHx8IGlkRjsKICB2YXIgc3VwcCA9IGVycC5zdXBwb3J0KFtdKTsKICByZXR1cm4gbWFwUmVkdWNlMShwbHVzLAogICAgICAgICAgICAgICAgICAgIGZ1bmN0aW9uKHMpIHsKICAgICAgICAgICAgICAgICAgICAgIHJldHVybiBNYXRoLmV4cChlcnAuc2NvcmUoW10sIHMpKSAqIGYocyk7CiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICBzdXBwKTsKfTsKCnZhciBlbnRyb3B5ID0gZnVuY3Rpb24oZXJwKSB7CiAgcmV0dXJuIGVycC5lbnRyb3B5KCk7Cn07CgovLyBEYXRhIHN0cnVjdHVyZXMgJiBoaWdoZXItb3JkZXIgZnVuY3Rpb25zCgp2YXIgYXBwZW5kID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhLmNvbmNhdChiKTsKfTsKdmFyIGNvbnMgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIFthXS5jb25jYXQoYik7Cn07CnZhciBzbm9jID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhLmNvbmNhdChbYl0pOwp9OwoKdmFyIGZpcnN0ID0gZnVuY3Rpb24oeHMpIHsKICByZXR1cm4geHNbMF07Cn07CnZhciBzZWNvbmQgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1sxXTsKfTsKdmFyIHRoaXJkID0gZnVuY3Rpb24oeHMpIHsKICByZXR1cm4geHNbMl07Cn07CnZhciBmb3VydGggPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1szXTsKfTsKdmFyIHNlY29uZExhc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1t4cy5sZW5ndGggLSAyXTsKfTsKdmFyIGxhc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1t4cy5sZW5ndGggLSAxXTsKfTsKdmFyIHJlc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4cy5zbGljZSgxKTsKfTsKCnZhciBtYXAgPSBmdW5jdGlvbihmbiwgYXIpIHsKICByZXR1cm4gYXIubGVuZ3RoID09PSAwID8gW10gOiBbZm4oYXJbMF0pXS5jb25jYXQobWFwKGZuLCBhci5zbGljZSgxKSkpOwp9OwoKdmFyIG1hcDIgPSBmdW5jdGlvbihmLCBsMSwgbDIpIHsKICByZXR1cm4gKGwxLmxlbmd0aCA9PT0gMCB8fCBsMi5sZW5ndGggPT09IDAgPwogICAgICAgICAgW10gOgogICAgICAgICAgW2YobDFbMF0sIGwyWzBdKV0uY29uY2F0KG1hcDIoZiwgbDEuc2xpY2UoMSksIGwyLnNsaWNlKDEpKSkpOwp9OwoKdmFyIG1hcE4gPSBmdW5jdGlvbihmLCBuKSB7CiAgdmFyIGZuID0gZnVuY3Rpb24oaSwgX2FjYykge3JldHVybiBpID09PSBuID8gX2FjYyA6IGZuKGkgKyAxLCBzbm9jKF9hY2MsIGYoaSkpKX07CiAgcmV0dXJuIGZuKDAsIFtdKTsKfQoKdmFyIG1hcEluZGV4ZWQgPSBmdW5jdGlvbihmLCBsKSB7CiAgdmFyIGZuID0gZnVuY3Rpb24obHMsIGksIF9hY2MpIHsKICAgIHJldHVybiBscy5sZW5ndGggPT09IDAgPwogICAgICAgIF9hY2MgOgogICAgICAgIGZuKHJlc3QobHMpLCBpICsgMSwgc25vYyhfYWNjLCBmKGksIGZpcnN0KGxzKSkpKQogIH07CiAgcmV0dXJuIGZuKGwsIDAsIFtdKTsKfQoKdmFyIF9yaW5nQXJvdW5kID0gZnVuY3Rpb24obCwgbikgewogIHJldHVybiBsLnNsaWNlKG4pLmNvbmNhdChsLnNsaWNlKDAsIG4pKTsKfTsKCnZhciByaW5nRm9yd2FyZCA9IGZ1bmN0aW9uKGwsIG4pIHsKICByZXR1cm4gX3JpbmdBcm91bmQobCwgbiA9PT0gdW5kZWZpbmVkID8gLTEgOiAtbik7Cn07Cgp2YXIgcmluZ0JhY2t3YXJkID0gZnVuY3Rpb24obCwgbikgewogIHJldHVybiBfcmluZ0Fyb3VuZChsLCBuID09PSB1bmRlZmluZWQgPyAxIDogbik7Cn07Cgp2YXIgbWFwUGFpcnMyID0gZnVuY3Rpb24oZiwgbDEsIGwyKSB7CiAgdmFyIHJlcyA9IG1hcChmdW5jdGlvbihhKSB7CiAgICByZXR1cm4gbWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgcmV0dXJuIGYoYSwgYik7CiAgICB9LCBsMikKICB9LCBsMSk7CiAgcmV0dXJuIFtdLmNvbmNhdC5hcHBseShbXSwgcmVzKTsgLy8gZmxhdHRlbgp9OwoKdmFyIG1hcFBhaXJzQyA9IGZ1bmN0aW9uKGYsIGwpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihsMSwgbDIsIGFjYykgewogICAgcmV0dXJuIChsMi5sZW5ndGggPT09IDAgPyBhY2MgOgogICAgICAgICAgICBmbihsMS5zbGljZSgxKSwKICAgICAgICAgICAgICAgbDIuc2xpY2UoMSksCiAgICAgICAgICAgICAgIGFjYy5jb25jYXQobWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgICAgICAgICAgICByZXR1cm4gZihsMVswXSwgYik7CiAgICAgICAgICAgICAgIH0sIGwyKSkpCiAgICApOwogIH07CiAgcmV0dXJuIGZuKGwsIGwuc2xpY2UoMSksIFtdKTsKfTsKCnZhciBtYXBQYWlyc05DID0gZnVuY3Rpb24oZiwgbCkgewogIHZhciByZXMgPSBtYXBQYWlyczIoZnVuY3Rpb24oYSwgYikgewogICAgcmV0dXJuIGEgPT09IGIgPyB1bmRlZmluZWQgOiBmKGEsIGIpOwogIH0sIGwsIGwpOwogIHJldHVybiByZW1vdmUodW5kZWZpbmVkLCByZXMpOwp9OwoKdmFyIHJlZHVjZSA9IGZ1bmN0aW9uKGZuLCBpbml0LCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyBpbml0IDogZm4oYXJbMF0sIHJlZHVjZShmbiwgaW5pdCwgYXIuc2xpY2UoMSkpKTsKfTsKCnZhciBtYXBSZWR1Y2UgPSBmdW5jdGlvbihmLCBpbml0LCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGluaXQpLAogICAgICAgICAgICAgICAgYXIpOwp9OwoKdmFyIG1hcFJlZHVjZTEgPSBmdW5jdGlvbihmLCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGFyW2FyLmxlbmd0aCAtIDFdKSwKICAgICAgICAgICAgICAgIGFyLnNsaWNlKDAsIC0xKSk7Cn07Cgp2YXIgc3VtID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UocGx1cywgMCwgbCk7Cn07CnZhciBwcm9kdWN0ID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UobXVsdCwgMSwgbCk7Cn07Cgp2YXIgbGlzdE1lYW4gPSBmdW5jdGlvbihsKSB7CiAgcmV0dXJuIHJlZHVjZShwbHVzLCAwLCBsKSAvIGwubGVuZ3RoOwp9Owp2YXIgbGlzdFZhciA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgdmFyIG11ID0gbXUgPT09IHVuZGVmaW5lZCA/IGxpc3RNZWFuKGwpIDogbXU7CiAgcmV0dXJuIG1hcFJlZHVjZTEocGx1cywgZnVuY3Rpb24oYSkgewogICAgcmV0dXJuIChhIC0gbXUpICogKGEgLSBtdSk7CiAgfSwgbCkgLyBsLmxlbmd0aDsKfTsKdmFyIGxpc3RTdGRldiA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgcmV0dXJuIE1hdGguc3FydChsaXN0VmFyKGwsIG11KSk7Cn07Cgp2YXIgYWxsID0gZnVuY3Rpb24ocCwgbCkgewogIHJldHVybiBtYXBSZWR1Y2UxKGFuZCwgcCwgbCk7Cn07CnZhciBhbnkgPSBmdW5jdGlvbihwLCBsKSB7CiAgcmV0dXJuIG1hcFJlZHVjZTEob3IsIHAsIGwpOwp9OwoKdmFyIHppcCA9IGZ1bmN0aW9uKHhzLCB5cykgewogIHJldHVybiB4cy5sZW5ndGggPT09IDAgPwogICAgICBbXSA6CiAgICAgIFtbeHNbMF0sIHlzWzBdXV0uY29uY2F0KHppcCh4cy5zbGljZSgxKSwgeXMuc2xpY2UoMSkpKTsKfTsKCnZhciBmaWx0ZXIgPSBmdW5jdGlvbihmbiwgYXIpIHsKICByZXR1cm4gYXIubGVuZ3RoID09PSAwID8KICAgICAgW10gOgogICAgICBhcHBlbmQoZm4oYXJbMF0pID8gW2FyWzBdXSA6IFtdLCBmaWx0ZXIoZm4sIGFyLnNsaWNlKDEpKSk7Cn07Cgp2YXIgZmluZCA9IGZ1bmN0aW9uKGYsIGFyKSB7CiAgcmV0dXJuIGFyLmxlbmd0aCA9PT0gMCA/IHVuZGVmaW5lZCA6IChmKGFyWzBdKSA/IGFyWzBdIDogZmluZChmLCBhci5zbGljZSgxKSkpOwp9OwoKdmFyIHJlbW92ZSA9IGZ1bmN0aW9uKGEsIGFyKSB7CiAgcmV0dXJuIGZpbHRlcihmdW5jdGlvbihlKSB7CiAgICByZXR1cm4gYSAhPSBlOwogIH0sIGFyKTsKfTsKCnZhciBpbnNlcnRBdCA9IGZ1bmN0aW9uKGFyLCBpLCB4KSB7CiAgcmV0dXJuIGFyLnNsaWNlKDAsIGkpLmNvbmNhdChbeF0pLmNvbmNhdChhci5zbGljZShpKSk7Cn0KCnZhciByZW1vdmVBdCA9IGZ1bmN0aW9uKGFyLCBpKSB7CiAgcmV0dXJuIGFyLnNsaWNlKDAsIGkpLmNvbmNhdChhci5zbGljZShpICsgMSkpOwp9Cgp2YXIgcmVwbGFjZUF0ID0gZnVuY3Rpb24oYXIsIGksIHgpIHsKICByZXR1cm4gYXIuc2xpY2UoMCwgaSkuY29uY2F0KFt4XSkuY29uY2F0KGFyLnNsaWNlKGkgKyAxKSk7Cn0KCnZhciBkcm9wID0gZnVuY3Rpb24obiwgYXIpIHsKICByZXR1cm4gbiA+IGFyLmxlbmd0aCA/IFtdIDogYXIuc2xpY2Uobik7Cn07CnZhciB0YWtlID0gZnVuY3Rpb24obiwgYXIpIHsKICByZXR1cm4gbiA+PSBhci5sZW5ndGggPyBhciA6IGFyLnNsaWNlKDAsIG4pOwp9Owp2YXIgZHJvcFdoaWxlID0gZnVuY3Rpb24ocCwgYXIpIHsKICByZXR1cm4gcChhclswXSkgPyBkcm9wV2hpbGUocCwgYXIuc2xpY2UoMSkpIDogYXI7Cn07CnZhciB0YWtlV2hpbGUgPSBmdW5jdGlvbihwLCBhcikgewogIHJldHVybiBwKGFyWzBdKSA/IGNvbnMoYXJbMF0sIHRha2VXaGlsZShwLCBhci5zbGljZSgxKSkpIDogW107Cn07Cgp2YXIgaW5kZXhPZiA9IGZ1bmN0aW9uKHgsIHhzKSB7CiAgLy8gcHJvdG90eXBlIG1ldGhvZCBkb2Vzbid0IHJldHVybiBmYWxzeSB2YWx1ZSBpZiBub3QgZm91bmQKICB2YXIgaSA9IHhzLmluZGV4T2YoeCk7CiAgcmV0dXJuIGkgPCAwID8gdW5kZWZpbmVkIDogaQp9OwoKdmFyIG1pbldpdGggPSBmdW5jdGlvbihmLCBhcikgewogIHZhciBmbiA9IGZ1bmN0aW9uKF9hciwgX2Jlc3QpIHsKICAgIGlmIChfYXIubGVuZ3RoID09PSAwKSB7CiAgICAgIHJldHVybiBfYmVzdDsKICAgIH0gZWxzZSBpZiAoX2FyWzBdWzFdIDwgX2Jlc3RbMV0pIHsKICAgICAgcmV0dXJuIGZuKF9hci5zbGljZSgxKSwgX2FyWzBdKTsKICAgIH0gZWxzZSB7CiAgICAgIHJldHVybiBmbihfYXIuc2xpY2UoMSksIF9iZXN0KTsKICAgIH0KICB9OwogIHJldHVybiBmbih6aXAoYXIsIG1hcChmLCBhcikpLCBbSW5maW5pdHksIEluZmluaXR5XSk7Cn07Cgp2YXIgbWF4V2l0aCA9IGZ1bmN0aW9uKGYsIGFyKSB7CiAgdmFyIGZuID0gZnVuY3Rpb24oX2FyLCBfYmVzdCkgewogICAgaWYgKF9hci5sZW5ndGggPT09IDApIHsKICAgICAgcmV0dXJuIF9iZXN0OwogICAgfSBlbHNlIGlmIChfYXJbMF1bMV0gPiBfYmVzdFsxXSkgewogICAgICByZXR1cm4gZm4oX2FyLnNsaWNlKDEpLCBfYXJbMF0pOwogICAgfSBlbHNlIHsKICAgICAgcmV0dXJuIGZuKF9hci5zbGljZSgxKSwgX2Jlc3QpOwogICAgfQogIH07CiAgcmV0dXJuIGZuKHppcChhciwgbWFwKGYsIGFyKSksIFstSW5maW5pdHksIC1JbmZpbml0eV0pOwp9OwoKdmFyIHNwYW4gPSBmdW5jdGlvbihwLCBhcikgewogIHZhciBmbiA9IGZ1bmN0aW9uKGFyLCBfdHMsIF9mcykgewogICAgcmV0dXJuIChhci5sZW5ndGggPT09IDAgPwogICAgICAgICAgICBbX3RzLCBfZnNdIDoKICAgICAgICAgICAgKHAoYXJbMF0pID8KICAgICAgICAgICAgIGZuKGFyLnNsaWNlKDEpLCBzbm9jKF90cywgYXJbMF0pLCBfZnMpIDoKICAgICAgICAgICAgIGZuKGFyLnNsaWNlKDEpLCBfdHMsIHNub2MoX2ZzLCBhclswXSkpKSk7CiAgfTsKICByZXR1cm4gZm4oYXIsIFtdLCBbXSk7Cn07Cgp2YXIgZ3JvdXBCeSA9IGZ1bmN0aW9uKGNtcCwgYXIpIHsKICBpZiAoYXIubGVuZ3RoID09PSAwKSB7CiAgICByZXR1cm4gW107CiAgfSBlbHNlIHsKICAgIHZhciB4ID0gYXJbMF07CiAgICB2YXIgc3AgPSBzcGFuKGZ1bmN0aW9uKGIpIHsgcmV0dXJuIGNtcCh4LCBiKTsgfSwgYXIuc2xpY2UoMSkpOwogICAgcmV0dXJuIFtjb25zKHgsIHNwWzBdKV0uY29uY2F0KGdyb3VwQnkoY21wLCBzcFsxXSkpOwogIH0KfTsKCnZhciByZXBlYXQgPSBmdW5jdGlvbihuLCBmbikgewogIHJldHVybiBuID09PSAwID8gW10gOiBhcHBlbmQocmVwZWF0KG4gLSAxLCBmbiksIFtmbihuIC0gMSldKTsKfTsKCnZhciBwdXNoID0gZnVuY3Rpb24oeHMsIHgpIHsKICByZXR1cm4geHMuY29uY2F0KFt4XSk7Cn07Cgp2YXIgY29tcG9zZSA9IGZ1bmN0aW9uKGYsIGcpIHsKICByZXR1cm4gZnVuY3Rpb24oeCkgewogICAgcmV0dXJuIGYoZyh4KSk7CiAgfTsKfTsKCnZhciBldmVyeU90aGVyID0gZnVuY3Rpb24obCkgewogIHJldHVybiBsLmxlbmd0aCA8PSAxID8gbCA6IFtsWzBdXS5jb25jYXQoZXZlcnlPdGhlcihsLnNsaWNlKDIpKSk7Cn07Cgp2YXIgX21lcmdlID0gZnVuY3Rpb24obDEsIGwyLCBwcmVkLCBrZXkpIHsKICByZXR1cm4gKGwxLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgICBsMiA6CiAgICAgICAgICAobDIubGVuZ3RoID09PSAwID8KICAgICAgICAgICBsMSA6CiAgICAgICAgICAgKHByZWQoa2V5KGwxWzBdKSwga2V5KGwyWzBdKSkgPwogICAgICAgICAgICBbbDFbMF1dLmNvbmNhdChfbWVyZ2UobDEuc2xpY2UoMSksIGwyLCBwcmVkLCBrZXkpKSA6CiAgICAgICAgICAgIFtsMlswXV0uY29uY2F0KF9tZXJnZShsMSwgbDIuc2xpY2UoMSksIHByZWQsIGtleSkpKSkpOwp9OwoKdmFyIF9zb3J0ID0gZnVuY3Rpb24obCwgcHJlZCwga2V5KSB7CiAgcmV0dXJuICgobC5sZW5ndGggPD0gMSkgPwogICAgICAgICAgbCA6CiAgICAgICAgICBfbWVyZ2UoX3NvcnQoZXZlcnlPdGhlcihsKSwgcHJlZCwga2V5KSwKICAgICAgICAgICAgICAgICBfc29ydChldmVyeU90aGVyKGwuc2xpY2UoMSkpLCBwcmVkLCBrZXkpLAogICAgICAgICAgICAgICAgIHByZWQsCiAgICAgICAgICAgICAgICAga2V5KSk7Cn07Cgp2YXIgc29ydCA9IGZ1bmN0aW9uKGwsIHByZWQsIGtleSkgewogIHJldHVybiBfc29ydChsLCAocHJlZCB8fCBsdCksIChrZXkgfHwgaWRGKSk7Cn07Cgp2YXIgc29ydE9uID0gZnVuY3Rpb24obCwga2V5LCBwcmVkKSB7CiAgcmV0dXJuIF9zb3J0KGwsIChwcmVkIHx8IGx0KSwga2V5KTsKfTsKCnZhciBjb25kaXRpb24gPSBmdW5jdGlvbihib29sKSB7CiAgZmFjdG9yKGJvb2wgPyAwIDogLUluZmluaXR5KTsKfTsK","base64"));
   var programAST = esprima.parse(programCode);
+  // if (doCaching)
+  //   programAST = caching(programAST);
+
   var out = _prepare(concatPrograms(headerAST, programAST));
 
   if (verbose && console.timeEnd) {
@@ -39008,6 +42494,8 @@ function compile(programCode, verbose) {
   }
 
   var _compile = function(ast) {
+    if (doCaching)
+      ast = freevars(ast);
     ast = thunkify(ast);
     ast = naming(ast);
     ast = cps(ast);
@@ -39019,8 +42507,16 @@ function compile(programCode, verbose) {
   };
 
   // Parse header and program, combine, compile, and generate program
-  var headerAST = esprima.parse(Buffer("Ly8gRVJQcwoKdmFyIGZsaXAgPSBmdW5jdGlvbih0aGV0YSkgewogIHJldHVybiBzYW1wbGUoYmVybm91bGxpRVJQLCBbdGhldGFdKTsKfTsKCnZhciByYW5kb21JbnRlZ2VyID0gZnVuY3Rpb24obikgewogIHJldHVybiBzYW1wbGUocmFuZG9tSW50ZWdlckVSUCwgW25dKTsKfTsKCnZhciBkaXNjcmV0ZSA9IGZ1bmN0aW9uKG4pIHsKICByZXR1cm4gc2FtcGxlKGRpc2NyZXRlRVJQLCBbbl0pOwp9OwoKdmFyIGNhdGVnb3JpY2FsID0gZnVuY3Rpb24ocHMsIHZzKSB7CiAgcmV0dXJuIHZzW2Rpc2NyZXRlKHBzKV07Cn0KCnZhciBnYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBzaWdtYSkgewogIHJldHVybiBzYW1wbGUoZ2F1c3NpYW5FUlAsIFttdSwgc2lnbWFdKTsKfTsKCnZhciBtdWx0aXZhcmlhdGVHYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBjb3YpIHsKICByZXR1cm4gc2FtcGxlKG11bHRpdmFyaWF0ZUdhdXNzaWFuRVJQLCBbbXUsIGNvdl0pOwp9OwoKdmFyIHVuaWZvcm0gPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIHNhbXBsZSh1bmlmb3JtRVJQLCBbYSwgYl0pOwp9OwoKdmFyIHVuaWZvcm1EcmF3ID0gZnVuY3Rpb24obCkgewogIHJldHVybiBsW3NhbXBsZShyYW5kb21JbnRlZ2VyRVJQLCBbbC5sZW5ndGhdKV07Cn07Cgp2YXIgZGlyaWNobGV0ID0gZnVuY3Rpb24oYWxwaGEpIHsKICByZXR1cm4gc2FtcGxlKGRpcmljaGxldEVSUCwgYWxwaGEpOwp9OwoKdmFyIHBvaXNzb24gPSBmdW5jdGlvbihtdSwgaykgewogIHJldHVybiBzYW1wbGUocG9pc3NvbkVSUCwgW211LCBrXSk7Cn07Cgp2YXIgYmlub21pYWwgPSBmdW5jdGlvbihwLCBuKSB7CiAgcmV0dXJuIHNhbXBsZShiaW5vbWlhbEVSUCwgW3AsIG5dKTsKfTsKCnZhciBiZXRhID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBzYW1wbGUoYmV0YUVSUCwgW2EsIGJdKTsKfTsKCnZhciBleHBvbmVudGlhbCA9IGZ1bmN0aW9uKGEpIHsKICByZXR1cm4gc2FtcGxlKGV4cG9uZW50aWFsRVJQLCBbYV0pOwp9OwoKdmFyIGdhbW1hID0gZnVuY3Rpb24oc2hhcGUsIHNjYWxlKSB7CiAgcmV0dXJuIHNhbXBsZShnYW1tYUVSUCwgW3NoYXBlLCBzY2FsZV0pOwp9OwoKdmFyIGRlbHRhRVJQID0gZnVuY3Rpb24odikgewogIHJldHVybiBnbG9iYWwubWFrZURlbHRhRVJQKHYpOwp9CgovLyBYUlBzCgp2YXIgbWFrZUJldGFCZXJub3VsbGkgPSBmdW5jdGlvbihwc2V1ZG9jb3VudHMpIHsKICBnbG9iYWxTdG9yZS5CQmluZGV4ID0gMSArIChnbG9iYWxTdG9yZS5CQmluZGV4IHx8IDApOwogIHZhciBiYm5hbWUgPSAnQkInICsgZ2xvYmFsU3RvcmUuQkJpbmRleDsKICBnbG9iYWxTdG9yZVtiYm5hbWVdID0gcHNldWRvY291bnRzOwogIHJldHVybiBmdW5jdGlvbigpIHsKICAgIHZhciBwYyA9IGdsb2JhbFN0b3JlW2JibmFtZV07ICAvLyBnZXQgY3VycmVudCBzdWZmaWNpZW50IHN0YXRzCiAgICB2YXIgdmFsID0gc2FtcGxlKGJlcm5vdWxsaUVSUCwgW3BjWzBdIC8gKHBjWzBdICsgcGNbMV0pXSk7ICAvLyBzYW1wbGUgZnJvbSBwcmVkaWN0aXZlLgogICAgZ2xvYmFsU3RvcmVbYmJuYW1lXSA9IFtwY1swXSArIHZhbCwgcGNbMV0gKyAhdmFsXTsgIC8vIHVwZGF0ZSBzdWZmaWNpZW50IHN0YXRzCiAgICByZXR1cm4gdmFsOwogIH07Cn07Cgp2YXIgbWFrZURpcmljaGxldERpc2NyZXRlID0gZnVuY3Rpb24ocHNldWRvY291bnRzKSB7CiAgdmFyIGFkZENvdW50ID0gZnVuY3Rpb24oYSwgaSwgaikgewogICAgdmFyIGogPSBqIHx8IDA7CiAgICBpZiAoYS5sZW5ndGggPT09IDApIHsKICAgICAgcmV0dXJuIFtdOwogICAgfSBlbHNlIHsKICAgICAgcmV0dXJuIFthWzBdICsgKGkgPT09IGopXS5jb25jYXQoYWRkQ291bnQoYS5zbGljZSgxKSwgaSwgaiArIDEpKTsKICAgIH0KICB9OwogIGdsb2JhbFN0b3JlLkREaW5kZXggPSAxICsgKGdsb2JhbFN0b3JlLkREaW5kZXggfHwgMCk7CiAgdmFyIGRkbmFtZSA9ICdERCcgKyBnbG9iYWxTdG9yZS5ERGluZGV4OwogIGdsb2JhbFN0b3JlW2RkbmFtZV0gPSBwc2V1ZG9jb3VudHM7CiAgcmV0dXJuIGZ1bmN0aW9uKCkgewogICAgdmFyIHBjID0gZ2xvYmFsU3RvcmVbZGRuYW1lXTsgIC8vIGdldCBjdXJyZW50IHN1ZmZpY2llbnQgc3RhdHMKICAgIHZhciB2YWwgPSBzYW1wbGUoZGlzY3JldGVFUlAsIFtwY10pOyAgLy8gc2FtcGxlIGZyb20gcHJlZGljdGl2ZS4gKGRvZXNuJ3QgbmVlZCB0byBiZSBub3JtYWxpemVkLikKICAgIGdsb2JhbFN0b3JlW2RkbmFtZV0gPSBhZGRDb3VudChwYywgdmFsKTsgLy8gdXBkYXRlIHN1ZmZpY2llbnQgc3RhdHMKICAgIHJldHVybiB2YWw7CiAgfTsKfTsKCi8vIEFyaXRobWV0aWMgYW5kIG90aGVyIGZ1bmN0aW9uYWxzCgp2YXIgcGx1cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSArIGI7Cn07CnZhciBtaW51cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAtIGI7Cn07CnZhciBtdWx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhICogYjsKfTsKdmFyIGRpdiA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAvIGI7Cn07Cgp2YXIgZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgPT09IGI7Cn07CnZhciBuZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgIT0gYjsKfTsKdmFyIGx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhIDwgYjsKfTsKdmFyIGd0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID4gYjsKfTsKdmFyIGxlcSA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSA8PSBiOwp9Owp2YXIgZ2VxID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID49IGI7Cn07Cgp2YXIgaXNFdmVuID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiA9PT0gMDsKfTsKdmFyIGlzT2RkID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiAhPSAwOwp9OwoKdmFyIGlkRiA9IGZ1bmN0aW9uKHgpIHsKICByZXR1cm4geDsKfTsKdmFyIGNvbnN0RiA9IGZ1bmN0aW9uKGYpIHsKICByZXR1cm4gZnVuY3Rpb24oKSB7CiAgICByZXR1cm4gZjsKICB9Owp9Owp2YXIgZmFsc2VGID0gZnVuY3Rpb24oKSB7CiAgcmV0dXJuIGZhbHNlOwp9Owp2YXIgdHJ1ZUYgPSBmdW5jdGlvbigpIHsKICByZXR1cm4gdHJ1ZTsKfTsKCgovLyBQcm9iYWJpbGl0eSBjb21wdXRhdGlvbnMgJiBjYWxjdWxhdGlvbnMKCnZhciBleHBlY3RhdGlvbiA9IGZ1bmN0aW9uKGVycCwgZnVuYykgewogIHZhciBmID0gZnVuYyB8fCBpZEY7CiAgdmFyIHN1cHAgPSBlcnAuc3VwcG9ydChbXSk7CiAgcmV0dXJuIG1hcFJlZHVjZTEocGx1cywKICAgICAgICAgICAgICAgICAgICBmdW5jdGlvbihzKSB7CiAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gTWF0aC5leHAoZXJwLnNjb3JlKFtdLCBzKSkgKiBmKHMpOwogICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgc3VwcCk7Cn07Cgp2YXIgZW50cm9weSA9IGZ1bmN0aW9uKGVycCkgewogIHZhciBzdXBwID0gZXJwLnN1cHBvcnQoW10pOwogIHJldHVybiAtbWFwUmVkdWNlMShwbHVzLAogICAgICAgICAgICAgICAgICAgICBmdW5jdGlvbihzKSB7CiAgICAgICAgICAgICAgICAgICAgICAgdmFyIGxwID0gZXJwLnNjb3JlKFtdLCBzKTsKICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gTWF0aC5leHAobHApICogbHA7CiAgICAgICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICAgICAgIHN1cHApOwp9OwoKCi8vIERhdGEgc3RydWN0dXJlcyAmIGhpZ2hlci1vcmRlciBmdW5jdGlvbnMKCnZhciBhcHBlbmQgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEuY29uY2F0KGIpOwp9Owp2YXIgY29ucyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gW2FdLmNvbmNhdChiKTsKfTsKdmFyIHNub2MgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEuY29uY2F0KFtiXSk7Cn07Cgp2YXIgZmlyc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1swXTsKfTsKdmFyIHNlY29uZCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzWzFdOwp9Owp2YXIgdGhpcmQgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1syXTsKfTsKdmFyIGZvdXJ0aCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzWzNdOwp9Owp2YXIgc2Vjb25kTGFzdCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzW3hzLmxlbmd0aCAtIDJdOwp9Owp2YXIgbGFzdCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzW3hzLmxlbmd0aCAtIDFdOwp9Owp2YXIgcmVzdCA9IGZ1bmN0aW9uKHhzKSB7CiAgcmV0dXJuIHhzLnNsaWNlKDEpOwp9OwoKdmFyIG1hcCA9IGZ1bmN0aW9uKGZuLCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyBbXSA6IFtmbihhclswXSldLmNvbmNhdChtYXAoZm4sIGFyLnNsaWNlKDEpKSk7Cn07Cgp2YXIgbWFwMiA9IGZ1bmN0aW9uKGYsIGwxLCBsMikgewogIHJldHVybiAobDEubGVuZ3RoID09PSAwIHx8IGwyLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgICBbXSA6CiAgICAgICAgICBbZihsMVswXSwgbDJbMF0pXS5jb25jYXQobWFwMihmLCBsMS5zbGljZSgxKSwgbDIuc2xpY2UoMSkpKSk7Cn07Cgp2YXIgbWFwTiA9IGZ1bmN0aW9uKGYsIG4pIHsKICB2YXIgZm4gPSBmdW5jdGlvbihpLCBfYWNjKSB7cmV0dXJuIGkgPT09IG4gPyBfYWNjIDogZm4oaSArIDEsIHNub2MoX2FjYywgZihpKSkpfTsKICByZXR1cm4gZm4oMCwgW10pOwp9Cgp2YXIgbWFwSW5kZXhlZCA9IGZ1bmN0aW9uKGYsIGwpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihscywgaSwgX2FjYykgewogICAgcmV0dXJuIGxzLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgX2FjYyA6CiAgICAgICAgZm4ocmVzdChscyksIGkgKyAxLCBzbm9jKF9hY2MsIGYoaSwgZmlyc3QobHMpKSkpCiAgfTsKICByZXR1cm4gZm4obCwgMCwgW10pOwp9Cgp2YXIgX3JpbmdBcm91bmQgPSBmdW5jdGlvbihsLCBuKSB7CiAgcmV0dXJuIGwuc2xpY2UobikuY29uY2F0KGwuc2xpY2UoMCwgbikpOwp9OwoKdmFyIHJpbmdGb3J3YXJkID0gZnVuY3Rpb24obCwgbikgewogIHJldHVybiBfcmluZ0Fyb3VuZChsLCBuID09PSB1bmRlZmluZWQgPyAtMSA6IC1uKTsKfTsKCnZhciByaW5nQmFja3dhcmQgPSBmdW5jdGlvbihsLCBuKSB7CiAgcmV0dXJuIF9yaW5nQXJvdW5kKGwsIG4gfHwgMSk7Cn07Cgp2YXIgbWFwUGFpcnMyID0gZnVuY3Rpb24oZiwgbDEsIGwyKSB7CiAgdmFyIHJlcyA9IG1hcChmdW5jdGlvbihhKSB7CiAgICByZXR1cm4gbWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgcmV0dXJuIGYoYSwgYik7CiAgICB9LCBsMikKICB9LCBsMSk7CiAgcmV0dXJuIFtdLmNvbmNhdC5hcHBseShbXSwgcmVzKTsgLy8gZmxhdHRlbgp9OwoKdmFyIG1hcFBhaXJzQyA9IGZ1bmN0aW9uKGYsIGwpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihsMSwgbDIsIGFjYykgewogICAgcmV0dXJuIChsMi5sZW5ndGggPT09IDAgPyBhY2MgOgogICAgICAgICAgICBmbihsMS5zbGljZSgxKSwKICAgICAgICAgICAgICAgbDIuc2xpY2UoMSksCiAgICAgICAgICAgICAgIGFjYy5jb25jYXQobWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgICAgICAgICAgICByZXR1cm4gZihsMVswXSwgYik7CiAgICAgICAgICAgICAgIH0sIGwyKSkpCiAgICApOwogIH07CiAgcmV0dXJuIGZuKGwsIGwuc2xpY2UoMSksIFtdKTsKfTsKCnZhciBtYXBQYWlyc05DID0gZnVuY3Rpb24oZiwgbCkgewogIHZhciByZXMgPSBtYXBQYWlyczIoZnVuY3Rpb24oYSwgYikgewogICAgcmV0dXJuIGEgPT09IGIgPyB1bmRlZmluZWQgOiBmKGEsIGIpOwogIH0sIGwsIGwpOwogIHJldHVybiByZW1vdmUodW5kZWZpbmVkLCByZXMpOwp9OwoKdmFyIHJlZHVjZSA9IGZ1bmN0aW9uKGZuLCBpbml0LCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyBpbml0IDogZm4oYXJbMF0sIHJlZHVjZShmbiwgaW5pdCwgYXIuc2xpY2UoMSkpKTsKfTsKCnZhciBtYXBSZWR1Y2UgPSBmdW5jdGlvbihmLCBpbml0LCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGluaXQpLAogICAgICAgICAgICAgICAgYXIpOwp9OwoKdmFyIG1hcFJlZHVjZTEgPSBmdW5jdGlvbihmLCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGFyW2FyLmxlbmd0aCAtIDFdKSwKICAgICAgICAgICAgICAgIGFyLnNsaWNlKDAsIC0xKSk7Cn07Cgp2YXIgc3VtID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UocGx1cywgMCwgbCk7Cn07CnZhciBwcm9kdWN0ID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UobXVsdCwgMSwgbCk7Cn07Cgp2YXIgbGlzdE1lYW4gPSBmdW5jdGlvbihsKSB7CiAgcmV0dXJuIHJlZHVjZShwbHVzLCAwLCBsKSAvIGwubGVuZ3RoOwp9Owp2YXIgbGlzdFZhciA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgdmFyIG11ID0gbXUgfHwgbGlzdE1lYW4obCk7CiAgcmV0dXJuIG1hcFJlZHVjZTEocGx1cywgZnVuY3Rpb24oYSkgewogICAgcmV0dXJuIChhIC0gbXUpICogKGEgLSBtdSk7CiAgfSwgbCkgLyBsLmxlbmd0aDsKfTsKdmFyIGxpc3RTdGRldiA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgcmV0dXJuIE1hdGguc3FydChsaXN0VmFyKGwsIG11KSk7Cn07Cgp2YXIgYWxsID0gZnVuY3Rpb24ocCwgbCkgewogIHJldHVybiBtYXBSZWR1Y2UxKGZ1bmN0aW9uKGEsIGIpIHsKICAgIHJldHVybiBhICYmIGI7CiAgfSwgcCwgbCk7Cn07CnZhciBhbnkgPSBmdW5jdGlvbihwLCBsKSB7CiAgcmV0dXJuIG1hcFJlZHVjZTEoZnVuY3Rpb24oYSwgYikgewogICAgcmV0dXJuIGEgfHwgYjsKICB9LCBwLCBsKTsKfTsKCnZhciB6aXAgPSBmdW5jdGlvbih4cywgeXMpIHsKICByZXR1cm4geHMubGVuZ3RoID09PSAwID8KICAgICAgW10gOgogICAgICBbW3hzWzBdLCB5c1swXV1dLmNvbmNhdCh6aXAoeHMuc2xpY2UoMSksIHlzLnNsaWNlKDEpKSk7Cn07Cgp2YXIgZmlsdGVyID0gZnVuY3Rpb24oZm4sIGFyKSB7CiAgcmV0dXJuIGFyLmxlbmd0aCA9PT0gMCA/CiAgICAgIFtdIDoKICAgICAgYXBwZW5kKGZuKGFyWzBdKSA/IFthclswXV0gOiBbXSwgZmlsdGVyKGZuLCBhci5zbGljZSgxKSkpOwp9OwoKdmFyIGZpbmQgPSBmdW5jdGlvbihmLCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyB1bmRlZmluZWQgOiAoZihhclswXSkgPyBhclswXSA6IGZpbmQoZiwgYXIuc2xpY2UoMSkpKTsKfTsKCnZhciByZW1vdmUgPSBmdW5jdGlvbihhLCBhcikgewogIHJldHVybiBmaWx0ZXIoZnVuY3Rpb24oZSkgewogICAgcmV0dXJuIGEgIT0gZTsKICB9LCBhcik7Cn07Cgp2YXIgaW5zZXJ0QXQgPSBmdW5jdGlvbihhciwgaSwgeCkgewogIHJldHVybiBhci5zbGljZSgwLCBpKS5jb25jYXQoW3hdKS5jb25jYXQoYXIuc2xpY2UoaSkpOwp9Cgp2YXIgcmVtb3ZlQXQgPSBmdW5jdGlvbihhciwgaSkgewogIHJldHVybiBhci5zbGljZSgwLCBpKS5jb25jYXQoYXIuc2xpY2UoaSArIDEpKTsKfQoKdmFyIHJlcGxhY2VBdCA9IGZ1bmN0aW9uKGFyLCBpLCB4KSB7CiAgcmV0dXJuIGFyLnNsaWNlKDAsIGkpLmNvbmNhdChbeF0pLmNvbmNhdChhci5zbGljZShpICsgMSkpOwp9Cgp2YXIgZHJvcCA9IGZ1bmN0aW9uKG4sIGFyKSB7CiAgcmV0dXJuIG4gPiBhci5sZW5ndGggPyBbXSA6IGFyLnNsaWNlKG4pOwp9Owp2YXIgdGFrZSA9IGZ1bmN0aW9uKG4sIGFyKSB7CiAgcmV0dXJuIG4gPj0gYXIubGVuZ3RoID8gYXIgOiBhci5zbGljZSgwLCBuKTsKfTsKdmFyIGRyb3BXaGlsZSA9IGZ1bmN0aW9uKHAsIGFyKSB7CiAgcmV0dXJuIHAoYXJbMF0pID8gZHJvcFdoaWxlKHAsIGFyLnNsaWNlKDEpKSA6IGFyOwp9Owp2YXIgdGFrZVdoaWxlID0gZnVuY3Rpb24ocCwgYXIpIHsKICByZXR1cm4gcChhclswXSkgPyBjb25zKGFyWzBdLCB0YWtlV2hpbGUocCwgYXIuc2xpY2UoMSkpKSA6IFtdOwp9OwoKdmFyIGluZGV4T2YgPSBmdW5jdGlvbih4LCB4cykgewogIC8vIHByb3RvdHlwZSBtZXRob2QgZG9lc24ndCByZXR1cm4gZmFsc3kgdmFsdWUgaWYgbm90IGZvdW5kCiAgdmFyIGkgPSB4cy5pbmRleE9mKHgpOwogIHJldHVybiBpIDwgMCA/IHVuZGVmaW5lZCA6IGkKfTsKCnZhciBtaW5XaXRoID0gZnVuY3Rpb24oZiwgYXIpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihfYXIsIF9iZXN0KSB7CiAgICBpZiAoX2FyLmxlbmd0aCA9PT0gMCkgewogICAgICByZXR1cm4gX2Jlc3Q7CiAgICB9IGVsc2UgaWYgKF9hclswXVsxXSA8IF9iZXN0WzFdKSB7CiAgICAgIHJldHVybiBmbihfYXIuc2xpY2UoMSksIF9hclswXSk7CiAgICB9IGVsc2UgewogICAgICByZXR1cm4gZm4oX2FyLnNsaWNlKDEpLCBfYmVzdCk7CiAgICB9CiAgfTsKICByZXR1cm4gZm4oemlwKGFyLCBtYXAoZiwgYXIpKSwgW0luZmluaXR5LCBJbmZpbml0eV0pOwp9OwoKdmFyIG1heFdpdGggPSBmdW5jdGlvbihmLCBhcikgewogIHZhciBmbiA9IGZ1bmN0aW9uKF9hciwgX2Jlc3QpIHsKICAgIGlmIChfYXIubGVuZ3RoID09PSAwKSB7CiAgICAgIHJldHVybiBfYmVzdDsKICAgIH0gZWxzZSBpZiAoX2FyWzBdWzFdID4gX2Jlc3RbMV0pIHsKICAgICAgcmV0dXJuIGZuKF9hci5zbGljZSgxKSwgX2FyWzBdKTsKICAgIH0gZWxzZSB7CiAgICAgIHJldHVybiBmbihfYXIuc2xpY2UoMSksIF9iZXN0KTsKICAgIH0KICB9OwogIHJldHVybiBmbih6aXAoYXIsIG1hcChmLCBhcikpLCBbLUluZmluaXR5LCAtSW5maW5pdHldKTsKfTsKCnZhciBzcGFuID0gZnVuY3Rpb24ocCwgYXIpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihhciwgX3RzLCBfZnMpIHsKICAgIHJldHVybiAoYXIubGVuZ3RoID09PSAwID8KICAgICAgICAgICAgW190cywgX2ZzXSA6CiAgICAgICAgICAgIChwKGFyWzBdKSA/CiAgICAgICAgICAgICBmbihhci5zbGljZSgxKSwgc25vYyhfdHMsIGFyWzBdKSwgX2ZzKSA6CiAgICAgICAgICAgICBmbihhci5zbGljZSgxKSwgX3RzLCBzbm9jKF9mcywgYXJbMF0pKSkpOwogIH07CiAgcmV0dXJuIGZuKGFyLCBbXSwgW10pOwp9OwoKdmFyIGdyb3VwQnkgPSBmdW5jdGlvbihjbXAsIGFyKSB7CiAgaWYgKGFyLmxlbmd0aCA9PT0gMCkgewogICAgcmV0dXJuIFtdOwogIH0gZWxzZSB7CiAgICB2YXIgeCA9IGFyWzBdOwogICAgdmFyIHNwID0gc3BhbihmdW5jdGlvbihiKSB7IHJldHVybiBjbXAoeCwgYik7IH0sIGFyLnNsaWNlKDEpKTsKICAgIHJldHVybiBbY29ucyh4LCBzcFswXSldLmNvbmNhdChncm91cEJ5KGNtcCwgc3BbMV0pKTsKICB9Cn07Cgp2YXIgcmVwZWF0ID0gZnVuY3Rpb24obiwgZm4pIHsKICByZXR1cm4gbiA9PT0gMCA/IFtdIDogYXBwZW5kKHJlcGVhdChuIC0gMSwgZm4pLCBbZm4obiAtIDEpXSk7Cn07Cgp2YXIgcHVzaCA9IGZ1bmN0aW9uKHhzLCB4KSB7CiAgcmV0dXJuIHhzLmNvbmNhdChbeF0pOwp9OwoKdmFyIGNvbXBvc2UgPSBmdW5jdGlvbihmLCBnKSB7CiAgcmV0dXJuIGZ1bmN0aW9uKHgpIHsKICAgIHJldHVybiBmKGcoeCkpOwogIH07Cn07Cgp2YXIgZXZlcnlPdGhlciA9IGZ1bmN0aW9uKGwpIHsKICByZXR1cm4gbC5sZW5ndGggPD0gMSA/IGwgOiBbbFswXV0uY29uY2F0KGV2ZXJ5T3RoZXIobC5zbGljZSgyKSkpOwp9OwoKdmFyIF9tZXJnZSA9IGZ1bmN0aW9uKGwxLCBsMiwgcHJlZCwga2V5KSB7CiAgcmV0dXJuIChsMS5sZW5ndGggPT09IDAgPwogICAgICAgICAgbDIgOgogICAgICAgICAgKGwyLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgICAgbDEgOgogICAgICAgICAgIChwcmVkKGtleShsMVswXSksIGtleShsMlswXSkpID8KICAgICAgICAgICAgW2wxWzBdXS5jb25jYXQoX21lcmdlKGwxLnNsaWNlKDEpLCBsMiwgcHJlZCwga2V5KSkgOgogICAgICAgICAgICBbbDJbMF1dLmNvbmNhdChfbWVyZ2UobDEsIGwyLnNsaWNlKDEpLCBwcmVkLCBrZXkpKSkpKTsKfTsKCnZhciBfc29ydCA9IGZ1bmN0aW9uKGwsIHByZWQsIGtleSkgewogIHJldHVybiAoKGwubGVuZ3RoIDw9IDEpID8KICAgICAgICAgIGwgOgogICAgICAgICAgX21lcmdlKF9zb3J0KGV2ZXJ5T3RoZXIobCksIHByZWQsIGtleSksCiAgICAgICAgICAgICAgICAgX3NvcnQoZXZlcnlPdGhlcihsLnNsaWNlKDEpKSwgcHJlZCwga2V5KSwKICAgICAgICAgICAgICAgICBwcmVkLAogICAgICAgICAgICAgICAgIGtleSkpOwp9OwoKdmFyIHNvcnQgPSBmdW5jdGlvbihsLCBwcmVkLCBrZXkpIHsKICByZXR1cm4gX3NvcnQobCwgKHByZWQgfHwgbHQpLCAoa2V5IHx8IGlkRikpOwp9OwoKdmFyIHNvcnRPbiA9IGZ1bmN0aW9uKGwsIGtleSwgcHJlZCkgewogIHJldHVybiBfc29ydChsLCAocHJlZCB8fCBsdCksIGtleSk7Cn07Cg==","base64"));
+  var headerAST = esprima.parse(Buffer("Ly8gRVJQcwoKdmFyIGZsaXAgPSBmdW5jdGlvbih0aGV0YSkgewogIHJldHVybiBzYW1wbGUoYmVybm91bGxpRVJQLCBbdGhldGFdKTsKfTsKCnZhciByYW5kb21JbnRlZ2VyID0gZnVuY3Rpb24obikgewogIHJldHVybiBzYW1wbGUocmFuZG9tSW50ZWdlckVSUCwgW25dKTsKfTsKCnZhciBkaXNjcmV0ZSA9IGZ1bmN0aW9uKG4pIHsKICByZXR1cm4gc2FtcGxlKGRpc2NyZXRlRVJQLCBbbl0pOwp9OwoKdmFyIGNhdGVnb3JpY2FsID0gZnVuY3Rpb24ocHMsIHZzKSB7CiAgcmV0dXJuIHZzW2Rpc2NyZXRlKHBzKV07Cn0KCnZhciBnYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBzaWdtYSkgewogIHJldHVybiBzYW1wbGUoZ2F1c3NpYW5FUlAsIFttdSwgc2lnbWFdKTsKfTsKCnZhciBtdWx0aXZhcmlhdGVHYXVzc2lhbiA9IGZ1bmN0aW9uKG11LCBjb3YpIHsKICByZXR1cm4gc2FtcGxlKG11bHRpdmFyaWF0ZUdhdXNzaWFuRVJQLCBbbXUsIGNvdl0pOwp9OwoKdmFyIHVuaWZvcm0gPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIHNhbXBsZSh1bmlmb3JtRVJQLCBbYSwgYl0pOwp9OwoKdmFyIHVuaWZvcm1EcmF3ID0gZnVuY3Rpb24obCkgewogIHJldHVybiBsW3NhbXBsZShyYW5kb21JbnRlZ2VyRVJQLCBbbC5sZW5ndGhdKV07Cn07Cgp2YXIgZGlyaWNobGV0ID0gZnVuY3Rpb24oYWxwaGEpIHsKICByZXR1cm4gc2FtcGxlKGRpcmljaGxldEVSUCwgYWxwaGEpOwp9OwoKdmFyIHBvaXNzb24gPSBmdW5jdGlvbihtdSwgaykgewogIHJldHVybiBzYW1wbGUocG9pc3NvbkVSUCwgW211LCBrXSk7Cn07Cgp2YXIgYmlub21pYWwgPSBmdW5jdGlvbihwLCBuKSB7CiAgcmV0dXJuIHNhbXBsZShiaW5vbWlhbEVSUCwgW3AsIG5dKTsKfTsKCnZhciBiZXRhID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBzYW1wbGUoYmV0YUVSUCwgW2EsIGJdKTsKfTsKCnZhciBleHBvbmVudGlhbCA9IGZ1bmN0aW9uKGEpIHsKICByZXR1cm4gc2FtcGxlKGV4cG9uZW50aWFsRVJQLCBbYV0pOwp9OwoKdmFyIGdhbW1hID0gZnVuY3Rpb24oc2hhcGUsIHNjYWxlKSB7CiAgcmV0dXJuIHNhbXBsZShnYW1tYUVSUCwgW3NoYXBlLCBzY2FsZV0pOwp9OwoKdmFyIGRlbHRhRVJQID0gZnVuY3Rpb24odikgewogIHJldHVybiBfdG9wLm1ha2VDYXRlZ29yaWNhbEVSUChbMS4wXSwgW3ZdKTsKfTsKCnZhciBjYXRlZ29yaWNhbEVSUCA9IGZ1bmN0aW9uKHBzLCB2cywgZXh0cmFQYXJhbXMpIHsKICByZXR1cm4gX3RvcC5tYWtlQ2F0ZWdvcmljYWxFUlAocHMsIHZzLCBleHRyYVBhcmFtcyk7Cn07Cgp2YXIgbXVsdGlwbGV4RVJQID0gZnVuY3Rpb24odnMsIGVycHMpIHsKICByZXR1cm4gX3RvcC5tYWtlTXVsdGlwbGV4RVJQKHZzLCBlcnBzKTsKfTsKCi8vIFhSUHMKCnZhciBtYWtlQmV0YUJlcm5vdWxsaSA9IGZ1bmN0aW9uKHBzZXVkb2NvdW50cykgewogIGdsb2JhbFN0b3JlLkJCaW5kZXggPSAxICsgKGdsb2JhbFN0b3JlLkJCaW5kZXggfHwgMCk7CiAgdmFyIGJibmFtZSA9ICdCQicgKyBnbG9iYWxTdG9yZS5CQmluZGV4OwogIGdsb2JhbFN0b3JlW2JibmFtZV0gPSBwc2V1ZG9jb3VudHM7CiAgcmV0dXJuIGZ1bmN0aW9uKCkgewogICAgdmFyIHBjID0gZ2xvYmFsU3RvcmVbYmJuYW1lXTsgIC8vIGdldCBjdXJyZW50IHN1ZmZpY2llbnQgc3RhdHMKICAgIHZhciB2YWwgPSBzYW1wbGUoYmVybm91bGxpRVJQLCBbcGNbMF0gLyAocGNbMF0gKyBwY1sxXSldKTsgIC8vIHNhbXBsZSBmcm9tIHByZWRpY3RpdmUuCiAgICBnbG9iYWxTdG9yZVtiYm5hbWVdID0gW3BjWzBdICsgdmFsLCBwY1sxXSArICF2YWxdOyAgLy8gdXBkYXRlIHN1ZmZpY2llbnQgc3RhdHMKICAgIHJldHVybiB2YWw7CiAgfTsKfTsKCnZhciBtYWtlRGlyaWNobGV0RGlzY3JldGUgPSBmdW5jdGlvbihwc2V1ZG9jb3VudHMpIHsKICB2YXIgYWRkQ291bnQgPSBmdW5jdGlvbihhLCBpLCBqKSB7CiAgICB2YXIgaiA9IGogfHwgMDsKICAgIGlmIChhLmxlbmd0aCA9PT0gMCkgewogICAgICByZXR1cm4gW107CiAgICB9IGVsc2UgewogICAgICByZXR1cm4gW2FbMF0gKyAoaSA9PT0gaildLmNvbmNhdChhZGRDb3VudChhLnNsaWNlKDEpLCBpLCBqICsgMSkpOwogICAgfQogIH07CiAgZ2xvYmFsU3RvcmUuRERpbmRleCA9IDEgKyAoZ2xvYmFsU3RvcmUuRERpbmRleCB8fCAwKTsKICB2YXIgZGRuYW1lID0gJ0REJyArIGdsb2JhbFN0b3JlLkREaW5kZXg7CiAgZ2xvYmFsU3RvcmVbZGRuYW1lXSA9IHBzZXVkb2NvdW50czsKICByZXR1cm4gZnVuY3Rpb24oKSB7CiAgICB2YXIgcGMgPSBnbG9iYWxTdG9yZVtkZG5hbWVdOyAgLy8gZ2V0IGN1cnJlbnQgc3VmZmljaWVudCBzdGF0cwogICAgdmFyIHZhbCA9IHNhbXBsZShkaXNjcmV0ZUVSUCwgW3BjXSk7ICAvLyBzYW1wbGUgZnJvbSBwcmVkaWN0aXZlLiAoZG9lc24ndCBuZWVkIHRvIGJlIG5vcm1hbGl6ZWQuKQogICAgZ2xvYmFsU3RvcmVbZGRuYW1lXSA9IGFkZENvdW50KHBjLCB2YWwpOyAvLyB1cGRhdGUgc3VmZmljaWVudCBzdGF0cwogICAgcmV0dXJuIHZhbDsKICB9Owp9OwoKLy8gcHV0IGhlcmUgYmVjYXVzZSBsaWZ0Rm4gaXMgYSB3cHBsLXRyYW5zZm9ybWVkIGZuCnZhciBsaWZ0RVJQID0gZnVuY3Rpb24oZXJwLCBsaWZ0Rm4pIHsKICB2YXIgYXVnbWVudGVkU3VwcG9ydCA9IG1hcChmdW5jdGlvbihiYXNlRW50aXR5KSB7CiAgICB2YXIgYmFzZUVudGl0eVNjb3JlID0gZXJwLnNjb3JlKFtdLCBiYXNlRW50aXR5KTsKICAgIHZhciBsaWZ0ZWRTdXBwb3J0ID0gbGlmdEZuKGJhc2VFbnRpdHkpOwogICAgcmV0dXJuIHsKICAgICAgazogSlNPTi5zdHJpbmdpZnkobGlmdGVkU3VwcG9ydCksCiAgICAgIHZzOiBbYmFzZUVudGl0eV0sCiAgICAgIHBzOiBbYmFzZUVudGl0eVNjb3JlXSwKICAgICAgbGlmdGVkU3VwcG9ydDogbGlmdGVkU3VwcG9ydCwKICAgICAgYWdncmVnYXRlU2NvcmU6IGJhc2VFbnRpdHlTY29yZQogICAgfTsKICB9LCBlcnAuc3VwcG9ydCgpKTsKICB2YXIgZXFDbGFzc2VzID0gZ3JvdXBCeShmdW5jdGlvbihlLCBmKSB7cmV0dXJuIGUuayA9PT0gZi5rfSwgYXVnbWVudGVkU3VwcG9ydCk7CiAgdmFyIGVxQ2xhc3Nlc1N0cnVjdHVyZWQgPSBtYXAoZnVuY3Rpb24oZXFDbGFzcykgewogICAgcmV0dXJuIFtlcUNsYXNzWzBdLmssCiAgICAgICAgICAgIG1hcFJlZHVjZTEoZnVuY3Rpb24oYSwgYikgewogICAgICAgICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICAgICB2czogYS52cy5jb25jYXQoYi52cyksCiAgICAgICAgICAgICAgICBwczogYS5wcy5jb25jYXQoYi5wcyksCiAgICAgICAgICAgICAgICBsaWZ0ZWRTdXBwb3J0OiBhLmxpZnRlZFN1cHBvcnQsCiAgICAgICAgICAgICAgICBhZ2dyZWdhdGVTY29yZTogdXRpbC5sb2dzdW1leHAoW2EuYWdncmVnYXRlU2NvcmUsIGIuYWdncmVnYXRlU2NvcmVdKQogICAgICAgICAgICAgIH07CiAgICAgICAgICAgIH0sIGlkRiwgZXFDbGFzcyldCiAgfSwgZXFDbGFzc2VzKTsKICB2YXIgdnMgPSBtYXAoZnVuY3Rpb24oZSkge3JldHVybiBlWzFdLmxpZnRlZFN1cHBvcnR9LCBlcUNsYXNzZXNTdHJ1Y3R1cmVkKTsKICB2YXIgcHMgPSBtYXAoZnVuY3Rpb24oZSkge3JldHVybiBNYXRoLmV4cChlWzFdLmFnZ3JlZ2F0ZVNjb3JlKX0sIGVxQ2xhc3Nlc1N0cnVjdHVyZWQpOwogIHJldHVybiBjYXRlZ29yaWNhbEVSUChwcywgdnMsIHtiYXNlRVJQRW50cmllczogXy5vYmplY3QoZXFDbGFzc2VzU3RydWN0dXJlZCl9KTsKfTsKCi8vIEFyaXRobWV0aWMgYW5kIG90aGVyIGZ1bmN0aW9uYWxzCgp2YXIgcGx1cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSArIGI7Cn07CnZhciBtaW51cyA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAtIGI7Cn07CnZhciBtdWx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhICogYjsKfTsKdmFyIGRpdiA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSAvIGI7Cn07Cgp2YXIgYW5kID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhICYmIGIKfQp2YXIgb3IgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgfHwgYgp9Cgp2YXIgZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgPT09IGI7Cn07CnZhciBuZXEgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIGEgIT0gYjsKfTsKdmFyIGx0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhIDwgYjsKfTsKdmFyIGd0ID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID4gYjsKfTsKdmFyIGxlcSA9IGZ1bmN0aW9uKGEsIGIpIHsKICByZXR1cm4gYSA8PSBiOwp9Owp2YXIgZ2VxID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhID49IGI7Cn07Cgp2YXIgaXNFdmVuID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiA9PT0gMDsKfTsKdmFyIGlzT2RkID0gZnVuY3Rpb24odikgewogIHJldHVybiB2ICUgMiAhPSAwOwp9OwoKdmFyIGlkRiA9IGZ1bmN0aW9uKHgpIHsKICByZXR1cm4geDsKfTsKdmFyIGNvbnN0RiA9IGZ1bmN0aW9uKGYpIHsKICByZXR1cm4gZnVuY3Rpb24oKSB7CiAgICByZXR1cm4gZjsKICB9Owp9Owp2YXIgZmFsc2VGID0gZnVuY3Rpb24oKSB7CiAgcmV0dXJuIGZhbHNlOwp9Owp2YXIgdHJ1ZUYgPSBmdW5jdGlvbigpIHsKICByZXR1cm4gdHJ1ZTsKfTsKCgovLyBQcm9iYWJpbGl0eSBjb21wdXRhdGlvbnMgJiBjYWxjdWxhdGlvbnMKCnZhciBNQVAgPSBmdW5jdGlvbihlcnApIHsKICByZXR1cm4gZXJwLk1BUCgpOwp9OwoKdmFyIGV4cGVjdGF0aW9uID0gZnVuY3Rpb24oZXJwLCBmdW5jKSB7CiAgdmFyIGYgPSBmdW5jIHx8IGlkRjsKICB2YXIgc3VwcCA9IGVycC5zdXBwb3J0KFtdKTsKICByZXR1cm4gbWFwUmVkdWNlMShwbHVzLAogICAgICAgICAgICAgICAgICAgIGZ1bmN0aW9uKHMpIHsKICAgICAgICAgICAgICAgICAgICAgIHJldHVybiBNYXRoLmV4cChlcnAuc2NvcmUoW10sIHMpKSAqIGYocyk7CiAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICBzdXBwKTsKfTsKCnZhciBlbnRyb3B5ID0gZnVuY3Rpb24oZXJwKSB7CiAgcmV0dXJuIGVycC5lbnRyb3B5KCk7Cn07CgovLyBEYXRhIHN0cnVjdHVyZXMgJiBoaWdoZXItb3JkZXIgZnVuY3Rpb25zCgp2YXIgYXBwZW5kID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhLmNvbmNhdChiKTsKfTsKdmFyIGNvbnMgPSBmdW5jdGlvbihhLCBiKSB7CiAgcmV0dXJuIFthXS5jb25jYXQoYik7Cn07CnZhciBzbm9jID0gZnVuY3Rpb24oYSwgYikgewogIHJldHVybiBhLmNvbmNhdChbYl0pOwp9OwoKdmFyIGZpcnN0ID0gZnVuY3Rpb24oeHMpIHsKICByZXR1cm4geHNbMF07Cn07CnZhciBzZWNvbmQgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1sxXTsKfTsKdmFyIHRoaXJkID0gZnVuY3Rpb24oeHMpIHsKICByZXR1cm4geHNbMl07Cn07CnZhciBmb3VydGggPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1szXTsKfTsKdmFyIHNlY29uZExhc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1t4cy5sZW5ndGggLSAyXTsKfTsKdmFyIGxhc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4c1t4cy5sZW5ndGggLSAxXTsKfTsKdmFyIHJlc3QgPSBmdW5jdGlvbih4cykgewogIHJldHVybiB4cy5zbGljZSgxKTsKfTsKCnZhciBtYXAgPSBmdW5jdGlvbihmbiwgYXIpIHsKICByZXR1cm4gYXIubGVuZ3RoID09PSAwID8gW10gOiBbZm4oYXJbMF0pXS5jb25jYXQobWFwKGZuLCBhci5zbGljZSgxKSkpOwp9OwoKdmFyIG1hcDIgPSBmdW5jdGlvbihmLCBsMSwgbDIpIHsKICByZXR1cm4gKGwxLmxlbmd0aCA9PT0gMCB8fCBsMi5sZW5ndGggPT09IDAgPwogICAgICAgICAgW10gOgogICAgICAgICAgW2YobDFbMF0sIGwyWzBdKV0uY29uY2F0KG1hcDIoZiwgbDEuc2xpY2UoMSksIGwyLnNsaWNlKDEpKSkpOwp9OwoKdmFyIG1hcE4gPSBmdW5jdGlvbihmLCBuKSB7CiAgdmFyIGZuID0gZnVuY3Rpb24oaSwgX2FjYykge3JldHVybiBpID09PSBuID8gX2FjYyA6IGZuKGkgKyAxLCBzbm9jKF9hY2MsIGYoaSkpKX07CiAgcmV0dXJuIGZuKDAsIFtdKTsKfQoKdmFyIG1hcEluZGV4ZWQgPSBmdW5jdGlvbihmLCBsKSB7CiAgdmFyIGZuID0gZnVuY3Rpb24obHMsIGksIF9hY2MpIHsKICAgIHJldHVybiBscy5sZW5ndGggPT09IDAgPwogICAgICAgIF9hY2MgOgogICAgICAgIGZuKHJlc3QobHMpLCBpICsgMSwgc25vYyhfYWNjLCBmKGksIGZpcnN0KGxzKSkpKQogIH07CiAgcmV0dXJuIGZuKGwsIDAsIFtdKTsKfQoKdmFyIF9yaW5nQXJvdW5kID0gZnVuY3Rpb24obCwgbikgewogIHJldHVybiBsLnNsaWNlKG4pLmNvbmNhdChsLnNsaWNlKDAsIG4pKTsKfTsKCnZhciByaW5nRm9yd2FyZCA9IGZ1bmN0aW9uKGwsIG4pIHsKICByZXR1cm4gX3JpbmdBcm91bmQobCwgbiA9PT0gdW5kZWZpbmVkID8gLTEgOiAtbik7Cn07Cgp2YXIgcmluZ0JhY2t3YXJkID0gZnVuY3Rpb24obCwgbikgewogIHJldHVybiBfcmluZ0Fyb3VuZChsLCBuID09PSB1bmRlZmluZWQgPyAxIDogbik7Cn07Cgp2YXIgbWFwUGFpcnMyID0gZnVuY3Rpb24oZiwgbDEsIGwyKSB7CiAgdmFyIHJlcyA9IG1hcChmdW5jdGlvbihhKSB7CiAgICByZXR1cm4gbWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgcmV0dXJuIGYoYSwgYik7CiAgICB9LCBsMikKICB9LCBsMSk7CiAgcmV0dXJuIFtdLmNvbmNhdC5hcHBseShbXSwgcmVzKTsgLy8gZmxhdHRlbgp9OwoKdmFyIG1hcFBhaXJzQyA9IGZ1bmN0aW9uKGYsIGwpIHsKICB2YXIgZm4gPSBmdW5jdGlvbihsMSwgbDIsIGFjYykgewogICAgcmV0dXJuIChsMi5sZW5ndGggPT09IDAgPyBhY2MgOgogICAgICAgICAgICBmbihsMS5zbGljZSgxKSwKICAgICAgICAgICAgICAgbDIuc2xpY2UoMSksCiAgICAgICAgICAgICAgIGFjYy5jb25jYXQobWFwKGZ1bmN0aW9uKGIpIHsKICAgICAgICAgICAgICAgICByZXR1cm4gZihsMVswXSwgYik7CiAgICAgICAgICAgICAgIH0sIGwyKSkpCiAgICApOwogIH07CiAgcmV0dXJuIGZuKGwsIGwuc2xpY2UoMSksIFtdKTsKfTsKCnZhciBtYXBQYWlyc05DID0gZnVuY3Rpb24oZiwgbCkgewogIHZhciByZXMgPSBtYXBQYWlyczIoZnVuY3Rpb24oYSwgYikgewogICAgcmV0dXJuIGEgPT09IGIgPyB1bmRlZmluZWQgOiBmKGEsIGIpOwogIH0sIGwsIGwpOwogIHJldHVybiByZW1vdmUodW5kZWZpbmVkLCByZXMpOwp9OwoKdmFyIHJlZHVjZSA9IGZ1bmN0aW9uKGZuLCBpbml0LCBhcikgewogIHJldHVybiBhci5sZW5ndGggPT09IDAgPyBpbml0IDogZm4oYXJbMF0sIHJlZHVjZShmbiwgaW5pdCwgYXIuc2xpY2UoMSkpKTsKfTsKCnZhciBtYXBSZWR1Y2UgPSBmdW5jdGlvbihmLCBpbml0LCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGluaXQpLAogICAgICAgICAgICAgICAgYXIpOwp9OwoKdmFyIG1hcFJlZHVjZTEgPSBmdW5jdGlvbihmLCBnLCBhcikgewogIC8vIHNwZWNpYWxpemVkIHRvIGFib3ZlIHJlZHVjZQogIHJldHVybiByZWR1Y2UoZnVuY3Rpb24oYSwgYikge3JldHVybiBmKGcoYSksIGIpO30sCiAgICAgICAgICAgICAgICBnKGFyW2FyLmxlbmd0aCAtIDFdKSwKICAgICAgICAgICAgICAgIGFyLnNsaWNlKDAsIC0xKSk7Cn07Cgp2YXIgc3VtID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UocGx1cywgMCwgbCk7Cn07CnZhciBwcm9kdWN0ID0gZnVuY3Rpb24obCkgewogIHJldHVybiByZWR1Y2UobXVsdCwgMSwgbCk7Cn07Cgp2YXIgbGlzdE1lYW4gPSBmdW5jdGlvbihsKSB7CiAgcmV0dXJuIHJlZHVjZShwbHVzLCAwLCBsKSAvIGwubGVuZ3RoOwp9Owp2YXIgbGlzdFZhciA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgdmFyIG11ID0gbXUgPT09IHVuZGVmaW5lZCA/IGxpc3RNZWFuKGwpIDogbXU7CiAgcmV0dXJuIG1hcFJlZHVjZTEocGx1cywgZnVuY3Rpb24oYSkgewogICAgcmV0dXJuIChhIC0gbXUpICogKGEgLSBtdSk7CiAgfSwgbCkgLyBsLmxlbmd0aDsKfTsKdmFyIGxpc3RTdGRldiA9IGZ1bmN0aW9uKGwsIG11KSB7CiAgcmV0dXJuIE1hdGguc3FydChsaXN0VmFyKGwsIG11KSk7Cn07Cgp2YXIgYWxsID0gZnVuY3Rpb24ocCwgbCkgewogIHJldHVybiBtYXBSZWR1Y2UxKGFuZCwgcCwgbCk7Cn07CnZhciBhbnkgPSBmdW5jdGlvbihwLCBsKSB7CiAgcmV0dXJuIG1hcFJlZHVjZTEob3IsIHAsIGwpOwp9OwoKdmFyIHppcCA9IGZ1bmN0aW9uKHhzLCB5cykgewogIHJldHVybiB4cy5sZW5ndGggPT09IDAgPwogICAgICBbXSA6CiAgICAgIFtbeHNbMF0sIHlzWzBdXV0uY29uY2F0KHppcCh4cy5zbGljZSgxKSwgeXMuc2xpY2UoMSkpKTsKfTsKCnZhciBmaWx0ZXIgPSBmdW5jdGlvbihmbiwgYXIpIHsKICByZXR1cm4gYXIubGVuZ3RoID09PSAwID8KICAgICAgW10gOgogICAgICBhcHBlbmQoZm4oYXJbMF0pID8gW2FyWzBdXSA6IFtdLCBmaWx0ZXIoZm4sIGFyLnNsaWNlKDEpKSk7Cn07Cgp2YXIgZmluZCA9IGZ1bmN0aW9uKGYsIGFyKSB7CiAgcmV0dXJuIGFyLmxlbmd0aCA9PT0gMCA/IHVuZGVmaW5lZCA6IChmKGFyWzBdKSA/IGFyWzBdIDogZmluZChmLCBhci5zbGljZSgxKSkpOwp9OwoKdmFyIHJlbW92ZSA9IGZ1bmN0aW9uKGEsIGFyKSB7CiAgcmV0dXJuIGZpbHRlcihmdW5jdGlvbihlKSB7CiAgICByZXR1cm4gYSAhPSBlOwogIH0sIGFyKTsKfTsKCnZhciBpbnNlcnRBdCA9IGZ1bmN0aW9uKGFyLCBpLCB4KSB7CiAgcmV0dXJuIGFyLnNsaWNlKDAsIGkpLmNvbmNhdChbeF0pLmNvbmNhdChhci5zbGljZShpKSk7Cn0KCnZhciByZW1vdmVBdCA9IGZ1bmN0aW9uKGFyLCBpKSB7CiAgcmV0dXJuIGFyLnNsaWNlKDAsIGkpLmNvbmNhdChhci5zbGljZShpICsgMSkpOwp9Cgp2YXIgcmVwbGFjZUF0ID0gZnVuY3Rpb24oYXIsIGksIHgpIHsKICByZXR1cm4gYXIuc2xpY2UoMCwgaSkuY29uY2F0KFt4XSkuY29uY2F0KGFyLnNsaWNlKGkgKyAxKSk7Cn0KCnZhciBkcm9wID0gZnVuY3Rpb24obiwgYXIpIHsKICByZXR1cm4gbiA+IGFyLmxlbmd0aCA/IFtdIDogYXIuc2xpY2Uobik7Cn07CnZhciB0YWtlID0gZnVuY3Rpb24obiwgYXIpIHsKICByZXR1cm4gbiA+PSBhci5sZW5ndGggPyBhciA6IGFyLnNsaWNlKDAsIG4pOwp9Owp2YXIgZHJvcFdoaWxlID0gZnVuY3Rpb24ocCwgYXIpIHsKICByZXR1cm4gcChhclswXSkgPyBkcm9wV2hpbGUocCwgYXIuc2xpY2UoMSkpIDogYXI7Cn07CnZhciB0YWtlV2hpbGUgPSBmdW5jdGlvbihwLCBhcikgewogIHJldHVybiBwKGFyWzBdKSA/IGNvbnMoYXJbMF0sIHRha2VXaGlsZShwLCBhci5zbGljZSgxKSkpIDogW107Cn07Cgp2YXIgaW5kZXhPZiA9IGZ1bmN0aW9uKHgsIHhzKSB7CiAgLy8gcHJvdG90eXBlIG1ldGhvZCBkb2Vzbid0IHJldHVybiBmYWxzeSB2YWx1ZSBpZiBub3QgZm91bmQKICB2YXIgaSA9IHhzLmluZGV4T2YoeCk7CiAgcmV0dXJuIGkgPCAwID8gdW5kZWZpbmVkIDogaQp9OwoKdmFyIG1pbldpdGggPSBmdW5jdGlvbihmLCBhcikgewogIHZhciBmbiA9IGZ1bmN0aW9uKF9hciwgX2Jlc3QpIHsKICAgIGlmIChfYXIubGVuZ3RoID09PSAwKSB7CiAgICAgIHJldHVybiBfYmVzdDsKICAgIH0gZWxzZSBpZiAoX2FyWzBdWzFdIDwgX2Jlc3RbMV0pIHsKICAgICAgcmV0dXJuIGZuKF9hci5zbGljZSgxKSwgX2FyWzBdKTsKICAgIH0gZWxzZSB7CiAgICAgIHJldHVybiBmbihfYXIuc2xpY2UoMSksIF9iZXN0KTsKICAgIH0KICB9OwogIHJldHVybiBmbih6aXAoYXIsIG1hcChmLCBhcikpLCBbSW5maW5pdHksIEluZmluaXR5XSk7Cn07Cgp2YXIgbWF4V2l0aCA9IGZ1bmN0aW9uKGYsIGFyKSB7CiAgdmFyIGZuID0gZnVuY3Rpb24oX2FyLCBfYmVzdCkgewogICAgaWYgKF9hci5sZW5ndGggPT09IDApIHsKICAgICAgcmV0dXJuIF9iZXN0OwogICAgfSBlbHNlIGlmIChfYXJbMF1bMV0gPiBfYmVzdFsxXSkgewogICAgICByZXR1cm4gZm4oX2FyLnNsaWNlKDEpLCBfYXJbMF0pOwogICAgfSBlbHNlIHsKICAgICAgcmV0dXJuIGZuKF9hci5zbGljZSgxKSwgX2Jlc3QpOwogICAgfQogIH07CiAgcmV0dXJuIGZuKHppcChhciwgbWFwKGYsIGFyKSksIFstSW5maW5pdHksIC1JbmZpbml0eV0pOwp9OwoKdmFyIHNwYW4gPSBmdW5jdGlvbihwLCBhcikgewogIHZhciBmbiA9IGZ1bmN0aW9uKGFyLCBfdHMsIF9mcykgewogICAgcmV0dXJuIChhci5sZW5ndGggPT09IDAgPwogICAgICAgICAgICBbX3RzLCBfZnNdIDoKICAgICAgICAgICAgKHAoYXJbMF0pID8KICAgICAgICAgICAgIGZuKGFyLnNsaWNlKDEpLCBzbm9jKF90cywgYXJbMF0pLCBfZnMpIDoKICAgICAgICAgICAgIGZuKGFyLnNsaWNlKDEpLCBfdHMsIHNub2MoX2ZzLCBhclswXSkpKSk7CiAgfTsKICByZXR1cm4gZm4oYXIsIFtdLCBbXSk7Cn07Cgp2YXIgZ3JvdXBCeSA9IGZ1bmN0aW9uKGNtcCwgYXIpIHsKICBpZiAoYXIubGVuZ3RoID09PSAwKSB7CiAgICByZXR1cm4gW107CiAgfSBlbHNlIHsKICAgIHZhciB4ID0gYXJbMF07CiAgICB2YXIgc3AgPSBzcGFuKGZ1bmN0aW9uKGIpIHsgcmV0dXJuIGNtcCh4LCBiKTsgfSwgYXIuc2xpY2UoMSkpOwogICAgcmV0dXJuIFtjb25zKHgsIHNwWzBdKV0uY29uY2F0KGdyb3VwQnkoY21wLCBzcFsxXSkpOwogIH0KfTsKCnZhciByZXBlYXQgPSBmdW5jdGlvbihuLCBmbikgewogIHJldHVybiBuID09PSAwID8gW10gOiBhcHBlbmQocmVwZWF0KG4gLSAxLCBmbiksIFtmbihuIC0gMSldKTsKfTsKCnZhciBwdXNoID0gZnVuY3Rpb24oeHMsIHgpIHsKICByZXR1cm4geHMuY29uY2F0KFt4XSk7Cn07Cgp2YXIgY29tcG9zZSA9IGZ1bmN0aW9uKGYsIGcpIHsKICByZXR1cm4gZnVuY3Rpb24oeCkgewogICAgcmV0dXJuIGYoZyh4KSk7CiAgfTsKfTsKCnZhciBldmVyeU90aGVyID0gZnVuY3Rpb24obCkgewogIHJldHVybiBsLmxlbmd0aCA8PSAxID8gbCA6IFtsWzBdXS5jb25jYXQoZXZlcnlPdGhlcihsLnNsaWNlKDIpKSk7Cn07Cgp2YXIgX21lcmdlID0gZnVuY3Rpb24obDEsIGwyLCBwcmVkLCBrZXkpIHsKICByZXR1cm4gKGwxLmxlbmd0aCA9PT0gMCA/CiAgICAgICAgICBsMiA6CiAgICAgICAgICAobDIubGVuZ3RoID09PSAwID8KICAgICAgICAgICBsMSA6CiAgICAgICAgICAgKHByZWQoa2V5KGwxWzBdKSwga2V5KGwyWzBdKSkgPwogICAgICAgICAgICBbbDFbMF1dLmNvbmNhdChfbWVyZ2UobDEuc2xpY2UoMSksIGwyLCBwcmVkLCBrZXkpKSA6CiAgICAgICAgICAgIFtsMlswXV0uY29uY2F0KF9tZXJnZShsMSwgbDIuc2xpY2UoMSksIHByZWQsIGtleSkpKSkpOwp9OwoKdmFyIF9zb3J0ID0gZnVuY3Rpb24obCwgcHJlZCwga2V5KSB7CiAgcmV0dXJuICgobC5sZW5ndGggPD0gMSkgPwogICAgICAgICAgbCA6CiAgICAgICAgICBfbWVyZ2UoX3NvcnQoZXZlcnlPdGhlcihsKSwgcHJlZCwga2V5KSwKICAgICAgICAgICAgICAgICBfc29ydChldmVyeU90aGVyKGwuc2xpY2UoMSkpLCBwcmVkLCBrZXkpLAogICAgICAgICAgICAgICAgIHByZWQsCiAgICAgICAgICAgICAgICAga2V5KSk7Cn07Cgp2YXIgc29ydCA9IGZ1bmN0aW9uKGwsIHByZWQsIGtleSkgewogIHJldHVybiBfc29ydChsLCAocHJlZCB8fCBsdCksIChrZXkgfHwgaWRGKSk7Cn07Cgp2YXIgc29ydE9uID0gZnVuY3Rpb24obCwga2V5LCBwcmVkKSB7CiAgcmV0dXJuIF9zb3J0KGwsIChwcmVkIHx8IGx0KSwga2V5KTsKfTsKCnZhciBjb25kaXRpb24gPSBmdW5jdGlvbihib29sKSB7CiAgZmFjdG9yKGJvb2wgPyAwIDogLUluZmluaXR5KTsKfTsK","base64"));
   var programAST = esprima.parse(programCode);
+
+  var doCaching = cachingRequired(programAST);
+
+  if (doCaching) {
+    if (verbose) console.log('Caching transforms will be applied.');
+    programAST = caching(programAST);
+  }
+
   var out = escodegen.generate(_compile(concatPrograms(headerAST, programAST)));
 
   if (verbose && console.timeEnd) {
@@ -39029,47 +42525,20 @@ function compile(programCode, verbose) {
   return out;
 }
 
-function run(code, contFun, verbose) {
+function run(code, k, verbose) {
   var compiledCode = compile(code, verbose);
-  eval(compiledCode)({}, contFun, '');
-}
-
-// Compile and run some webppl code in global scope:
-function webpplEval(k, code, verbose) {
-  var compiledCode = compile(code, verbose);
+  if (verbose && console.time) {
+    console.time('run');
+  }
   eval.call(global, compiledCode)({}, k, '');
-}
-
-// For use in browser
-function webpplCPS(code) {
-  var programAst = esprima.parse(code);
-  var newProgramAst = optimize(cps(programAst));
-  return escodegen.generate(newProgramAst);
-}
-
-function webpplNaming(code) {
-  var programAst = esprima.parse(code);
-  var newProgramAst = naming(programAst);
-  return escodegen.generate(newProgramAst);
-}
-
-// For use in browser using browserify
-if (util.runningInBrowser()) {
-  window.webppl = {
-    run: run,
-    compile: compile,
-    cps: webpplCPS,
-    naming: webpplNaming,
-    analyze: analyze
-  };
-  console.log('webppl loaded.');
-} else {
-  // Put eval into global scope. browser version??
-  global.webpplEval = webpplEval;
+  if (verbose && console.timeEnd) {
+    console.timeEnd('run');
+  }
 }
 
 module.exports = {
-  webpplEval: webpplEval,
+  requireHeader: requireHeader,
+  requireHeaderWrapper: requireHeaderWrapper,
   run: run,
   prepare: prepare,
   compile: compile,
@@ -39077,7 +42546,43 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./analysis/main":88,"./header.js":93,"./syntax":104,"./transforms/cps":105,"./transforms/naming":106,"./transforms/optimize":107,"./transforms/store":108,"./transforms/trampoline":109,"./transforms/varargs":110,"./util":111,"ast-types":15,"buffer":113,"escodegen":16,"esprima":80}],104:[function(require,module,exports){
+},{"./analysis/main":90,"./header":97,"./syntax":112,"./transforms/caching":113,"./transforms/cps":114,"./transforms/freevars":115,"./transforms/naming":116,"./transforms/optimize":117,"./transforms/store":118,"./transforms/trampoline":119,"./transforms/varargs":120,"./util":121,"ast-types":15,"buffer":123,"escodegen":16,"esprima":82,"estraverse":83}],111:[function(require,module,exports){
+
+// Inference query table
+// Simple abstraction over js objects that provides a
+//   write-only interface
+
+function Query() {
+  this.table = {};
+}
+
+Query.prototype.add = function(key, val) {
+  this.table[key] = val;
+};
+
+Query.prototype.addAll = function(other) {
+  for (var key in other.table)
+    this.table[key] = other.table[key];
+};
+
+Query.prototype.clear = function() {
+  this.table = {};
+};
+
+// Returns a copy
+Query.prototype.getTable = function() {
+  var tbl = {};
+  for (var key in this.table)
+    tbl[key] = this.table[key];
+  return tbl;
+};
+
+
+module.exports = {
+  Query: Query
+};
+
+},{}],112:[function(require,module,exports){
 'use strict';
 
 var types = require('ast-types').namedTypes;
@@ -39248,9 +42753,85 @@ module.exports = {
   isPrimitive: isPrimitive
 };
 
-},{"./util":111,"ast-types":15,"estraverse":81}],105:[function(require,module,exports){
+},{"./util":121,"ast-types":15,"estraverse":83}],113:[function(require,module,exports){
 'use strict';
 
+var _ = require('underscore');
+
+var Syntax = require('estraverse').Syntax;
+var replace = require('estraverse').replace;
+var build = require('ast-types').builders;
+var types = require('ast-types').types;
+var isPrimitive = require('../syntax').isPrimitive;
+
+
+// TODO: Auto-extract this list, somehow?
+var cacheExempt = [
+  'flip',
+  'randomInteger',
+  'discrete',
+  'gaussian',
+  'uniform',
+  'uniformDraw',
+  'dirichlet',
+  'poisson',
+  'binomial',
+  'beta',
+  'exponential',
+  'gamma',
+  'factor',
+  'sample',
+  'sampleWithFactor'
+];
+var cacheExemptTable = {};
+_.each(cacheExempt, function(erpname) {
+  cacheExemptTable[erpname] = true;
+});
+cacheExempt = cacheExemptTable;
+
+function shouldCache(callee) {
+  // Don't cache 'primitive' functions. It actually could be benficial to cache
+  //    these in some cases, but correctly binding 'this' will require some
+  //    systemic changes that I don't want to deal with right now.
+  if (isPrimitive(callee))
+    return false;
+  // Don't cache ERPs or other coroutine functions that deal with ERPs.
+  // Why do this? If the cache adaptation decides to remove one of these functions,
+  //    then that function will have the same address as the ERP it's dealing with,
+  //    so the adapter will also try to remove the ERP.
+  // Basically, a core assumption of IncrementalMH is that all cache nodes have unique
+  //    addresses.
+  if (callee.type === Syntax.Identifier && cacheExempt[callee.name])
+    return false;
+  // Otherwise, go ahead
+  return true;
+}
+
+function exit(node) {
+  switch (node.type) {
+    case Syntax.CallExpression:
+      if (shouldCache(node.callee)) {
+        return build.callExpression(
+            build.identifier('incrementalize'),
+            [node.callee, build.arrayExpression(node.arguments)]
+        );
+      }
+    default:
+  }
+}
+
+function cachingMain(node) {
+  return replace(node, { leave: exit });
+}
+
+module.exports = {
+  caching: cachingMain
+};
+
+},{"../syntax":112,"ast-types":15,"estraverse":83,"underscore":88}],114:[function(require,module,exports){
+'use strict';
+
+var assert = require('assert');
 var build = require('ast-types').builders;
 var types = require('ast-types').namedTypes;
 var Syntax = require('estraverse').Syntax;
@@ -39305,6 +42886,9 @@ function atomize(node, metaK) {
       });
     }),
     clause(Syntax.AssignmentExpression, function(left, right) {
+      assert(left.type === Syntax.MemberExpression &&
+             left.object.name === 'globalStore',
+             'Assignment is allowed only to fields of globalStore.');
       return atomize(left, function(left) {
         return atomize(right, function(right) {
           return metaK(build.assignmentExpression(node.operator, left, right));
@@ -39386,8 +42970,11 @@ function atomize(node, metaK) {
       return atomize(argument, function(argument) {
         return metaK(build.unaryExpression(node.operator, argument));
       });
+    }),
+    clause(Syntax.DebuggerStatement, function() {
+      var body = build.blockStatement([node]);
+      return metaK(buildCall(build.functionExpression(null, [], body), []));
     })
-
 
   ], fail('atomize: unrecognized node', node));
 }
@@ -39421,6 +43008,7 @@ function cps(node, k) {
     case Syntax.MemberExpression:
     case Syntax.ObjectExpression:
     case Syntax.UnaryExpression:
+    case Syntax.DebuggerStatement:
       return atomize(node, function(node) {
         return buildContinuationCall(k, node);
       });
@@ -39524,6 +43112,9 @@ function cpsInnerStatement(node, e, fk) {
       return cpsDeclarations(declarations, 0, function(id) {
         return buildContinuation(id, e);
       });
+    }),
+    clause(Syntax.DebuggerStatement, function() {
+      return cps(node, buildContinuation(genvar('debugger'), e));
     })], fail('cpsInnerStatement', node));
 }
 
@@ -39558,6 +43149,9 @@ function cpsFinalStatement(node, k, fk) {
       return cpsDeclarations(declarations, 0, function(id) {
         return buildContinuation(id, cps(build.identifier('undefined'), k));
       });
+    }),
+    clause(Syntax.DebuggerStatement, function() {
+      return cps(node, k);
     })], fail('cpsFinalStatement', node));
 }
 
@@ -39575,7 +43169,122 @@ module.exports = {
   cps: cpsMain
 };
 
-},{"../syntax":104,"ast-types":15,"estraverse":81}],106:[function(require,module,exports){
+},{"../syntax":112,"assert":122,"ast-types":15,"estraverse":83}],115:[function(require,module,exports){
+'use strict';
+
+var _ = require('underscore');
+
+var Syntax = require('estraverse').Syntax;
+var replace = require('estraverse').replace;
+var build = require('ast-types').builders;
+var types = require('ast-types').types;
+var makeGensym = require('../util').makeGensym;
+
+
+// filter out:
+// -- member expression properties
+
+
+var genid = null;
+var boundVarsStack = null;
+var freeVarsStack = null;
+var nodeStack = null;
+
+var literalIdentifiers = {
+  undefined: true,
+  NaN: true,
+  Infinity: true
+};
+
+function identifierIsVar(node) {
+  // esprima represents some special literals as Identifer nodes; skip those
+  if (literalIdentifiers[node.name]) return false;
+  // exprima also represents non-computed object member access with an
+  //    Identifer node, so skip those as well.
+  var ntop = nodeStack[nodeStack.length - 1];
+  if (ntop.type === Syntax.MemberExpression && !ntop.computed &&
+      node === ntop.property) return false;
+  // Property keys in object literal expressions are also Identifer nodes
+  if (ntop.type === Syntax.Property && node === ntop.key) return false;
+  return true;
+}
+
+function enter(node) {
+  switch (node.type) {
+    case Syntax.FunctionExpression:
+      // Bind the formal parameters of the function
+      var boundVars = {};
+      for (var i = 0; i < node.params.length; i++)
+        boundVars[node.params[i].name] = true;
+      boundVarsStack.push(boundVars);
+      // Create a new (empty) set of free vars for this function body
+      freeVarsStack.push({});
+      break;
+    case Syntax.VariableDeclarator:
+      // Bind any vars that are declared locally
+      if (boundVarsStack.length > 0)
+        boundVarsStack[boundVarsStack.length - 1][node.id.name] = true;
+      break;
+    case Syntax.Identifier:
+      if (boundVarsStack.length > 0 && identifierIsVar(node)) {
+        // If the Identifier isn't already bound, then it's a free var
+        if (!boundVarsStack[boundVarsStack.length - 1][node.name])
+          freeVarsStack[freeVarsStack.length - 1][node.name] = true;
+      }
+      break;
+    default:
+  }
+  nodeStack.push(node);
+}
+
+function exit(node) {
+  switch (node.type) {
+    case Syntax.FunctionExpression:
+      // Wrap the function expression in a call to _Fn.tag,
+      //    which tags the function with a lexically-unique id and a list
+      //    of its free variable values.
+      var freeVars = freeVarsStack.pop();
+      var freeVarNodes = [];
+      for (var name in freeVars) {
+        freeVarNodes.push(build.identifier(name));
+      }
+      boundVarsStack.pop();
+      var wrappedFn = build.callExpression(
+          build.memberExpression(build.identifier('_Fn'),
+          build.identifier('tag'), false),
+          [node, build.literal(genid(0)), build.arrayExpression(freeVarNodes)]
+          );
+      // Also, if we're exiting a nested function, add all free variables of
+      //    that function to the outer function (if they are not bound in
+      //    the outer function)
+      if (freeVarsStack.length > 0) {
+        var outerFreeVars = freeVarsStack[freeVarsStack.length - 1];
+        var outerBoundVars = boundVarsStack[boundVarsStack.length - 1];
+        for (var name in freeVars) {
+          if (outerBoundVars[name] === undefined)
+            outerFreeVars[name] = true;
+        }
+      }
+      return wrappedFn;
+    default:
+  }
+  nodeStack.pop();
+}
+
+function freevarsMain(node) {
+  genid = makeGensym();
+  boundVarsStack = [];
+  freeVarsStack = [];
+  nodeStack = [];
+
+  return replace(node, { enter: enter, leave: exit });
+}
+
+module.exports = {
+  freevars: freevarsMain
+};
+
+},{"../util":121,"ast-types":15,"estraverse":83,"underscore":88}],116:[function(require,module,exports){
 'use strict';
 
 var Syntax = require('estraverse').Syntax;
@@ -39651,7 +43360,7 @@ module.exports = {
   naming: namingMain
 };
 
-},{"../syntax":104,"../util":111,"ast-types":15,"estraverse":81}],107:[function(require,module,exports){
+},{"../syntax":112,"../util":121,"ast-types":15,"estraverse":83}],117:[function(require,module,exports){
 'use strict';
 
 var esmangle = require('esmangle');
@@ -39753,6 +43462,15 @@ function optimize(node) {
         return node;
       }
 
+    case Syntax.VariableDeclaration:
+      // Un-wrap debugger statements.
+      if (node.declarations.length === 1 &&
+          node.declarations[0].id.name.slice(0, 9) === '_debugger') {
+        return build.debuggerStatement();
+      } else {
+        return node;
+      }
+
     default:
       return node;
   }
@@ -39774,7 +43492,7 @@ module.exports = {
   optimize: optimizeMain
 };
 
-},{"../syntax":104,"ast-types":15,"esmangle":35,"estraverse":81}],108:[function(require,module,exports){
+},{"../syntax":112,"ast-types":15,"esmangle":35,"estraverse":83}],118:[function(require,module,exports){
 'use strict';
 
 var estraverse = require('estraverse');
@@ -39822,7 +43540,7 @@ module.exports = {
   store: storeMain
 };
 
-},{"../syntax":104,"ast-types":15,"estraverse":81}],109:[function(require,module,exports){
+},{"../syntax":112,"ast-types":15,"estraverse":83}],119:[function(require,module,exports){
 'use strict';
 
 var replace = require('estraverse').replace;
@@ -39896,7 +43614,7 @@ module.exports = {
   trampoline: trampolineMain
 };
 
-},{"../syntax":104,"ast-types":15,"esprima":80,"estraverse":81}],110:[function(require,module,exports){
+},{"../syntax":112,"ast-types":15,"esprima":82,"estraverse":83}],120:[function(require,module,exports){
 'use strict';
 
 var assert = require('assert');
@@ -39979,7 +43697,7 @@ module.exports = {
   varargs: varargsMain
 };
 
-},{"assert":112,"ast-types":15,"esprima":80,"estraverse":81}],111:[function(require,module,exports){
+},{"assert":122,"ast-types":15,"esprima":82,"estraverse":83}],121:[function(require,module,exports){
 'use strict';
 
 var _ = require('underscore');
@@ -40004,11 +43722,15 @@ function prettyJSON(obj) {
   console.log(JSON.stringify(obj, null, 2));
 }
 
+function asArray(arg) {
+  return arg ? [].concat(arg) : [];
+}
+
 function sum(xs) {
   if (xs.length === 0) {
     return 0.0;
   } else {
-    var total = _(xs).reduce(
+    var total = _.reduce(xs,
         function(a, b) {
           return a + b;
         });
@@ -40025,6 +43747,13 @@ function normalizeHist(hist) {
   return normHist;
 }
 
+var logHist = function(hist) {
+  return _.mapObject(hist, function(x) {
+    return {prob: Math.log(x.prob), val: x.val}
+  });
+};
+
+
 function normalizeArray(xs) {
   var Z = sum(xs);
   return xs.map(function(x) {
@@ -40039,6 +43768,14 @@ function logsumexp(a) {
     sum += (a[i] === -Infinity ? 0 : Math.exp(a[i] - m));
   }
   return m + Math.log(sum);
+}
+
+function copyObj(obj) {
+  var newobj = {};
+  for (var k in obj) {
+    if (obj.hasOwnProperty(k)) {newobj[k] = obj[k];}
+  }
+  return newobj;
 }
 
 // More efficient version of (indexOf o map p)
@@ -40073,7 +43810,9 @@ function cpsForEach(func, nextK, xs, i) {
     return nextK();
   } else {
     return func(xs[i], i, xs, function() {
-      return cpsForEach(func, nextK, xs, i + 1);
+      return function() { // insert trampoline step
+        return cpsForEach(func, nextK, xs, i + 1);
+      }
     });
   }
 }
@@ -40097,7 +43836,7 @@ function histsApproximatelyEqual(hist, expectedHist, tolerance) {
 function expectation(hist, func) {
   var f = func == undefined ? function(x) {return x;} : func;
   if (_.isArray(hist)) {
-    return sum(xs) / xs.length;
+    return sum(hist) / hist.length;
   } else {
     var expectedValue = sum(_.mapObject(hist, function(v, x) {
       return f(x) * v;
@@ -40120,13 +43859,21 @@ function std(hist) {
   return Math.sqrt(variance);
 }
 
+function getOpt(optObject, option, defaultValue) {
+  return (optObject && optObject[option] !== undefined) ?
+      optObject[option] :
+      defaultValue;
+}
+
 module.exports = {
+  copyObj: copyObj,
   cpsForEach: cpsForEach,
   expectation: expectation,
   gensym: gensym,
   histsApproximatelyEqual: histsApproximatelyEqual,
   indexOfPred: indexOfPred,
   logsumexp: logsumexp,
+  logHist: logHist,
   lastIndexOfPred: lastIndexOfPred,
   deleteIndex: deleteIndex,
   makeGensym: makeGensym,
@@ -40135,10 +43882,12 @@ module.exports = {
   prettyJSON: prettyJSON,
   runningInBrowser: runningInBrowser,
   std: std,
-  sum: sum
+  getOpt: getOpt,
+  sum: sum,
+  asArray: asArray
 };
 
-},{"underscore":86}],112:[function(require,module,exports){
+},{"underscore":88}],122:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -40499,7 +44248,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":122}],113:[function(require,module,exports){
+},{"util/":132}],123:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -40516,7 +44265,6 @@ exports.SlowBuffer = SlowBuffer
 exports.INSPECT_MAX_BYTES = 50
 Buffer.poolSize = 8192 // not used by this implementation
 
-var kMaxLength = 0x3fffffff
 var rootParent = {}
 
 /**
@@ -40553,6 +44301,12 @@ Buffer.TYPED_ARRAY_SUPPORT = (function () {
     return false
   }
 })()
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
 
 /**
  * Class: Buffer
@@ -40704,9 +44458,9 @@ function allocate (that, length) {
 function checked (length) {
   // Note: cannot use `length < kMaxLength` here because that fails when
   // length is NaN (which is otherwise coerced to zero.)
-  if (length >= kMaxLength) {
+  if (length >= kMaxLength()) {
     throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                         'size: 0x' + kMaxLength.toString(16) + ' bytes')
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
   }
   return length | 0
 }
@@ -40798,29 +44552,38 @@ Buffer.concat = function concat (list, length) {
 }
 
 function byteLength (string, encoding) {
-  if (typeof string !== 'string') string = String(string)
+  if (typeof string !== 'string') string = '' + string
 
-  if (string.length === 0) return 0
+  var len = string.length
+  if (len === 0) return 0
 
-  switch (encoding || 'utf8') {
-    case 'ascii':
-    case 'binary':
-    case 'raw':
-      return string.length
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      return string.length * 2
-    case 'hex':
-      return string.length >>> 1
-    case 'utf8':
-    case 'utf-8':
-      return utf8ToBytes(string).length
-    case 'base64':
-      return base64ToBytes(string).length
-    default:
-      return string.length
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'binary':
+      // Deprecated
+      case 'raw':
+      case 'raws':
+        return len
+      case 'utf8':
+      case 'utf-8':
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
   }
 }
 Buffer.byteLength = byteLength
@@ -40829,8 +44592,7 @@ Buffer.byteLength = byteLength
 Buffer.prototype.length = undefined
 Buffer.prototype.parent = undefined
 
-// toString(encoding, start=0, end=buffer.length)
-Buffer.prototype.toString = function toString (encoding, start, end) {
+function slowToString (encoding, start, end) {
   var loweredCase = false
 
   start = start | 0
@@ -40871,6 +44633,13 @@ Buffer.prototype.toString = function toString (encoding, start, end) {
         loweredCase = true
     }
   }
+}
+
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
 }
 
 Buffer.prototype.equals = function equals (b) {
@@ -41915,7 +45684,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-},{"base64-js":114,"ieee754":115,"is-array":116}],114:[function(require,module,exports){
+},{"base64-js":124,"ieee754":125,"is-array":126}],124:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -42041,16 +45810,16 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],115:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i]
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
   i += d
 
@@ -42076,14 +45845,14 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 }
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
   value = Math.abs(value)
 
@@ -42127,7 +45896,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],116:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 
 /**
  * isArray
@@ -42162,7 +45931,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],117:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -42187,7 +45956,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],118:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -42234,7 +46003,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],119:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -42462,7 +46231,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":120}],120:[function(require,module,exports){
+},{"_process":130}],130:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -42554,14 +46323,14 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],121:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],122:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -43151,4 +46920,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":121,"_process":120,"inherits":117}]},{},[103]);
+},{"./support/isBuffer":131,"_process":130,"inherits":127}]},{},[94]);

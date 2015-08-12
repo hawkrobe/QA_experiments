@@ -1,3 +1,0 @@
-var model = function() {
-  return gaussian(3, 2);
-};
