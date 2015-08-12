@@ -11,6 +11,7 @@ To do so, we adopt a visual analogy to the Rational Speech Act model (Frank and 
 A sketcher, like a speaker, seeks to be informative about the topic (QUD) they're trying to convey. In pictionary, this topic is some object. The sketcher wants to draw a sketch that maximizes the likelihood that their partner will guess the correct object. In order to infer what this sketch might look like, they reason about what their partner will believe after seeing a sketch (i.e. P(object \| sketch)). To compute this conditional probability, we use the approach developed by Fan et al (2015) using a convolutional neural network (CNN) to investigate object representations in a visual production task. 
 
 ~~~~
+///fold:
 var drawCurves = function(drawObj, splines){
   var curve = splines[0];
   drawObj.drawSpline(curve[0], curve[1], curve[2], curve[3], curve[4], curve[5]);
@@ -34,18 +35,50 @@ var makeSplines = function(n, splines){
   return (n==1) ? newSplines : makeSplines(n-1, newSplines);
 };
 
-// Takes the name of an object you're trying to get opponent to guess
-var sketcher = function() {
-  var goalObj = "chair";
-  var splineParams = makeSplines(3, []); // Sample a curve
-  var generatedImg = Draw(70, 70, true);    // Generate a sketch from the curve
-  drawCurves(generatedImg, splineParams);
-  var guessScore = getGuessScore(generatedImg, goalObj);  // Query the CNN for its guess
-  print(guessScore)
-  factor(guessScore);     // Score the curve based on guess
-  return splineParams;
+var possibleGuesses = ["snake", "elephant","lobster","couch","teapot","giraffe","harp","bell","train","motorbike","spoon","dolphin","fish","duck","hat","rabbit","helicopter","ladder","laptop","mouse (animal)","tiger","violin","bicycle","trumpet","shark","kangaroo","crab","cow","fork","pineapple","airplane","pig","van","mosquito","zebra","truck","hammer","bus","floor lamp","pear","seagull","guitar","table","crocodile","palm tree","frying-pan","cat","race car","suv","chair","cactus","socks","blimp","swan","horse","bed","shoe","sheep","ship","microphone","banana","tablelamp","bench","shovel"];
+///
+
+var splinePrior = function() {
+  var numCurves = randomInteger(4) + 1;
+  return makeSplines(numCurves, []);
 };
 
-print(MH(sketcher, 100));
+var guessPrior = function() {
+  return uniformDraw(possibleGuesses);  
+};
+
+// tries to draw the sketch that maximizes the raw similarity to the goal object
+var literalSketcher = function(goalObj) {
+  return MH(function() {
+    var splineParams = splinePrior();       // Sample a set of 1-5 curves
+    var generatedImg = Draw(70, 70, true);  // Create a canvas to draw on
+    drawCurves(generatedImg, splineParams); // Sketch the sample curves on the canvas
+    var guesses = getGuesses(generatedImg); // Query the CNN to get the raw similarity score
+    factor(guesses[goalObj]);               // Weight the sample based on score
+    return splineParams;
+  };
+};
+
+var guesser = function(sketch) {
+  var possibleGuesses = getGuesses(sketch);
+  return Enumerate(function() {
+      var guess = guessPrior();
+      factor(possibleGuesses[guess]);
+      return guess;
+  });
+};
+
+var pragmaticSketcher = function(goalObj) {
+  return MH(function() {
+    var splineParams = splinePrior();       // Sample a set of 1-5 curves
+    var generatedImg = Draw(70, 70, true);  // Create a canvas to draw on
+    drawCurves(generatedImg, splineParams); // Sketch the sample curves on the canvas
+    var guessERP = guesser(generatedImg);    // Query the *GUESSER* to get the likelihood 
+    factor(guessERP.score([], goalObj));
+    return splineParams;
+  }, 500);
+};
+
+print(pragmaticSketcher("chair"));
 
 ~~~~
