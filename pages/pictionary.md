@@ -56,15 +56,15 @@ var literalSketcher = function(goalObj) {
     var guesses = getGuesses(generatedImg); // Query the CNN to get the raw similarity score
     factor(guesses[goalObj]);               // Weight the sample based on score
     return splineParams;
-  };
+  }, 50);
 };
 
 var guesser = function(sketch) {
   var possibleGuesses = getGuesses(sketch);
   return Enumerate(function() {
-      var guess = guessPrior();
-      factor(possibleGuesses[guess]);
-      return guess;
+    var guess = guessPrior();
+    factor(possibleGuesses[guess]);
+    return guess;
   });
 };
 
