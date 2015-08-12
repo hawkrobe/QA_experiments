@@ -157,7 +157,7 @@ DrawObject.prototype.drawSpline = function(startX, startY, midX, midY, endX, end
   this.redraw();
 };
 
-function getGuessScore (s, k, a, drawObj, goalItem) {
+function getGuesses (s, k, a, drawObj) {
   var raster = new drawObj.paper.Raster(drawObj.canvas);
   raster.visible = false;
   var dataStr = raster.toDataURL(); // converts to Base 64
@@ -177,9 +177,8 @@ function getGuessScore (s, k, a, drawObj, goalItem) {
     contentType: 'application/json; charset=utf-8',
     data: current_data,
     success: function(msg) {
-      console.log(msg);
       var repackagedOutput =  _.object(_.zip(msg.guesses, msg.margins));
-      var trampoline = k(s, repackagedOutput[goalItem]);
+      var trampoline = k(s, repackagedOutput);
       while (trampoline){
 	trampoline = trampoline();
       }
