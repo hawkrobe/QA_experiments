@@ -22,19 +22,19 @@ var drawCurves = function(drawObj, splines){
 
 var makeSplines = function(n, splines){
   // Add a curve line to the set of curves
-  var startX = randomInteger(50) + 10;
-  var startY = randomInteger(50) + 10;
-  var midX = randomInteger(50) + 10;
-  var midY = randomInteger(50) + 10;
-  var endX = randomInteger(50) + 10;
-  var endY = randomInteger(50) + 10;
+  var startX = uniform(10,60);
+  var startY = uniform(10,60);
+  var midX = uniform(10,60);
+  var midY = uniform(10,60);
+  var endX = uniform(10,60);
+  var endY = uniform(10,60);
   var newSplines = splines.concat([[startX, startY,
                                     midX, midY,
                                     endX, endY]]);
   // Repeat until you have the desired number
   return (n==1) ? newSplines : makeSplines(n-1, newSplines);
 };
-
+											    
 var possibleGuesses = ["snake", "elephant","lobster","couch","teapot","giraffe","harp","bell","train","motorbike","spoon","dolphin","fish","duck","hat","rabbit","helicopter","ladder","laptop","mouse (animal)","tiger","violin","bicycle","trumpet","shark","kangaroo","crab","cow","fork","pineapple","airplane","pig","van","mosquito","zebra","truck","hammer","bus","floor lamp","pear","seagull","guitar","table","crocodile","palm tree","frying-pan","cat","race car","suv","chair","cactus","socks","blimp","swan","horse","bed","shoe","sheep","ship","microphone","banana","tablelamp","bench","shovel"];
 ///
 
@@ -79,6 +79,10 @@ var pragmaticSketcher = function(goalObj) {
   }, 500);
 };
 
-print(pragmaticSketcher("chair"));
+// Plot best sketch
+var bestSplineParams = MAP(pragmaticSketcher("giraffe")).val;
+var generatedImg = Draw(70, 70, true);
+var generatedImg = Draw(70, 70, true);
+drawCurves(generatedImg, bestSplineParams);
 
 ~~~~
