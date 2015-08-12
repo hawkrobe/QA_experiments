@@ -35,13 +35,22 @@ var makeSplines = function(n, splines){
   return (n==1) ? newSplines : makeSplines(n-1, newSplines);
 };
 											    
-var possibleGuesses = ["circle", "square"];
+var possibleGuesses = ["circle", "box"];
 ///
+
+var splinePrior = function() {
+  var numCurves = 4;
+  return makeSplines(numCurves, []);
+};
+
+var guessPrior = function() {
+  return uniformDraw(possibleGuesses);  
+};
 
 // tries to draw the sketch that maximizes the raw similarity to the goal object
 var literalSketcher = function(goalObj) {
   var targetImg = Draw(70, 70, false);      // Load the target
-  loadImage(targetImg, "/assets/img/" + goalObj + ".png"); 
+  loadImage(targetImg, "/Q_and_A/assets/img/" + goalObj + ".png"); 
   return MH(function() {
     var splineParams = splinePrior();       // Sample a set of 1-5 curves
     var generatedImg = Draw(70, 70, true);  // Create a canvas to draw on
@@ -55,8 +64,8 @@ var guesser = function(sketch) {
   return Enumerate(function() {
     var guess = guessPrior();
     var targetImg = Draw(70, 70, false);
-    loadImage(targetImg, "/assets/img/" + guess + ".png");
-    factor(-targetImg.distance(generatedImg)/1000);
+    loadImage(targetImg, "/Q_and_A/assets/img/" + guess + ".png");
+    factor(-targetImg.distance(sketch)/1000);
     return guess;
   });
 };
@@ -73,7 +82,7 @@ var pragmaticSketcher = function(goalObj) {
 };
 
 // Plot best sketch
-var bestSplineParams = MAP(pragmaticSketcher("square")).val;
+var bestSplineParams = MAP(pragmaticSketcher("box")).val;
 var generatedImg = Draw(70, 70, true);
 var generatedImg = Draw(70, 70, true);
 drawCurves(generatedImg, bestSplineParams);
@@ -107,7 +116,6 @@ var makeSplines = function(n, splines){
 };
 											    
 var possibleGuesses = ["snake", "elephant","lobster","couch","teapot","giraffe","harp","bell","train","motorbike","spoon","dolphin","fish","duck","hat","rabbit","helicopter","ladder","laptop","mouse (animal)","tiger","violin","bicycle","trumpet","shark","kangaroo","crab","cow","fork","pineapple","airplane","pig","van","mosquito","zebra","truck","hammer","bus","floor lamp","pear","seagull","guitar","table","crocodile","palm tree","frying-pan","cat","race car","suv","chair","cactus","socks","blimp","swan","horse","bed","shoe","sheep","ship","microphone","banana","tablelamp","bench","shovel"];
-///
 
 var splinePrior = function() {
   var numCurves = 4;
@@ -117,6 +125,9 @@ var splinePrior = function() {
 var guessPrior = function() {
   return uniformDraw(possibleGuesses);  
 };
+
+
+///
 
 // tries to draw the sketch that maximizes the raw similarity to the goal object
 var literalSketcher = function(goalObj) {
