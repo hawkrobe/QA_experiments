@@ -23,7 +23,8 @@
 \usepackage{textcomp}
 
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
-  
+\graphicspath{{./figures/}}
+ 
 \makeatother
 
 \title{Why do you ask? Good questions provoke informative answers.}
@@ -658,7 +659,7 @@ Humans are experts at inferring the intentions of other agents from their action
 . By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity.  % If questions themselves are informative, we must ask them carefully.
 
 
-\bibliography{fyp}
+\bibliography{qa}
 \bibliographystyle{apacite}
 
 
