@@ -330,127 +330,7 @@ While the questioner component of our model was critical to the pragmatic answer
 
 \todo[inline]{ndg: random note about politeness: we often use more words than necessary, just to avoid seeming curt. for instance i'd bet a lot of the 'yes' answers in the credit cards experiment are actually something like 'yes, we do'. one way to think about this is that the answerers relative balance between cost and helpfulness (roughly how much they care) is unknown to the questioner, and questioners will infer this. thus the answerer will choose answers partly to signal that they value helping.}
 
-
-\section{Exp.~1: Hierarchical questions and answers}
-
-\todo[inline]{Experiment 1 and 2 are the single-player versions, which I think we can take out in the version we submit to a journal -- the first multi-player exp (\#3) is just a better version of experiment 1, and the second multi-player one (\#4) succeeds in distinguishing the questioner models much better than experiment 2, which is quite confusing.}
-In order to simultaneously test how questioners choose questions when faced with a particular goal and how answerers respond  under uncertainty about this goal, we used a guessing-game task played by two players: a questioner and an answerer. In this game, $4$ animals (a dalmatian, a poodle, a cat, and a whale) were hidden behind $4$ gates. These animals corresponded to different levels in a class hierarchy (see Fig.~\ref{fig:taskhierarchy}). The questioner received a private goal of finding one of the objects (e.g. `find the poodle'), and the answerer (but not the questioner) knew the location of each object. Before choosing a gate, the questioner asked the answerer a single question, chosen from a restricted set of options, and the answerer responded by revealing the object behind a single gate. This restriction was motivated by one of the key features of our opening example: when the most direct question (``can I eat your food?'') is suppressed due to politeness, utterance length, complexity, or some other intervening factor, questioners must rely instead on an indirect question. 
-
-This set of restricted options was critical to distinguishing between the pragmatic and explicit variants of our model. If all questions were equally available, both our `explicit' and `pragmatic' questioner models would prefer the most direct one. To see how they make different predictions in the presence of restrictions, suppose `poodle?' was not available the questioner. If the questioner asked about a `dog?', the poodle and dalmatian would be considered equally good options by an explicit answerer because they are both dogs. However, the pragmatic answerer could reason that if the questioner was truly interested in the location of the dalmatian, he would have \emph{asked} about the dalmatian. Because he didn't, he must be interested in the other valid response that he lacks a direct question for: the poodle. 
-
-\begin{figure}[t!]
-\begin{center}
-\includegraphics[scale = .35]{taskhierarchy.pdf}
-\end{center}
-\vspace{-.25cm}
-\caption{Stimulus hierarchy used in Exp.~1. The goal space and answer space contained the four leaves. %hidden behind gates (the nodes of the tree). 
-The question space, however, was restricted to the highlighted nodes, proceeding up the hierarchy, allowing for indirect questions.}
-\label{fig:taskhierarchy}
-\end{figure}
-
-\subsubsection{Participants} We recruited 125 participants %between the ages of 20 and 75 
-from Amazon's Mechanical Turk to participate in this task.  %They were compensated 50\textcent \, for their work, and the median completion time was 3.75 minutes. 
-Eleven participants were excluded due to self-reported confusion about the task instructions or due to being non-native English speakers.
-
-\subsubsection{Stimuli \& Procedure} In terms of our model specification, the world space $\mathcal{W}$ was the set of $4! = 24$ possible assignments of four objects to four gates. The goal space $\mathcal{G}$ was the set of four objects that the questioner could be trying to find (the leaves of the tree in Fig.~\ref{fig:taskhierarchy}). The answer space $\mathcal{A}$ was the set of four gates that the answerer could  reveal. The restricted question space $\mathcal{Q}$ contained the set of highlighted nodes in the hierarchy: `dalmatian?', `dog?', `pet?', and `animal?'. 
-
-	\begin{figure}[t!]
-\begin{center}
-\includegraphics[scale = .4]{Exp1PragmaticQuestioner.pdf}
-\includegraphics[scale = .4]{Exp1PragmaticAnswerer.pdf}
-\end{center}
-\vspace{-.5cm}
-\caption{Exp.~1 results, compared with the predictions of the best-performing model  for questioner (left) and answerer (right).  The explicit and pragmatic questioner models do not make different predictions in this task, but the pragmatic answerer better accounts for the qualitative patterns in the response data than the explicit answerer.}
-\vspace{-.1cm}
-\label{fig:exp1res}
-\end{figure}
-
-Each participant provided responses for four trials in the role of the questioner (corresponding to the four goals), and four trials in the role of the answerer (corresponding to the four possible questions). In the questioner block, players were presented with a private goal from $\mathcal{G}$, like ``find the poodle!'' and were prompted to select a question from a drop-down menu containing elements of $\mathcal{Q}$ that would best help them find it. In the answerer block, players were shown which items were behind which gates and were told that the other player had asked a particular question from $\mathcal{Q}$. They were prompted to select a gate from a drop-down menu that would be most helpful for the questioner, keeping in mind his or her constraints. 
-(To minimize learning effects, questioners did not receive answers and neither role saw the outcome of the game.%; this may have affected motivation.
-)
-In order to collect responses for all elements of $\mathcal{G}$ and $\mathcal{Q}$, the order of the questioner and answerer blocks was randomly assigned for each participant, and the order of stimuli within these blocks was also randomized%\footnote{The experiment is online at \url{http://cocolab.stanford.edu/cogsci2015/Q_and_A/experiment1/experiment1.html}}. 
-
-\subsubsection{Results}
-%\red{check for effect of Q/A block order.}
-Results for the questioner role are shown alongside model predictions in Fig.~\ref{fig:exp1res} (left). We find that questioners systematically prefer to ask different questions given different goals, even as those questions become more indirect. $\chi^2$ tests over each of the four response distributions show a significant divergence from uniform. Questioners preferentially ask about the `dalmatian' given the  dalmatian goal, ${\chi^2(3) = 137}, {p < .001}$, about the `dog' given the poodle goal, ${\chi^2(3) = 152}, {p <.001}$, about the `pet' given the cat goal, ${\chi^2(3) = 120},  {p <.001}$, and about the `animal' when given the whale goal, ${\chi^2(3) = 150}, {p <.001}$. 
-
-Results for the answerer role are shown in Fig.~\ref{fig:exp1res} (right). Answerers are highly sensitive to the constraints of the questioner, giving information about the dalmatian when asked about a `dalmatian', ${\chi^2(3) = 281}, {p <.001}$, about the poodle when asked about a `dog', ${\chi^2(3) = 137}, {p <.001}$, about the cat when asked about a `pet', ${\chi^2(3) = 57}, {p<.001}$, and about the whale when asked about an `animal', ${\chi^2(3) = 121}, {p < .001}$. Note that, under an explicit interpretation of the question, revealing the dalmatian and the poodle would both be perfectly acceptable answers to a question about a `dog', but answerers strongly prefer to give the location of the poodle.  In the next section, we compare these results to the predictions of our family of models (Fig. \ref{fig:Exp1ModelSpace}). 
-
-\subsubsection{Model comparison}
-Each model was run with uniform prior probability over worlds, goals, questions, and answers, and with equal cost for all utterances. For each model, a single optimality parameter, which applied to all agents as described above, was fit to maximize correlation with the data.
-
-We can rule out both the literal answerer and literal questioner. The \emph{literal answerer} yields a uniform distribution over the four answers. %that are the case in the given world. 
-This has consequences for the corresponding \emph{literal questioner} model: when this questioner reasons about which question would generate the most helpful answer from the literal answerer, it finds no differences in response probabilities, and therefore has no preference for which question to ask. The predictions of these model, plotted against our empirical results, are shown in the left-hand column of Fig. \ref{fig:Exp1ModelSpace}.
-%; questioners and answerers behave very differently than predicted by these literal models, so we will not consider them further.
-
-The two remaining questioner models make roughly the same predictions for this task, and we are not able to distinguish them on the basis of these data. 
-%Since the explicit questioner is nested two levels inside the pragmatic questioner, and each agent in the pragmatic questioner's recursion could in principle be associated with a free rationality parameter, we must consider model complexity when making comparisons. 
-%To ensure equal footing for the different models, we use just two rationality parameters: one shared by questioners at all levels of recursion, and one shared by answerers at all levels of recursion. 
-%For each model, we tune these parameters to maximize the correlation between model and data. 
-We found a model-data correlation of $r = 0.96$ for the explicit questioner and correlation of $r = 0.99$ for the pragmatic questioner. The difference between these correlations is significant, $d = 0.03, \textrm{hou's 95\% confidence interval} = [-0.097, -0.004]$, taking into account the fact that these correlations are dependent and overlapping on the same empirical data \cite{DiedenhofenMusch14_cocor}. Although the pragmatic model has a slightly better fit, the two models only differ slightly in the magnitude of predictions, not in qualitatively important ways such as the rank ordering of response.
-%
-\begin{figure}[t!]
-\begin{center}
-\includegraphics[scale=.75]{Exp1ModelFits.pdf}
-\end{center}
-\vspace{-.5cm}
-\caption{Full space of models, and their correlations with the data from Exp.~1. Questioner models in the first row reason about the answerers directly below them, and the pragmatic answerer reasons about the explicit questioner.}
-\label{fig:Exp1ModelSpace}
-\vspace{-.15cm}
-\end{figure}
-%
-The pragmatic questioner model's predictions for each response distribution are shown in Fig.~\ref{fig:exp1res} (left). Although the magnitude of its predictions are not in perfect alignment with the magnitude of the empirical data (because it is strongly optimizing), it captures most of the interesting qualitative patterns of the data, particularly the modal responses. 
-
-The pragmatic answerer provides a much better fit to the data than the explicit answerer: a model-data correlation of $r = 0.8$ for the explicit answerer and $r = 0.95$ for the pragmatic answerer. The difference between these correlations is significant, $d = -0.15, \textrm{ Zou's 95\% confidence interval} = [-0.43, -0.02]$.
-%To ensure equal footing for model comparison, we restricted both models to a single optimality parameter, shared by all agents within the recursion.
-%The model comparison here is more involved, since the explicit answerer does not depend on a questioner at all and therefore only has one parameter. We impose the same restriction on the pragmatic answerer as we applied to the pragmatic questioner, fitting one optimality parameter held in common between all answerer agents, and a second parameter for the internal questioner. 
-%
-
-\subsubsection{Discussion} Only the pragmatic answerer can account for essential qualitative features of the response data. For example, the explicit answerer predicts that participants will be equally likely to show the `dalmatian,' `poodle,' and `cat' when asked about a pet. Instead, the data show a significant preference for revealing the cat, leaving `dalmatian' and `poodle' at the same level as the other alternative. The pragmatic answerer correctly predicts this pattern  (see Fig.~\ref{fig:exp1res} (right)). Even more dramatically, the explicit answerer predicts a uniform distribution over responses to the `animal?' question. %(since all four responses denote animals)
-However, the empirical distribution was significantly different from uniform. Thus, the pragmatic answerer is necessary to account for these data.
-
-These data provide strong evidence for a pragmatic answerer, but are more equivocal with respect to the explicit and pragmatic questioner. Because the two models did not make significantly different predictions for this experiment (and both work quite well), we ran a follow-up study on a special case of the guessing-game paradigm in which the explicit and pragmatic questioners make different predictions.
-
-\section{Exp.~2: A Critical Test of Questioner Models}
-
-\subsubsection{Participants} We recruited 50 participants to participate only in the questioner scenario of the guessing game presented above. Ten participants were excluded on the basis of having a non-English native language, or reporting confusion about the instructions.
-
-\subsubsection{Stimuli \& Procedure} The procedure was the same as before with some changes to the stimuli. The world space $\mathcal{W}$ consisted of possible assignments of the three pets to three gates. The possible goals $\mathcal{G}$ were the dalmatian and poodle (not the cat). The possible questions $\mathcal{G}$ were `dalmatian?' or `cat?'.  The possible answers $\mathcal{A}$ were the three gates. Each participant was given the two goals in a random order%\footnote{The experiment is online at \url{http://cocolab.stanford.edu/cogsci2015/Q_and_A/experiment2/experiment2.html}}. 
-
-\subsubsection{Results}
-
-When the goal was to find the dalmatian, participants were significantly more likely to ask about the dalmatian than the cat, $\chi^2(1) = 12, p < 0.001$. When the goal was to find the poodle, participants were marginally more likely to ask about the cat than the dalmatian, $\chi^2(1) = 3.6, p = 0.058$. When looking only at the first of the two trials, the dalmatian result held, $\chi^2(1) = 14.4, p < 0.001$, but participants' preference for asking about the cat disappeared, $\chi^2(1) = 0.07, p = 0.79$. These results are shown in Fig.~\ref{fig:exp2res}.
-
-\begin{figure}[t!]
-\begin{center}
-\includegraphics[scale=.45]{Exp2Results_all.pdf}
-\includegraphics[scale=.45]{Exp2Results_split.pdf}
-\end{center}
-\vspace{-.5cm}
-\caption{The overall response distribution in Exp.~2 (left) and the same distribution split into first- and second-trial data (right).}
-\vspace{-.25cm}
-\label{fig:exp2res}
-\end{figure}
-
-\subsubsection{Model comparison}
-
-The explicit questioner predicts that participants should have no preference for a question given the `poodle' goal, since an explicit answerer would be equally unlikely to give the desired answer for both. The pragmatic questioner model, however, predicts that participants should prefer to ask about the cat. This is because the (internal) pragmatic answerer would reason that if the questioner was interested in the dalmatian, they would ask about the dalmatian; if they didn't, they must be interested in the other possible goal. 
-
-It is again unclear which questioner model is best. Overall, the response distribution matches the predictions of the pragmatic model: questioners prefer to ask about the cat. 
-However, participants don't show this behavior if we look at only the first trial.
-This could be due to a number of reasons.
-Interestingly, the pragmatic model predicts a more explicit-like response distribution if the questioner does not take into account the constraint on possible goals: if participants thought the poodle was the only goal (counter to the instructions), then asking about the dog would be consistent with the pragmatic model as well. 
-It is possible that participants only fully-processed the alternative (dalmatian) goal if they had first done the trial where that was the goal.\footnote{This pattern was also replicated with a simpler set of stimuli containing red and blue squares and circles.}
-
-\subsubsection{Discussion}
-
-Experiment 1 established that the pragmatic answerer model is necessary to account for answerer behavior in our simple guessing-game task, complementing  results from our computational experiments. Additionally, it established that the explicit and pragmatic questioner models could capture qualitatively important features of the questioner data, such as the systematic preference for under-informative questions when the explicit label for an object was unavailable. However, both experiments 1 and 2 failed to distinguish between the explicit and pragmatic questioner models. In experiment 1, they made indistinguishable predictions; in experiment 2, the response data were confounded with participants' beliefs about goal alternatives. 
-
-Certain aspects of the task are subject to other methodological concerns. For instance, participants only gave hypothetical judgements about what they \emph{would} say given different goals or questions instead of playing out the full game, and participants did not believe that they were playing with a real partner. These issues contributed to overall confusion about the task, and potentially reflected abstract logic-based reasoning instead of the social and linguistic intuitions we intended to test.
-
-In the following two experiments, we modified the task in two ways to address these concerns. In experiment 3, we replicated experiment 1 in a real-time, multi-player environment where participants are assigned to either the ``questioner'' role or the ``answerer'' role and interact directly with one another as they play the full game. In experiment 4, we additionally expanded the set of items beyond the single animal hierarchy used in the previous experiments. This item set includes four different domains (animals, plants, places, and artifacts), crossed with three different hierarchy structures eliciting a larger range of predictions from our models. One of these hierarchy structures was specifically designed to provide a critical test for distinguishing the explicit and pragmatic questioner models. Unlike experiment 2, this condition did not require participants to reason about unintuitive question alternatives that do not pick out any existing items in the world. 
-
-\section{Exp.~3: Interactive Questions and Answers}
+\section{Exp.~1: Interactive Questions and Answers}
 
 \subsubsection{Participants} We recruited 50 participants
 from Amazon's Mechanical Turk to participate in this task: 25 were assigned to the  questioner role and 25 to the answerer role, yielding 25 complete games.
@@ -511,13 +391,17 @@ The pragmatic answerer provides a much better fit to the data than the explicit 
 
 \subsubsection{Discussion}
 
-We replicated the results of experiment 1 in a real-time, interactive setting. Again, we found that both explicit and pragmatic questioner models provide an excellent fit to questioner behavior, and that the pragmatic answerer accounts for the data significantly better than the explicit answerer both quantitatively and qualitatively. In addition, the full, interactive game was designed to be more natural and less confusing to participants than the drop-down menu design from experiments 1 and 2. Because players received constant feedback from their partner, this task was framed as inherently social, and because answerers watched as questioners moved words to form questions, there was a convincing mechanism for people to believe they were playing with another human. This addresses some concerns raised with experiments 1 and 2. 
+%We replicated the results of experiment 1 in a real-time, interactive setting. Again, we found that both explicit and pragmatic questioner models provide an excellent fit to questioner behavior, and that the pragmatic answerer accounts for the data significantly better than the explicit answerer both quantitatively and qualitatively. In addition, the full, interactive game was designed to be more natural and less confusing to participants than the drop-down menu design from experiments 1 and 2. Because players received constant feedback from their partner, this task was framed as inherently social, and because answerers watched as questioners moved words to form questions, there was a convincing mechanism for people to believe they were playing with another human. This addresses some concerns raised with experiments 1 and 2. 
+Only the pragmatic answerer can account for essential qualitative features of the response data. For example, the explicit answerer predicts that participants will be equally likely to show the `dalmatian,' `poodle,' and `cat' when asked about a pet. Instead, the data show a significant preference for revealing the cat, leaving `dalmatian' and `poodle' at the same level as the other alternative. The pragmatic answerer correctly predicts this pattern  (see Fig.~\ref{fig:exp1res} (right)). Even more dramatically, the explicit answerer predicts a uniform distribution over responses to the `animal?' question. %(since all four responses denote animals)
+However, the empirical distribution was significantly different from uniform. Thus, the pragmatic answerer is necessary to account for these data.
+
+These data provide strong evidence for a pragmatic answerer, but are more equivocal with respect to the explicit and pragmatic questioner. Because the two models did not make significantly different predictions for this experiment (and both work quite well), we ran a follow-up study on a special case of the guessing-game paradigm in which the explicit and pragmatic questioners make different predictions.
 
 Note that so far we have used the same animal hierarchy for the stimulus set in all our experiments, providing only 16 points of comparison between our models and empirical data. Furthermore, there exists a heuristic strategy for selecting questions given goals in the hierarchy structure we have been using which produces the same pattern of responses without requiring any social inference. Suppose questioners saw their goal on a given trial and ruled out labels that do not apply (e.g. a `cat' is neither a `dalmatian' nor a `dog'), then picked the most specific of the remaining labels (`pet' picks out a smaller set of objects than `animal'). Whether through use of this heuristic strategy or pragmatic inference (as our model suggests), questioners strongly converged on a single mapping from goals to question utterances. Because response probabilities are clumped at the ends of the scale, our fits to the questioner model are not particularly meaningful: we're fitting endpoints.
  
-In experiment 4, we test the generality of our model by expanding the stimulus set to encompass multiple stimulus domains and multiple hierarchy structures designed to elicit graded judgements. This addresses the potential concern that the behavioral patterns we have been modeling are specific to the set of four animals or the tree-like hierarchy in which they were embedded. We also took care to include one simple but critical hierarchy structure where (1) the explicit and pragmatic questioner models make different predictions and (2) the heuristic strategy cannot mimic these predictions. 
+In experiment 2, we test the generality of our model by expanding the stimulus set to encompass multiple stimulus domains and multiple hierarchy structures designed to elicit graded judgements. This addresses the potential concern that the behavioral patterns we have been modeling are specific to the set of four animals or the tree-like hierarchy in which they were embedded. We also took care to include one simple but critical hierarchy structure where (1) the explicit and pragmatic questioner models make different predictions and (2) the heuristic strategy cannot mimic these predictions. 
 
-\section{Exp.~4: Generalizing Predictions}
+\section{Exp.~2: Generalizing Predictions}
 
 \subsubsection{Participants} We recruited 199 participants
 from Amazon's Mechanical Turk to participate in this task. Fifty participants were excluded due to a server crash that terminated the task before completion. Two additional participants were excluded because they were not non-native English speakers. This left 74 unique completed games.
