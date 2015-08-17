@@ -33,7 +33,7 @@
 \affiliation{Stanford University} 
 
 
-\abstract{What makes a question useful? What makes an answer appropriate? In this paper, we formulate a family of probabilistic models of question and answer behavior that differ in the amount of pragmatic reflection attributed to speakers. We compare these models based on three different pieces of evidence: First, we explore three classic effects in psycholinguistics that show an answerer's level of informativeness varies with the inferred questioner goal. Second, we jointly test the questioner and answerer components of our model using a simple question-answer communication game. Third, we use a real-time, multi-player version of this game with a wider range of conditions, which allows us to distinguish among the questioner models. We find that sophisticated pragmatic reasoning is needed to account for some critical aspects of the data. People can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests. The best model accurately fits our behavioral data, providing a promising direction for understanding the dynamics of human question-answer dialog.
+\abstract{What makes a question useful? What makes an answer helpful? In this paper, we formulate a family of probabilistic models of question and answer behavior that differ in the amount of pragmatic reflection attributed to speakers. We compare these models based on three different pieces of evidence: First, we explore three classic effects in psycholinguistics that show an answerer's level of informativeness varies with the inferred questioner goal. Second, we jointly test the questioner and answerer components of our model using a simple question-answer communication game. Third, we use a real-time, multi-player version of this game with a wider range of conditions, which allows us to distinguish among the questioner models. We find that sophisticated pragmatic reasoning is needed to account for some critical aspects of the data. People can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests. The best model accurately fits our behavioral data, providing a promising direction for understanding the dynamics of human question-answer dialog.
 }
 
 \keywords{pragmatics, computational modeling}
@@ -44,16 +44,13 @@
 \maketitle
 \section{Introduction}
 
-\todo[inline]{ndg: I moved this to a new file for post-fyp edits (on our way to a journal paper). We should probably move it to a new dir and change the name appropriately....}
+\begin{enumerate}[(1)]
+\item Scenario: Q is hungry and wants A's apple.\\Q: ``Are you gonna eat that apple?''\\ A: ``Oh, go ahead!''
+\item Scenario: Q is looking for a copy of \emph{Oh, The Places You'll Go!} to give to her son at graduation.\\ Q: ``Do you know how to get to the campus bookstore?''\\ A: ``It's way on the other side of campus, but there's a shop just down the street with a better selection.''
+\item Scenario: Q is at office hours and wants to learn calculus.\\ Q: ``What's wrong with my answer to \#1?''\\ A: ``Well, let me remind you how to compute a derivative...''
+\end{enumerate}
 
-\begin{quote}
-Q:``Are you gonna eat that apple?''\\ A:``Oh, go ahead!''
-\end{quote}
-
-In this exchange, Q wants to know whether she can eat A's apple. Instead of directly asking for the apple, Q strategically chooses a question that differs from her true interest -- avoiding an impolite question -- yet still manages to send a signal to A about her intentions. A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. This subtle interplay highlights the prevalence of social reasoning tasks in everyday dialogue and raises two specific questions for formal models of language:
-What makes a question useful? And what makes an answer appropriate? 
-
-\todo[inline]{ndg: I wonder if we should include more intro examples for this longer version? I like this one, but the politeness aspect is slightly misleading....}
+In these three exchanges, Q strategically chooses a question differing from her true interests, yet still manages to send a signal to A about her intentions. A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. There are many reasons why we ask indirect questions: the direct question may be impolite or embarrassing, as in (1) and (2), it may be too long or costly to fully explain, as in (2), or we may just not know enough about the topic we're interested in to articulate our interests, as in (3). A good answerer, however, can be remain reasonably helpful regardless of the circumstances. This subtle interplay highlights the prevalence of social reasoning tasks in everyday dialogue and raises two specific questions for formal models of language: What makes a question useful? And what makes an answer helpful? 
 
 A number of psycholinguistic studies have provided evidence that answerers are both sensitive to a questioner's goals and attempt to be informative with respect to those goals.
 For instance, in Clark's \citeyear{Clark79_IndirectSpeechActs} classic study, researchers called liquor merchants and opened the conversation with one of two sentences to set context: ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). They then asked, ``Does a fifth of Jim Beam cost more than \$5?'' Merchants gave a literal yes/no answer significantly more often in the latter condition than the former, where an exact price was more common. When provided with the five dollar context, the merchant inferred that the questioner's goal was literally to find out whether or not they could afford the whiskey, hence a simple `yes'  sufficed. In the uninformative context, however, the merchant inferred that the questioner's goal was just to buy whiskey, so the exact price was the most relevant response \cite{Clark79_IndirectSpeechActs}. 
