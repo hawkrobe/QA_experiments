@@ -1,0 +1,52 @@
+// Run as:
+// webppl genAnswererPredictions.wppl --require ../qa
+
+var main = function(){
+
+  var rationalityPs = _.range(1, 10, .1);
+
+  var conditions = [{gameObj: expCondition1, type : "branching"},
+                    {gameObj: expCondition2, type : "overlapping"},
+                    {gameObj: expCondition3, type : "equivocal"}
+                   ];
+  var fileName = "answererPredictions.raw.csv";
+  
+//  qa.writeCSV([["type", "modelLevel", "question", "rationality", "response", "modelProb"]], fileName)
+
+  map(function(expCond) {
+    // Set up file
+    var model = QAmodel(expCond.gameObj);
+
+    map(function(rationality) {
+      // Set up r to be nice
+      var r = rationality.toFixed(1);
+
+      map(function(question) {
+        // // get relevant parameters
+        var world = expCond.gameObj.exampleWorld;
+        var questions = expCond.gameObj.questionSpace;
+
+        var litA = model.litA;
+        var erp = litA(question, model.exampleWorld, r);
+        var label = [expCond.type, "literal", "Q" + expCond.type.slice(0,1) + ":" + question, r];
+        console.log(label);
+//       qa.writeERP(erp, label, fileName)
+
+        var pragA = model.pragA;
+        var erp = pragA(question, model.exampleWorld, r);
+        var label = [expCond.type, "pragmatic", "Q" + expCond.type.slice(0,1) + ":" + question, r];
+        console.log(label);
+//       qa.writeERP(erp, label, fileName)
+
+        var expA = model.expA;
+        var erp = expA(question, model.exampleWorld, r);
+        var label = [expCond.type, "explicit", "Q" + expCond.type.slice(0,1) + ":" + question, r];
+        console.log(label);
+//       qa.writeERP(erp, label, fileName)
+      }, model.questionSpace);
+    }, rationalityPs);
+  }, conditions);
+  return 'done';
+};
+
+main();
