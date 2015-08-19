@@ -101,16 +101,16 @@ var QAmodel = function(conditionObj) {
     var location = qa.butLast(temp[1]);
     return function(pred){
       return function(x){
-	return x[node] == location; // return true if the object really is in location
+        return x[node] == location; // return true if the object really is in location
       };
     };
   });
 
   var meaning = cache(function(utterance){
     return (isTaxonomyQuestion(utterance) ? taxonomyQuestionMeaning(utterance) :
-	    isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) :
-	    utterance === 'null' ? function(w){return true;} :
-	    undefined);
+            isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) :
+            utterance === 'null' ? function(w){return true;} :
+            undefined);
   });
 
   var getFitnessVals = function(labelVal) {
@@ -119,8 +119,8 @@ var QAmodel = function(conditionObj) {
       // match if object is a decendent of the labelVal 
       // have to hack it a bit if the label is a leaf of the tree
       var match = (labeledSubtree == null  
-		   ? objectVal == labelVal 
-		   : qa.isNodeInTree(objectVal, labeledSubtree))
+                   ? objectVal == labelVal 
+                   : qa.isNodeInTree(objectVal, labeledSubtree))
       // will eventually want to sample instead of fixing at 0...
       return match ? 0 : -Infinity
     }, qudSpace)
@@ -151,11 +151,11 @@ var QAmodel = function(conditionObj) {
     function(question, trueWorld, rationality) {
       // Pick answer conditioned on communicating question predicate value
       return Enumerate(
-	function(){
+        function(){
           var answer = fullAnswerPrior();
           factor(literalListener(question, answer).score([], trueWorld) * rationality);
           return answer;
-	});
+        });
     });
 
   var literalQuestioner = cache(
@@ -163,12 +163,12 @@ var QAmodel = function(conditionObj) {
       var qud = (makeQUD(qud_node))
 
       Enumerate(function(){
-	var question = questionPrior();
-	// What is the gate value I'd guess under my prior?
-	var prior = Enumerate(function(){
+        var question = questionPrior();
+        // What is the gate value I'd guess under my prior?
+        var prior = Enumerate(function(){
           return qud(worldPrior());
-	});
-	var expectedKL = mean(
+        });
+        var expectedKL = mean(
           function(){
             // What do I expect the world to be like?
             var trueWorld = worldPrior();
@@ -184,8 +184,8 @@ var QAmodel = function(conditionObj) {
             });
             return qa.KL(posterior, prior);
           });
-	factor(expectedKL * rationality);
-	return question;
+        factor(expectedKL * rationality);
+        return question;
       });
     }
   );
@@ -195,24 +195,24 @@ var QAmodel = function(conditionObj) {
     function(question, trueWorld, rationality) {
       // Pick answer conditioned on communicating question predicate value
       return Enumerate(
-	function(){
+        function(){
           var truthfulAnswerPrior = Enumerate(function(){
             var answer = fullAnswerPrior();
             factor(literalListener(question, answer).score([], trueWorld));
             return answer
           });
           var answer = sample(truthfulAnswerPrior);
-	  var qud = makeQUD(questionToNode(question));
-	  var score = mean(function(){
+          var qud = makeQUD(questionToNode(question));
+          var score = mean(function(){
             var inferredWorld = sample(literalListener(question, answer));
             var inferredLocs = qud(inferredWorld);
             var trueLocs = qud(trueWorld);
-	    var posToCheck = randomInteger(inferredLocs.length); 
+            var posToCheck = randomInteger(inferredLocs.length); 
             return (_.isEqual(trueLocs[posToCheck], inferredLocs[posToCheck]) ? 1 : 0);
-	  });
+          });
           factor(Math.log(score) * rationality);
           return answer;
-	});
+        });
     });
 
 
@@ -222,10 +222,10 @@ var QAmodel = function(conditionObj) {
       var question = questionPrior();
       // What is the gate value I'd guess under my prior?
       var prior = Enumerate(function(){
-	return qud(worldPrior());
+        return qud(worldPrior());
       });
       var expectedKL = mean(
-	function(){
+        function(){
           // What do I expect the world to be like?
           var trueWorld = worldPrior();
           // If I ask this question, what answer do I expect to get,
@@ -239,7 +239,7 @@ var QAmodel = function(conditionObj) {
             return qud(world);
           });
           return qa.KL(posterior, prior);
-	});
+        });
       factor(expectedKL * rationality);
       return question;
     });
@@ -257,16 +257,16 @@ var QAmodel = function(conditionObj) {
       // Pick answer conditioned on communicating question predicate value
 
       var truthfulAnswerPrior = Enumerate(function(){
-	var answer = fullAnswerPrior();
-	factor(literalListener(question, answer).score([], trueWorld));
-	return answer
+        var answer = fullAnswerPrior();
+        factor(literalListener(question, answer).score([], trueWorld));
+        return answer
       })
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
         var inferredWorld = sample(literalListener(question, answer));
         var inferredLocs = qud(inferredWorld);
         var trueLocs = qud(trueWorld);
-	var posToCheck = randomInteger(inferredLocs.length); // always 1, here
+        var posToCheck = randomInteger(inferredLocs.length); // always 1, here
         return (_.isEqual(trueLocs[posToCheck], inferredLocs[posToCheck]) ? 1 : 0);
       });
       factor(Math.log(score) * rationality);
@@ -280,10 +280,10 @@ var QAmodel = function(conditionObj) {
       var question = questionPrior();
       // What is the gate value I'd guess under my prior?
       var prior = Enumerate(function(){
-	return qud(worldPrior());
+        return qud(worldPrior());
       });
       var expectedKL = mean(
-	function(){
+        function(){
           // What do I expect the world to be like?
           var trueWorld = worldPrior();
           // If I ask this question, what answer do I expect to get,
@@ -297,14 +297,14 @@ var QAmodel = function(conditionObj) {
             return qud(world);
           });
           return qa.KL(posterior, prior);
-	});
+        });
       factor(expectedKL * rationality);
       return question;
     });
   });
   return {qudSpace : qudSpace,
-  	  questionSpace : questionSpace,
-  	  exampleWorld : exampleWorld,
+          questionSpace : questionSpace,
+          exampleWorld : exampleWorld,
           pragQ : pragmaticQuestioner,
           litQ : literalQuestioner,
           expQ: explicitQuestioner,
