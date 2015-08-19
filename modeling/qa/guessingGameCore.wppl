@@ -200,29 +200,16 @@ var QAmodel = function(conditionObj) {
             var answer = fullAnswerPrior();
             factor(literalListener(question, answer).score([], trueWorld));
             return answer
-          })
+          });
           var answer = sample(truthfulAnswerPrior);
-          var score = mean(
-            function(){
-              // We may be uncertain about which leaf node the question
-              // refers to, so we're integrating over possible leaf nodes
-              // of interest
-              var fitness = fitnessMat()
-              var questionNode = questionToNode(question);
-              var subtree = qa.findSubtree(questionNode, taxonomy);
-              var leavesBelowNode = subtree === null ? [questionNode] : qa.leaves(subtree);
-              var leafOfInterest = uniformDraw(leavesBelowNode);
-
-              // factor based on fitness of label to object
-              factor(fitness[questionNode][leafOfInterest])
-
-              // Did the listener infer the correct location of the leaf
-              // node of interest?
-              var inferredWorld = sample(literalListener(question, answer));
-              var inferredPosition = inferredWorld[leafOfInterest];
-              var truePosition = trueWorld[leafOfInterest];
-              return (truePosition == inferredPosition) ? 1 : 0;
-            });
+	  var qud = makeQUD(questionToNode(question));
+	  var score = mean(function(){
+            var inferredWorld = sample(literalListener(question, answer));
+            var inferredLocs = qud(inferredWorld);
+            var trueLocs = qud(trueWorld);
+	    var posToCheck = randomInteger(inferredLocs.length); 
+            return (_.isEqual(trueLocs[posToCheck], inferredLocs[posToCheck]) ? 1 : 0);
+	  });
           factor(Math.log(score) * rationality);
           return answer;
 	});
@@ -230,9 +217,8 @@ var QAmodel = function(conditionObj) {
 
 
   var explicitQuestioner = cache(function(qud_node, rationality) {
-    var qud = (makeQUD(qud_node))
-    
-    Enumerate(function(){
+    var qud = makeQUD(qud_node);
+    return Enumerate(function(){
       var question = questionPrior();
       // What is the gate value I'd guess under my prior?
       var prior = Enumerate(function(){
@@ -275,14 +261,14 @@ var QAmodel = function(conditionObj) {
 	factor(literalListener(question, answer).score([], trueWorld));
 	return answer
       })
-      var answer = sample(truthfulAnswerPrior)
-      var score = mean(
-	function(){
-          var inferredWorld = sample(literalListener(question, answer));
-          var inferredPosition = qud(inferredWorld);
-          var truePosition = qud(trueWorld)
-          return (truePosition[0] == inferredPosition[0]) ? 1 : 0;
-	});
+      var answer = sample(truthfulAnswerPrior);
+      var score = mean(function(){
+        var inferredWorld = sample(literalListener(question, answer));
+        var inferredLocs = qud(inferredWorld);
+        var trueLocs = qud(trueWorld);
+	var posToCheck = randomInteger(inferredLocs.length); // always 1, here
+        return (_.isEqual(trueLocs[posToCheck], inferredLocs[posToCheck]) ? 1 : 0);
+      });
       factor(Math.log(score) * rationality);
       return answer;
     });
