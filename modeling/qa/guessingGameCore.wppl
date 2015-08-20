@@ -191,31 +191,34 @@ var QAmodel = function(conditionObj) {
   );
   
 
-  var explicitAnswerer = cache(
-    function(question, trueWorld, rationality) {
-      // Pick answer conditioned on communicating question predicate value
-      return Enumerate(
-        function(){
-          var truthfulAnswerPrior = Enumerate(function(){
-            var answer = fullAnswerPrior();
-            factor(literalListener(question, answer).score([], trueWorld));
-            return answer
-          });
-          var answer = sample(truthfulAnswerPrior);
-          var qud = makeQUD(questionToNode(question));
-          var score = mean(function(){
-            var inferredWorld = sample(literalListener(question, answer));
-            var inferredLocs = qud(inferredWorld);
-            var trueLocs = qud(trueWorld);
-            var posToCheck = randomInteger(inferredLocs.length); 
-            return (_.isEqual(trueLocs[posToCheck], inferredLocs[posToCheck]) ? 1 : 0);
-          });
-          factor(Math.log(score) * rationality);
-          return answer;
-        });
+  var explicitAnswerer = cache(function(question, trueWorld, rationality) {
+    // Pick answer that is most informative about explicit QUD
+    var qud = makeQUD(questionToNode(question));
+    return Enumerate(function(){
+      // Restrict to true answers, for simplicity (otherwise lots of low-prob items)
+      var truthfulAnswerPrior = Enumerate(function(){
+        var answer = fullAnswerPrior();
+        factor(literalListener(question, answer).score([], trueWorld));
+        return answer;
+      });
+      var answer = sample(truthfulAnswerPrior);
+      // This is P(listener with this QUD will correctly guess relevant aspects of true world | q, answer)?
+      var score = mean(function(){
+	// For each world that the questioner might infer...
+        var inferredWorld = sample(literalListener(question, answer));
+        var inferredLocs = qud(inferredWorld);
+        var trueLocs = qud(trueWorld);
+	// For each item of interest in that world...
+        var posToCheck = randomInteger(inferredLocs.length);
+	// Check whether the inferred item position is correct
+        return (_.isEqual(trueLocs[posToCheck], inferredLocs[posToCheck]) ? 1 : 0);
+      });
+      factor(Math.log(score) * rationality);
+      return answer;
     });
-
-
+  });
+  
+  
   var explicitQuestioner = cache(function(qud_node, rationality) {
     var qud = makeQUD(qud_node);
     return Enumerate(function(){
