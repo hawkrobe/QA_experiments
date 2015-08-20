@@ -146,10 +146,10 @@ In order to choose a question that results in useful information, the questioner
 
 More formally, suppose there is a set of world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$.
 These sets are taken to be in common ground between the questioner and the answerer.
-An informational goal $g \in \mathcal{G}$ is a projection function that maps a world state to a particular feature or set of features that the questioner cares about; this is similar to the notion of a question-under-discussion \cite{Roberts96_InformationStructureDiscourse}.
-\todo[inline]{ndg: somewhere (discussion?) explore whether this notion of goals is enough.}
-Letting $P(w)$ denote a distribution over the space of possible world states $\mathcal{W}$, we will use the notation $\widehat{P^g}(w)$ to indicate the probability of $g(w)$ under the projected distribution. So 
-$$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ which is a distribution over the image of $g$.
+We formalize the notion of an informational goal $g \in \mathcal{G}$ as a projection function that maps a world state $w$ to a particular feature or set of features that the questioner cares about; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can say to convey a world state, but only a few which are informative \emph{with respect to} the current topic of discussion.
+
+We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of $w$ under the projected distribution. Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. Instead, 
+$$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ is a distribution over the image of $g$.
 
 \todo[inline]{i also think we should add subscripts of the different model components ($Q_0$, etc). should make a figure illustrating these components....
 
@@ -161,7 +161,7 @@ we need to unpack and explain the math in this section more (since we have room 
 The \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a distribution over questions $q \in \mathcal{Q}$:
 %
 $$ 
-P(q|g) \propto e^{\E{P(w^*)}{\KL{P_g(w|q, w^*)}{P_g(w)}} - C(q)} 
+P_{Q}(q|g) \propto \exp\left\{\E{w^*\in\mathcal{W}}{\KL{\widehat{P^g}(w|q, w^*)}{\widehat{P^g}(w)}} - C(q)\right\} 
 $$
 \todo[inline]{ndg: hmm... i think this isn't quite right: as defined $P_g$ isn't a distribution (on W). i think what we want is the KL of the g-projections of each distribution on W. this then raises a question about whether the KLs for different goals are comparable in the right way -- e.g. smaller g-images have less capacity for information gain -- is this right?}
 %
@@ -221,7 +221,9 @@ $$
 For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $.
 %
 
-This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}, and runnable code for all reported simulations is available online at \url{http://hawkrobe.github.io/Q\_and\_A/}. The model predictions shown throughout the rest of the paper are computed using this implementation. We emphasize that our models are situated firmly at the computational level \cite{Marr10_Vision} -- these models formalize hypotheses about the problem being solved by questioners and answerers in dialogue, and they make quantitative predictions about expected behavior under different assumptions. However, we do not propose that people are actively running a recursive probability calculation online every time they ask a question; further work is needed at the algorithmic and mechanistic levels to understand exactly what cognitive and neural processes give rise to the computations we predict. We now proceed to show how our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature.
+This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}, and runnable code for all reported simulations is available online at \url{http://hawkrobe.github.io/Q\_and\_A/}. The model predictions shown throughout the rest of the paper are computed using this implementation. 
+
+We emphasize that our models are situated firmly at the computational level \cite{Marr10_Vision} -- these models formalize hypotheses about the problem being solved by questioners and answerers in dialogue, and they make quantitative predictions about expected behavior under different assumptions. However, we do not propose that people are actively running a recursive probability calculation online every time they ask a question; further work is needed at the algorithmic and mechanistic levels to understand exactly what cognitive and neural processes give rise to the computations we predict. We now proceed to show how our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature.
 
 \section{Four case studies}
 
@@ -551,6 +553,8 @@ We have presented evidence that answerer behavior is best described by a pragmat
 
 Questioner behavior in Exp.~2, however, seemed to be much more dependent on experience. In another version of Exp.~1, we did not emphasize certain aspects of the game in the instructions, such as the fact that the answerer knows about the restricted answer set, which might prompt perspective-taking. 
 Our data in this pilot experiment appeared to contain a mixture of explicit and pragmatic answerers and questioners (though other confounds were present in this version). We found the interactive, multi-player version of the task, used in Exp.~3 and Exp.~4 to be more robust to these minor variations. We also found that at least in certain scenarios like the overlapping hierarchy condition of Exp~.4, questioners systematically relied on higher-order pragmatic reasoning about what inferences an answerer would make about their own underlying goals when deciding what question to ask. Note that this behavior also could not be explained by the heuristic strategy raised in the earlier experiments: if questioners just ruled out labels that did not apply (e.g. ``lion''), they would have no mechanism for deciding between the two equally-good parent labels (``pet'' and ``cat'') to pick out their goal. It will ultimately be important to explore the mixture of explicit- and pragmatic-questioning across an even larger range of situations: these issues may be a product of our artificial game paradigm, or they may be reflective of real tendencies in language use, raising novel questions about audience design in question-answer behavior.
+
+\todo[inline]{ndg: somewhere (discussion?) explore whether this notion of goals is enough.}
 
 Perhaps the most important formal advance of the models considered here is to move the Rational Speech Act framework beyond interpretation of single utterances (in context), to consider the dynamics of simple dialogs (albeit consisting of a single question and its answer). 
 Doing so requires replacing the immediate motive to convey true information with the more distant motive to provoke useful information from one's interlocutor. On the answerer side, sophisticated inference was required to account for the implicit interests of the questioner. This provides a useful connection to current game-theoretic and decision-theoretic models \cite{VogelBodoiaPottsJurafsky13_GricePOMDP, VanRooy03_QuestioningDecisionProblems}, which also emphasize the importance of goals and speaker beliefs in communication but emphasize less the complex interplay of inference between questioner and answerer.
