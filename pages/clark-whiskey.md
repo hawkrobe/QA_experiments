@@ -227,45 +227,55 @@ var qudPrior = function(context){
   var p = ((context === buyWhiskeyContext) ? 0.5 :
            (context === spendFiveDollarsContext) ? 0.9 :
            console.error('unknown context'));
-  return (flip(p) ? "qudPriceGreaterThan5" :
-          "qudPrice");
+  return (flip(p) ? "qudPriceGreaterThan5" : "qudPrice");
 };
 
 var nameToQUD = function(qudName){
   return (qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 :
-    qudName == "qudPrice" ? qudPrice :
-    console.error('unknown qud name', qudName));
+  	  qudName == "qudPrice" ? qudPrice :
+	  qudName == isMoreThanFiveQuestion ? qudPriceGreaterThan5 :
+	  console.error('unknown qud name', qudName));
 };
 
-var questioner = function(qudName) {
+var explicitAnswerer = cache(function(question, trueWorld, rationality) {
+  var qud = nameToQUD(question);
+  return Enumerate(function(){
+    var truthfulAnswerPrior = Enumerate(function(){
+      var answer = answerPrior();
+      factor(literalListener(question, answer).score([], trueWorld));
+      return answer;
+    });
+    var answer = sample(truthfulAnswerPrior);
+    var score = mean(function(){
+      var inferredWorld = sample(literalListener(question, answer));
+      var inferredVal = qud(inferredWorld);
+      var trueVal = qud(trueWorld);
+      return (_.isEqual(trueVal, inferredVal) ? 1 : 0);
+    });
+    factor(Math.log(score) * rationality);
+    return answer;
+  });
+});
+
+var explicitQuestioner = cache(function(qudName, rationality) {
   var qud = nameToQUD(qudName);
   return Enumerate(function(){
     var question = questionPrior();
     var prior = Enumerate(function(){
-      return qud(worldPrior());
-    });
-    var expectedKL = mean(
-      function(){
-  // What do I expect the world to be like?
-  var trueWorld = worldPrior();
-  // If I ask this question, what answer do I expect to get,
-  // given what the world is like?
-  var answer = sample(literalAnswerer(question, trueWorld));
-  var posterior = Enumerate(function(){
-    // Given this answer, how would I update my distribution on worlds?
-    var world = sample(literalListener(question, answer));
-    // What is the value of the predicate I care about under
-    // this new distribution on worlds?
-    return qud(world);
-  });
-  return KL(posterior, prior);
+      return qud(worldPrior());});
+    var expectedKL = mean(function(){
+      var trueWorld = worldPrior();
+      var answer = sample(explicitAnswerer(question, trueWorld, rationality));
+      var posterior = Enumerate(function(){
+        var world = sample(literalListener(question, answer));
+        return qud(world);
       });
-    factor(expectedKL * 3);
-
+      return qa.KL(posterior, prior);
+    });
+    factor(expectedKL * rationality);
     return question;
   });
-};
-
+});
 
 var pragmaticAnswerer = function(context, question, trueWorld){
   var qudPosterior = Enumerate(function(){
