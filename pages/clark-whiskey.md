@@ -277,11 +277,11 @@ var explicitQuestioner = cache(function(qudName, rationality) {
   });
 });
 
-var pragmaticAnswerer = function(context, question, trueWorld){
+var pragmaticAnswerer = function(context, question, trueWorld, rationality){
   var qudPosterior = Enumerate(function(){
     var qudName = qudPrior(context);
     var qud = nameToQUD(qudName);
-    var q_erp = questioner(qudName);
+    var q_erp = explicitQuestioner(qudName, rationality);
     factor(q_erp.score([], question));
     return qudName;
   });
@@ -300,7 +300,7 @@ var pragmaticAnswerer = function(context, question, trueWorld){
         var inferredWorld = sample(literalListener(question, answer));
         return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
       });
-    factor(Math.log(score) * 3);
+    factor(Math.log(score) * rationality);
     return answer;
   });
 };
@@ -308,9 +308,9 @@ var pragmaticAnswerer = function(context, question, trueWorld){
 var world = [4];
 
 print(buyWhiskeyContext + " " + isMoreThanFiveQuestion);
-print(pragmaticAnswerer(buyWhiskeyContext, isMoreThanFiveQuestion, world));
+print(pragmaticAnswerer(buyWhiskeyContext, isMoreThanFiveQuestion, world, 3));
 
 print(spendFiveDollarsContext + " " + isMoreThanFiveQuestion);
-print(pragmaticAnswerer(spendFiveDollarsContext, isMoreThanFiveQuestion, world));
+print(pragmaticAnswerer(spendFiveDollarsContext, isMoreThanFiveQuestion, world, 3));
 
 ~~~~
