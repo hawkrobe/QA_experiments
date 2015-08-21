@@ -270,7 +270,7 @@ var explicitQuestioner = cache(function(qudName, rationality) {
         var world = sample(literalListener(question, answer));
         return qud(world);
       });
-      return qa.KL(posterior, prior);
+      return KL(posterior, prior);
     });
     factor(expectedKL * rationality);
     return question;
