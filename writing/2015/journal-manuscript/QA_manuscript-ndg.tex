@@ -161,25 +161,25 @@ we need to unpack and explain the math in this section more (since we have room 
 The \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a distribution over questions $q \in \mathcal{Q}$:
 %
 $$ 
-P_{Q}(q|g) \propto \exp\left\{\E{w^*\in\mathcal{W}}{\KL{\widehat{P^g}(w|q, w^*)}{\widehat{P^g}(w)}} - C(q)\right\} 
+P_{Q}(q|g) \propto \exp\left\{\E{P(w^*)}{\KL{\widehat{P^g}(w|q, w^*)}{\widehat{P^g}(w)}} - C(q)\right\} 
 $$
 \todo[inline]{ndg: hmm... i think this isn't quite right: as defined $P_g$ isn't a distribution (on W). i think what we want is the KL of the g-projections of each distribution on W. this then raises a question about whether the KLs for different goals are comparable in the right way -- e.g. smaller g-images have less capacity for information gain -- is this right?}
 %
-It trades off the cost of asking a question, $C(q)$, and expected information gain. The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the ($g$-relevant) prior distribution, $P_g(w)$, and the posterior distribution one would expect after asking a question $q$ whose answer reflected true world state $w^*$:
+It trades off the cost of asking a question, $C(q)$, and expected information gain. The expectation is taken over all possible true worlds $w^* \in \mathcal{W}$ because the questioner has uncertainty over which true world is actually the case (represented by the world prior $P(w^*)$). The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the ($g$-projected) prior distribution, $\widehat{P^g}(w)$, and the ($g$-projected) posterior distribution one would expect after asking a question $q$ whose answer reflected true world state $w^*$:
 %
-$$ P_g(w|q, w^*) = \sum_{a \in \mathcal{A}} P_g(w |q, a) P(a| q, w^*)$$
+$$P(w|q, w^*) = \sum_{a \in \mathcal{A}} P(w |q, a) P(a| q, w^*)$$
 %
 %This conditional distribution reflects the fact that the answerer (who knows the true world state $w$) may behave noisily, have a limited set of possible answers, or other limitations.
 %to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. 
 This distribution has two components: 
-First, it depends on $P(a | q, w^*)$, a model of the answerer which we will explore shortly.
-Second, it depends on (the goal projection of) 
-\todo[inline]{ndg: I don't think we want the goal projection here. we want the distribution over worlds, in order to get a posterior distribution on worlds. we will then project along g in the KL operator above.... (note: need to check against implementation.)}
-$P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs.
+First, it depends on $P(a | q, w^*)$, a model of likely answerer behavior which we will explore shortly.
+Second, it depends on
+%\todo[inline]{ndg: I don't think we want the goal projection here. we want the distribution over worlds, in order to get a posterior distribution on worlds. . (note: need to check against implementation.)}
+$P(w | q, a)$, an `interpreter' that specifies the likelihood assigned to different worlds given question and answer pairs. Note that the interpreter does not taking into account goals: we will project along $g$ in the KL operator above after we have computed the posterior.
 
-To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign questions a semantic meaning.
-We assume that a question is an informational goal that projects from worlds to the answer set $\mathcal{A}$.
-This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection; an answer picks out an element of the partition via $q^{-1}(a)$.
+To define the interpreter function, which all agents use to compute the literal interpretation of a question-answer pair, we must assign questions and answers a semantic meaning.
+We assume that a question is an informational goal that maps from worlds to the answer set $\mathcal{A}$.
+This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection; an answer is a map from a question to a function picking out an element of the answer set given the true world: $a(q)(w)$.
 % \red{JD: how can we see this, exactly?} \red{RDH: we say this in the next sentence, right? $q^{-1}(a)$ gives the cell of the partition corresponding to the given aspect of interest\dots}
 %An answer-value (as opposed to the answer utterance) is a possible value of the projection function (which picks out an element of the partition via $q^{-1}(a)$).
 %The explicit question can be assigned a literal meaning which is a projection from worlds to answer values (this is equivalent to the common partition semantics of questions \cite{gronendijk}).
@@ -187,7 +187,7 @@ This is equivalent to the more common partition semantics of \citeA{GroenendijkS
 %For the purposes of this paper, we will use Groenendijk \& Stokhof semantics \citeyear{GroenendijkStokhof84_SemanticsOfQuestions}, where a question induces a partition $\mathcal{P}_q$ over the space of possible world and each cell of this partition is an equivalence class corresponding to a different answer. An answer, then, selects a cell of this partition, denoted by $\mathcal{P}_q(a)$, which is a set.
 The \textbf{interpreter} constrains the prior on worlds to the subset of its support that is consistent with the semantics of a question-answer pair\footnote{In a complete language understanding model we would also have a semantic evaluation function that maps an answer utterance to its value in $\mathcal{A}$. For clarity we assume this is a trivial mapping and suppress it.}:
 %
-$$P(w | q, a) \propto P(w) \delta_{q(w)=a}$$
+$$P_I(w | q, a) \propto P(w) \delta_{q(w)=a}$$
 
 \subsection{The Answerer}
 
