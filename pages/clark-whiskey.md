@@ -32,9 +32,9 @@ var KL = function(erpTrue, erpApprox){
       var p = Math.exp(erpTrue.score([], value));
       var q = Math.exp(erpApprox.score([], value));
       if (p == 0.0){
-	return 0.0;
+        return 0.0;
       } else {
-	return p * Math.log(p / q);
+        return p * Math.log(p / q);
       }
     },
     values);
@@ -62,7 +62,7 @@ var powerset = function(set) {
     var rest = powerset(set.slice(1));
     return map(
       function(element) {
-	return [set[0]].concat(element);
+        return [set[0]].concat(element);
       },
       rest).concat(rest);
   }
@@ -86,11 +86,11 @@ var permute = function (input) {
     }
     map(
       function(i) {
-	var ch = input.splice(i, 1)[0];
-	usedChars.push(ch);
-	doPerm();
-	usedChars.pop();
-	input.splice(i, 0, ch);
+        var ch = input.splice(i, 1)[0];
+        usedChars.push(ch);
+        doPerm();
+        usedChars.pop();
+        input.splice(i, 0, ch);
       },
       _.range(input.length));
   };
@@ -104,8 +104,8 @@ var cartesianProductOf = function(listOfLists) {
     return _.flatten(map(function(x) {
       console.log(x)
       return map(function(y) {
-	console.log(y)
-	return x.concat(y);
+        console.log(y)
+        return x.concat(y);
       }, b);
     }, a), true);
   }, [[]], listOfLists);
@@ -169,9 +169,9 @@ var numericAnswerMeaning = function(number){
   return function(questionMeaning){
     return function(world){
       if (questionMeaning == isMoreThanFiveQuestionMeaning){
-	return price(world) == number;
+        return price(world) == number;
       } else {
-	return true; // vacuous
+        return true; // vacuous
       }
     };
   };
@@ -181,7 +181,7 @@ var booleanAnswerMeaning = function(bool){
   return function(questionMeaning){
     return function(world){
       if (questionMeaning == isMoreThanFiveQuestionMeaning){
-	return (price(world) > 5) == bool;
+        return (price(world) > 5) == bool;
       }
     }
   }
@@ -192,7 +192,7 @@ var combinedMeaning = function(list){
     return function(world){
       var bool = list[0] === "yes" ? true : false
       if(questionMeaning == isMoreThanFiveQuestionMeaning){
-	return (price(world) == list[1]) & (price(world) > 5 == bool)
+        return (price(world) == list[1]) & (price(world) > 5 == bool)
       }
     }
   }
@@ -200,11 +200,11 @@ var combinedMeaning = function(list){
 
 var meaning = function(utterance){
   return ((utterance === isMoreThanFiveQuestion) ? isMoreThanFiveQuestionMeaning :
-	  (utterance.length > 1) ? combinedMeaning(utterance) :
-	  (utterance[0] === "yes") ? booleanAnswerMeaning(true) :
-	  (utterance[0] === "no") ? booleanAnswerMeaning(false) :
-	  isNumeric(utterance[0]) ? numericAnswerMeaning(utterance[0]) :
-	  console.error('unknown utterance!', utterance));
+          (utterance.length > 1) ? combinedMeaning(utterance) :
+          (utterance[0] === "yes") ? booleanAnswerMeaning(true) :
+          (utterance[0] === "no") ? booleanAnswerMeaning(false) :
+          isNumeric(utterance[0]) ? numericAnswerMeaning(utterance[0]) :
+          console.error('unknown utterance!', utterance));
 };
 
 var literalListener = cache(function(question, answer){
@@ -222,8 +222,8 @@ var answerPrior = function(){
   var literalComponent = flip(0.6) ? uniformDraw(["yes", "no"]) : undefined
   if(literalComponent) {
     return (flip(0.6) ?
-	    [literalComponent, uniformDraw(prices)] :
-	    [literalComponent])
+            [literalComponent, uniformDraw(prices)] :
+            [literalComponent])
   } else {
     return [uniformDraw(prices)]
   }
@@ -243,8 +243,8 @@ var makeTruthfulAnswerPrior = function(question, trueWorld) {
   return Enumerate(function(){
     var answer = answerPrior();
     var score = (logicallyConsistent(answer) ?
-		 literalListener(question, answer).score([], trueWorld) :
-		 -Infinity)
+                 literalListener(question, answer).score([], trueWorld) :
+                 -Infinity)
     factor(score);
     return answer
   })
@@ -255,16 +255,16 @@ var qudPriceGreaterThan5 = function(world){return price(world) > 5;};
 
 var qudPrior = function(context){
   var p = ((context === buyWhiskeyContext) ? 0.5 :
-	   (context === spendFiveDollarsContext) ? 0.9 :
-	   console.error('unknown context'));
+           (context === spendFiveDollarsContext) ? 0.9 :
+           console.error('unknown context'));
   return (flip(p) ? "qudPriceGreaterThan5" : "qudPrice");
 };
 
 var nameToQUD = function(qudName){
   return (qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 :
-	  qudName == "qudPrice" ? qudPrice :
-	  qudName == isMoreThanFiveQuestion ? qudPriceGreaterThan5 :
-	  console.error('unknown qud name', qudName));
+          qudName == "qudPrice" ? qudPrice :
+          qudName == isMoreThanFiveQuestion ? qudPriceGreaterThan5 :
+          console.error('unknown qud name', qudName));
 };
 
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
@@ -293,8 +293,8 @@ var explicitQuestioner = cache(function(qudName, rationality) {
       var trueWorld = worldPrior();
       var answer = sample(explicitAnswerer(question, trueWorld, rationality));
       var posterior = Enumerate(function(){
-	var world = sample(literalListener(question, answer));
-	return qud(world);
+        var world = sample(literalListener(question, answer));
+        return qud(world);
       });
       return KL(posterior, prior);
     });
@@ -320,8 +320,8 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
-	var inferredWorld = sample(literalListener(question, answer));
-	return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
+        var inferredWorld = sample(literalListener(question, answer));
+        return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
       });
     factor(Math.log(score) * rationality);
     return answer;
