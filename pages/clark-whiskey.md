@@ -6,7 +6,7 @@ status: current
 
 Depending on the context, liquor merchants will be more or less likely to give over-informative answers. Our model accounts for this via inference about the underlying goal, given the context.
 
-  ~~~~
+~~~~
 ///fold:
 var identity = function(x){return x;};
 
