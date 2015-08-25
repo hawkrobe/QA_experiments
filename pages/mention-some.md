@@ -252,18 +252,22 @@ var questionPrior = function(){
 };
 
 // built-in cost for saying more than one answer
+
 var answerPrior = function(){
   var drawCafe = function(cafeList) {
-    if(_.isEmpty(cafeList))
-      return []
-    else {
-      var newCafe = [uniformDraw(cafeList)]
-      return (flip(0.5) ? newCafe :
-        newCafe.concat(drawCafe(_.without(cafeList, newCafe[0]))))
+    if(_.isEmpty(cafeList)) {
+      return [];
+    } else {
+      var newCafe = [uniformDraw(cafeList)];
+      return (flip(0.5) ? [] :
+              newCafe.concat(drawCafe(_.without(cafeList, newCafe[0]))));
     }
-  }
-  return flip(0.1) ? ['none'] : sort(drawCafe(cafes), function(s1, s2) {return s1[4] < s2[4]})
+  };
+  var answer = drawCafe(cafes);
+  return (answer.length == 0 ? ['none'] :
+          sort(answer, function(s1, s2) {return s1[4] < s2[4];}));
 };
+
 
 var cafeAnswerMeaning = function(cafeList){
   return function(questionMeaning){
