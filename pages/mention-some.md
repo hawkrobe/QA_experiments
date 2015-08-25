@@ -8,14 +8,6 @@ We'll set up the mention-some problem below, using the same structure as our oth
 
 ~~~~
 ///fold:
-var identity = function(x){return x;};
-
-var negate = function(predicate){
-  return function(x){
-    return !predicate(x);
-  };
-};
-
 var condition = function(x){
   var score = x ? 0 : -Infinity;
   factor(score);
@@ -36,6 +28,10 @@ var allFalse = function(boolList) {
     return !val && memo;
   }, true, boolList)
 }
+
+var countCafeCombinations = function(n) {
+  return filter(function(l) {return l.length == n}, cafePowerset).length;
+};
 
 var getFilteredCafeList = function(world) {
   var cafeList = map(function(value) {
@@ -119,61 +115,14 @@ var powerset = function(set) {
   }
 }
 
-var mapReduce1 = function(f,g,ar){
-  // specialized to above reduce
-  return reduce(function(a,b) { return f(g(a),b); }, g(ar[ar.length-1]), ar.slice(0,-1));
+var cafePowerset = powerset(cafes);
+
+var countCafeCombinations = function(n) {
+  return filter(function(l) {return l.length == n}, cafePowerset).length;
 };
 
 var all = function(p,l) { 
   return mapReduce1(function(a,b){ return a & b; }, p, l); };
-
-var permute = function (input) {
-  var input = input.slice();
-  var permArr = [];
-  var usedChars = [];
-  var doPerm = function() {
-    if (input.length == 0) {
-      permArr.push(usedChars.slice());
-    }
-    map(
-      function(i) {
-        var ch = input.splice(i, 1)[0];
-        usedChars.push(ch);
-        doPerm();
-        usedChars.pop();
-        input.splice(i, 0, ch);
-      },
-      _.range(input.length));
-  };
-  doPerm();
-  return permArr;
-};
-
-
-var cartesianProductOf = function(listOfLists) {
-    return reduce(function(b, a) {
-        return _.flatten(map(function(x) {
-          console.log(x)
-            return map(function(y) {
-              console.log(y)
-              return x.concat(y);
-            }, b);
-          }, a), true);
-  }, [[]], listOfLists);
-};
-
-// Sometimes you just need all possible combination of true and false
-var TFCartesianProd = function(n) {
-  var inner_fun = function(n, result) {
-    if (n == 0)
-      return result
-    else
-      return inner_fun(n-1, result.concat([['true','false']]))
-  }
-  var result = inner_fun(n, [])
-  console.log(result)
-  return cartesianProductOf(result);
-}
 
 var butLast = function(xs){
   return xs.slice(0, xs.length-1);
@@ -182,24 +131,6 @@ var butLast = function(xs){
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
 };
-
-var mean = function(thunk){
-  return expectation(Enumerate(thunk), function(v){return v;});
-};
-
-var negate = function(predicate){
-  return function(x){
-    return !predicate(x);
-  };
-};
-
-var identity = function(x){
- return x;
-};
-
-var condition = function(x){
- factor(x ? 0 : -Infinity);
-};
 ///
 
 // World knowledge
@@ -207,6 +138,8 @@ var condition = function(x){
 var distances = [1,3]//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 var cafes = ['cafe1', 'cafe2', 'cafe3', 'cafe4']
+var cafePowerset = powerset(cafes);
+
 var touristContext = "I'm new in town.";
 var businesspersonContext = "I'm trying to set up a newspaper distribution business.";
 
@@ -252,22 +185,13 @@ var questionPrior = function(){
 };
 
 // built-in cost for saying more than one answer
-
 var answerPrior = function(){
-  var drawCafe = function(cafeList) {
-    if(_.isEmpty(cafeList)) {
-      return [];
-    } else {
-      var newCafe = [uniformDraw(cafeList)];
-      return (flip(0.5) ? [] :
-              newCafe.concat(drawCafe(_.without(cafeList, newCafe[0]))));
-    }
-  };
-  var answer = drawCafe(cafes);
-  return (answer.length == 0 ? ['none'] :
-          sort(answer, function(s1, s2) {return s1[4] < s2[4];}));
+  var tempAnswer = uniformDraw(cafePowerset)
+  var score = (Math.pow(.5, tempAnswer.length + 1)
+                   / countCafeCombinations(tempAnswer.length))
+  factor(Math.log(score))
+  return (tempAnswer.length == 0 ? ['none'] : tempAnswer)
 };
-
 
 var cafeAnswerMeaning = function(cafeList){
   return function(questionMeaning){
