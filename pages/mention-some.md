@@ -190,6 +190,15 @@ var answerPrior = function(){
   return (tempAnswer.length == 0 ? ['none'] : tempAnswer)
 };
 
+var makeTruthAnswerPrior = function(trueWorld) {
+  var truthfulAnswerPrior = Enumerate(function(){
+    var answer = answerPrior();
+    factor(interpreter(answer).score([], trueWorld));
+    return answer
+  });
+  return truthfulAnswerPrior;
+};
+
 var cafeAnswerMeaning = function(cafeList){
   return function(world){
     var doTheyHaveNewspapers = map(function(cafe) {
@@ -257,17 +266,11 @@ var nameToQUD = function(qudName){
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
   var qud = nameToQUD(question);
   return Enumerate(function(){
-    var truthfulAnswerPrior = Enumerate(function(){
-      var answer = fullAnswerPrior();
-      factor(interpreter(answer).score([], trueWorld));
-      return answer;
-    });
+    var truthfulAnswerPrior = makeTruthAnswerPrior(trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
       var inferredWorld = sample(interpreter(answer));
-      var inferredVal = qud(inferredWorld);
-      var trueVal = qud(trueWorld);
-      return (_.isEqual(trueVal, inferredVal) ? 1 : 0);
+      return (qud(trueWorld) == qud(inferredWorld)) ? 1 : 0);
     });
     factor(Math.log(score) * rationality);
     return answer;
@@ -281,16 +284,15 @@ var explicitQuestioner = function(qudName, rationality) {
     var prior = Enumerate(function(){
       return qud(worldPrior());
     });
-    var expectedKL = mean(
-      function(){
-        var trueWorld = worldPrior();
-        var answer = sample(explicitAnswerer(question, trueWorld, rationality));
-        var posterior = Enumerate(function(){
-          var world = sample(interpreter(answer));
-          return qud(world);
-        });
-        return KL(posterior, prior);
+    var expectedKL = mean(function(){
+      var trueWorld = worldPrior();
+      var answer = sample(explicitAnswerer(question, trueWorld, rationality));
+      var posterior = Enumerate(function(){
+        var world = sample(interpreter(answer));
+        return qud(world);
       });
+      return KL(posterior, prior);
+    });
     factor(expectedKL * rationality);
     return question;
   });
@@ -308,11 +310,7 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
     var qudName = sample(qudPosterior);
     var qud = nameToQUD(qudName);
     // Pick answer conditioned on communicating question predicate value
-    var truthfulAnswerPrior = Enumerate(function(){
-      var answer = answerPrior();
-      factor(interpreter(answer).score([], trueWorld));
-      return answer
-    })
+    var truthfulAnswerPrior = makeTruthAnswerPrior(trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
@@ -332,9 +330,9 @@ var world = {'cafe1' : [3, false],
 print("world", world);
 
 print(businesspersonContext, newspaperQuestion);
-print(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world));
+print(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world,1));
 
 print(touristContext, newspaperQuestion);
-print(pragmaticAnswerer(touristContext, newspaperQuestion, world));
+print(pragmaticAnswerer(touristContext, newspaperQuestion, world,1));
 
 ~~~~
