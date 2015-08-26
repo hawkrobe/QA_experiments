@@ -270,7 +270,7 @@ var explicitAnswerer = cache(function(question, trueWorld, rationality) {
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
       var inferredWorld = sample(interpreter(answer));
-      return (qud(trueWorld) == qud(inferredWorld) ? 1 : 0);
+      return (_.isEqual(qud(trueWorld), qud(inferredWorld)) ? 1 : 0);
     });
     factor(Math.log(score) * rationality);
     return answer;
