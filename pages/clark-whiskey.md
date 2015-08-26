@@ -95,14 +95,14 @@ var numericAnswerMeaning = function(number){
 var booleanAnswerMeaning = function(bool){
   return function(world){
     return (price(world) > 5) == bool;
-  }
-}
+  };
+};
 
 var meaning = function(utterance){
   return ((utterance === "yes, the whiskey costs more than $5") ? booleanAnswerMeaning(true) :
           (utterance === "no, the whiskey costs less than $5") ? booleanAnswerMeaning(false) :
           (utterance === isMoreThanFiveQuestion) ? isMoreThanFiveQuestionMeaning :
-          _.contains(priceAnswers, utterance) ? numericAnswerMeaning(last(utterance)*1) :
+          _.contains(priceAnswers, utterance) ? numericAnswerMeaning(last(utterance.split('$'))*1) :
           console.error('unknown utterance!', utterance));
 };
 
@@ -177,7 +177,7 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
     return qudName;
   });
   return Enumerate(function(){
-    var qud = nameToQUD(sample(qudPosterior););
+    var qud = nameToQUD(sample(qudPosterior));
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
