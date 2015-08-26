@@ -136,27 +136,33 @@ The RSA framework has already been applied to account for diverse pragmatic phen
 interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}, 
 non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords} and irony \cite{KaoGoodman15_IronyCogSci}, 
 and acquisition \cite{FrankGoodman14_InferringWordMeanings}. 
-Our model situates question-answer behavior within this unifying view of language understanding as recursive social inference, allowing us to formulate and evaluate competing hypotheses about what that inference entails. 
+Our model situates question-answer behavior within this unifying view of language understanding as recursive social inference.
 
 \section{A Rational Speech Act model of question and answer behavior}
 \label{sec:model}
 
 \subsection{Preliminaries}
 
-Suppose there is a set of world states $\mathcal{W}$, a set of possible goals $\mathcal{G}$, a set of possible questions $\mathcal{Q}$, and a set of possible answers $\mathcal{A}$.\footnote{It is common in linguistics to distinguish between utterances and their underlying semantic values. In a complete language understanding model, we would have a separate space of question utterances $\mathcal{U}_q$ and a semantic evaluation function that maps a question utterance $u_q \in \mathcal{U}_q$ to its value in the semantic space $\mathcal{Q}$. Similarly, this evaluation function would map an answer utterance $u_a$ to its value in $\mathcal{A}$. For clarity, we assume these are trivial mappings and suppress them.}
+Suppose there is a set of world states $\mathcal{W}$, 
+a set of possible goals $\mathcal{G}$, 
+a set of possible questions $\mathcal{Q}$, 
+and a set of possible answers $\mathcal{A}$.%
+%%%
+\footnote{It is common in linguistics to distinguish between utterances and their underlying semantic values. In a complete language understanding model, we would have a separate space of question utterances $\mathcal{U}_q$ and a semantic evaluation function that maps a question utterance $u_q \in \mathcal{U}_q$ to its value in the semantic space $\mathcal{Q}$. Similarly, this evaluation function would map an answer utterance $u_a$ to its value in $\mathcal{A}$. For clarity, we assume these are trivial mappings and suppress them.}
+%%%
 These sets are taken to be in common ground between the questioner and the answerer. We formalize the notion of an informational goal $g \in \mathcal{G}$ as a projection function that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\hat{w} = g(w)$; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion.
 
 We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution. Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. Instead, 
 $$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ is a distribution over the image of $g$.
 
-We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection: $q^{-1}(\hat{w})$. An answer is a map from world states to booleans, which eliminates possible worlds. This is equivalent to indicating a cell in the induced partition.
+We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD: a projection from a world state to a feature (or features) of interest. This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection: $q^{-1}(\hat{w})$. An answer is a map from world states to booleans, which eliminates possible worlds. This is equivalent to indicating a cell in the induced partition.
 
-These semantics enter our model primarily through an \textbf{interpreter} function, which all agents use to compute the literal interpretation of an answer. The interpreter  constrains the prior on worlds to the subset of its support that is consistent with the semantics of the given answer\footnote{For the purposes of this paper, we assume answers are always full sentences, corresponding to truth-functional propositions that can be evaluated in a given world. This is the simplest interpreter required to model such answers. For fragments such as `yes' or `Bob,' which can be used to answer questions like `Is dinner at 7pm?' or `Who got the promotion?' we would require a more sophisticated interpreter that can expand the fragment into a valid proposition. This }:
+These semantics enter our model primarily through an \textbf{interpreter} function, which all agents use to compute the literal interpretation of an answer. The interpreter constrains the prior on worlds to the subset of its support that is consistent with the given answer:%
+%%%
+\footnote{For the purposes of this paper, we assume answers are always full sentences, corresponding to truth-functional propositions that can be evaluated in a given world. The interpreter describe is the simplest required to model such answers. For fragments such as `yes' or `Bob,' which can be used to answer questions like `Is dinner at 7pm?' or `Who got the promotion?' we would require a more sophisticated interpreter that can compositionally expand the fragment into a valid proposition, using the question. This is a standard operation in formal semantic models, and an interesting target for future research, but is not necessary for the experiments we report.}
 %
 $$P_I(w | a) \propto P(w) \delta_{a(w)}$$
 %
-
-
 
 \subsection{The Questioner}
 
@@ -181,7 +187,6 @@ More formally, the \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input
 $$ 
 P_{Q}(q|g)  \propto e^{ \E{P(w^*)}{\KL{\widehat{P^g}(w|q, w^*)}{\widehat{P^g}(w)}} - \,\,C(q)}
 $$
-%\todo[inline]{ndg: hmm... i think this isn't quite right: as defined $P_g$ isn't a distribution (on W). i think what we want is the KL of the g-projections of each distribution on W. this then raises a question about whether the KLs for different goals are comparable in the right way -- e.g. smaller g-images have less capacity for information gain -- is this right?}
 %
 It trades off the cost of asking a question, $C(q)$, and expected information gain. The expectation is taken over all possible true worlds $w^* \in \mathcal{W}$; we assume the questioner has uncertainty over which true world is actually the case (represented by the world prior $P(w^*)$). The cost likely depends on question length, among other factors. Information gain is measured as the Kullback-Leibler divergence between the ($g$-projected) prior distribution, $\widehat{P^g}(w)$, and the $g$-projection of the posterior distribution one would expect after asking a question $q$ whose answer reflected true world state $w^*$:
 %
@@ -190,37 +195,36 @@ $$P(w|q, w^*) = \sum_{a \in \mathcal{A}} P_I(w | a) P_{A}(a| q, w^*)$$
 %This conditional distribution reflects the fact that the answerer (who knows the true world state $w$) may behave noisily, have a limited set of possible answers, or other limitations.
 %to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. 
 This distribution has two components: 
-First, it depends on $P_{A}(a | q, w^*)$, a model of likely answerer behavior which we will explore shortly. Second, it depends on
-%\todo[inline]{ndg: I don't think we want the goal projection here. we want the distribution over worlds, in order to get a posterior distribution on worlds. . (note: need to check against implementation.)}
-$P(w | a)$, an `interpreter' that specifies the likelihood assigned to different worlds after hearing an answer statement. Note that the interpreter does not depend on goals: we will only project along $g$ in the KL operator above after we have computed the posterior.
+First, it depends on the interpreter, $P_I(w | a)$, which specifies the likelihood of different worlds after hearing an answer statement. Note this function does not depend on goals: we will only project along $g$ in the KL operator above after we have finished computed the posterior. Second, it depends on $P_{A}(a | q, w^*)$, a model of likely answerer behavior which we explore next.
 
 \subsection{The Answerer}
 
 How should an answerer choose between answers to a question? What should a questioner assume about the answerer when choosing a question? We next describe three different answerer models; the questioner could assume any one of them, leading to three corresponding versions of the questioner model. From here on, we index the questioner and answerer models by $i$ to formulate different questioner models $Q_i$ which reason about different answerers $A_i$ (see Figure \ref{fig:models}).
 All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
 %
-The \textbf{literal answerer} simply chooses answers by trading off prior answer probability and how well a question-answer pair conveys the true state of the world to an interpreter:
+
+The \textbf{literal answerer} simply chooses answers by trading off prior answer probability (interpreted here as cost) and how well that answer pair conveys the true state of the world to an interpreter:
 %
-$$P_{A_0}(a | q,w^*) \propto P(a) P(w^* | q, a) $$
+$$P_{A_0}(a | q,w^*) \propto e^{P_I(w^* | \,a) - C(a)} $$
 %
-For a fixed question, this is equivalent to the speaker in previous RSA models. The question enters only in specifying the literal meaning of an answer (e.g. ``yes'' and ``no'' pick out different worlds in response to different questions).
+For a fixed question, this is equivalent to the speaker in previous RSA models. The question does not affect the response distribution, hence we do not expect it to be a very good explanation of question-answering phenomenon. It is of interest primarily as a null model for comparison to previous RSA models, where the speaker seeks to be informative without any queue from the listener.
 %
-The \textbf{explicit answerer} additionally evaluates answers with respect to how well they address the explicit question $q$. In other words, we treat $q$ itself as a projection operator on worlds, and choose answers proportionally to how well a listener with goal $q$ would guess the true state of the world $w^*$:
+
+The \textbf{explicit answerer} additionally evaluates answers with respect to how well they address the explicit question $q$. In other words, we use the question $q$ itself as the QUD projection, and choose answers proportionally to how well a listener with goal $q$ would guess the true state of the world $w^*$:
 %
-$$P_{A_1}(a | q, w^*) \propto P(a) \widehat{P^q}(w^* | q, a) $$
+$$P_{A_1}(a | q, w^*) \propto e^{\widehat{P^q}_I(w^* | \, a) - C(a)}$$
 This implements the simplest realistic theory of answerers: they attempt to reduce the questioner's uncertainty about the aspect of the world that they were queried about.
 
 The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the questioner's goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which underlying goals $g$ are likely given that a question $q$ was asked, and chooses answers that have high expected informativity:
-%% FIXME: restrict to truthful answers
 %
 $$
-P_{A_2}(a | q, w^*) \propto p(a) \sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g}(w^*|q, a)
+P_{A_2}(a | q, w^*) \propto e^{\sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g}_I(w^*|\,a) - C(a)}
 $$
 Reasoning backwards from questions to goals is a simple Bayesian inversion of the (explicit) questioner using a prior on goals:
 $$
 P(g|q) \propto P_{Q_1}(q|g)P(g)
 $$
-We use the explicit $i=1$ questioner model here for simplicity, but we could make $i$th order answerers that depend on the $(i-1)$th order questioner model, with $i$ arbitrarily high. For the purposes of this paper, we will only examine the simplest $(n=2)$ pragmatic answerer, and the questioner that reasons about it -- as in previous studies using RSA models, we do not find qualitative differences in the predictions of higher-order models.
+We use the explicit ($i=1$) questioner model here for simplicity, but we could make $i$th order answerers that depend on the $(i-1)$th order questioner model, with arbitrarily high $i$. For the purposes of this paper, we will only examine the simplest $(i=2)$ pragmatic answerer, and the questioner that reasons about it -- as in previous studies using RSA models \cite<e.g.>{LassiterGoodman15_AdjectivalVagueness}, we do not find qualitative differences in the predictions of higher-order models.
 %\todo[inline]{ndg: need to say here that we could depend on a sophisticated questioner model here, but we use the simplest(?) one for simplicity....}
 
 For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $. Furthermore, we have set the answer prior in all answerer models such that outright false responses are excluded. The answerer models naturally assign very low, but non-zero probability to these options (because they are minimally informative). However, we set them to zero probability for the sake of simplicity in reporting and visualizing predictions.
