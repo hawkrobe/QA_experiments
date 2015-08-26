@@ -8,14 +8,6 @@ Depending on the context, liquor merchants will be more or less likely to give o
 
 ~~~~
 ///fold:
-var identity = function(x){return x;};
-
-var negate = function(predicate){
-  return function(x){
-    return !predicate(x);
-  };
-};
-
 var condition = function(x){
   var score = x ? 0 : -Infinity;
   factor(score);
@@ -41,101 +33,11 @@ var KL = function(erpTrue, erpApprox){
   return sum(xs);
 };
 
-var flatten = function(xs){
-  if (xs.length == 0) {
-    return [];
-  } else {
-    return xs[0].concat(flatten(xs.slice(1)));
-  }
-};
-
-var setsEqual = function(a1, a2){
-  var s1 = a1.slice().sort();
-  var s2 = a2.slice().sort();
-  return JSON.stringify(s1) === JSON.stringify(s2);
-}
-
-var powerset = function(set) {
-  if (set.length == 0)
-    return [[]];
-  else {
-    var rest = powerset(set.slice(1));
-    return map(
-      function(element) {
-        return [set[0]].concat(element);
-      },
-      rest).concat(rest);
-  }
-}
-
-var mapReduce1 = function(f,g,ar){
-  // specialized to above reduce
-  return reduce(function(a,b) { return f(g(a),b); }, g(ar[ar.length-1]), ar.slice(0,-1));
-};
-
-var all = function(p,l) {
-  return mapReduce1(function(a,b){ return a & b; }, p, l); };
-
-var permute = function (input) {
-  var input = input.slice();
-  var permArr = [];
-  var usedChars = [];
-  var doPerm = function() {
-    if (input.length == 0) {
-      permArr.push(usedChars.slice());
-    }
-    map(
-      function(i) {
-        var ch = input.splice(i, 1)[0];
-        usedChars.push(ch);
-        doPerm();
-        usedChars.pop();
-        input.splice(i, 0, ch);
-      },
-      _.range(input.length));
-  };
-  doPerm();
-  return permArr;
-};
-
-
-var cartesianProductOf = function(listOfLists) {
-  return reduce(function(b, a) {
-    return _.flatten(map(function(x) {
-      console.log(x)
-      return map(function(y) {
-        console.log(y)
-        return x.concat(y);
-      }, b);
-    }, a), true);
-  }, [[]], listOfLists);
-};
-
-// Sometimes you just need all possible combination of true and false
-var TFCartesianProd = function(n) {
-  var inner_fun = function(n, result) {
-    if (n == 0)
-      return result
-    else
-      return inner_fun(n-1, result.concat([['true','false']]))
-  }
-  var result = inner_fun(n, [])
-  console.log(result)
-  return cartesianProductOf(result);
-}
-
-var butLast = function(xs){
-  return xs.slice(0, xs.length-1);
-};
-
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
 };
 
 ///
-
-
-// --------------------------------------------------------------------
 
 var buyWhiskeyContext = "I'd like to buy some whiskey.";
 var spendFiveDollarsContext = "I only have $5 to spend.";
@@ -155,8 +57,9 @@ var price = function(world){
 };
 
 var isMoreThanFiveQuestion = "Does Jim Beam cost more than $5?";
+
 var isMoreThanFiveQuestionMeaning = function(world){
-  return price(world) <= 5;
+  return price(world) < 5;
 };
 
 var questions = [isMoreThanFiveQuestion];
@@ -165,47 +68,49 @@ var questionPrior = function(){
   return uniformDraw(questions);
 };
 
+var literalAnswers = ["yes, the whiskey costs more than $5", "no, the whiskey costs less than $5"];
+
+var priceAnswers = map(function(p) {return "the whiskey costs $" + p;}, prices);
+
 var answerPrior = function(){
-  // prefer yes/no over detailed answer
-  return flip(0.5) ? uniformDraw(["yes", "no"]) : uniformDraw(prices);
+  // evenly distribute probability across response types
+  return flip(0.5) ? uniformDraw(literalAnswers) : uniformDraw(priceAnswers);
+};
+
+var makeTruthfulAnswerPrior = function(trueWorld) {
+  var truthfulAnswerPrior = Enumerate(function(){
+    var answer = answerPrior();
+    factor(interpreter(answer).score([], trueWorld));
+    return answer;
+  });
+  return truthfulAnswerPrior;
 };
 
 var numericAnswerMeaning = function(number){
-  return function(questionMeaning){
-    return function(world){
-      if (questionMeaning == isMoreThanFiveQuestionMeaning){
-        return price(world) == number;
-      } else {
-        return true; // vacuous
-      }
-    };
+  return function(world){
+    return price(world) == number;
   };
 };
 
 var booleanAnswerMeaning = function(bool){
-  return function(questionMeaning){
-    return function(world){
-      if (questionMeaning == isMoreThanFiveQuestionMeaning){
-        return (price(world) > 5) == bool;
-      }
-    }
+  return function(world){
+    return (price(world) > 5) == bool;
   }
 }
 
 var meaning = function(utterance){
-  return ((utterance === "yes") ? booleanAnswerMeaning(true) :
-          (utterance === "no") ? booleanAnswerMeaning(false) :
-          isNumeric(utterance) ? numericAnswerMeaning(utterance) :
+  return ((utterance === "yes, the whiskey costs more than $5") ? booleanAnswerMeaning(true) :
+          (utterance === "no, the whiskey costs less than $5") ? booleanAnswerMeaning(false) :
           (utterance === isMoreThanFiveQuestion) ? isMoreThanFiveQuestionMeaning :
+          _.contains(priceAnswers, utterance) ? numericAnswerMeaning(last(utterance)*1) :
           console.error('unknown utterance!', utterance));
 };
 
-var interpreter = cache(function(question, answer){
+var interpreter = cache(function(answer){
   return Enumerate(function(){
     var world = worldPrior();
-    var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-    condition(answerMeaning(questionMeaning)(world));
+    condition(answerMeaning(world));
     return world;
   });
 });
@@ -223,21 +128,17 @@ var qudPrior = function(context){
 var nameToQUD = function(qudName){
   return (qudName == "qudPriceGreaterThan5" ? qudPriceGreaterThan5 :
           qudName == "qudPrice" ? qudPrice :
-          qudName == isMoreThanFiveQuestion ? qudPriceGreaterThan5 :
+          qudName == isMoreThanFiveQuestion ? isMoreThanFiveQuestionMeaning :
           console.error('unknown qud name', qudName));
 };
 
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
   var qud = nameToQUD(question);
   return Enumerate(function(){
-    var truthfulAnswerPrior = Enumerate(function(){
-      var answer = answerPrior();
-      factor(interpreter(question, answer).score([], trueWorld));
-      return answer;
-    });
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
-      var inferredWorld = sample(interpreter(question, answer));
+      var inferredWorld = sample(interpreter(answer));
       var inferredVal = qud(inferredWorld);
       var trueVal = qud(trueWorld);
       return (_.isEqual(trueVal, inferredVal) ? 1 : 0);
@@ -257,7 +158,7 @@ var explicitQuestioner = cache(function(qudName, rationality) {
       var trueWorld = worldPrior();
       var answer = sample(explicitAnswerer(question, trueWorld, rationality));
       var posterior = Enumerate(function(){
-        var world = sample(interpreter(question, answer));
+        var world = sample(interpreter(answer));
         return qud(world);
       });
       return KL(posterior, prior);
@@ -276,18 +177,12 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
     return qudName;
   });
   return Enumerate(function(){
-    var qudName = sample(qudPosterior);
-    var qud = nameToQUD(qudName);
-    var truthfulAnswerPrior = Enumerate(function(){
-      var answer = answerPrior();
-      factor(interpreter(question, answer).score([], trueWorld));
-      return answer;
-    });
-    // Pick answer conditioned on communicating question predicate value
+    var qud = nameToQUD(sample(qudPosterior););
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
-        var inferredWorld = sample(interpreter(question, answer));
+        var inferredWorld = sample(interpreter(answer));
         return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
       });
     factor(Math.log(score) * rationality);
