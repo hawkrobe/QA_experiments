@@ -190,15 +190,6 @@ var answerPrior = function(){
   return (tempAnswer.length == 0 ? ['none'] : tempAnswer)
 };
 
-var makeTruthAnswerPrior = function(trueWorld) {
-  var truthfulAnswerPrior = Enumerate(function(){
-    var answer = answerPrior();
-    factor(interpreter(answer).score([], trueWorld));
-    return answer
-  });
-  return truthfulAnswerPrior;
-};
-
 var cafeAnswerMeaning = function(cafeList){
   return function(world){
     var doTheyHaveNewspapers = map(function(cafe) {
@@ -237,6 +228,15 @@ var interpreter = cache(function(answer){
   });
 });
 
+var makeTruthAnswerPrior = function(trueWorld) {
+  var truthfulAnswerPrior = Enumerate(function(){
+    var answer = answerPrior();
+    factor(interpreter(answer).score([], trueWorld));
+    return answer
+  });
+  return truthfulAnswerPrior;
+};
+
 //  ------
 // | QUDs |
 //  ------
@@ -270,7 +270,7 @@ var explicitAnswerer = cache(function(question, trueWorld, rationality) {
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
       var inferredWorld = sample(interpreter(answer));
-      return (qud(trueWorld) == qud(inferredWorld)) ? 1 : 0);
+      return (qud(trueWorld) == qud(inferredWorld) ? 1 : 0);
     });
     factor(Math.log(score) * rationality);
     return answer;

@@ -89,15 +89,6 @@ var answerPrior = function(){
   return flip(0.5) ? uniformDraw(literalAnswers) : uniformDraw(priceAnswers);
 };
 
-var makeTruthfulAnswerPrior = function(trueWorld) {
-  var truthfulAnswerPrior = Enumerate(function(){
-    var answer = answerPrior();
-    factor(interpreter(answer).score([], trueWorld));
-    return answer;
-  });
-  return truthfulAnswerPrior;
-};
-
 var numericAnswerMeaning = function(number){
   return function(world){
     return price(world) == number;
@@ -131,6 +122,15 @@ var interpreter = cache(function(answer){
   });
 });
 
+var makeTruthfulAnswerPrior = function(trueWorld) {
+  var truthfulAnswerPrior = Enumerate(function(){
+    var answer = answerPrior();
+    factor(interpreter(answer).score([], trueWorld));
+    return answer;
+  });
+  return truthfulAnswerPrior;
+};
+
 //  ------
 // | QUDs |
 //  ------
@@ -163,7 +163,7 @@ var explicitAnswerer = cache(function(question, trueWorld, rationality) {
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
       var inferredWorld = sample(interpreter(answer));
-      return (qud(trueWorld) == qud(inferredWorld)) ? 1 : 0);
+      return (qud(trueWorld) == qud(inferredWorld) ? 1 : 0);
     });
     factor(Math.log(score) * rationality);
     return answer;
