@@ -29,10 +29,6 @@ var allFalse = function(boolList) {
   }, true, boolList)
 }
 
-var countCafeCombinations = function(n) {
-  return filter(function(l) {return l.length == n}, cafePowerset).length;
-};
-
 var getFilteredCafeList = function(world) {
   var cafeList = map(function(value) {
     var hasNewspaper = world[value][1];
@@ -96,12 +92,6 @@ var flatten = function(xs){
   }
 };
 
-var setsEqual = function(a1, a2){
-  var s1 = a1.slice().sort();
-  var s2 = a2.slice().sort();
-  return JSON.stringify(s1) === JSON.stringify(s2);
-}
-
 var powerset = function(set) {
   if (set.length == 0)
     return [[]];
@@ -115,12 +105,6 @@ var powerset = function(set) {
   }
 }
 
-var cafePowerset = powerset(cafes);
-
-var countCafeCombinations = function(n) {
-  return filter(function(l) {return l.length == n}, cafePowerset).length;
-};
-
 var all = function(p,l) { 
   return mapReduce1(function(a,b){ return a & b; }, p, l); };
 
@@ -133,9 +117,11 @@ var uniformDraw = function (xs) {
 };
 ///
 
-// World knowledge
+//   ---------------
+// | World knowledge |
+//   ---------------
 
-var distances = [1,3]//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+var distances = [1,3]
 
 var cafes = ['cafe1', 'cafe2', 'cafe3', 'cafe4']
 var cafePowerset = powerset(cafes);
@@ -147,6 +133,10 @@ var isCafeList = function(x){
   return allTrue(map(function(v) {return _.contains(cafes, v)}, x));
 };
 
+var countCafeCombinations = function(n) {
+  return filter(function(l) {return l.length == n}, cafePowerset).length;
+};
+
 var worldPrior = function(){
   return {
     'cafe1' : [uniformDraw(distances), flip(.5)],
@@ -155,7 +145,6 @@ var worldPrior = function(){
     'cafe4' : [uniformDraw(distances), flip(.5)]
   }
 }
-// Questions
 
 var hasNewspaper = function(world, cafe) {
   if(_.contains(_.keys(world), cafe))
@@ -168,7 +157,11 @@ var hasNewspaper = function(world, cafe) {
 var distance = function(world, cafe) {
   return world[cafe][0]
 }
-  
+
+//  -------------------
+// | Question knowledge |
+//  -------------------
+
 var newspaperQuestion = "Where can one buy an Italian newspaper?";
 
 // projects from a world to the relevant properties for the desired answer
@@ -178,42 +171,46 @@ var newspaperQuestionMeaning = function(world){
   }, cafes))
 };
 
-var questions = [newspaperQuestion] //doYouTakeCreditQuestion];
+var questions = [newspaperQuestion]
 
 var questionPrior = function(){
   return uniformDraw(questions);
 };
 
-// built-in cost for saying more than one answer
+//  -----------------
+// | Answer knowledge |
+//  -----------------
+
+// (truncated) geometric distribution
 var answerPrior = function(){
   var tempAnswer = uniformDraw(cafePowerset)
   var score = (Math.pow(.5, tempAnswer.length + 1)
-                   / countCafeCombinations(tempAnswer.length))
+               / countCafeCombinations(tempAnswer.length))
   factor(Math.log(score))
   return (tempAnswer.length == 0 ? ['none'] : tempAnswer)
 };
 
 var cafeAnswerMeaning = function(cafeList){
-  return function(questionMeaning){
-    return function(world){
-      var doTheyHaveNewspapers = map(function(cafe) {
-        hasNewspaper(world, cafe)
-      }, cafeList);
-      return allTrue(doTheyHaveNewspapers);
-    };
+  return function(world){
+    var doTheyHaveNewspapers = map(function(cafe) {
+      hasNewspaper(world, cafe)
+    }, cafeList);
+    return allTrue(doTheyHaveNewspapers);
   };
 };
 
 var noneMeaning = function() {
-  return function(questionMeaning){
-    return function(world){
-      var doTheyHaveNewspapers = map(function(cafe) {
-        hasNewspaper(world, cafe)
-      }, cafes);
-      return allFalse(doTheyHaveNewspapers);
-    } 
+  return function(world){
+    var doTheyHaveNewspapers = map(function(cafe) {
+      hasNewspaper(world, cafe)
+    }, cafes);
+    return allFalse(doTheyHaveNewspapers);
   }
 }
+
+//   -----------
+// | Interpreter |
+//   -----------
 
 var meaning = function(utterance){
   return (isCafeList(utterance) ? cafeAnswerMeaning(utterance) :
@@ -222,28 +219,20 @@ var meaning = function(utterance){
          console.error('unknown utterance!', utterance));
 };
 
-var interpreter = cache(function(question, answer){
+var interpreter = cache(function(answer){
   return Enumerate(function(){
     var world = worldPrior();
-    var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-    condition(answerMeaning(questionMeaning)(world));
+    condition(answerMeaning(world));
     return world;
   });
 });
 
-var literalAnswerer = cache(function(question, trueWorld){
-  return Enumerate(
-    function(){
-      var answer = answerPrior();
-      var ll = interpreter(question, answer)
-      factor(interpreter(question, answer).score([], trueWorld) * 3);
-      return answer;
-    }
-  );
-});
+//  ------
+// | QUDs |
+//  ------
 
-var qudAll = function(world){return pickAllNewspaperCafes(world)}
+var qudAll = function(world){return pickAllNewspaperCafes(world);};
 var qudClosest = function(world){return pickClosestNewspaperCafe(world);};
 
 var qudPrior = function(context){
@@ -261,17 +250,21 @@ var nameToQUD = function(qudName){
           console.error('unknown qud name', qudName));
 };
 
+//  -------
+// | Models |
+//  -------
+
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
   var qud = nameToQUD(question);
   return Enumerate(function(){
     var truthfulAnswerPrior = Enumerate(function(){
       var answer = fullAnswerPrior();
-      factor(interpreter(question, answer).score([], trueWorld));
+      factor(interpreter(answer).score([], trueWorld));
       return answer;
     });
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
-      var inferredWorld = sample(interpreter(question, answer));
+      var inferredWorld = sample(interpreter(answer));
       var inferredVal = qud(inferredWorld);
       var trueVal = qud(trueWorld);
       return (_.isEqual(trueVal, inferredVal) ? 1 : 0);
@@ -293,7 +286,7 @@ var explicitQuestioner = function(qudName, rationality) {
         var trueWorld = worldPrior();
         var answer = sample(explicitAnswerer(question, trueWorld, rationality));
         var posterior = Enumerate(function(){
-          var world = sample(interpreter(question, answer));
+          var world = sample(interpreter(answer));
           return qud(world);
         });
         return KL(posterior, prior);
@@ -317,13 +310,13 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
     // Pick answer conditioned on communicating question predicate value
     var truthfulAnswerPrior = Enumerate(function(){
       var answer = answerPrior();
-      factor(interpreter(question, answer).score([], trueWorld));
+      factor(interpreter(answer).score([], trueWorld));
       return answer
     })
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
-        var inferredWorld = sample(interpreter(question, answer));
+        var inferredWorld = sample(interpreter(answer));
         return (_.isEqual(qud(trueWorld), qud(inferredWorld))) ? 1.0 : 0.0;
       });
     factor(Math.log(score) * rationality);

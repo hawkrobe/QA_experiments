@@ -39,6 +39,10 @@ var uniformDraw = function (xs) {
 
 ///
 
+//   ---------------
+// | World knowledge |
+//   ---------------
+
 var buyWhiskeyContext = "I'd like to buy some whiskey.";
 var spendFiveDollarsContext = "I only have $5 to spend.";
 
@@ -56,6 +60,10 @@ var price = function(world){
   return world[0];
 };
 
+//  -------------------
+// | Question knowledge |
+//  -------------------
+
 var isMoreThanFiveQuestion = "Does Jim Beam cost more than $5?";
 
 var isMoreThanFiveQuestionMeaning = function(world){
@@ -67,6 +75,10 @@ var questions = [isMoreThanFiveQuestion];
 var questionPrior = function(){
   return uniformDraw(questions);
 };
+
+//  -----------------
+// | Answer knowledge |
+//  -----------------
 
 var literalAnswers = ["yes, the whiskey costs more than $5", "no, the whiskey costs less than $5"];
 
@@ -98,6 +110,10 @@ var booleanAnswerMeaning = function(bool){
   };
 };
 
+//   -----------
+// | Interpreter |
+//   -----------
+
 var meaning = function(utterance){
   return ((utterance === "yes, the whiskey costs more than $5") ? booleanAnswerMeaning(true) :
           (utterance === "no, the whiskey costs less than $5") ? booleanAnswerMeaning(false) :
@@ -114,6 +130,10 @@ var interpreter = cache(function(answer){
     return world;
   });
 });
+
+//  ------
+// | QUDs |
+//  ------
 
 var qudPrice = function(world){return price(world);};
 var qudPriceGreaterThan5 = function(world){return price(world) > 5;};
@@ -132,6 +152,10 @@ var nameToQUD = function(qudName){
           console.error('unknown qud name', qudName));
 };
 
+//  -------
+// | Models |
+//  -------
+
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
   var qud = nameToQUD(question);
   return Enumerate(function(){
@@ -139,9 +163,7 @@ var explicitAnswerer = cache(function(question, trueWorld, rationality) {
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
       var inferredWorld = sample(interpreter(answer));
-      var inferredVal = qud(inferredWorld);
-      var trueVal = qud(trueWorld);
-      return (_.isEqual(trueVal, inferredVal) ? 1 : 0);
+      return (qud(trueWorld) == qud(inferredWorld)) ? 1 : 0);
     });
     factor(Math.log(score) * rationality);
     return answer;
