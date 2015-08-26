@@ -55,75 +55,6 @@ var setsEqual = function(a1, a2){
   return JSON.stringify(s1) === JSON.stringify(s2);
 }
 
-var powerset = function(set) {
-  if (set.length == 0)
-    return [[]];
-  else {
-    var rest = powerset(set.slice(1));
-    return map(
-      function(element) {
-        return [set[0]].concat(element);
-      },
-      rest).concat(rest);
-  }
-}
-
-var mapReduce1 = function(f,g,ar){
-  // specialized to above reduce
-  return reduce(function(a,b) { return f(g(a),b); }, g(ar[ar.length-1]), ar.slice(0,-1));
-};
-
-var all = function(p,l) { 
-  return mapReduce1(function(a,b){ return a & b; }, p, l); };
-
-var permute = function (input) {
-  var input = input.slice();
-  var permArr = [];
-  var usedChars = [];
-  var doPerm = function() {
-    if (input.length == 0) {
-      permArr.push(usedChars.slice());
-    }
-    map(
-      function(i) {
-        var ch = input.splice(i, 1)[0];
-        usedChars.push(ch);
-        doPerm();
-        usedChars.pop();
-        input.splice(i, 0, ch);
-      },
-      _.range(input.length));
-  };
-  doPerm();
-  return permArr;
-};
-
-
-var cartesianProductOf = function(listOfLists) {
-    return reduce(function(b, a) {
-        return _.flatten(map(function(x) {
-          console.log(x)
-            return map(function(y) {
-              console.log(y)
-              return x.concat(y);
-            }, b);
-          }, a), true);
-  }, [[]], listOfLists);
-};
-
-// Sometimes you just need all possible combination of true and false
-var TFCartesianProd = function(n) {
-  var inner_fun = function(n, result) {
-    if (n == 0)
-      return result
-    else
-      return inner_fun(n-1, result.concat([['true','false']]))
-  }
-  var result = inner_fun(n, [])
-  console.log(result)
-  return cartesianProductOf(result);
-}
-
 var butLast = function(xs){
   return xs.slice(0, xs.length-1);
 };
@@ -154,14 +85,20 @@ var roundToNearest = function(time) {
 
 ///
 
-var currTimes = map(function(n) {return "3:" + n;}, _.range(30, 60));
+//   ---------------
+// | World knowledge |
+//   ---------------
 
-var appointmentContext = "I have an appointment at 4:00.";
+var times = map(function(n) {return "3:" + n;}, _.range(30, 60));
 
 // World state is just the true current time
 var worldPrior = function(){
-  return uniformDraw(currTimes)
+  return uniformDraw(times)
 };
+
+//  -------------------
+// | Question knowledge |
+//  -------------------
 
 var timeQuestion = "What time is it?";
 
@@ -176,126 +113,136 @@ var questionPrior = function(){
   return uniformDraw(questions);
 };
 
+//  -----------------
+// | Answer knowledge |
+//  -----------------
+
 // saying inexact times is easier?
 var answerPrior = function(){
-   var time = uniformDraw(currTimes)
-   return time
+   return uniformDraw(times)
 };
 
-// rather than true/false, the time answer meaning returns 
-// a score that can be used in a factor statement
-var timeAnswerMeaning = function(currTime){
-  return function(questionMeaning){
-    return function(world){
-      return timeDiff(currTime, world)
-    };
-  };
-};
+// 
+// var timeAnswerMeaning = function(currTime){
+//   return function(world){
+//     return timeDiff(currTime, world)
+//   };
+// };
+
+//   -----------
+// | Interpreter |
+//   -----------
 
 var meaning = function(utterance){
-  return (_.contains(currTimes, utterance) ? timeAnswerMeaning(utterance) :
+  return (_.contains(times, utterance) ? timeAnswerMeaning(utterance) :
          (utterance === timeQuestion) ? timeQuestionMeaning :
          console.error('unknown utterance!', utterance));
 };
 
-var literalListener = cache(function(question, answer){
+var interpreter = cache(function(answer){
   return Enumerate(function(){
     var world = worldPrior();
-    var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-    factor(- answerMeaning(questionMeaning)(world));
+    condition(answerMeaning(world));
     return world;
   });
 });
 
-var literalAnswerer = cache(function(question, trueWorld){
-  return Enumerate(
-    function(){
-      var answer = answerPrior();
-      var ll = literalListener(question, answer)
-      factor(literalListener(question, answer).score([], trueWorld));
-      return answer;
-    }
-  );
-});
+//  ------
+// | QUDs |
+//  ------
 
 var qudFactory = function(threshold) {
- return function(world){
-  if(world < threshold) {
-    return roundToNearest(world)
-  } else {
-    return world
-  }
- }}
+  return function(world){
+    if(world < threshold) {
+      return roundToNearest(world);
+    } else {
+      return world;
+    }
+  };
+};
 
 // Family of quds parameterized by threshold at which "running late"
-// Thresholds closer to the appointment are more likely
+// Thresholds closer to the appointment time (provided by context) are more likely
 var qudPrior = function(context){
-  var threshold = uniformDraw(getEveryFifthTime(currTimes))
-  var appointmentTime = "4:00"
-  factor(timeDiff(threshold, appointmentTime))
+  var threshold = uniformDraw(getEveryFifthTime(times))
+  factor(timeDiff(threshold, context))
   return "qud" + threshold
 };
 
 var nameToQUD = function(qudName){
-  var threshold = qudName.slice(3)
-  return qudFactory(threshold)
+  if (qudName == timeQuestion) {
+    return timeQuestionMeaning;
+  } else {
+    var threshold = qudName.slice(3)
+    return qudFactory(threshold)
+  }
 };
 
-var questioner = function(qudName) {
+//  -------
+// | Models |
+//  -------
+
+var explicitAnswerer = cache(function(question, trueWorld, rationality) {
+  var qud = nameToQUD(question);
+  return Enumerate(function(){
+    var answer = answerPrior();
+    var score = mean(function(){
+      var inferredWorld = sample(interpreter(answer));
+      return (_.isEqual(qud(trueWorld), qud(inferredWorld)) ? 1 : 0);
+    });
+    factor(Math.log(score) * rationality);
+    return answer;
+  });
+});  
+
+var explicitQuestioner = function(qudName, rationality) {
   var qud = nameToQUD(qudName);
   return Enumerate(function(){
     var question = questionPrior();
     var prior = Enumerate(function(){
       return qud(worldPrior());
     });
-    var expectedKL = mean(
-      function(){
-        // What do I expect the world to be like?
-        var trueWorld = worldPrior();
-        // If I ask this question, what answer do I expect to get,
-        // given what the world is like?
-        var answer = sample(literalAnswerer(question, trueWorld));
-        var posterior = Enumerate(function(){
-          // Given this answer, how would I update my distribution on worlds?
-          var world = sample(literalListener(question, answer));
-          // What is the value of the predicate I care about under
-          // this new distribution on worlds?
-          return qud(world);
-        });
-        return KL(posterior, prior);
+    var expectedKL = mean(function(){
+      var trueWorld = worldPrior();
+      var answer = sample(explicitAnswerer(question, trueWorld, rationality));
+      var posterior = Enumerate(function(){
+        var world = sample(interpreter(answer));
+        return qud(world);
       });
-    factor(expectedKL * 3);
-    
+      return KL(posterior, prior);
+    });
+    factor(expectedKL * rationality);
     return question;
   });
 };
 
-var pragmaticAnswerer = function(context, question, trueWorld){
+var pragmaticAnswerer = function(context, question, trueWorld, rationality){
   var qudPosterior = Enumerate(function(){
     var qudName = qudPrior(context);
     var qud = nameToQUD(qudName);
-    var q_erp = questioner(qudName);
+    var q_erp = explicitQuestioner(qudName, rationality);
     factor(q_erp.score([], question));
     return qudName;
   });
   return Enumerate(function(){
     var qudName = sample(qudPosterior);
     var qud = nameToQUD(qudName);
-    // Pick answer conditioned on communicating question predicate value
-    var answer = answerPrior();
+    var answer = answerPrior(); // note we DON'T use truthfulAnswerPrior here
     var score = mean(
       function(){
-        var inferredWorld = sample(literalListener(question, answer));
+        var inferredWorld = sample(interpreter(answer));
         return (_.isEqual(qud(trueWorld), qud(inferredWorld))) ? 1.0 : 0.0;
       });
-    factor(Math.log(score) * 10);
+    factor(Math.log(score) * rationality);
     return answer;
   });
 };
 
 
 //var qud = qudFactory("qud3:30")
+
+var appointmentContext = "4:00";
 
 var world = "3:34"
 print(appointmentContext + " " + timeQuestion + "; " +  "true time = ", world);
