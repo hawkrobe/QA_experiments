@@ -70,7 +70,7 @@ var pickClosestNewspaperCafe = function(world) {
       return world[k][0];
     }, filt)[0]
   }
-}			       
+}                               
 
 var KL = function(erpTrue, erpApprox){
   var values = erpTrue.support([]);
@@ -222,7 +222,7 @@ var meaning = function(utterance){
          console.error('unknown utterance!', utterance));
 };
 
-var literalListener = cache(function(question, answer){
+var interpreter = cache(function(question, answer){
   return Enumerate(function(){
     var world = worldPrior();
     var questionMeaning = meaning(question);
@@ -236,8 +236,8 @@ var literalAnswerer = cache(function(question, trueWorld){
   return Enumerate(
     function(){
       var answer = answerPrior();
-      var ll = literalListener(question, answer)
-      factor(literalListener(question, answer).score([], trueWorld) * 3);
+      var ll = interpreter(question, answer)
+      factor(interpreter(question, answer).score([], trueWorld) * 3);
       return answer;
     }
   );
@@ -257,10 +257,31 @@ var qudPrior = function(context){
 var nameToQUD = function(qudName){
   return (qudName == "qudClosest" ? qudClosest :
           qudName == "qudAll" ? qudAll :
+          qudName == newspaperQuestion ? newspaperQuestionMeaning :
           console.error('unknown qud name', qudName));
 };
 
-var questioner = function(qudName) {
+var explicitAnswerer = cache(function(question, trueWorld, rationality) {
+  var qud = nameToQUD(question);
+  return Enumerate(function(){
+    var truthfulAnswerPrior = Enumerate(function(){
+      var answer = fullAnswerPrior();
+      factor(interpreter(question, answer).score([], trueWorld));
+      return answer;
+    });
+    var answer = sample(truthfulAnswerPrior);
+    var score = mean(function(){
+      var inferredWorld = sample(interpreter(question, answer));
+      var inferredVal = qud(inferredWorld);
+      var trueVal = qud(trueWorld);
+      return (_.isEqual(trueVal, inferredVal) ? 1 : 0);
+    });
+    factor(Math.log(score) * rationality);
+    return answer;
+  });
+});  
+
+var explicitQuestioner = function(qudName, rationality) {
   var qud = nameToQUD(qudName);
   return Enumerate(function(){
     var question = questionPrior();
@@ -269,31 +290,24 @@ var questioner = function(qudName) {
     });
     var expectedKL = mean(
       function(){
-        // What do I expect the world to be like?
         var trueWorld = worldPrior();
-        // If I ask this question, what answer do I expect to get,
-        // given what the world is like?
-        var answer = sample(literalAnswerer(question, trueWorld));
+        var answer = sample(explicitAnswerer(question, trueWorld, rationality));
         var posterior = Enumerate(function(){
-          // Given this answer, how would I update my distribution on worlds?
-          var world = sample(literalListener(question, answer));
-          // What is the value of the predicate I care about under
-          // this new distribution on worlds?
+          var world = sample(interpreter(question, answer));
           return qud(world);
         });
         return KL(posterior, prior);
       });
-    factor(expectedKL * 3);
-    
+    factor(expectedKL * rationality);
     return question;
   });
 };
 
-var pragmaticAnswerer = function(context, question, trueWorld){
+var pragmaticAnswerer = function(context, question, trueWorld, rationality){
   var qudPosterior = Enumerate(function(){
     var qudName = qudPrior(context);
     var qud = nameToQUD(qudName);
-    var q_erp = questioner(qudName);
+    var q_erp = explicitQuestioner(qudName, rationality);
     factor(q_erp.score([], question));
     return qudName;
   });
@@ -303,24 +317,24 @@ var pragmaticAnswerer = function(context, question, trueWorld){
     // Pick answer conditioned on communicating question predicate value
     var truthfulAnswerPrior = Enumerate(function(){
       var answer = answerPrior();
-      factor(literalListener(question, answer).score([], trueWorld));
+      factor(interpreter(question, answer).score([], trueWorld));
       return answer
     })
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
-        var inferredWorld = sample(literalListener(question, answer));
+        var inferredWorld = sample(interpreter(question, answer));
         return (_.isEqual(qud(trueWorld), qud(inferredWorld))) ? 1.0 : 0.0;
       });
-    factor(Math.log(score) * 10);
+    factor(Math.log(score) * rationality);
     return answer;
   });
 };
 
 var world = {'cafe1' : [3, false],
-         'cafe2' : [1, true],
-         'cafe3' : [3, true],
-         'cafe4' : [3, true]}
+             'cafe2' : [1, true],
+             'cafe3' : [3, true],
+             'cafe4' : [3, true]}
 
 print("world", world);
 
