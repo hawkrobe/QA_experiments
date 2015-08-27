@@ -5,6 +5,7 @@
 \usepackage[outdir=./]{epstopdf}
 %\DeclareGraphicsExtensions{.eps}
 
+\usepackage{mathtools}
 \usepackage{enumerate}
 \usepackage{apacite}
 \usepackage{listings}
@@ -241,27 +242,12 @@ We now proceed to show how our model addresses four classic examples of question
 
 \todo[inline]{ndg: it would be good to make this section a bit more formal. specify the model components mathematically, not only with words, and have some kind of results figures. the figures of course don't have a ton of information, but having them makes it feel more like real results. can we model the actual data from these experiments?}
 
-\subsection{Clark (1979), Experiment 4}
-%\todo[inline]{This example is redundant with the next one -- both simply make the QUD prior dependent on a context statement. Maybe we should leave this one out, since we're already using the other Clark experiment?}
-First, we show how our model can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context. For this illustration, we model the whiskey-pricing study presented in the Introduction \cite{Clark79_IndirectSpeechActs}. Recall that liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in the uninformative context (``I want to buy some bourbon'') than in the five dollar context (``I've got \$5 to spend'').
-
-Our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \$2, \dots, \$10\}$. We consider two possible goals $g \in \mathcal{G}$: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than \$5, the amount the agent has in their pocket). %\todo[inline]{ndg: would the model work the same if the a priori goal set included additional threshold or interval goals? ie would the answerer rule them out based on the question asked? alternatively maybe re-cast the >5 goal as a `can i buy' goal?} 
-
-The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \$2, \dots, \$10\}$ as well as ``yes'' and ``no.'' The answer prior assigns equal probability to picking the category of ``yes/no'' answers and of ``price'' answers, then uniformly draws from the possible responses within each category. Thus, $$P(\textrm{``yes''}) = P(\textrm{``no''}) = 0.25$$ and $$P(\textrm{``\$1''}) = \cdots = P(\textrm{``\$10''}) = 0.05$$
-
-Because the question was fixed in the experiment, the question space $\mathcal{Q}$ simply consists of the single question $q = $``Does a fifth of Jim Beam cost more than \$5?'' \todo[inline]{rdh: if we had alternative question possibilities, like ``How much does a fifth of whiskey cost?'', this would theoretically affect the pragmatic answerers' response: if they had been interested in the actual price, wouldn't they have asked the other question?} We model the context sentence as affecting the questioner's goal prior $P(g)$. When the context is ``I'd like to buy some whiskey,'' we assume that the the two goals are equally likely: $P(g_= | c) = P(g_> | c)$. When it is ``I only have \$5 to spend,'' we assume that it is more strongly in favor the agent learning whether or not they can afford it: $P(g_> | c)~=~.99$.
-
-%\todo[inline]{ndg: need to unpack these results -- this paragraph is quite cryptic.}
-
-\subsubsection{Results} 
-
-
 \begin{table*}[t]
 \centering
 \begin{tabular}{ p{3cm} | r | r ||||||  r | r }
 & \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
 \hline
-&           \% yes/no &   \%  price &           \% yes/no &   \%  price    \\
+&           \% literal &   \%  info &           \% literal &   \%  info    \\
 \hline
 ``Some bourbon'' &   0.37 & 0.63 &  0.38 & 0.62 \\
 \hline
@@ -272,6 +258,20 @@ Because the question was fixed in the experiment, the question space $\mathcal{Q
 \label{table:clark79exp4}
 \end{table*}
 
+\subsection{Clark (1979), Experiment 4}
+%\todo[inline]{This example is redundant with the next one -- both simply make the QUD prior dependent on a context statement. Maybe we should leave this one out, since we're already using the other Clark experiment?}
+First, we show how our model can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context. For this illustration, we model the whiskey-pricing study presented in the Introduction \cite{Clark79_IndirectSpeechActs}. Recall that liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in the uninformative context (``I want to buy some bourbon'') than in the five dollar context (``I've got \$5 to spend'').
+
+Our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \$2, \dots, \$10\}$. We consider two possible goals $g \in \mathcal{G}$: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than \$5, the amount the agent has in their pocket). %\todo[inline]{ndg: would the model work the same if the a priori goal set included additional threshold or interval goals? ie would the answerer rule them out based on the question asked? alternatively maybe re-cast the >5 goal as a `can i buy' goal?} 
+
+The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \$2, \dots, \$10\}$ as well as ``yes'' and ``no.'' The answer prior assigns equal probability to picking the category of ``yes/no'' answers and of ``price'' answers, then uniformly draws from the possible responses within each category. Thus, $$P(\textrm{``yes''}) = P(\textrm{``no''}) = 0.25$$ and $$P(\textrm{``\$1''}) = \cdots = P(\textrm{``\$10''}) = 0.05$$
+
+Because the question was fixed in the experiment, the question space $\mathcal{Q}$ simply consists of the single question $q = $``Does a fifth of Jim Beam cost more than \$5?'' \todo[inline]{rdh: if we had alternative question possibilities, like ``How much does a fifth of whiskey cost?'', this would theoretically affect the pragmatic answerers' response: if they had been interested in the actual price, wouldn't they have asked the other question?} We model the context sentence as affecting the questioner's goal prior $P(g)$. When the context is ``I'd like to buy some whiskey,'' we assume that the the two goals are equally likely: $P(g_= | c) = P(g_> | c)$. When it is ``I only have \$5 to spend,'' we assume that it is more strongly in favor the agent learning whether or not they can afford it: $P(g_> | c)~=~.99$. We set the rationality parameter $\alpha = 1$.
+
+%\todo[inline]{ndg: need to unpack these results -- this paragraph is quite cryptic.}
+
+\subsubsection{Results} 
+
 Our pragmatic answerer model's output is shown in Table \ref{table:clark79exp4}, compared with empirical results from \citeA{Clark79_IndirectSpeechActs}. The responses in \citeA{Clark79_IndirectSpeechActs} were tallied in three categories: literal answer only $(n_l)$, information only $(n_i)$, or both literal answer \emph{and} information $(n_b)$. For the purposes of this case study, we are only interested in the ratio of literal answers to information answers: $p_l = n_l/(n_l+n_i)$ and $p_i = n_i/(n_l+n_i)$.
 
 Critically, our pragmatic answerer model displays the same context-dependence as the original empirical result: when the question is prefaced with ``I'd like to buy some whiskey,'', which makes the goal prior uniform across the two possible goals, then the correct exact price answer is favored more strongly (at probability $0.62$) than the literal response (probability $0.37$). This asymmetry arises in our model due to the fact that an exact price is much more highly informative than a literal response with respect to the ``exact price'' goal $g_=$, and if there is uncertainty over which goal is in fact the case, it is worth erring on the side of over-informativeness. This matches the empirical trend, which also favored the exact price answer (at probability $0.57$) over the literal answer (at probability $0.41$).
@@ -281,41 +281,49 @@ On the other hand, when the question is prefaced with ``I only have \$5 to spend
 Note that the literal and explicit answerers (which have no natural way to account for context) do not make differential predictions in the two contexts. The literal model predicts that the answerer is equally likely to say the true Boolean answer and the true numerical answer, and the explicit model predicts that the answerer will always give the true Boolean answer, since it is the explicit question being asked. This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. 
 
 \subsection{Groenendijk and Stokhof (1984)}
+ \begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = 1]{groenendijckPlot.pdf}
+\end{center}
+\vspace{-.25cm}
+\caption{Results for our computational experiments implementing the Groenendijck \& Stokhof (1984) \emph{mention-some} problem.}
+\label{fig:cafeExperimentResults}
+\end{figure*}
 
 For a slightly more complex example, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an exhaustive list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a single answer would be sufficient. Many theoretical explanations in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}. While there are no experimental results on \emph{mention-some} and \emph{mention-all} readings with which we can compare our model's output, we include the phenomenon as a case study for its value in demonstrating how our model formalizes the standard explanation. 
 
 We focus on a question like ``Where do they sell Italian newspapers in Amsterdam?'' that can intuitively be ambiguous between these meanings depending on who is asking: if it is a tourist, they probably just want to know the nearest place, but if it is a businessperson trying to build a newspaper distribution network in town, they likely want the whole list \cite<see>{GroenendijkStokhof84_SemanticsOfQuestions}. The puzzle is determining how the same question can take on different meaning in different contexts: according to our account, this happens via an inference about the questioner's underlying goal.
 
-Our world space $\mathcal{W}$ consists of all possible assignments of properties to a set of four cafes in town. Each cafe has two properties: its distance from the speaker and whether or not it sells Italian newspapers. There are two possible goals $g \in \mathcal{G}$: $g_{n}$, learning the identity of the \emph{nearest} cafe selling a newspaper, and $g_{a}$, learning the identity of \emph{all} cafes selling a newspaper. The space of answers $\mathcal{A}$ includes all $\sum_{i=0}^4 {4 \choose i} = 16$ combinations of different cafes (e.g. ``none,'' ``cafe1,'' ``cafe 1 and cafe 3,'' or ``cafe 2, cafe 3, and cafe 4''). Again, our question space $\mathcal{Q}$ consists of a single question: ``Where can one buy an Italian newspaper?''
+Our world space $\mathcal{W}$ consists of all possible assignments of properties to a set of four cafes in town. Each cafe has two properties: its distance from the speaker and whether or not it sells Italian newspapers. There are two possible goals (or QUDs) $g \in \mathcal{G}$: $g_{n}$, learning the identity of the \emph{nearest} cafe selling a newspaper, and $g_{a}$, learning the identity of \emph{all} cafes selling a newspaper. Both of these are represented by projections on world states, mapping a list of cafes to the single cafe selling newspapers with the lowest distance or to the sublist that sell newspapers, respectively. The space of answers $\mathcal{A}$ includes all $\sum_{i=0}^4 {4 \choose i} = 16$ combinations of different cafes (e.g. ``none,'' ``cafe1,'' ``cafe 1 and cafe 3,'' or ``cafe 2, cafe 3, and cafe 4''). Again, our question space $\mathcal{Q}$ consists of a single question: ``Where can one buy an Italian newspaper?''
 
-For the prior $P(a)$ over answer utterances, we use a (truncated) geometric distribution, which is common over spaces where probabilities naturally scale with length. Let $\ell(a)$ be the number of locations in the answer (e.g. $\ell(\textrm{`none'})~=~0, \ell(\textrm{`cafe 1'})~=~1$, etc). Then the probability of an answer $a$ is given by:
+For the prior $P(a)$ over answer utterances, we use a (truncated) geometric distribution, which is common over spaces where probabilities should naturally scale with some count. Let $\ell(a)$ be the number of locations named in the answer (e.g. $\ell(\textrm{`none'})~=~0, \ell(\textrm{`cafe 1'})~=~1$, etc). Then the probability of an answer $a$ is given by:
 
 $$P(a) \propto \frac{(1 - p)^{\ell(a)}p}{{4 \choose (\ell(a))}}$$
-which we re-normalize to account for the fact that $\ell(a) \le 4$ for all $a\in \mathcal{A}$. In our computational experiment, we fix $p = 0.5$. 
+which we re-normalize to account for the fact that $\ell(a) \le 4$ for all $a\in \mathcal{A}$. In our computational experiment, we fix $p = 0.6$. 
 This simple distribution has two advantageous properties: 
 \begin{enumerate}[(1)]
-\item the probability mass assigned to a given length by the geometric distribution is spread evenly across different answers of that length, ignoring order.
+\item the probability mass assigned to a given length by the geometric distribution is spread evenly across different answers of that length.
 \item we naturally assign longer answers lower probability, reflecting their higher cost of utterance. \end{enumerate}
 
 We model the context sentence as affecting the questioner's goal prior $P(g)$: if they say ``I'm new here,'' then there's a high chance that they are interested in the closest location with a newspaper ($P(g_n | c) = 0.9$); if they say ``I'm a businessperson\dots,'' then there's a high chance that they are interested in all of the newspaper locations ($P(g_a | c) = 0.9$).\footnote{Note that this formulation of the problem differs slightly from the one given by \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, although they easily map onto one another. In the original formulation, the \emph{answer} is fixed and the \emph{meaning} of the answer must be inferred to either be mention-some or mention-all. In our formulation, the meaning of each answer is unique and fixed, but the answerer must choose among a set of different possible answers. The same inferential machinery that our questioner uses to reason about which answer utterance the answerer will give could also be used to reason about which \emph{meaning} the answerer intends by their fixed utterance. The only difference is that the questioner would have uncertainty over a set of possible meanings instead of uncertainty over a set of possible answer utterances. We chose the latter because it more closely resembles the other scenarios we are modeling.}
 
-Note that it remains unclear where these goals and goal priors may come from in real-world situations: it is likely tied to background knowledge about tourists, newspapers, and the business world, as well as past experience in social situations. While these deeper explanations lie outside the scope of our model, the model still has explanatory power in showing how goals interact with other terms, and how these priors differ across scenarios. 
-
-%\todo[inline]{ndg: we need to say more about where the goals and goal priors come from, so that it's clear we know this is an unsolved issue, and also clear that the model is explaining something anyhow....}
+It remains unclear where these goals and goal priors may come from in real-world situations: it is likely tied to background knowledge about tourists, newspapers, and the business world, as well as past experience in social situations. While these deeper explanations lie outside the scope of our model, we still have explanatory power in showing how goals interact with other terms, and how these priors differ across scenarios. 
 
 \subsubsection{Results}
 
-For concreteness, we set the world to be the following :
+For concreteness, we set the true world to be the following :
 
 \begin{lstlisting}
-world = {'cafe1' : [3, false],
-         'cafe2' : [1, true],
-         'cafe3' : [3, true],
-         'cafe4' : [3, true]}
+world = {`cafe1' : [3, false],
+         `cafe2' : [1, true],
+         `cafe3' : [3, true],
+         `cafe4' : [3, true]}
 \end{lstlisting}
-and enumerated over all model executions for both contexts. We find that the highest probability response given the ``I'm new here'' context is the single location ``cafe2,'' with probability 0.56. Given the ``I'm a businessperson\dots'' context, however, the highest probability response is the conjunction ``cafe2 and cafe3 and cafe4,'' with probability 0.82. Note that cafe 1 was not assigned any probability in either context because it did not sell Italian newspapers (demonstrating that the pragmatic answerer will not lie), and that the nearest cafe was given precedence in the ``tourist'' context. 
+meaning that `cafe1' is three blocks away from the speaker and does \emph{not} sell Italian newspapers, `cafe2' is one block away and \emph{does} sell Italian newspapers, and so on. We enumerated over all model executions for both contexts. Results are displayed in Figure \ref{fig:cafeExperimentResults}. We find that the highest probability response given the ``tourist'' context is the single location ``cafe2,'' with response probability $p = 0.26$. This is in fact the nearest location selling newspapers, informatively fulfilling the contextually more likely goal $g_n$. Note that responses containing ``cafe1'' are ruled out entirely, as it does not carry Italian newspapers. Of the remaining responses, those including ``cafe2'' have relatively higher probability, while ``cafe3, cafe4'' is assigned lowest probability, as it does not informatively address \emph{either} goal and is also relatively unlikely under the prior. 
 
-The literal and explicit answerers, as in the Clark scenario, do not have the means of making inferences about the questioner's underlying goals. Thus, both models incorrectly predicted that the context would not affect the preferred response. The literal answerer predicted that all combinations of cafes 2, 3, and 4 would be given in proportion to their prior likelihood (with no special preference given to the closest one). The explicit answerer predicted that cafe2 would be preferred in all contexts.     Crucially, the only difference between our model of this scenario and the Clark scenario is the set of QUDs, the structure of the world, and the meanings of the answers. The questioner and answerer functions stayed exactly the same.
+Given the ``businessperson'' context, however, the highest probability response is the conjunction ``cafe2 and cafe3 and cafe4,'' with probability $p = 0.27$. This is the exhaustive answer, informatively fulfilling the contextually more likely goal $g_a$ of knowing the location of all cafes selling Italian newspapers. The remaining answers are equally unlikely, as they all fail to be informative about the exhaustive list of locations. The slight variability, with $a = `cafe2'$ more likely than the rest, and $a = `cafe3, cafe4'$ less likely, is due to the influence of the less likely ``nearest'' goal, and the answer prior.
+
+The literal and explicit answerers, as in the Clark scenario, do not have the means of making inferences about the questioner's underlying goals. Thus, both models incorrectly predicted that the context would not affect the preferred response. The literal answerer predicted that all combinations of cafes 2, 3, and 4 would be given in proportion to their prior likelihood (with no special preference given to the closest one). The explicit answerer predicted that the exhaustive answer would be preferred in all contexts (as this is literal semantics we encoded for the question).  Crucially, the only difference between our model of this scenario and the Clark scenario is the space of QUDs, the structure of the world, and the meanings of the answers. The questioner and answerer functions stayed exactly the same.
 
  \begin{figure*}[t!]
 \begin{center}
@@ -328,18 +336,36 @@ The literal and explicit answerers, as in the Clark scenario, do not have the me
 
 \subsection{Gibbs Jr. \& Bryant (2008): Experiment 3}
 
-It has been shown in previous work that people typically round their answers to the nearest 5 or 10 minute interval when asked `Do you have the time?'', even when they're wearing a digital watch \cite{DerHenstCarlesSperber02_RelevanceTellingTime}.  \citeA{GibbsBryant08_OptimalRelevance} replicated this result, and then performed a follow-up study where they preceded their question by the context ``I have a meeting at 4:00.'' They found that the tendency to round times decreased as a function of the time remaining until the stated deadline: when people were asked at 3:40, they would say ``It's 3:45,'' but when people were asked at 3:53, they would make their response precise to the minute. They explain this result by appealing to the questioner's goals: while an approximate time is sufficiently informative with respect to most goals, a questioner who is running late to an appointment may have the goal of judging whether to rush, in which case a precise time is needed. 
+It has been shown in previous work that people typically round their answers to the nearest 5 minute interval when asked `Do you have the time?'', even when they're wearing a digital watch \cite{DerHenstCarlesSperber02_RelevanceTellingTime}.  \citeA{GibbsBryant08_OptimalRelevance} replicated this result, and then performed a follow-up study on analog-watch wearers where they preceded their question by the context ``I have a meeting at 4:00.'' 
 
-We take the world state to be the true current time. Unlike in the previous two scenarios, where there are only two QUDs \todo[inline]{ndg: first use of QUD?\\ rdh: I defined it in the model spec section} and two contexts that make each QUD more or less likely, we now let there be a \emph{family of QUDs} and a fixed context stating the time of the appointment. This family of QUDs is parameterized by a threshold time, below which times are rounded to the nearest 5 minute increment and above which times are given exactly. For example, the QUD with the threshold set at 3:50 corresponds to a goal of wanting to learn the true time if it is higher than 3:50 and only caring about the approximate time below 3:50. The prior over thresholds ($\tau =$ 3:30, 3:35, \dots, 3:55), given a context sentence, weights each threshold by its distance to the appointment time, reflecting the intuition that the questioner will be more interested in the exact time as it approaches the appointment time.
-\todo[inline]{ndg: why this set of goals? maybe derive more explicitly from assumptions about planning and travel time??}
+They found that the tendency to round times decreased as a function of the time remaining until the stated deadline: the group asked 30-16 minutes before the stated appointment rounded their responses 79\% of the time, while the group asked 14 minutes or closer to the appointment rounded significantly less (62\%). They explained this result by appealing to the questioner's goals: while an approximate time is sufficiently informative with respect to most goals, such as knowing how much time is left before heading to an appointment, a questioner who is running late may need to gauge how quickly they should move, whether they should call and warn about being late, or make other such decisions, in which case a precise time is highly relevant. 
 
- The set of answers is the set of times that could be given (e.g. 3:30, 3:31, \dots, 4:00), with uniform probability. Critically, the meaning of an answer is not exact: it introduces a factor in the ``interpreter'' component of the model, upweighting world states that are close to the answer utterance. In other words, we specify an ``approximate'' semantics for number references, which is necessary for rounded answers to be produced in the first place.
- \todo[inline]{need to be more careful and formal in defining the number word meanings here.
- 
- in fig 1, 3:36 is just as likely as 3:34... that seems problematic.}
- 
- 
- 
+To set up this scenario in our model, we take the world space to be the set of possible times, which we limit to a half hour interval (as in the experiment): $\mathcal{W}~=~\{\textrm{3:30}, \textrm{3:31}, \dots, \textrm{3:59}\}$. Unlike in the previous two case studies, where there are only two contrasting goals \todo[inline]{ndg: first use of QUD?\\ rdh: I defined it in the model spec section, but it's probably best to stick to using `goal'} and two contexts that make each goal more or less likely, we now let there be a \emph{family of goals} $\mathcal{G} = \{g_\tau\}_{t=3:30}^{3:59}$ and a fixed context stating the time of the appointment. \todo[inline]{ndg: why this set of goals? maybe derive more explicitly from assumptions about planning and travel time??\\
+rdh: is this explanation better, or should I actually start by defining a separate set of goals about travel time, then define these threshold goals in those terms?}
+
+This family of goals is parameterized by a threshold time $\tau$, representing the point at which the agent believes they are running late to the appointment (likely based on expectations about travel time, social norms concerning lateness, and other exogenous factors). For times earlier than $\tau,$ the agent is equally likely to want to know the price time vs. a rounded, imprecise time, to know roughly how much time they have before leaving\footnote{Note that even when someone is \emph{not} running late, they are still sometimes interested in the true time}. For times later than $\tau$, the agent cares about the exact time in order to make the kind of decisions described above:
+
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+$$g_\tau(x) = \left\{
+\begin{array}{rcl}
+x & & x \ge \tau\\
+x & & x < \tau; p = 0.5 \\
+5\floor{\frac{x}{5} + \frac{1}{2}}  & & x < \tau; p = 0.5
+\end{array}
+\right.
+$$
+\todo[inline]{rdh: couple issues with this: (1) we're not really round the TIME, we're rounding the minute integer. (2) Bad notation for probabilistic projection? Should probably find another way to get the influence of the probability without putting it here}
+For example, the goal $g_{3:50}$ with the threshold set at 3:50 corresponds to a goal of wanting to learn the true time if it is higher than 3:50, and wanting to learning the true time with probability $p = 0.5$ if it is below 3:50. This would be the case if the agent knew they would need to leave around 3:50 in order to make it to an appointment on time.
+
+The goal prior $P(g_\tau)$ over different thresholds ($\tau \in \{$ 3:31, 3:32, \dots, 3:59 $\}$), given an appointment time as context, weights each threshold by the log of its distance to that appointment time, reflecting the intuition that the questioner will be more interested in the exact time as it approaches the appointment time:
+
+$$P(g_\tau; c) \propto e^{|\tau - c|}  $$
+
+\todo[inline]{rdh: Explain what this looks like}
+
+ The set of answers is the set of times that could be given (e.g. 3:30, 3:31, \dots, 4:00), with multiples of 5 strongly favored; as  \citeA{GibbsBryant08_OptimalRelevance} point out, their participants all wore analog watches and precise answers have higher cost. We use exact number semantics: the response ``3:35'' evaluates to true in worlds where the time is in fact 3:35, and false otherwise. While we suppressed \emph{a priori} false answers for convenience in other case studies (they would be naturally be assigned vanishingly small probability anyway), we cannot do so here: answerers must be allowed to make \emph{a priori} false utterances that get reinterpreted by the listener \cite<see>{KaoWuBergenGoodman14_NonliteralNumberWords}.
+
  \subsubsection{Results}
  
  To test the behavior of this model, we compare two simulations. In both, the context is ``I have an appointment at 4:00.'' In the first, the true world state is 3:34 (the `appointment far' condition); in the second, the true world state is 3:54 (the `appointment near' condition). Gibbs Jr. and Bryant \citeyear{GibbsBryant08_OptimalRelevance} found that the answerer is most likely to round to 3:35 in the `appointment far' condition, but most likely to give the exact time, 3:54, in the `appointment near' condition. Indeed, in the `appointment far' condition, the pragmatic questioner model, which infers which threshold is likely given the context and threshold, replies the rounded time `3:35' with probability 0.40 compared to the true time `3:34' with probability 0.27. In the `appointment near' condition, this pattern reverses: the pragmatic questioner model replies the rounded time `3:55' with probability 0.16 and the exact time `3:54' with probability 0.68 (see Figure \ref{fig:timeExperimentResults}).
@@ -551,9 +577,7 @@ In experiment 2, we test the generality of our model by expanding the stimulus s
 \includegraphics[scale = .3]{Exp4GuesserViewStart}
 \includegraphics[scale = .15]{Exp4HelperViewStart}
 \end{center}
-\vspace{-.5cm}
 \caption{Exp.~2 interfaces, for the questioner (top) and answerer (bottom).}
-\vspace{-.1cm}
 \label{fig:exp4views}
 \end{figure*}
 \section{Exp.~2: Generalizing Predictions}
@@ -568,21 +592,10 @@ from Amazon's Mechanical Turk to participate in this task. Fifty participants we
 \begin{center}
 \includegraphics[scale = .3]{hierarchyStructureExamples}
 \end{center}
-\vspace{-.5cm}
 \caption{Example of each type of hierarchy used in Experiment 2. The bottom row served as the answer space, and the labels in the questioner space highlighted in red. }
-\vspace{-.1cm}
 \label{fig:hierarchyStructures}
 \end{figure*}
-The procedure was the same as Experiment 1 with two major modifications. First, we addressed an asymmetry in the task: the answerer watched the questioner move words, but the questioner only saw template text responses in response. In an exit survey, we found that answerers were more likely to believe they were playing with a  human partner than questioners. To bring questioner and answerer expectations closer together, we changed the mechanism by which the answerer responds. Instead of clicking on a gate and then clicking the `send' button, we supplied a ``Reveal Box.'' When the answerer was ready to reveal a gate, they would simply click and drag the object they wanted to reveal into this box. The questioner watched as the outline of the gate moved, in real time, and saw the image as soon as the answerer dropped it in the box. 
-
-Second, we noticed that some players began exploiting the freedom of the ``question box'' drag-and-drop procedure after playing several rounds. On difficult items, especially those in the equivocal hierarchy where our model predicts no preferred question for certain goals, players would use the words to form non-grammatical signals. This is interesting behavior in its own right, but we are interested in testing models which operate over a well-defined set of question utterances held in common ground. We therefore pre-set a frame ``Where is the \dots'' for the question box and allowed participants to drag one and only one of the question labels into the blank. 
-
-The resulting questioner and answerer interfaces are displayed in Figure \ref{fig:exp4views}.  Each participant provided one response for each of the twelve items, presented in random order. 
-
-\subsubsection{Results}
-
-First, we note that there was high correlation in response probabilities across domains for both questioners and answerers (see Table \ref{table:experiment4correlations}). Thus, in examining the results below we will collapse across domains for simplicity of analysis. Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
-\begin{table*}[b!]
+\begin{table*}[t!]
 \centering
 \begin{tabular}{ p{1.5cm} | r | r | r | r |||||| r | r | r | r |}
 & \multicolumn{4}{c||||||}{Questioners} & \multicolumn{4}{c}{Answerers} \\
@@ -600,6 +613,18 @@ artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 \caption{Inter-domain correlations in Experiment 4} 
 \label{table:experiment4correlations}
 \end{table*}
+The procedure was the same as Experiment 1 with two major modifications. First, we addressed an asymmetry in the task: the answerer watched the questioner move words, but the questioner only saw template text responses in response. In an exit survey, we found that answerers were more likely to believe they were playing with a  human partner than questioners. To bring questioner and answerer expectations closer together, we changed the mechanism by which the answerer responds. Instead of clicking on a gate and then clicking the `send' button, we supplied a ``Reveal Box.'' When the answerer was ready to reveal a gate, they would simply click and drag the object they wanted to reveal into this box. The questioner watched as the outline of the gate moved, in real time, and saw the image as soon as the answerer dropped it in the box. 
+
+Second, we noticed that some players began exploiting the freedom of the ``question box'' drag-and-drop procedure after playing several rounds. On difficult items, especially those in the equivocal hierarchy where our model predicts no preferred question for certain goals, players would use the words to form non-grammatical signals. This is interesting behavior in its own right, but we are interested in testing models which operate over a well-defined set of question utterances held in common ground. We therefore pre-set a frame ``Where is the \dots'' for the question box and allowed participants to drag one and only one of the question labels into the blank. 
+
+The resulting questioner and answerer interfaces are displayed in Figure \ref{fig:exp4views}.  Each participant provided one response for each of the twelve items, presented in random order. 
+
+\subsubsection{Results}
+
+First, we note that there was high correlation in response probabilities across domains for both questioners and answerers (see Table \ref{table:experiment4correlations}). Thus, in examining the results below we will collapse across domains for simplicity of analysis. Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
+
+
+
 In the `equivocal' condition (Figure \ref{fig:hierarchyStructures}(a)), the questioner chose whether to ask about the `pet' or the `fish'; two of the goal animals were `pet fish' belonging to both categories, while the other two animals were just a pet (e.g. a dalmatian) or just a fish (e.g. a deep-sea angler fish), respectively. We found that when trying to find the object that was only a pet or only a fish, participants preferred to ask `pet', $\chi^2(1) = 67, p < 0.001$, or `fish,' $\chi^2(1) = 57, p < 0.001$, respectively. Answerers, in turn, revealed the location of the `dalmatian' when asked about the `pet', $\chi^2(3) = 238, p < 0.001$, and the location of the `angler fish' when asked about the `fish,' $\chi^2(3) = 142, p < 0.001$. 
 
 For the two objects belonging to both categories, where we expected questioners to have no preference, we found strong variability across domains -- in the `animal' domain, for example, 85\% of questioners asked about the `fish' when given one of the `pet fish' goals, compared to only 15\% asking about the `pet,' $\chi^2(1) = 15, p < 0.001$. In the `artifacts' domain, on the other hand, questioners had no preference between asking about the `seat' or `metal thing' when the objects (metal chairs) fell into both categories, $\chi^2(1) = 0.4, p = 0.52$. This suggests that labels have differential fitness when applied to different objects, and participants are relying on more knowledge than the purely structural connections captured by the hierarchy. 
@@ -613,9 +638,7 @@ In the `branching' hierarchy (Figure \ref{fig:hierarchyStructures}(c)), we repli
 \includegraphics[scale = .25]{Exp4QuestResults}
 \includegraphics[scale = .25]{Exp4AnsResults}
 \end{center}
-\vspace{-.5cm}
 \caption{Exp.~2 results and model fits, for the best-performing questioner (left) and answerer (right) models, collapsing over the different domains. Error bars represent bootstrapped 95\% confidence intervals.}
-\vspace{-.1cm}
 \label{fig:exp4res}
 \end{figure*}
 
@@ -627,10 +650,8 @@ In the `branching' hierarchy (Figure \ref{fig:hierarchyStructures}(c)), we repli
 \includegraphics[scale=.57]{Exp4QuestFits.jpeg}
 \includegraphics[scale=.57]{Exp4AnsFits.jpeg}
 \end{center}
-\vspace{-.5cm}
 \caption{Full space of models, and their correlations with the data from Exp.~2, broken down by item and type.}
 \label{fig:Exp4ModelSpace}
-\vspace{-.15cm}
 \end{figure*}
 %
 
