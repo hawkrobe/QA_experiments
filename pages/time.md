@@ -117,17 +117,18 @@ var questionPrior = function(){
 // | Answer knowledge |
 //  -----------------
 
-// saying inexact times is easier?
+// saying inexact times is a bit easier (analog watches)
 var answerPrior = function(){
-   return uniformDraw(times)
+  var ans = uniformDraw(times);
+  factor(ans == roundToNearest(ans) ? Math.log(2) : Math.log(1));
+  return ans;
 };
 
-// 
-// var timeAnswerMeaning = function(currTime){
-//   return function(world){
-//     return timeDiff(currTime, world)
-//   };
-// };
+var timeAnswerMeaning = function(currTime){
+  return function(world){
+    return timeDiff(currTime, world) == 0;
+  };
+};
 
 //   -----------
 // | Interpreter |
@@ -165,8 +166,8 @@ var qudFactory = function(threshold) {
 // Family of quds parameterized by threshold at which "running late"
 // Thresholds closer to the appointment time (provided by context) are more likely
 var qudPrior = function(context){
-  var threshold = uniformDraw(getEveryFifthTime(times))
-  factor(timeDiff(threshold, context))
+  var threshold = uniformDraw(times)
+  factor(timeDiff(threshold, context) * .01)
   return "qud" + threshold
 };
 
@@ -246,12 +247,12 @@ var appointmentContext = "4:00";
 
 var world = "3:34"
 print(appointmentContext + " " + timeQuestion + "; " +  "true time = ", world);
-var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world)
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 10)
 print(erp)
 
 var world = "3:54"
 print(appointmentContext + " " + timeQuestion + "; " +  "true time = ", world);
-var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world)
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 10)
 print(erp);
 
 ~~~~
