@@ -49,20 +49,9 @@ var flatten = function(xs){
   }
 };
 
-var setsEqual = function(a1, a2){
-  var s1 = a1.slice().sort();
-  var s2 = a2.slice().sort();
-  return JSON.stringify(s1) === JSON.stringify(s2);
-}
-
-var butLast = function(xs){
-  return xs.slice(0, xs.length-1);
-};
-
 var uniformDraw = function (xs) {
   return xs[randomInteger(xs.length)];
 };
-
 
 var timeDiff = function(timeString1, timeString2) {
   var min1 = timeString1.split(":")[1]
@@ -76,6 +65,12 @@ var getEveryFifthTime = function(list) {
   }, list);
 };
 
+var getNonFifthTimes = function(list) {
+  return filter(function(num) {
+    return num[3] % 5 != 0;
+  }, list);
+};
+	
 var roundToNearest = function(time) {
   var hour = time.split(":")[0]
   var minutes = time.split(":")[1]
@@ -117,10 +112,11 @@ var questionPrior = function(){
 // | Answer knowledge |
 //  -----------------
 
-// saying inexact times is a bit easier (analog watches)
+// saying rounded times is easier (b/c analog watches)
 var answerPrior = function(){
-  var ans = uniformDraw(times);
-  factor(ans == roundToNearest(ans) ? Math.log(2) : Math.log(1));
+  var ans = (flip(.25) ?
+             uniformDraw(getNonFifthTimes(times)) :
+             uniformDraw(getEveryFifthTime(times)));
   return ans;
 };
 
@@ -156,7 +152,7 @@ var interpreter = cache(function(answer){
 var qudFactory = function(threshold) {
   return function(world){
     if(world < threshold) {
-      return roundToNearest(world);
+      return flip(.4) ? roundToNearest(world) : world;
     } else {
       return world;
     }
@@ -246,13 +242,13 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
 var appointmentContext = "4:00";
 
 var world = "3:34"
-print(appointmentContext + " " + timeQuestion + "; " +  "true time = ", world);
-var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 10)
+print(appointmentContext + " " + timeQuestion + "; " +  "true time = " + world);
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 1)
 print(erp)
 
 var world = "3:54"
-print(appointmentContext + " " + timeQuestion + "; " +  "true time = ", world);
-var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 10)
+print(appointmentContext + " " + timeQuestion + "; " +  "true time = " + world);
+var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 1)
 print(erp);
 
 ~~~~
