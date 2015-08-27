@@ -152,7 +152,7 @@ var interpreter = cache(function(answer){
 var qudFactory = function(threshold) {
   return function(world){
     if(world < threshold) {
-      return flip(.4) ? roundToNearest(world) : world;
+      return flip(.5) ? roundToNearest(world) : world;
     } else {
       return world;
     }
@@ -162,17 +162,17 @@ var qudFactory = function(threshold) {
 // Family of quds parameterized by threshold at which "running late"
 // Thresholds closer to the appointment time (provided by context) are more likely
 var qudPrior = function(context){
-  var threshold = uniformDraw(times)
-  factor(timeDiff(threshold, context) * .01)
-  return "qud" + threshold
+  var threshold = uniformDraw(times);
+  factor(Math.log(timeDiff(threshold, context)));
+  return "qud" + threshold;
 };
 
 var nameToQUD = function(qudName){
   if (qudName == timeQuestion) {
     return timeQuestionMeaning;
   } else {
-    var threshold = qudName.slice(3)
-    return qudFactory(threshold)
+    var threshold = qudName.slice(3);
+    return qudFactory(threshold);
   }
 };
 
