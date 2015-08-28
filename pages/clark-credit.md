@@ -83,13 +83,19 @@ var getFilteredCardList = function(world) {
     return filteredCardList;
 }
 
+var allFalse = function(boolList) {
+  return reduce(function(val, memo) {
+    return !val && memo;
+  }, true, boolList)
+}
+        
 var butLast = function(xs){
     return xs.slice(0, xs.length-1);
 };
 
 var uniformDraw = function (xs) {
     return xs[randomInteger(xs.length)];
-};
+};            
 
 ///
 
@@ -112,6 +118,13 @@ var worldPrior = function(){
         'CarteBlanche' : flip(0.5)
     };
 };
+
+var hasCard = function(world, card) {
+  if(_.contains(_.keys(world), card))
+    return world[card]
+  else
+    return false
+}
 
 //  -------------------
 // | Question knowledge |
@@ -153,6 +166,10 @@ var questionPrior = function(){
 
 var cardAnswerSpace = powerset(cardTypes);
 
+var countAnswerCombinations = function(n) {
+  return filter(function(l) {return l.length == n}, cardAnswerSpace).length;
+};
+  
 var posCreditCardAnswer = "yes, we accept credit cards";
 var negCreditCardAnswer = "no, we don't accept credit cards";
 var posAmericanExpressAnswer = "yes, we accept American Express";
@@ -163,12 +180,20 @@ var booleanAnswerSpace = [posCreditCardAnswer, negCreditCardAnswer,
                           posAmericanExpressAnswer, negAmericanExpressAnswer,
                           posMasterCardAnswer, negMasterCardAnswer];
 
+var geometric = function(list) {
+  var tempAnswer = uniformDraw(list)
+  var score = (Math.pow(.5, tempAnswer.length + 1)
+              / countAnswerCombinations(tempAnswer.length))
+  factor(Math.log(score))
+  return (tempAnswer.length == 0 ? ['none'] : tempAnswer)
+};
+                       
 // Say 'yes' 'no' or some combination of cards
 var answerPrior = function(){
     // prefer yes/no over detailed answer
-    return (flip(0.2) ? 
+    return (flip(0.01) ? 
             uniformDraw(booleanAnswerSpace) : 
-            uniformDraw(cardAnswerSpace));
+            geometric(cardAnswerSpace));
 };
 
 var cardAnswerMeaning = function(cardList){
@@ -199,6 +224,15 @@ var booleanAnswerMeaning = function(utterance){
   };
 };
 
+var noneMeaning = function() {
+  return function(world){
+    var doTheyHaveCards = map(function(card) {
+      hasCard(world, card);
+    }, cardTypes);
+    return allFalse(doTheyHaveCards);
+  };
+};
+                      
 var cardUtterance = function(utterance) {
   var filteredList = filter(function(x) {
     return _.isEqual(x, utterance);
@@ -220,6 +254,7 @@ var booleanUtterance = function(utterance) {
 var meaning = function(utterance){
     return (booleanUtterance(utterance) ? booleanAnswerMeaning(utterance) :
             cardUtterance(utterance) ? cardAnswerMeaning(utterance) :
+            _.isEqual(utterance, [ "none" ]) ? noneMeaning() :
             (utterance === masterCardQuestion) ? masterCardQuestionMeaning :
             (utterance === AmericanExpressQuestion) ? AmericanExpressQuestionMeaning :
             (utterance === creditCardsQuestion) ? creditCardsQuestionMeaning :
@@ -275,10 +310,10 @@ var nameToQUD = function(qudName){
             qudName == "qudMasterExpressDiners" ? qudMasterExpressDiners :
             qudName == "qudAny" ? qudAny :
             qudName == "qudNames" ? qudNames :
-	    qudName == masterCardQuestion ? masterCardQuestionMeaning :
-	    qudName == AmericanExpressQuestion ? AmericanExpressQuestionMeaning:
-	    qudName == creditCardsQuestion ? creditCardsQuestionMeaning :
-	    qudName == anyKindsQuestion ? anyKindsQuestionMeaning :
+            qudName == masterCardQuestion ? masterCardQuestionMeaning :
+            qudName == AmericanExpressQuestion ? AmericanExpressQuestionMeaning:
+            qudName == creditCardsQuestion ? creditCardsQuestionMeaning :
+            qudName == anyKindsQuestion ? anyKindsQuestionMeaning :
             console.error('unknown qud name', qudName));
 };
 
