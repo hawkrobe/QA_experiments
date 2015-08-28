@@ -143,7 +143,7 @@ var questions = [masterCardQuestion, AmericanExpressQuestion,
 // Penalize questions for their length
 var questionPrior = function(){
   var q = uniformDraw(questions);
-  factor(q.split(' ').length);
+  factor(- Math.log(q.split(' ').length));
   return q;
 };
 
@@ -239,7 +239,11 @@ var interpreter = cache(function(answer){
 var makeTruthfulAnswerPrior = function(trueWorld) {
   var truthfulAnswerPrior = Enumerate(function(){
     var answer = answerPrior();
-    factor(interpreter(answer).score([], trueWorld));
+    var possibleWorlds = interpreter(answer);
+    var containsTrueWorld = _.some(map(function(v){
+      return _.isEqual(trueWorld, v)
+    }, possibleWorlds.support()))
+    condition(containsTrueWorld)
     return answer;
   });
   return truthfulAnswerPrior;
