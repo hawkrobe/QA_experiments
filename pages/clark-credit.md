@@ -271,6 +271,10 @@ var nameToQUD = function(qudName){
             qudName == "qudMasterExpressDiners" ? qudMasterExpressDiners :
             qudName == "qudAny" ? qudAny :
             qudName == "qudNames" ? qudNames :
+	    qudName == masterCardQuestion ? masterCardQuestionMeaning :
+	    qudName == AmericanExpressQuestion ? AmericanExpressQuestionMeaning:
+	    qudName == creditCardsQuestion ? creditCardsQuestionMeaning :
+	    qudName == anyKindsQuestion ? anyKindsQuestionMeaning :
             console.error('unknown qud name', qudName));
 };
 
@@ -312,9 +316,9 @@ var explicitQuestioner = cache(function(qudName, rationality) {
   });
 });
 
-var pragmaticAnswerer = function(context, question, trueWorld, rationality){
+var pragmaticAnswerer = function(question, trueWorld, rationality){
   var qudPosterior = Enumerate(function(){
-    var qudName = qudPrior(context);
+    var qudName = qudPrior();
     var qud = nameToQUD(qudName);
     var q_erp = explicitQuestioner(qudName, rationality);
     factor(q_erp.score([], question));
