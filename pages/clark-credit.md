@@ -347,7 +347,7 @@ var explicitAnswerer = cache(function(question, trueWorld, rationality) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
-      var inferredWorld = sample(interpreter(question answer));
+      var inferredWorld = sample(interpreter(question, answer));
       return (qud(trueWorld) == qud(inferredWorld) ? 1 : 0);
     });
     factor(Math.log(score) * rationality);
