@@ -228,7 +228,7 @@ var interpreter = cache(function(answer){
   });
 });
 
-var makeTruthAnswerPrior = function(trueWorld) {
+var makeTruthfulAnswerPrior = function(trueWorld) {
   var truthfulAnswerPrior = Enumerate(function(){
     var answer = answerPrior();
     factor(interpreter(answer).score([], trueWorld));
@@ -266,7 +266,7 @@ var nameToQUD = function(qudName){
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
   var qud = nameToQUD(question);
   return Enumerate(function(){
-    var truthfulAnswerPrior = makeTruthAnswerPrior(trueWorld);
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
       var inferredWorld = sample(interpreter(answer));
@@ -310,7 +310,7 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
     var qudName = sample(qudPosterior);
     var qud = nameToQUD(qudName);
     // Pick answer conditioned on communicating question predicate value
-    var truthfulAnswerPrior = makeTruthAnswerPrior(trueWorld);
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
