@@ -172,15 +172,17 @@ var countAnswerCombinations = function(n) {
   return filter(function(l) {return l.length == n;}, cardAnswerSpace).length;
 };
   
-var posCreditCardAnswer = "yes, we accept credit cards";
-var negCreditCardAnswer = "no, we don't accept credit cards";
-var posAmericanExpressAnswer = "yes, we accept American Express";
-var negAmericanExpressAnswer = "no, we don't accept American Express";
-var posMasterCardAnswer = "yes, we accept Master Card";
-var negMasterCardAnswer = "no, we don't accept Master Card";
-var booleanAnswerSpace = [posCreditCardAnswer, negCreditCardAnswer,
-                          posAmericanExpressAnswer, negAmericanExpressAnswer,
-                          posMasterCardAnswer, negMasterCardAnswer];
+// var posCreditCardAnswer = "yes, we accept credit cards";
+// var negCreditCardAnswer = "no, we don't accept credit cards";
+// var posAmericanExpressAnswer = "yes, we accept American Express";
+// var negAmericanExpressAnswer = "no, we don't accept American Express";
+// var posMasterCardAnswer = "yes, we accept Master Card";
+// var negMasterCardAnswer = "no, we don't accept Master Card";
+// var booleanAnswerSpace = [posCreditCardAnswer, negCreditCardAnswer,
+//                           posAmericanExpressAnswer, negAmericanExpressAnswer,
+//                           posMasterCardAnswer, negMasterCardAnswer];
+
+var booleanAnswerSpace = ["yes", "no"];
 
 var geometric = function(list) {
   var tempAnswer = uniformDraw(list);
@@ -199,39 +201,38 @@ var answerPrior = function(){
 };
 
 var cardAnswerMeaning = function(cardList){
-  return function(world){
-    return _.every(map(function(card) {
-      return world[card];
-    }, cardList));
+  return function(questionMeaning){
+    return function(world){
+      return _.every(map(function(card) {
+        return world[card];
+      }, cardList));
+    };
   };
 };
 
-var booleanAnswerMeaning = function(utterance){
-  return function(world){
-    if (utterance == posMasterCardAnswer){
-      return (world['MasterCard'] == true);
-    } else if (utterance == negMasterCardAnswer) {
-      return (world['MasterCard'] == false);
-    } else if (utterance == posAmericanExpressAnswer) {
-      return (world['AmericanExpress'] == true); 
-    } else if (utterance == negAmericanExpressAnswer) {
-      return (world['AmericanExpress'] == false);
-    } else if (utterance == posCreditCardAnswer) {
-      return (_.some(_.values(world)) == true);
-    } else if (utterance == negCreditCardAnswer) {
-      return (_.some(_.values(world)) == false);
-    } else {
-      return console.error("unknown utterance in boolean answer meaning!: " + utterance);
+var booleanAnswerMeaning = function(bool){
+  return function(questionMeaning){
+    return function(world){
+      if (questionMeaning == masterCardQuestionMeaning){
+        return (world['MasterCard'] == bool);
+      } else if (questionMeaning == AmericanExpressQuestionMeaning){
+        return (world['AmericanExpress'] == bool);
+      } else if (questionMeaning == creditCardsQuestionMeaning
+                 || questionMeaning == anyKindsQuestionMeaning){
+        return (_.some(_.values(world)) == bool);
+      }
     }
-  };
-};
-
+  }
+}
+									     
 var noneMeaning = function() {
-  return function(world){
-    var doTheyHaveCards = map(function(card) {
-      hasCard(world, card);
-    }, cardTypes);
-    return allFalse(doTheyHaveCards);
+  return function(questionMeaning){
+    return function(world){
+      var doTheyHaveCards = map(function(card) {
+        hasCard(world, card);
+      }, cardTypes);
+      return allFalse(doTheyHaveCards);
+    };
   };
 };
                       
@@ -254,7 +255,8 @@ var booleanUtterance = function(utterance) {
 //   -----------
 
 var meaning = function(utterance){
-    return (booleanUtterance(utterance) ? booleanAnswerMeaning(utterance) :
+    return (utterance === "yes" ? booleanAnswerMeaning(true) :
+            utterance === "no" ? booleanAnswerMeaning(false) :
             cardUtterance(utterance) ? cardAnswerMeaning(utterance) :
             _.isEqual(utterance, [ "none" ]) ? noneMeaning() :
             (utterance === masterCardQuestion) ? masterCardQuestionMeaning :
@@ -264,23 +266,35 @@ var meaning = function(utterance){
             console.error('unknown utterance in meaning!', utterance));
 };
 
-var interpreter = cache(function(answer){
+var interpreter = cache(function(question, answer){
     return Enumerate(function(){
         var world = worldPrior();
         var answerMeaning = meaning(answer);
-        condition(answerMeaning(world));
+	var questionMeaning = meaning(question);
+        condition(answerMeaning(questionMeaning)(world));
         return world;
     });
 });
 
-var makeTruthfulAnswerPrior = function(trueWorld) {
+var checkExhaustive = function(answer, trueWorld) {
+  print(answer);
+  var cardsAccepted = filter(function(key){
+    return trueWorld[key];
+  }, _.keys(trueWorld));
+  return _.isEqual(answer, cardsAccepted);
+};
+	    
+var makeTruthfulAnswerPrior = function(question, trueWorld) {
   var truthfulAnswerPrior = Enumerate(function(){
     var answer = answerPrior();
-    var possibleWorlds = interpreter(answer);
+    var possibleWorlds = interpreter(question, answer);
     var containsTrueWorld = _.some(map(function(v){
       return _.isEqual(trueWorld, v);
     }, possibleWorlds.support()));
-    condition(containsTrueWorld);
+    var exhaustive = (cardUtterance(answer)
+                      ? checkExhaustive(answer, trueWorld)
+                      : true)
+    condition(containsTrueWorld && exhaustive);
     return answer;
   });
   return truthfulAnswerPrior;
@@ -330,10 +344,10 @@ var nameToQUD = function(qudName){
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
   var qud = nameToQUD(question);
   return Enumerate(function(){
-    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(function(){
-      var inferredWorld = sample(interpreter(answer));
+      var inferredWorld = sample(interpreter(question answer));
       return (qud(trueWorld) == qud(inferredWorld) ? 1 : 0);
     });
     factor(Math.log(score) * rationality);
@@ -351,7 +365,7 @@ var explicitQuestioner = cache(function(qudName, rationality) {
       var trueWorld = worldPrior();
       var answer = sample(explicitAnswerer(question, trueWorld, rationality));
       var posterior = Enumerate(function(){
-        var world = sample(interpreter(answer));
+        var world = sample(interpreter(question, answer));
         return qud(world);
       });
       return KL(posterior, prior);
@@ -371,11 +385,11 @@ var pragmaticAnswerer = function(question, trueWorld, rationality){
   });
   return Enumerate(function(){
     var qud = nameToQUD(sample(qudPosterior));
-    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld);
     var answer = sample(truthfulAnswerPrior);
     var score = mean(
       function(){
-        var inferredWorld = sample(interpreter(answer));
+        var inferredWorld = sample(interpreter(question, answer));
         return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
       });
     factor(Math.log(score) * rationality);
