@@ -8,79 +8,80 @@ In this experiment, the pragmatic answerer infers the questioner's goal from the
 
 ~~~~
 
+
 ///fold:
 var identity = function(x){return x;};
 
 var negate = function(predicate){
-    return function(x){
-        return !predicate(x);
-    };
+  return function(x){
+    return !predicate(x);
+  };
 };
 
 var condition = function(x){
-    var score = x ? 0 : -Infinity;
-    factor(score);
+  var score = x ? 0 : -Infinity;
+  factor(score);
 };
 
 var mean = function(thunk){
-    return expectation(Enumerate(thunk), function(v){return v;});
+  return expectation(Enumerate(thunk), function(v){return v;});
 };
 
 var KL = function(erpTrue, erpApprox){
-    var values = erpTrue.support([]);
-    var xs = map(
-        function(value){
-            var p = Math.exp(erpTrue.score([], value));
-            var q = Math.exp(erpApprox.score([], value));
-            if (p == 0.0){
-                return 0.0;
-            } else {
-                return p * Math.log(p / q);
-            }
-        },
-        values);
-    return sum(xs);
+  var values = erpTrue.support([]);
+  var xs = map(
+    function(value){
+      var p = Math.exp(erpTrue.score([], value));
+      var q = Math.exp(erpApprox.score([], value));
+      if (p == 0.0){
+        return 0.0;
+      } else {
+        return p * Math.log(p / q);
+      }
+    },
+    values);
+  return sum(xs);
 };
 
 var flatten = function(xs){
-    if (xs.length == 0) {
-        return [];
-    } else {
-        return xs[0].concat(flatten(xs.slice(1)));
-    }
+  if (xs.length == 0) {
+    return [];
+  } else {
+    return xs[0].concat(flatten(xs.slice(1)));
+  }
 };
 
 var powerset = function(set) {
-    if (set.length == 0)
-        return [[]];
-    else {
-        var rest = powerset(set.slice(1));
-        return map(
-            function(element) {
-                return [set[0]].concat(element);
-            },
-            rest).concat(rest);
-    }
+  if (set.length == 0)
+    return [[]];
+  else {
+    var rest = powerset(set.slice(1));
+    return map(
+      function(element) {
+        return [set[0]].concat(element);
+      },
+      rest).concat(rest);
+  }
 }
 
 var getFilteredCardList = function(world) {
-    var cardList = map(function(value) {
-        var hasCard = world[value];
-        if(hasCard) {
-            return value;
-        } else {
-            return []
-        }
-    }, _.keys(world))
+  var cardList = map(function(value) {
+    var hasCard = world[value];
+    if(hasCard) {
+      return value;
+    } else {
+      return []
+    }
+  }, _.keys(world))
 
-    var filteredCardList = filter(function(val){
-        if(_.isEmpty(val))
-            return false
-        else
-            return true
-    }, cardList)
+  var filteredCardList = filter(function(val){
+    if(_.isEmpty(val))
+      return false
+    else
+      return true
+  }, cardList)
 
-    return filteredCardList;
+  return filteredCardList;
 }
 
 var allFalse = function(boolList) {
@@ -88,14 +89,14 @@ var allFalse = function(boolList) {
     return !val && memo;
   }, true, boolList)
 }
-        
+
 var butLast = function(xs){
-    return xs.slice(0, xs.length-1);
+  return xs.slice(0, xs.length-1);
 };
 
 var uniformDraw = function (xs) {
-    return xs[randomInteger(xs.length)];
-};            
+  return xs[randomInteger(xs.length)];
+};
 
 ///
 
@@ -110,15 +111,23 @@ var cardTypes = ['Visa','MasterCard', 'AmericanExpress', 'Diners', 'CarteBlanche
 
 var cardPowerSet = powerset(cardTypes);
 
+var cardLikelihoods = {
+  'Visa' : 0.72,
+  'MasterCard' : 0.71,
+  'AmericanExpress' : 0.38,
+  'Diners' : 0.12,
+  'CarteBlanche' : 0.10
+};
+
 // Reflect real probabilities of acceptance from Clark
 var worldPrior = function(){
-    return {
-        'Visa' : flip(0.5),
-        'MasterCard' : flip(0.5),
-        'AmericanExpress' : flip(0.5),
-        'Diners' : flip(0.5),
-        'CarteBlanche' : flip(0.5)
-    };
+  return {
+    'Visa' : flip(cardLikelihoods['Visa']),
+    'MasterCard' : flip(cardLikelihoods['MasterCard']),
+    'AmericanExpress' : flip(cardLikelihoods['AmericanExpress']),
+    'Diners' : flip(cardLikelihoods['Diners']),
+    'CarteBlanche' : flip(cardLikelihoods['CarteBlanche'])
+  };
 };
 
 var hasCard = function(world, card) {
@@ -134,25 +143,31 @@ var hasCard = function(world, card) {
 
 var masterCardQuestion = "Do you accept Master Card?";
 var masterCardQuestionMeaning = function(world){
-    return world['MasterCard'];
+  return world['MasterCard'];
 };
 
 var AmericanExpressQuestion = "Do you accept American Express?";
 var AmericanExpressQuestionMeaning = function(world){
-    return world['AmericanExpress'];
+  return world['AmericanExpress'];
+};
+
+var masterCardOrDinersQuestion = "Do you accept Master Card or Diner's Club?";
+var masterCardOrDinersQuestionMeaning = function(world){
+  return (world['MasterCard'] || world['Diners']);
 };
 
 var creditCardsQuestion = "Do you accept credit cards?";
 var creditCardsQuestionMeaning = function(world){
-    return _.some(_.values(world));
+  return _.some(_.values(world));
 };
 
 var anyKindsQuestion = "Do you accept any kinds of credit cards?";
 var anyKindsQuestionMeaning = function(world){
-    return _.some(_.values(world));
+  return _.some(_.values(world));
 };
 
 var questions = [masterCardQuestion, AmericanExpressQuestion,
+                 masterCardOrDinersQuestion,
                  creditCardsQuestion, anyKindsQuestion];
 
 // Penalize questions for their length
@@ -171,33 +186,15 @@ var cardAnswerSpace = powerset(cardTypes);
 var countAnswerCombinations = function(n) {
   return filter(function(l) {return l.length == n;}, cardAnswerSpace).length;
 };
-  
-// var posCreditCardAnswer = "yes, we accept credit cards";
-// var negCreditCardAnswer = "no, we don't accept credit cards";
-// var posAmericanExpressAnswer = "yes, we accept American Express";
-// var negAmericanExpressAnswer = "no, we don't accept American Express";
-// var posMasterCardAnswer = "yes, we accept Master Card";
-// var negMasterCardAnswer = "no, we don't accept Master Card";
-// var booleanAnswerSpace = [posCreditCardAnswer, negCreditCardAnswer,
-//                           posAmericanExpressAnswer, negAmericanExpressAnswer,
-//                           posMasterCardAnswer, negMasterCardAnswer];
 
 var booleanAnswerSpace = ["yes", "no"];
 
-var geometric = function(list) {
-  var tempAnswer = uniformDraw(list);
-  var score = (Math.pow(.5, tempAnswer.length + 1)
-              / countAnswerCombinations(tempAnswer.length));
-  factor(Math.log(score));
-  return (tempAnswer.length == 0 ? ['none'] : tempAnswer);
-};
-                       
 // Say 'yes' 'no' or some combination of cards
 var answerPrior = function(){
-    // prefer yes/no over detailed answer
-    return (flip(0.01) ? 
-            uniformDraw(booleanAnswerSpace) : 
-            geometric(cardAnswerSpace));
+  // prefer yes/no over detailed answer
+  return (flip(0.1) ?
+          uniformDraw(booleanAnswerSpace) :
+          uniformDraw(cardAnswerSpace));
 };
 
 var cardAnswerMeaning = function(cardList){
@@ -217,14 +214,18 @@ var booleanAnswerMeaning = function(bool){
         return (world['MasterCard'] == bool);
       } else if (questionMeaning == AmericanExpressQuestionMeaning){
         return (world['AmericanExpress'] == bool);
+      } else if (questionMeaning == masterCardOrDinersQuestionMeaning){
+        return ((world['MasterCard'] || world['Diners']) == bool);
       } else if (questionMeaning == creditCardsQuestionMeaning
                  || questionMeaning == anyKindsQuestionMeaning){
         return (_.some(_.values(world)) == bool);
+      } else {
+        console.error("unknown question meaning");
       }
-    }
-  }
-}
-									     
+    };
+  };
+};
+
 var noneMeaning = function() {
   return function(questionMeaning){
     return function(world){
@@ -235,7 +236,7 @@ var noneMeaning = function() {
     };
   };
 };
-                      
+
 var cardUtterance = function(utterance) {
   var filteredList = filter(function(x) {
     return _.isEqual(x, utterance);
@@ -255,35 +256,35 @@ var booleanUtterance = function(utterance) {
 //   -----------
 
 var meaning = function(utterance){
-    return (utterance === "yes" ? booleanAnswerMeaning(true) :
-            utterance === "no" ? booleanAnswerMeaning(false) :
-            cardUtterance(utterance) ? cardAnswerMeaning(utterance) :
-            _.isEqual(utterance, [ "none" ]) ? noneMeaning() :
-            (utterance === masterCardQuestion) ? masterCardQuestionMeaning :
-            (utterance === AmericanExpressQuestion) ? AmericanExpressQuestionMeaning :
-            (utterance === creditCardsQuestion) ? creditCardsQuestionMeaning :
-            (utterance === anyKindsQuestion) ? anyKindsQuestionMeaning :
-            console.error('unknown utterance in meaning!', utterance));
+  return (utterance === "yes" ? booleanAnswerMeaning(true) :
+          utterance === "no" ? booleanAnswerMeaning(false) :
+          cardUtterance(utterance) ? cardAnswerMeaning(utterance) :
+          _.isEqual(utterance, [ "none" ]) ? noneMeaning() :
+          (utterance === masterCardOrDinersQuestion) ? masterCardOrDinersQuestionMeaning :
+          (utterance === masterCardQuestion) ? masterCardQuestionMeaning :
+          (utterance === AmericanExpressQuestion) ? AmericanExpressQuestionMeaning :
+          (utterance === creditCardsQuestion) ? creditCardsQuestionMeaning :
+          (utterance === anyKindsQuestion) ? anyKindsQuestionMeaning :
+          console.error('unknown utterance in meaning!', utterance));
 };
 
 var interpreter = cache(function(question, answer){
-    return Enumerate(function(){
-        var world = worldPrior();
-        var answerMeaning = meaning(answer);
-	var questionMeaning = meaning(question);
-        condition(answerMeaning(questionMeaning)(world));
-        return world;
-    });
+  return Enumerate(function(){
+    var world = worldPrior();
+    var answerMeaning = meaning(answer);
+    var questionMeaning = meaning(question);
+    condition(answerMeaning(questionMeaning)(world));
+    return world;
+  });
 });
 
 var checkExhaustive = function(answer, trueWorld) {
-  print(answer);
   var cardsAccepted = filter(function(key){
     return trueWorld[key];
   }, _.keys(trueWorld));
   return _.isEqual(answer, cardsAccepted);
 };
-	    
+
 var makeTruthfulAnswerPrior = function(question, trueWorld) {
   var truthfulAnswerPrior = Enumerate(function(){
     var answer = answerPrior();
@@ -293,8 +294,8 @@ var makeTruthfulAnswerPrior = function(question, trueWorld) {
     }, possibleWorlds.support()));
     var exhaustive = (cardUtterance(answer)
                       ? checkExhaustive(answer, trueWorld)
-                      : true)
-    condition(containsTrueWorld && exhaustive);
+                      : true);
+    condition(containsTrueWorld & exhaustive);
     return answer;
   });
   return truthfulAnswerPrior;
@@ -313,12 +314,23 @@ var qudFactory = function(cardString) {
   };
 };
 
+var cardSetLikelihood = function(cardSet) {
+  var cardsNotInSet = _.difference(cardTypes, cardSet);
+  var inSetScore = reduce(function(v, memo){
+    return memo * cardLikelihoods[v];
+  }, 1, cardSet);
+  var outOfSetScore = reduce(function(v, memo) {
+    return memo * (1 - cardLikelihoods[v]);
+  }, 1, cardsNotInSet);
+  return inSetScore * outOfSetScore;
+};
+
 var qudPrior = function(){
-  // Will probably need to adjust this to the likelihoods of people having cards
   var filteredPowerSet = filter(function(cardSet){
     return !_.isEmpty(cardSet);
   }, cardPowerSet);
   var cardSet = uniformDraw(filteredPowerSet);
+  factor(cardSetLikelihood(cardSet));
   return "qud" + cardSet;
 };
 
@@ -331,6 +343,8 @@ var nameToQUD = function(qudName){
     return creditCardsQuestionMeaning;
   } else if (qudName == anyKindsQuestion) {
     return anyKindsQuestionMeaning;
+  } else if (qudName == masterCardOrDinersQuestion) {
+    return masterCardOrDinersQuestionMeaning;
   } else {
     var cardSet = qudName.slice(3);
     return qudFactory(cardSet);
@@ -383,6 +397,7 @@ var pragmaticAnswerer = function(question, trueWorld, rationality){
     factor(q_erp.score([], question));
     return qudName;
   });
+  print(qudPosterior);
   return Enumerate(function(){
     var qud = nameToQUD(sample(qudPosterior));
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld);
@@ -398,17 +413,16 @@ var pragmaticAnswerer = function(question, trueWorld, rationality){
 };
 
 var world = {
-    'Visa' : false,
-    'MasterCard' : true,
-    'AmericanExpress' : false,
-    'Diners' : true,
-    'CarteBlanche' : false
+  'Visa' : false,
+  'MasterCard' : true,
+  'AmericanExpress' : false,
+  'Diners' : false,
+  'CarteBlanche' : true
 };
 
-print("Do you accept credit cards?");
-print(pragmaticAnswerer(creditCardsQuestion, world, 1));
+print(creditCardsQuestion);
+print(pragmaticAnswerer(creditCardsQuestion, world, 30));
 
-print("Do you accept Master Card?");
-print(pragmaticAnswerer(masterCardQuestion, world, 1));
-
+print(masterCardQuestion);
+print(pragmaticAnswerer(masterCardQuestion, world, 30));
 ~~~~
