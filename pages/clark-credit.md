@@ -108,6 +108,8 @@ var uniformDraw = function (xs) {
 
 var cardTypes = ['Visa','MasterCard', 'AmericanExpress', 'Diners', 'CarteBlanche'];
 
+var cardPowerSet = powerset(cardTypes);
+
 // Reflect real probabilities of acceptance from Clark
 var worldPrior = function(){
     return {
@@ -121,10 +123,10 @@ var worldPrior = function(){
 
 var hasCard = function(world, card) {
   if(_.contains(_.keys(world), card))
-    return world[card]
+    return world[card];
   else
-    return false
-}
+    return false;
+};
 
 //  -------------------
 // | Question knowledge |
@@ -167,7 +169,7 @@ var questionPrior = function(){
 var cardAnswerSpace = powerset(cardTypes);
 
 var countAnswerCombinations = function(n) {
-  return filter(function(l) {return l.length == n}, cardAnswerSpace).length;
+  return filter(function(l) {return l.length == n;}, cardAnswerSpace).length;
 };
   
 var posCreditCardAnswer = "yes, we accept credit cards";
@@ -181,11 +183,11 @@ var booleanAnswerSpace = [posCreditCardAnswer, negCreditCardAnswer,
                           posMasterCardAnswer, negMasterCardAnswer];
 
 var geometric = function(list) {
-  var tempAnswer = uniformDraw(list)
+  var tempAnswer = uniformDraw(list);
   var score = (Math.pow(.5, tempAnswer.length + 1)
-              / countAnswerCombinations(tempAnswer.length))
-  factor(Math.log(score))
-  return (tempAnswer.length == 0 ? ['none'] : tempAnswer)
+              / countAnswerCombinations(tempAnswer.length));
+  factor(Math.log(score));
+  return (tempAnswer.length == 0 ? ['none'] : tempAnswer);
 };
                        
 // Say 'yes' 'no' or some combination of cards
@@ -276,9 +278,9 @@ var makeTruthfulAnswerPrior = function(trueWorld) {
     var answer = answerPrior();
     var possibleWorlds = interpreter(answer);
     var containsTrueWorld = _.some(map(function(v){
-      return _.isEqual(trueWorld, v)
-    }, possibleWorlds.support()))
-    condition(containsTrueWorld)
+      return _.isEqual(trueWorld, v);
+    }, possibleWorlds.support()));
+    condition(containsTrueWorld);
     return answer;
   });
   return truthfulAnswerPrior;
@@ -288,33 +290,37 @@ var makeTruthfulAnswerPrior = function(trueWorld) {
 // | QUDs |
 //  ------
 
-var qudNames = function(world) {return getFilteredCardList(world);};
-var qudAny = function(world) {return _.any(_.values(world));};
-var qudMasterCard = function(world){return world['MasterCard'];};
-var qudMasterPlusDiners = function(world){return world['MasterCard'] | world['Diners'];};
-var qudMasterExpressDiners = function(world){
-  return world['AmericanExpress'] | world['MasterCard'] | world['Diners'];
+var qudFactory = function(cardString) {
+  var cardList = cardString.split(",");
+  return function(world){
+    return _.some(map(function(card){
+      return world[card];
+    }, cardList));
+  };
 };
 
-var qudSpace = ["qudMasterCard", "qudMasterPlusDiners",
-                "qudMasterExpressDiners", "qudNames"];
-
 var qudPrior = function(){
-    return uniformDraw(qudSpace);
+  // Will probably need to adjust this to the likelihoods of people having cards
+  var filteredPowerSet = filter(function(cardSet){
+    return !_.isEmpty(cardSet);
+  }, cardPowerSet);
+  var cardSet = uniformDraw(filteredPowerSet);
+  return "qud" + cardSet;
 };
 
 var nameToQUD = function(qudName){
-    return (qudName == "qudMasterCard" ? qudMasterCard :
-            qudName == "qudAmericanExpress" ? qudAmericanExpress :
-            qudName == "qudMasterPlusDiners" ? qudMasterPlusDiners :
-            qudName == "qudMasterExpressDiners" ? qudMasterExpressDiners :
-            qudName == "qudAny" ? qudAny :
-            qudName == "qudNames" ? qudNames :
-            qudName == masterCardQuestion ? masterCardQuestionMeaning :
-            qudName == AmericanExpressQuestion ? AmericanExpressQuestionMeaning:
-            qudName == creditCardsQuestion ? creditCardsQuestionMeaning :
-            qudName == anyKindsQuestion ? anyKindsQuestionMeaning :
-            console.error('unknown qud name', qudName));
+  if (qudName == masterCardQuestion) {
+    return masterCardQuestionMeaning;
+  } else if (qudName == AmericanExpressQuestion) {
+    return AmericanExpressQuestionMeaning;
+  } else if (qudName == creditCardsQuestion) {
+    return creditCardsQuestionMeaning;
+  } else if (qudName == anyKindsQuestion) {
+    return anyKindsQuestionMeaning;
+  } else {
+    var cardSet = qudName.slice(3);
+    return qudFactory(cardSet);
+  }
 };
 
 //  -------
