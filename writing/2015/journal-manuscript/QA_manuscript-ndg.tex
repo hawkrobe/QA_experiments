@@ -398,7 +398,25 @@ We found that our pragmatic answerer model rounds the 3:34 to 3:35 in the `early
 It is also notable that (1) \emph{all} states in the pre-image of the rounding projection from the true time $t_0$ are assigned low probability, due to the influence of goals $g_\tau$ with thresholds $\tau > t_0$ and (2) the true time $t_0$ is assigned relatively higher probability than the other non-rounded times, due to the influence of goals $g_\tau$ with thresholds $\tau < t_0$. This dynamic, paired with the upward-skewed prior on goals, causes the `late' condition to assign a much higher relative probability to the true time, than the `early' condition (see Figure \ref{fig:timeExperimentResults}). 
 
 \todo[inline]{rdh: Discuss influence of answer prior? 	This is what makes the \emph{quantitative} fit work so well}
-
+\begin{table*}[t!]
+\centering
+\begin{tabular}{ p{4cm} | r | r ||||||  r | r }
+& \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
+\hline
+&           \% literal &   \%  info &           \% literal &   \%  info    \\
+\hline
+``Master Charge cards?'' &   1.00 & 0.00 &  0.94 & 0.06 \\
+\hline
+``American Express cards?''     & 1.00 & 0.00 & 0.96 & 0.04 \\
+\hline
+``Credit cards?''     & 0.73 & 0.27 & 0.70 & 0.30 \\
+\hline
+``Any kinds of credit cards?''     & 0.23 & 0.76 & 0.70 & 0.30 \\
+\end{tabular}
+\\[1.5pt]
+\caption{Comparison of model predictions and data from Clark (1979), Experiment 5. Shows the proportion of literal and over-informative responses restauranteurs gave to each of four different questions from a customer inquiring about credit cards.} 
+\label{table:clark79exp5}
+\end{table*}
 \subsection{Clark (1979): Experiment 5}
 Our final scenario demonstrates the role of the questioner component in our pragmatic answerer model. Because the question space in the previous computational experiments only contained one element (by virtue of the task being modeled), the pragmatic answerers' inferences were entirely based on the context and the QUD prior. One of the most interesting and novel predictions of the RSA model, however, is that the questioner's choice of utterance itself should guide a pragmatic answerer's inferences about likely underlying goals. While there are few previous experimental results using questioner behavior as the \emph{dependent variable}, there is some work manipulating the question asked as an \emph{independent variable} and testing how it affects answers.
 
@@ -411,43 +429,20 @@ One such study was conducted as a follow-up to the first experiment we modeled e
 \item ``Do you accept any kinds of credit cards?'' 
 \end{enumerate}
 
-He analyzed the likelihood that the respondent gave a literal yes/no answer, compared to the likelihood of giving the full (over-informative) list of exactly which cards were accepted.  He found that (1) and (2) were nearly always answered with a `yes' or `no', (3) was equally likely to be answered with yes/no and full information, and (4) was nearly always answered with full information. 
+He analyzed the likelihood that the respondent gave a literal yes/no answer, compared to the likelihood of giving the full (over-informative) list of exactly which cards were accepted.  He found that (1) and (2) were nearly always answered with a `yes' or `no', (3) was slightly more likely to be answered with full information, and (4) was \emph{much} more likely to be answered with full information (see Table \ref{table:clark79exp5}). As in the first case study above, we are only interested in the ratio of literal answers vs. over-informative answers $p_l = n_l/(n_l + n_i)$ and $p_i = n_i/(n_l + n_i)$, not in responses including both. 
 
-We formalize this scenario in our model in the following way. The set of possible worlds is given by an object mapping five differents kinds of cards (`Visa', `MasterCard', `American Express', `Diner's Club', and `Carte Blanche') to a Boolean representing whether or not they are accepted. The true world state is known by the answerer but not the questioner. The above four questions form the question space, and the answer space contains `yes', `no', and all possible combinations of cards, including the empty list.
+We formalize Clark's analysis of the scenario in our model in the following way. The set of possible worlds $\mathcal{W}$ is given by all $2^5 = 32$ assignments of the five possible credit cards to Booleans representing whether or not they are accepted. The prior distribution over worlds, $P(w)$, takes into account the true likelihoods of restaurants accepting different cards. Clark reports these likelihoods to be 72, 71, 38, 12, and 10\% for  Visa, MasterCard, American Express, Diner's Club, and Carte Blanche, respectively. 
 
-There are four possible goals, which we can understand through four possible questioner situations. First suppose that the questioner only has MasterCard. Thus, a full list would not be helpful -- they only want to know whether or not MasterCard is accepted. This is the ``MasterCard'' goal. Second, suppose that the questioner has both MasterCard and Diner's Club. Then they want to know whether the restaurant takes \emph{either} card. This is the ``Master + Diner's'' goal. Third, suppose that the questioner has MasterCard, Diner's Club, and American Express. Then they just need to find out whether any one of these cards is accepted. This is the ``Master + Diner's + American'' goal. Finally, they might be interested in learning the actual set of names of cards accepted by the restaurant. This is the ``names'' goal. 
+The question space $\mathcal{Q}$ contains the five basic questions (``Do you accept $X$?" with $X$ one of the five cards) in addition to ``Do you accept credit cards?'' and ``Do you accept any kinds of credit cards?'' For the semantics of the five basic questions, we use projections to the explicitly mentioned property of the world (therefore creating a partition over worlds in which card $X$ is accepted and worlds in which it is not), while the latter questions return \texttt{true} on worlds that accept at least one card and \texttt{false} otherwise. \todo[inline]{rdh: is this the right literal semantics?} The prior distribution $P(q)$ over these questions is proportional to question length.
+
+The answer space $\mathcal{A}$ contains `yes', `no', and all possible combinations of the five cards. Thus, the restauranteur could respond to the question ``Do you accept Master Charge cards?" by saying ``We accept Visa and Diner's Club." As in our model of Clark (1979), we assign prior probability $p = 0.5$ to ``yes''/``no'' type responses, and prior probability $p = 0.5$ to card type responses. To simplify our analysis, we have our agent restrict the prior to responses which are both \emph{true} (e.g. they would not say ``We accept Visa'' when they only accept American Express) and \emph{exhaustive} (e.g. they wouldn't not say ``We accept Visa'' when they accept Visa and three other cards). This corresponds to the way Clark (1975) classified responses. 
+
+Finally, all goal projections $g \in \mathcal{G}$ correspond to solving a single problem: finding out whether the restaurant accepts one of the cards the agent owns. This space of goals is parametrized by \emph{which} cards the agent actually owns, with a prior $P(g)$ using the same likelihoods that govern the world prior\footnote{This corresponds to an assumption that restaurants accept cards proportional to the percentage of people owning those cards. This assumption was suggested by Clark (1975), but not needed in his informal analysis).}
 
 % learning whether or not the establishment accepts (1) Visa, (2) Discover, (3) MasterCard, or (4) learning the exact list of cards that the establishment accepts. The set of answers includes ``yes,'' ``no,'' and all possible lists of the three cards listed above, with ``yes'' and ``no'' slightly preferred for their lower cost. Because there is now a decision between different questions that the questioner must entertain, we must also specify a \emph{questioner} prior, which we set to uniform for simplicity. 
 
-\subsubsection{Results}
-  \begin{figure}[t!]
-  \begin{center}
-\includegraphics[scale = .6]{creditCardPlot.jpeg}
-\end{center}
-\vspace{-.25cm}
-\caption{Results for our computational experiments replicating Clark (1979), Experiment 5. M stands for the ``MasterCard'' answer, D stands for the ``Diner's Club'' answer, and $M+D$ stands for the answer mentioning both. Note that we give an over-informative answer to ``Do you accept any kinds of credit card?'' in the left panel, but a literal `yes'/`no' answer to ``Do you accept MasterCard?'' in the right panel.}
-\label{fig:creditCardExperimentResults}
-\end{figure}
 %
-\begin{table*}[t]
-\centering
-\begin{tabular}{ p{3cm} | r | r ||||||  r | r }
-& \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
-\hline
-&           \% literal &   \%  info &           \% literal &   \%  info    \\
-\hline
-``Master Charge cards?'' &   1.00 & 0.00 &  ? & ? \\
-\hline
-``American Express cards?''     & 1.00 & 0.00 & ? & ? \\
-\hline
-``Credit cards?''     & 0.73 & 0.27 & ? & ? \\
-\hline
-``Any kinds of credit cards?''     & 0.23 & 0.76 & ? & ? \\
-\end{tabular}
-\\[1.5pt]
-\caption{Comparison of model predictions and data from Clark (1979). Shows the proportion of responses to the question ``Does a fifth of Jim Beam cost more than \$5?'' when paired with two contexts: ``I want to buy some bourbon'' (``Some bourbon'') and ``I've got \$5 to spend'' (``Five dollars''). } 
-\label{table:clark79exp4}
-\end{table*}
+
 
 
 We tested the behavior of our pragmatic answerer on the following world state:
