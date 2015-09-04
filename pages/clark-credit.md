@@ -149,7 +149,7 @@ var masterCardQuestionMeaning = function(world){
 
 var VisaQuestion = "Do you accept Visa card?";
 var VisaQuestionMeaning = function(world){
-  return world['MasterCard'];
+  return world['Visa'];
 };
 
 var dinersQuestion = "Do you accept Diners card?";
