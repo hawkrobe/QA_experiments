@@ -7,6 +7,7 @@ status: current
 We'll set up the mention-some problem below, using the same structure as our other models
 
 ~~~~
+
 ///fold:
 var identity = function(x){return x;};
 
@@ -70,7 +71,7 @@ var getNonFifthTimes = function(list) {
     return num[3] % 5 != 0;
   }, list);
 };
-	
+
 var roundToNearest = function(time) {
   var hour = time.split(":")[0]
   var minutes = time.split(":")[1]
@@ -152,24 +153,32 @@ var interpreter = cache(function(answer){
 var qudFactory = function(threshold) {
   return function(world){
     if(world < threshold) {
-      return flip(.5) ? roundToNearest(world) : world;
+      return roundToNearest(world);
     } else {
       return world;
     }
   };
 };
 
+var qudScore = function(qudWord, context) {
+  return (qudWord === "Exact" 
+          ? 5.8
+          : Math.log(timeDiff(qudWord, context)));
+};
+
 // Family of quds parameterized by threshold at which "running late"
 // Thresholds closer to the appointment time (provided by context) are more likely
 var qudPrior = function(context){
-  var threshold = uniformDraw(times);
-  factor(Math.log(timeDiff(threshold, context)));
-  return "qud" + threshold;
+  var qudWord = uniformDraw(times.concat("Exact"));
+  factor(qudScore(qudWord, context));
+  return "qud" + qudWord;
 };
 
 var nameToQUD = function(qudName){
   if (qudName == timeQuestion) {
     return timeQuestionMeaning;
+  } else if (qudName === "qudExact") {
+    return (function(world) {return world;});
   } else {
     var threshold = qudName.slice(3);
     return qudFactory(threshold);
@@ -226,29 +235,31 @@ var pragmaticAnswerer = function(context, question, trueWorld, rationality){
     var qudName = sample(qudPosterior);
     var qud = nameToQUD(qudName);
     var answer = answerPrior(); // note we DON'T use truthfulAnswerPrior here
-    var score = mean(
-      function(){
-        var inferredWorld = sample(interpreter(answer));
-        return (_.isEqual(qud(trueWorld), qud(inferredWorld))) ? 1.0 : 0.0;
-      });
+    var score = mean(function(){
+      var inferredWorld = sample(interpreter(answer));
+      return (_.isEqual(qud(trueWorld), qud(inferredWorld))) ? 1.0 : 0.0;
+    });
     factor(Math.log(score) * rationality);
     return answer;
   });
 };
 
-
-//var qud = qudFactory("qud3:30")
-
 var appointmentContext = "4:00";
 
-var world = "3:34"
-print(appointmentContext + " " + timeQuestion + "; " +  "true time = " + world);
-var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 1)
-print(erp)
+var runModel = function(group) {
+  return mean(function(){
+    var trueWorld = worldPrior();
+    var ansERP = pragmaticAnswerer(appointmentContext, timeQuestion, trueWorld, 1);
+    condition(group === "early" ?
+	      trueWorld.slice(2) < 45 :
+	      trueWorld.slice(2) > 45);
+    return Math.exp(ansERP.score([], roundToNearest(trueWorld)));
+  });
+};
 
-var world = "3:54"
-print(appointmentContext + " " + timeQuestion + "; " +  "true time = " + world);
-var erp = pragmaticAnswerer(appointmentContext, timeQuestion, world, 1)
-print(erp);
+print(Enumerate(function(){return qudPrior(appointmentContext)}));
+
+print("early rounds p = " + runModel("early"));
+print("late rounds p = " + runModel("late"));
 
 ~~~~
