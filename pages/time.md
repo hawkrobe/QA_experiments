@@ -55,8 +55,10 @@ var uniformDraw = function (xs) {
 };
 
 var timeDiff = function(timeString1, timeString2) {
-  var min1 = timeString1.split(":")[1]
-  var min2 = timeString2.split(":")[1]
+  var hr1 = timeString1.split(":")[0]
+  var hr2 = timeString2.split(":")[0]
+  var min1 = 60*hr1 + 1*timeString1.split(":")[1]
+  var min2 = 60*hr2 + 1*timeString2.split(":")[1]
   return Math.abs(min2 - min1)
 }
 
