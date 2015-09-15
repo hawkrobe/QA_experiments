@@ -162,17 +162,17 @@ var qudFactory = function(threshold) {
   };
 };
 
-var qudScore = function(qudWord, context) {
-  return (qudWord === "Exact" 
-          ? 5.8
-          : Math.log(timeDiff(qudWord, context)));
-};
-
 // Family of quds parameterized by threshold at which "running late"
 // Thresholds closer to the appointment time (provided by context) are more likely
 var qudPrior = function(context){
-  var qudWord = uniformDraw(times.concat("Exact"));
-  factor(qudScore(qudWord, context));
+  var timeDiffs = map(function(time) {return timeDiff(time, context)},
+                      times);
+  var maxDiff = Math.max.apply(null, timeDiffs);
+  var timeProbs = map(function(timeDiff) {return maxDiff - timeDiff;},
+                      timeDiffs);
+  var qudWord = (flip(0.25) ?
+                 "Exact" :
+                 categorical(timeProbs, times));
   return "qud" + qudWord;
 };
 
