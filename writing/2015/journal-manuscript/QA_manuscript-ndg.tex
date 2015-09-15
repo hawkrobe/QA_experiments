@@ -366,10 +366,10 @@ w & & w \ge \tau\\
 $$
 where $\floor{w}$ returns the \emph{floor} of an integer and all operations are assumed to act on the minutes component of a time $w$. For example, the goal $g_{3:50}$ with the threshold set at $\tau = $3:50 corresponds to a projection function that rounds input worlds earlier than 3:50 and does not round worlds later than 3:50. This would be the case if the agent knew they would need to leave around 3:50 in order to make it to an appointment on time. 
 
-The goal prior $P(g_\tau)$ assigns high probability ($p = xxx$) to the context-independent goal $g_0$ of wanting to know the exact time\todo[inline]{rdh: why?}, and divides the remaining probability mass across different threshold goals ($\tau \in \{$ 3:31, 3:32, \dots, 3:59 $\}$) according to the following rule: each goal $g_\tau$ is proportional to the log of its distance (in minutes) to the given appointment time $c$, reflecting the intuition that the questioner will be more likely to be running late, and therefore in need of the exact time, as it approaches the appointment time: 
+The goal prior $P(g_\tau)$ assigns probability $p=0.25$ to the context-independent goal $g_0$ of wanting to know the exact time. The remaining probability mass is divided across different threshold goals ($\tau \in \{$ 3:31, 3:32, \dots, 3:59 $\}$) according to the following rule: the likelihood of each goal $g_\tau$ is inversely proportional to the distance (in minutes) between the threshold $\tau$ and the given appointment time $c$, reflecting the intuition that the questioner will be more likely to be running late, and therefore in need of the exact time, as it approaches the appointment time:
 
-$$P(g_\tau; c) \propto e^{|\tau - c|}  $$
-\todo[inline]{put the real probabilities here: fix the probability of the pure goal to be reasonable}
+$$P(g_0) = 0.25$$
+$$P(g_\tau; c) = \frac{0.75}{\sum_{i=1}^{29}i}(30 - |\tau - c|)$$
 
 The set of answers is the set of times that could be given (e.g. 3:30, 3:31, \dots, 4:00), with multiples of 5 preferred:
 $$P(t) = \left\{
