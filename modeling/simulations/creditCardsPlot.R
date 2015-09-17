@@ -1,15 +1,36 @@
-col1 = rep(c('yes', 'no', 'M+D', 'M', 'D', 'none'), 2)
-col2 = c(.19, 0, .41, 0.20, 0.15, 0.04, 0.51, 0, 0.26,0.13, 0.08,0.02)
-col3 = c(rep('Do you accept any kinds of credit card?', 6), rep('Do you accept MasterCard?', 6))
+col1 = c('AmericanExpress', 'AmericanExpress\nCarteBlanche', 
+         'AmericanExpress\nDiners', 'AmericanExpress\nDiners\nCarteBlanche\n\n')
+col2 = c(0.25554128204638693, 0.24834069415362003, 0.2485424286904104, 0.24757559510958238)
 
-qData = data.frame(answer = col1, model_probability = col2, question = col3)
-qData$answer = factor(qData$answer, levels = c('yes', 'no', 'M+D', 'M', 'D', 'none'))
+qData = data.frame(answer = col1, probability = col2)
+#qData$answer = factor(qData$answer, levels = c('yes', 'no', 'M+D', 'M', 'D', 'none'))
 
-pdf("../writing/2015/computational-experiments-final/creditCardPlot.jpeg",
-    width=6, height=3)
-g = (ggplot(qData, aes(x = answer, y = model_probability))
+pdf("../writing/2015/journal-manuscript/figures/americanExpressPosterior.pdf",
+    width=8, height=4)
+g = (ggplot(qData, aes(x = answer, y = probability))
      + geom_bar(stat = 'identity', position = 'dodge')
-     + facet_wrap(~ question)
-     + ggtitle("Pragmatic Answerer: Clark (1979) Experiment 4"))
+     + ggtitle("Pragmatic Answerer Posterior, Q = 'AmericanExpress?'")
+     + theme_bw())
+g
+dev.off()
+
+col1 = c('Visa\nMasterCard\nAmericanExpress\nDiners\nCarteBlanche',
+         'Visa\nMasterCard\nAmericanExpress\nCarteBlanche',
+         'Visa\nMasterCard\nDiners\nCarteBlanche',
+         'Visa\nMasterCard\nAmericanExpress\nDiners',
+         'Visa\nMasterCard\nAmericanExpress')
+col2 = c(0.18993035940048889 , 0.19365593924754979 , 
+         0.18993035940048889 , 0.19464844308741136 ,
+         0.23183489886406064)
+
+qData = data.frame(answer = col1, probability = col2)
+#qData$answer = factor(qData$answer, levels = c('yes', 'no', 'M+D', 'M', 'D', 'none'))
+
+pdf("../writing/2015/journal-manuscript/figures/creditCardsPosterior.pdf",
+    width=8, height=4)
+g = (ggplot(qData, aes(x = answer, y = probability))
+     + geom_bar(stat = 'identity', position = 'dodge')
+     + ggtitle("Pragmatic Answerer Posterior, Q = 'Credit Cards?'")
+     + theme_bw())
 g
 dev.off()
