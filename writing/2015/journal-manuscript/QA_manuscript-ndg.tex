@@ -12,6 +12,12 @@
 \usepackage{multirow}
 \usepackage{todonotes}
 
+\newcommand{\den}[2][]{
+\(
+\left\llbracket\;\text{#2}\;\right\rrbracket^{#1}
+\)
+}
+
 \newenvironment{figurehere}
 	{\def\@captype{figure}}
 	{}
@@ -371,6 +377,7 @@ The goal prior $P(g_\tau)$ assigns probability $p=0.25$ to the context-independe
 $$P(g_0) = 0.25$$
 $$P(g_\tau; c) = \frac{0.75}{\sum_{i=1}^{29}i}(30 - |\tau - c|)$$
 
+\todo[inline]{rdh: This would be cleaner if we could leave out the normalization constant... But just using $\propto$ isn't technically correct, since it's important to normalize accounting for the flip$(0.25)$ division between the pure goal and the threshold goals}
 The set of answers is the set of times that could be given (e.g. 3:30, 3:31, \dots, 4:00), with multiples of 5 preferred:
 $$P(t) = \left\{
 \begin{array}{lcl}
@@ -386,9 +393,9 @@ For our answers, we use exact number semantics: the response ``3:35'' evaluates 
  
 To compare our model's performance against the `early group' and `late group' conditions in \citeA{GibbsBryant08_OptimalRelevance}, we ran two simulations. In both, the context is ``I have an appointment at 4:00.'' In the first, the true world state is between 3:30 and 3:45 (the `early' condition); in the second, the true world state is between 3:45 and 3:59 (the `late' condition). In each condition, we ran our pragmatic answerer model for all true worlds in the appropriate range of times, and report the average probability of responding with a rounded answer. Our results are compared against empirical data from Gibbs Jr. and Bryant \citeyear{GibbsBryant08_OptimalRelevance} in Table \ref{table:gibbsJrExp3}. 
 
-\todo[inline]{Fix the Figure that this refers to}
+To more closely analyze what is driving our model's performance in these two conditions, we examine the answer behavior for two specific world states: one from the `early group' (3:34) and one from the `late group' (3:54). Answer probabilities for these two conditions are shown in Figure \ref{fig:timeExperimentResults}. We found that our pragmatic answerer model rounds the 3:34 to 3:35 in the `early' condition with probability $p = 0.74$, but rounds 3:54 to 3:55 with lower probability $p = 0.65$ in the `late' condition. 
 
-To more closely analyze what is driving our model's performance in these two conditions, we examine the answer behavior for two specific world states: one from the `early group' (3:34) and one from the `late group' (3:54). Answer probabilities for these two conditions are shown in Figure \ref{fig:timeExperimentResults}. We found that our pragmatic answerer model rounds the 3:34 to 3:35 in the `early' condition with probability $p = 0.82$, but rounds 3:54 to 3:55 with lower probability $p = 0.56$ in the `late' condition. The goal prior is the key component of the model governing this difference. Note that that (1) \emph{all} states in the pre-image of the rounding projection from the true time $t_0$ are assigned lower probability than the rounded time $g_\tau(t_0)$, due to the influence of goals $g_\tau$ with thresholds $\tau > t_0$ and (2) the true time $t_0$ is assigned relatively higher probability than the other non-rounded times, due to the influence of the pure goal $g_0$ and goals $g_\tau$ with thresholds $\tau < t_0$. This dynamic, paired with the upward-skewed prior on goals discussed above, causes the `late' condition to assign a much higher relative probability to the true time, than the `early' condition.
+The goal prior is the key component of the model governing this difference. Note that that (1) \emph{all} states in the pre-image of the rounding projection from the true time $t_0$ are assigned lower probability than the rounded time $g_\tau(t_0)$, due to the influence of goals $g_\tau$ with thresholds $\tau > t_0$ and (2) the true time $t_0$ is assigned relatively higher probability than the other non-rounded times, due to the influence of the pure goal $g_0$ and goals $g_\tau$ with thresholds $\tau < t_0$. This dynamic, paired with the upward-skewed prior on goal priors discussed above, causes the `late' condition to assign a much higher relative probability to the true time, than the `early' condition.
 
 The pragmatic answerer thus accurately captures the empirical results both qualitatively and quantitatively. Our literal and explicit answerer models fail to capture these contextual differences, as they do not reason about the space of underlying goals (which justify rounding) and always give the exact time. The literal answerer always gives the exact time because it is the only property of the world, which they are attempting to be informative about without regard to the question. The explicit answerer always gives the exact time because it uses the explicit question meaning, which simply asks for the time.
 
@@ -398,21 +405,21 @@ The pragmatic answerer thus accurately captures the empirical results both quali
 \todo[inline]{rdh: Discuss the fact that we clearly set some numbers to get a good quantitative fit, specifically the base likelihood of the pure goal in the goal prior (0.25) and the likelihood of rounded answers vs. non-rounded answers in the answer prior (0.75)?}
 \begin{table*}[t!]
 \centering
-\begin{tabular}{ p{4cm} | r | r ||||||  r | r }
+\begin{tabular}{ p{5cm} | r | r ||||||  r | r }
 & \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
 \hline
 &           \% literal &   \%  info &           \% literal &   \%  info    \\
 \hline
-``Master Charge cards?'' &   1.00 & 0.00 &  0.94 & 0.06 \\
+``Master Charge cards?'' &   1.00 & 0.00 &  0.92 & 0.08 \\
 \hline
-``American Express cards?''     & 1.00 & 0.00 & 0.95 & 0.05 \\
+``American Express cards?''     & 1.00 & 0.00 & 0.96 & 0.04 \\
 \hline
-``Credit cards?''     & 0.73 & 0.27 & 0.73 & 0.27 \\
-\hline
-``Any kinds of credit cards?''     & 0.23 & 0.76 & 0.73 & 0.27 \\
+``Credit cards?''     & 0.73 & 0.27 & 0.76 & 0.24 \\
+%\hline
+%``Any kinds of credit cards?''     & 0.23 & 0.76 & 0.73 & 0.27 \\
 \end{tabular}
 \\[1.5pt]
-\caption{Comparison of model predictions and data from Clark (1979), Experiment 5. Shows the proportion of literal and over-informative responses restauranteurs gave to each of four different questions from a customer inquiring about credit cards.} 
+\caption{Comparison of model predictions and data from Clark (1979), Experiment 5. Shows the proportion of literal and over-informative responses restauranteurs gave to each of three different questions from a customer inquiring about credit cards.} 
 \label{table:clark79exp5}
 \end{table*}
 \subsection{Clark (1979): Experiment 5}
@@ -427,23 +434,29 @@ One such study was conducted as a follow-up to the first experiment we modeled e
 \item ``Do you accept any kinds of credit cards?'' 
 \end{enumerate}
 
-He analyzed the likelihood that the respondent gave a literal yes/no answer, compared to the likelihood of giving the full (over-informative) list of exactly which cards were accepted.  He found that (1) and (2) were nearly always answered with a `yes' or `no', (3) was slightly more likely to be answered with full information, and (4) was \emph{much} more likely to be answered with full information (see Table \ref{table:clark79exp5}). As in the first case study above, we are only interested in the ratio of literal answers vs. over-informative answers $p_l = n_l/(n_l + n_i)$ and $p_i = n_i/(n_l + n_i)$, not in responses including both. 
+He analyzed the likelihood that the respondent gave a literal yes/no answer, compared to the likelihood of giving the full (over-informative) list of exactly which cards were accepted.  He found that (1) and (2) were nearly always answered with a `yes' or `no', (3) was slightly more likely to be answered with full information, and (4) was \emph{much} more likely to be answered with full information (see Table \ref{table:clark79exp5}). As in the first case study above, we are only interested in the ratio of literal answers vs. over-informative answers $p_l = n_l/(n_l + n_i)$ and $p_i = n_i/(n_l + n_i)$, not in responses including both. We restrict our analysis to the first three questions\footnote{We view Clark's results for the fourth question as an example of M-implicature: by using a more costly utterance with the same literal meaning as question (3), the meaning of (4) becomes marked. Rational speech act models capture M-implicature by introducing \emph{lexical uncertainty} \cite{BergenGoodmanLevy12_Alternatives}, where both speaker and listener begin their inference with uncertainty over the literal meaning of utterances. By jointly reasoning about an utterance's meaning and the world state the speaker is trying to convey, more costly utterances are mapped to meanings with lower prior probability, allowing a pragmatic inference that ``Do you accept any kinds of credit cards?'' most likely means something like ``What kinds of credit card do you accept?'' Because this is the only example of M-implicature that arises in this paper, and it is not even the critical result from the experiment we are modeling, we believe that a presentation of the full lexical uncertainty model would be unnecessary and confusing to the reader.}.
 
-We formalize Clark's analysis of the scenario in our model in the following way. The set of possible worlds $\mathcal{W}$ is given by all $2^5 = 32$ assignments of the five possible credit cards to Booleans representing whether or not they are accepted. The prior distribution over worlds, $P(w)$, takes into account the true likelihoods of restaurants accepting different cards. Clark reports these likelihoods to be 72, 71, 38, 12, and 10\% for  Visa, MasterCard, American Express, Diner's Club, and Carte Blanche, respectively. 
+We formalize Clark's analysis of the scenario in our model in the following way. The set of possible worlds $\mathcal{W}$ is given by the power set $\mathcal{P}(\mathcal{C})$, where $\mathcal{C} = \{$Visa, Master Card, American Express, Diner's Club, and Carte Blanche$\}$, the set of five possible credit cards. This power set contains all $2^5 = 32$ subsets of cards that the restaurant might accept. The prior distribution over worlds, $P(w)$, takes into account the true likelihoods of restaurants accepting different cards. Clark reports these likelihoods to be 72, 71, 38, 12, and 10\% for Visa, Master Card, American Express, Diner's Club, and Carte Blanche, respectively. 
 
-The question space $\mathcal{Q}$ contains the five basic questions (``Do you accept $X$?" with $X$ one of the five cards) in addition to ``Do you accept credit cards?'' and ``Do you accept any kinds of credit cards?'' For the semantics of the five basic questions, we use projections to the explicitly mentioned property of the world (therefore creating a partition over worlds in which card $X$ is accepted and worlds in which it is not), while the latter questions return \texttt{true} on worlds that accept at least one card and \texttt{false} otherwise. \todo[inline]{rdh: is this the right literal semantics?} The prior distribution $P(q)$ over these questions is proportional to question length.
+The question space $\mathcal{Q}$ contains the five basic questions (``Do you accept $c$?" with $c \in \mathcal{C}$ one of the five cards) in addition to ``Do you accept credit cards?'' For the literal semantics of the five basic questions, indexed by $c$, we use the projection 
+$$g_c(w) = \left\{\begin{array}{rcl} 1 && c \in w \\ 0 && \textrm{otherwise}\end{array}\right.$$ 
+therefore partitioning the space of possible worlds into one cell  in which card $c$ is accepted and another cell in which it is not. The latter question returns \texttt{true} on worlds that accept at least one card and \texttt{false} otherwise: 
+$$g(w) =  \left\{\begin{array}{rcl} 1 && |w| > 0 \\ 0 && \textrm{otherwise}\end{array}\right.$$ 
+The prior distribution $P(q)$ over these questions is proportional to question length, which happens to be uniform.
 
 The answer space $\mathcal{A}$ contains `yes', `no', and all possible combinations of the five cards. Thus, the restauranteur could respond to the question ``Do you accept Master Charge cards?" by saying ``Yes'' or by saying something like ``We accept Visa and Diner's Club." As in our early case study of Clark's (1979) whiskey experiment, we assign prior probability $p = 0.5$ to ``yes''/``no'' type responses, and prior probability $p = 0.5$ to card type responses, with uniform distributions within each category. To simplify our analysis, we have our agent restrict their prior to responses which are both \emph{true} (e.g. they would not say ``We accept Visa'' when they only accept American Express) and \emph{exhaustive} (e.g. they wouldn't  say ``We accept Visa'' when they accept Visa and three other cards). This corresponds to the way Clark (1979) classified responses. 
 
-Finally, all goal projections $g \in \mathcal{G}$ correspond to solving a simple problem: finding out, for each card the agent owns, whether the restaurant accepts that card. This family of goals is parametrized by \emph{which} cards the agent actually owns, with a prior $P(g)$ using the same likelihoods that govern the world prior\footnote{This corresponds to an assumption that restaurants accept cards proportional to the percentage of people owning those cards. This assumption was suggested by Clark (1979), but not used in his informal analysis).}. Formally, for the goal $g_{\mathcal{C}}$, where $\mathcal{C}$ is a set of cards owned by the questioner, we define a probabilistic projection on worlds $w$, which maps a world to \texttt{true} (or, equivalently, state 1) with probability proportional to the number of cards contained in both sets. 
+Finally, all goal projections $g \in \mathcal{G}$ correspond to solving a simple problem: finding out whether the restaurant accepts one of the cards they own. This family of goals is parametrized by $\mathcal{C}_q$, the set of cards that the questioner actually owns, with a prior $P(g)$ using the same likelihoods that govern the world prior\footnote{This corresponds to an assumption that restaurants accept cards proportional to the percentage of people owning those cards. This assumption was suggested by Clark (1979), but not used in his informal analysis).}. Formally, for the goal $g_{\mathcal{C}_q}$, we define a projection on worlds $w$, which maps a world to \texttt{true} if they accept at least one of the cards in $\mathcal{C}_q$ and \texttt{false} otherwise. 
 
-$$P(g_\mathcal{C}(w) = 1)  \propto  | \mathcal{C} \cap \{c \in \mathcal{C} : c \textrm{ accepted in } w \}|$$
-
-This is equivalent to giving ``partial credit'' for each goal-relevant state that the answerer correctly conveys.\footnote{If we instead use the stricter, deterministic goal projection $$g_\mathcal{C}(w) = \left\{\begin{array}{rcl} 1 && | \mathcal{C} \cap \{c \in \mathcal{C} : c \textrm{ accepted in } w \}| > 0 \\ 0 && \textrm{otherwise}\end{array}\right.$$ we obtain a similar qualitative pattern, but must use an extremely high rationality parameter of $\alpha > 500$ to obtain quantitative fits. Since we also find the probabilistic projection (i.e. ``Is a random one of my cards accepted?'') more theoretically plausible than this deterministic projection (i.e. ``Is at least one of my cards accepted?''), we use the probabilistic one for our simulations.}
+$$g_{\mathcal{C}_q}(w) = \left\{\begin{array}{rcl} 1 && | \mathcal{C}_q \cap w | > 0 \\ 0 && \textrm{otherwise}\end{array}\right.$$
 
 \subsubsection{Results}
 
-For each possible question in the experiment, we tested the likelihood of our pragmatic answerer responding with a literal ``yes''/``no'' vs. an exhaustive list of accepted cards, marginalizing over all possible world states. For quantitative fit, we tuned a single rationality parameter $\alpha$, shared by all model components. For the results presented in Table \ref{table:clark79exp5}, $\alpha = 10$. We find that when the questioner asks ``Do you accept MasterCard?'', the pragmatic answerer gives a literal ``yes''/``no'' answer with probability $p = 0.94$ (compared to $p=1.00$ empirically). Similarly, when the questioner asks ``Do you accept American Express?'', the pragmatic answerer gives a literal answer with probability $p = 0.96$ (also compared to $p=1.00$ empirically). The small difference comes from the relative likelihoods of the different cards in the true world. However, when the questioner asks ``Do you accept credit cards?'', the probability of a literal response drops to $p = 0.73$ (compared to $p=0.73$ empirically). Our model output therefore provides a good fit to the original experiment data, both qualitatively and quantitatively.
+For each possible question in the experiment, we tested the likelihood of our pragmatic answerer responding with a literal ``yes''/``no'' vs. an exhaustive list of accepted cards, marginalizing over all possible world states. For quantitative fit, we tuned a single rationality parameter $\alpha$, shared by all model components. For the results presented in Table \ref{table:clark79exp5}, we found the best quantitative fit when $\alpha \rightarrow \infty$. We use $\alpha = 10000$, since the predictions stabilize above this value. Recall that a high value of $\alpha$ corresponds to an agent that maximizes with respect to their probability distribution (i.e. always picks the utterance with highest probability, which is technically optimal). 
+
+\todo[inline]{rdh: is this an appropriate discussion of high $\alpha$?}
+
+We find that when the questioner asks ``Do you accept MasterCard?'', the pragmatic answerer gives a literal ``yes''/``no'' answer with probability $p = 0.92$ (compared to $p=1.00$ empirically). Similarly, when the questioner asks ``Do you accept American Express?'', the pragmatic answerer gives a literal answer with probability $p = 0.96$ (also compared to $p=1.00$ empirically). The small difference between these predicted response probabilities comes from the relative likelihoods of the different cards in the true world. However, when the questioner asks ``Do you accept credit cards?'', the probability of a literal response drops to $p = 0.76$ (compared to $p=0.73$ empirically). Our model output therefore provides a good fit to the original experiment data, both qualitatively and quantitatively.
 
 To further understand \emph{why} our model behaves this way, we examine the posterior over goals that the pragmatic answerer infers from different questions. \todo[inline]{Put in a qudPosterior plot for both the ``credit cards?'' question and the ``MasterCard'' question, once we've finalized the model.} For the ``MasterCard'' question, the pragmatic answerer reasons that the most likely goal is to find out whether the merchant specifically accepts MasterCard, hence a response of ``yes'' perfectly rules out possible worlds in which the merchant does \emph{not} accept MasterCard, informatively resolving the question. Giving a full, exhaustive list of accepted credit cards is still a valid answer, but has low prior probability; the minimal increase in usefulness is not enough to overcome this low prior. 
 
