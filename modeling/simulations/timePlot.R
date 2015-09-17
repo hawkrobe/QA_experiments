@@ -1,9 +1,8 @@
 library(ggplot2)
+library(dplyr)
 setwd("~/Box Sync/stanford/research/goodman/q&a/modeling/")
-support = vapply(30:59, function(v){return(paste("3:", v, sep = ""))}, "string")
 modelPreds = read.csv("simulations/timePredictions.csv",
-                       sep = ',', header = TRUE) %>%
-  mutate(answer = as.factor(answer, levels = support))
+                       sep = ',', header = TRUE) 
 
 
 pdf("../writing/2015/journal-manuscript/figures/timeExpResults.pdf",
