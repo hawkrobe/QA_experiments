@@ -2,6 +2,6 @@
   "name": "qa",
   "main" : "qa.js",
   "webppl": {
-    "wppl": ["guessingGameCore.wppl"]
+    "wppl": ["guessingGameCore.wppl", "guessingGameWorldKnowledge.wppl"]
   }
 }

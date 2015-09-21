@@ -20,16 +20,25 @@ var condition = function(x){
  factor(x ? 0 : -Infinity);
 };
 
+// Takes a taxonomy object with saliency probabilities
+// and picks one item from each label to be 'the salient one'
+var sampleSalienceAssignment = function(tax) {
+  return mapObject(function(label, probObj) {
+    var saliencyPrior = categoricalERP(_.values(probObj), _.keys(probObj));
+    var salientItem = sample(saliencyPrior);
+    return _.object([salientItem], [null]);
+  }, tax);
+};
+
 var QAmodel = function(conditionObj) {
   var taxonomy = conditionObj.taxonomy;
   var qudSpace = conditionObj.qudSpace;
   var labelSpace = conditionObj.labelSpace;
   var exampleWorld = conditionObj.exampleWorld;
-
-  // set up world space: All possible assignments of four objects to four positions
-  var worldSpace = map(function(perm) {
-    return _.object(qa.leaves(taxonomy), perm);
-  }, qa.permute([1,2,3,4]));
+  var locationAssignments = qa.permute([1,2,3,4]);
+  // set up world space:
+  // 1) All possible assignments of four objects to four positions
+  // 2) Also assignments of salience to different objects for each category
 
   var questionSpace = map(function(v){
     return 'whereIs' + v.charAt(0).toUpperCase() + v.slice(1) + '?';
@@ -43,7 +52,10 @@ var QAmodel = function(conditionObj) {
   }, qa.leaves(taxonomy)));
 
   var worldPrior = function() {
-    return uniformDraw(worldSpace);
+    var locAssignment = uniformDraw(locationAssignments);
+    var tax = sampleSalienceAssignment(taxonomy);
+    return {knowledge : tax,
+	    locations : _.object(qa.leaves(tax), locAssignment)};
   };
 
   // returns a function that maps world to the gate we should pick to find
@@ -52,7 +64,8 @@ var QAmodel = function(conditionObj) {
     var subtree = qa.findSubtree(node, taxonomy);
     var leavesBelowNode = subtree === null ? [node] : qa.leaves(subtree);
     return function(world){
-      return map(function(node) {return world[node];}, leavesBelowNode);
+       _.object(map(function(node) {return world[node];}, leavesBelowNode),
+		map(function(node) {return false;}, leavesBelowNode));
     };
   };
 
@@ -85,7 +98,8 @@ var QAmodel = function(conditionObj) {
     var subtree = qa.findSubtree(node, taxonomy);
     var leavesBelowNode = subtree === null ? [node] : qa.leaves(subtree);
     return function(world){
-      return map(function(node) {return world[node];}, leavesBelowNode);
+      return _.object(map(function(node) {return world[node];}, leavesBelowNode),
+		      map(function(node) {return false;}, leavesBelowNode));
     };
   });
 
@@ -180,7 +194,8 @@ var QAmodel = function(conditionObj) {
         var inferredWorld = sample(interpreter(answer));
         var inferredLocs = qud(inferredWorld);
         var trueLocs = qud(trueWorld);
-//        var posToCheck = randomInteger(inferredLocs.length);
+	// console.log(inferredLocs, trueLocs);
+	// console.log(_.isEqual(inferredLocs, trueLocs));
         return (_.isEqual(trueLocs, inferredLocs) ? 1 : 0);
       });
       factor(Math.log(score) * rationality);
@@ -232,23 +247,22 @@ var QAmodel = function(conditionObj) {
       var truthfulAnswerPrior = Enumerate(function(){
         var answer = fullAnswerPrior();
         factor(interpreter(answer).score([], trueWorld));
-        return answer
-      })
+        return answer;
+      });
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
         var inferredWorld = sample(interpreter(answer));
         var inferredLocs = qud(inferredWorld);
         var trueLocs = qud(trueWorld);
-        var posToCheck = randomInteger(inferredLocs.length); // always 1, here
-        return (_.isEqual(trueLocs[posToCheck], inferredLocs[posToCheck]) ? 1 : 0);
+        return (_.isEqual(trueLocs, inferredLocs) ? 1 : 0);
       });
       factor(Math.log(score) * rationality);
       return answer;
     });
-  })
+  });
 
   var pragmaticQuestioner = cache(function(qud_node, rationality) {
-    var qud = (makeQUD(qud_node))
+    var qud = (makeQUD(qud_node));
     Enumerate(function(){
       var question = questionPrior();
       // What is the gate value I'd guess under my prior?
@@ -286,61 +300,3 @@ var QAmodel = function(conditionObj) {
           expA: explicitAnswerer};
 };
 
-// World knowledge
-var expCondition1 = {
-  taxonomy : {
-    animal: {
-      pet: {
-        dog : {
-         dalmatian: null,
-         poodle: null
-       },
-       siamese : null
-     },
-    whale: null // no good category for this thing
-    }
-  },
-  qudSpace : ['dalmatian', 'poodle', 'siamese', 'whale'],
-  labelSpace : ['dalmatian', 'dog', 'pet', 'animal'],
-  exampleWorld: {dalmatian: 2, poodle: 1, siamese: 3, whale: 4}
-};
-
-var expCondition2 = {
-  taxonomy : {
-    animal: {
-      pet: {
-        dalmatian: null,
-        siamese : null
-      },
-      cat: {
-        lion : null,
-        siamese : null
-      },
-      whale: null // no good category for this thing
-    }
-  },
-  qudSpace : ['dalmatian', 'whale', 'lion', 'siamese'],
-  labelSpace : ['pet', 'cat', 'lion', 'animal'],
-  exampleWorld: {dalmatian: 2, siamese: 1, lion: 3, whale: 4}
-
-}
-
-var expCondition3 = {
-  taxonomy : {
-    animal: {
-      fish : {
-        beta : null,
-        goldfish: null,
-        angler : null
-      },
-      pet : {
-        dalmatian : null,
-        goldfish: null,
-        beta : null
-      }
-    }
-  },
-  qudSpace : ['beta', 'goldfish', 'angler', 'dalmatian'],
-  labelSpace : ['fish', 'pet'],
-  exampleWorld: {beta: 1, goldfish: 2, angler: 3, dalmatian: 4}
-};

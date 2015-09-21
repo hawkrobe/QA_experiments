@@ -1,0 +1,81 @@
+// World knowledge
+var expCondition1 = {
+  taxonomy : {
+    animal: {
+      dalmatian: 0.25,
+      poodle: 0.25,
+      siamese : 0.25,
+      whale: 0.25
+    },
+    pet : {
+      dalmatian: 0.33,
+      poodle: 0.33,
+      siamese : 0.33
+    },
+    dog : {
+      dalmatian: 0.5,
+      poodle: 0.5
+    },
+    dalmatian : {dalmatian: 1},
+    poodle : {poodle: 1},
+    siamese : {siamese: 1},
+    whale: {whale: 1}
+  },
+  qudSpace : ['dalmatian', 'poodle', 'siamese', 'whale'],
+  labelSpace : ['dalmatian', 'dog', 'pet', 'animal'],
+  exampleWorld: {dalmatian: 2, poodle: 1, siamese: 3, whale: 4}
+};
+
+var expCondition2 = {
+  taxonomy : {
+    animal: {
+      dalmatian : 0.25,
+      siamese : 0.25,
+      lion : 0.25,
+      siamese : 0.25
+    },
+    pet: {
+      dalmatian: 0.5,
+      siamese : 0.5
+    },
+    cat: {
+      lion : 0.5,
+      siamese : 0.5
+    },
+    lion : {lion: 1},
+    siamese : {siamese: 1},
+    dalmatian : {dalmatian: 1},
+    whale: {whale: 1}
+  },
+  qudSpace : ['dalmatian', 'whale', 'lion', 'siamese'],
+  labelSpace : ['pet', 'cat', 'lion', 'animal'],
+  exampleWorld: {dalmatian: 2, siamese: 1, lion: 3, whale: 4}
+};
+
+var expCondition3 = {
+  taxonomy : {
+    animal: {
+      beta: 0.25,
+      goldfish : 0.25,
+      angler : 0.25,
+      dalmatian : 0.25
+    },
+    fish : {
+      beta : 0.33,
+      goldfish: 0.33,
+      angler : 0.33
+    },
+    pet : {
+      dalmatian : 0.33,
+      goldfish: 0.33,
+      beta : 0.33
+    },
+    dalmatian : {dalmatian: 1},
+    goldfish: {goldfish: 1},
+    beta : {beta: 1},
+    angler : {angler: 1}
+  },
+  qudSpace : ['beta', 'goldfish', 'angler', 'dalmatian'],
+  labelSpace : ['fish', 'pet'],
+  exampleWorld: {beta: 1, goldfish: 2, angler: 3, dalmatian: 4}
+};

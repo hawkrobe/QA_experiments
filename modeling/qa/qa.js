@@ -99,13 +99,13 @@ function powerset(set) {
 var TFCartesianProd = function(n) {
   var result = [];
   _.map(_.range(n), function(i){
-    result.push(['true', 'false'])
-  })
+    result.push(['true', 'false']);
+  });
   return cartesianProductOf(result);
-}
+};
 
-var permute = function (input) {
-  var input = input.slice();
+var permute = function (old_input) {
+  var input = old_input.slice();
   var permArr = [];
   var usedChars = [];
   var doPerm = function() {
@@ -126,13 +126,13 @@ var permute = function (input) {
 };
 
 var cartesianProductOf = function(listOfLists) {
-    return _.reduce(listOfLists, function(a, b) {
-        return _.flatten(_.map(a, function(x) {
-            return _.map(b, function(y) {
-                return x.concat([y]);
-            });
-        }), true);
-    }, [ [] ]);
+  return _.reduce(listOfLists, function(a, b) {
+    return _.flatten(_.map(a, function(x) {
+      return _.map(b, function(y) {
+        return x.concat([y]);
+      });
+    }), true);
+  }, [ [] ]);
 };
 
 // recursively traverse object; return all keys
