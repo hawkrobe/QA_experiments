@@ -4,7 +4,6 @@
 var main = function(){
 
   var rationalityPs = [1];//_.range(1, 10, .1);
-
   var conditions = [{gameObj: expCondition1, type : "branching"},
 //                    {gameObj: expCondition2, type : "overlapping"},
 //                    {gameObj: expCondition3, type : "equivocal"}
@@ -16,7 +15,7 @@ var main = function(){
   map(function(expCond) {
     // Set up file
     var model = QAmodel(expCond.gameObj);
-
+    var runAnswererModel = model.runAnswererModel;
     map(function(rationality) {
       // Set up r to be nice
       var r = rationality.toFixed(1);
@@ -27,19 +26,21 @@ var main = function(){
         var questions = expCond.gameObj.questionSpace;
 
         // var litA = model.litA;
-        // var erp = litA(question, model.exampleWorld, r);
+        // var erp = runAnswererModel(litA, question, r);
         // var label = [expCond.type, "literal", "Q" + expCond.type.slice(0,1) + ":" + question, r];
         // console.log(label);
+	// qa.printERP(erp);
 //       qa.writeERP(erp, label, fileName)
 
         // var pragA = model.pragA;
-        // var erp = pragA(question, model.exampleWorld, r);
+	// var erp = runAnswererModel(pragA, question, r);
         // var label = [expCond.type, "pragmatic", "Q" + expCond.type.slice(0,1) + ":" + question, r];
         // console.log(label);
+	// qa.printERP(erp);
 //       qa.writeERP(erp, label, fileName)
 
         var expA = model.expA;
-        var erp = expA(question, model.exampleWorld, r);
+	var erp = runAnswererModel(expA, question, r);
         var label = [expCond.type,
 		     "explicit", "Q" + expCond.type.slice(0,1) + ":" + question, r];
         console.log(label);

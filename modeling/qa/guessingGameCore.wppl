@@ -34,7 +34,6 @@ var QAmodel = function(conditionObj) {
   var taxonomy = conditionObj.taxonomy;
   var qudSpace = conditionObj.qudSpace;
   var labelSpace = conditionObj.labelSpace;
-  var exampleWorld = conditionObj.exampleWorld;
   var locationAssignments = qa.permute([1,2,3,4]);
   // set up world space:
   // 1) All possible assignments of four objects to four positions
@@ -44,27 +43,20 @@ var QAmodel = function(conditionObj) {
     return 'whereIs' + v.charAt(0).toUpperCase() + v.slice(1) + '?';
   }, labelSpace);
 
-  // Can tell questioner about a location of one object
-  var fullAnswerSpace = qa.flatten(map(function(leaf){
-    map(function(loc){
-      return leaf + '@' + loc + ".";
-    }, [1,2,3,4]);
-  }, qa.leaves(taxonomy)));
-
   var worldPrior = function() {
     var locAssignment = uniformDraw(locationAssignments);
     var tax = sampleSalienceAssignment(taxonomy);
     return {knowledge : tax,
-	    locations : _.object(qa.leaves(tax), locAssignment)};
+	    locs : _.object(qa.leaves(tax), locAssignment)};
   };
 
   // returns a function that maps world to the gate we should pick to find
   // a leaf under the given node
   var makeQUD = function(node){
-    var subtree = qa.findSubtree(node, taxonomy);
-    var leavesBelowNode = subtree === null ? [node] : qa.leaves(subtree);
     return function(world){
-       _.object(map(function(node) {return world[node];}, leavesBelowNode),
+      var subtree = qa.findSubtree(node, world.knowledge);
+      var leavesBelowNode = subtree === null ? [node] : qa.leaves(subtree);
+      _.object(map(function(node) {return world.locs[node];}, leavesBelowNode),
 		map(function(node) {return false;}, leavesBelowNode));
     };
   };
@@ -84,8 +76,11 @@ var QAmodel = function(conditionObj) {
     return node;
   };
 
-  var fullAnswerPrior = function(){
-    return uniformDraw(fullAnswerSpace);
+  // Can tell questioner about a location of one object
+  var fullAnswerPrior = function(world){
+    var loc = uniformDraw([1,2,3,4]);
+    var leaf = uniformDraw(_.keys(world.locs));
+    return leaf + '@' + loc + ".";
   };
 
   var isTaxonomyQuestion = function(x){
@@ -94,11 +89,11 @@ var QAmodel = function(conditionObj) {
   };
 
   var taxonomyQuestionMeaning = cache(function(utterance){
-    var node = questionToNode(utterance);
-    var subtree = qa.findSubtree(node, taxonomy);
-    var leavesBelowNode = subtree === null ? [node] : qa.leaves(subtree);
     return function(world){
-      return _.object(map(function(node) {return world[node];}, leavesBelowNode),
+      var node = questionToNode(utterance);
+      var subtree = qa.findSubtree(node, world.knowledge);
+      var leavesBelowNode = subtree === null ? [node] : qa.leaves(subtree);
+      return _.object(map(function(node) {return world.locs[node];}, leavesBelowNode),
 		      map(function(node) {return false;}, leavesBelowNode));
     };
   });
@@ -111,8 +106,8 @@ var QAmodel = function(conditionObj) {
     var temp = utterance.split("@");
     var node = temp[0];
     var location = qa.butLast(temp[1]);
-    return function(x){
-      return x[node] == location; // return true if the object really is in location
+    return function(world){
+      return world.locs[node] == location; // return true if the object really is in location
     };
   });
 
@@ -156,7 +151,7 @@ var QAmodel = function(conditionObj) {
   var literalAnswerer = cache(function(question, trueWorld, rationality) {
     // Pick answer conditioned on communicating question predicate value
     return Enumerate(function(){
-      var answer = fullAnswerPrior();
+      var answer = fullAnswerPrior(trueWorld);
       factor(interpreter(answer).score([], trueWorld) * rationality);
       return answer;
     });
@@ -185,7 +180,7 @@ var QAmodel = function(conditionObj) {
     var qud = makeQUD(questionToNode(question));
     return Enumerate(function(){
       var truthfulAnswerPrior = Enumerate(function(){
-        var answer = fullAnswerPrior();
+        var answer = fullAnswerPrior(trueWorld);
         factor(interpreter(answer).score([], trueWorld));
         return answer;
       });
@@ -242,10 +237,8 @@ var QAmodel = function(conditionObj) {
     });
     return Enumerate(function(){
       var qud = makeQUD(sample(qudNodePosterior));
-      // Pick answer conditioned on communicating question predicate value
-
       var truthfulAnswerPrior = Enumerate(function(){
-        var answer = fullAnswerPrior();
+        var answer = fullAnswerPrior(trueWorld);
         factor(interpreter(answer).score([], trueWorld));
         return answer;
       });
@@ -289,14 +282,25 @@ var QAmodel = function(conditionObj) {
       return question;
     });
   });
+
+  var runAnswererModel = function(answererModel, question, rationality) {
+    return Enumerate(function() {
+      var trueWorld = worldPrior();
+      var ansERP = answererModel(question, trueWorld, rationality);
+      var ans = sample(ansERP);
+      return ans.split("@")[0];
+    });
+  };
+  
   return {qudSpace : qudSpace,
           questionSpace : questionSpace,
-          exampleWorld : exampleWorld,
           pragQ : pragmaticQuestioner,
           litQ : literalQuestioner,
           expQ: explicitQuestioner,
           pragA : pragmaticAnswerer,
           litA : literalAnswerer,
-          expA: explicitAnswerer};
+          expA: explicitAnswerer,
+	  runAnswererModel: runAnswererModel
+	 };
 };
 

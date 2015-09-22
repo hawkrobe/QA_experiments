@@ -22,8 +22,7 @@ var expCondition1 = {
     whale: {whale: 1}
   },
   qudSpace : ['dalmatian', 'poodle', 'siamese', 'whale'],
-  labelSpace : ['dalmatian', 'dog', 'pet', 'animal'],
-  exampleWorld: {dalmatian: 2, poodle: 1, siamese: 3, whale: 4}
+  labelSpace : ['dalmatian', 'dog', 'pet', 'animal']
 };
 
 var expCondition2 = {
@@ -48,8 +47,7 @@ var expCondition2 = {
     whale: {whale: 1}
   },
   qudSpace : ['dalmatian', 'whale', 'lion', 'siamese'],
-  labelSpace : ['pet', 'cat', 'lion', 'animal'],
-  exampleWorld: {dalmatian: 2, siamese: 1, lion: 3, whale: 4}
+  labelSpace : ['pet', 'cat', 'lion', 'animal']
 };
 
 var expCondition3 = {
@@ -76,6 +74,5 @@ var expCondition3 = {
     angler : {angler: 1}
   },
   qudSpace : ['beta', 'goldfish', 'angler', 'dalmatian'],
-  labelSpace : ['fish', 'pet'],
-  exampleWorld: {beta: 1, goldfish: 2, angler: 3, dalmatian: 4}
+  labelSpace : ['fish', 'pet']
 };
