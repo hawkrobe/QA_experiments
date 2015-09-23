@@ -2,19 +2,19 @@
 var expCondition1 = {
   taxonomy : {
     animal: {
-      dalmatian: 0.25,
-      poodle: 0.25,
-      siamese : 0.25,
-      whale: 0.25
+      dalmatian: .25,
+      poodle: .25,
+      siamese : .25,
+      whale: .25
     },
     pet : {
-      dalmatian: 0.33,
-      poodle: 0.33,
-      siamese : 0.33
+      dalmatian: .33,
+      poodle: .33,
+      siamese : .33
     },
     dog : {
-      dalmatian: 0.5,
-      poodle: 0.5
+      dalmatian: .5,
+      poodle: .5
     },
     dalmatian : {dalmatian: 1},
     poodle : {poodle: 1},
