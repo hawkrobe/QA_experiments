@@ -36,13 +36,10 @@ var QAmodel = function(conditionObj) {
     }, tax);
   };
   
-  var worldPrior = Enumerate(function() {
-    //    var locAssignment = uniformDraw(locationAssignments);
+  var worldPrior = function() {
     var locAssignment = uniformDraw(locationAssignments);
-    var tax = sampleSalienceAssignment(taxonomy);
-    return {knowledge : tax,
-	    locs : _.object(qudSpace, locAssignment)};
-  });
+    return _.object(qudSpace, locAssignment);
+  };
 
   var questionPrior = function() {
     var v = uniformDraw(labelSpace);
@@ -61,7 +58,7 @@ var QAmodel = function(conditionObj) {
 
   var answerPrior = function(world){
     var loc = uniformDraw([1,2,3,4]);
-    var leaf = uniformDraw(_.keys(world.locs));
+    var leaf = uniformDraw(_.keys(world));
     return leaf + '@' + loc + ".";
   };
 
@@ -75,22 +72,24 @@ var QAmodel = function(conditionObj) {
     var node = temp[0];
     var location = qa.butLast(temp[1]);
     return function(world){
-      return world.locs[node] == location; 
+      return world[node] == location; 
     };
   };
 
     // returns a function that maps world to the gate we should pick to find
   // a leaf under the given node
-  var makeQUD = function(node) {
+  var makeQUD = function(node, tax) {
     return function(world){
-      var salientObj = world.knowledge[node];
-      return world.locs[salientObj];
+      var salientObj = tax ? tax[node] : node;
+      return world[salientObj];
     };
   };
   
-  var nameToQUD = function(qudName){
-    return (_.contains(questionSpace, qudName) ? makeQUD(questionToNode(qudName)) :
-	    _.contains(qudSpace, qudName) ? makeQUD(qudName) :
+  var nameToQUD = function(options){
+    var tax = options.salience ? options.salience : null;
+    var qudName = options.qudName;
+    return (_.contains(questionSpace, qudName) ? makeQUD(questionToNode(qudName), tax) :
+	    _.contains(qudSpace, qudName) ? makeQUD(qudName, tax) :
 	    console.error('unknown qud name', qudName));
   };
 
@@ -106,7 +105,7 @@ var QAmodel = function(conditionObj) {
 
   var interpreter = cache(function(answer){
     return Enumerate(function(){
-      var world = sample(worldPrior);
+      var world = worldPrior();
       var answerMeaning = meaning(answer);
       condition(answerMeaning(world));
       return world;
@@ -123,7 +122,6 @@ var QAmodel = function(conditionObj) {
   };
 
   var literalAnswerer = cache(function(question, trueWorld, rationality) {
-//    qa.printERP(worldPrior);
     return Enumerate(function(){
       var answer = answerPrior(trueWorld);
 //      console.log(answer);
@@ -136,9 +134,9 @@ var QAmodel = function(conditionObj) {
     var qud = nameToQUD(qud_node);
     return Enumerate(function(){
       var question = questionPrior();
-      var prior = Enumerate(function(){return qud(sample(worldPrior));});
+      var prior = Enumerate(function(){return qud(worldPrior());});
       var expectedKL = mean(function(){
-        var trueWorld = sample(worldPrior);
+        var trueWorld = worldPrior();
         var answer = sample(literalAnswerer(question, trueWorld, rationality));
         var posterior = Enumerate(function(){
           var world = sample(interpreter(answer));
@@ -152,8 +150,9 @@ var QAmodel = function(conditionObj) {
   });
 
   var explicitAnswerer = cache(function(question, trueWorld, rationality) {
-    var qud = nameToQUD(question);
     return Enumerate(function(){
+      var salienceGuess = sampleSalienceAssignment(taxonomy);
+      var qud = nameToQUD({qudName: question, salience: salienceGuess});
       var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
@@ -166,19 +165,19 @@ var QAmodel = function(conditionObj) {
   });
 
   var explicitQuestioner = cache(function(qudName, rationality) {
-    var qud = nameToQUD(qudName);
+    var qud = nameToQUD({qudName : qudName});
     return Enumerate(function(){
       var question = questionPrior();
       var prior = Enumerate(function(){
-	return qud(sample(worldPrior));});
+	return qud(worldPrior());});
       var expectedKL = mean(function(){
-	var trueWorld = sample(worldPrior);
+	var trueWorld = worldPrior();
 	var answer = sample(explicitAnswerer(question, trueWorld, rationality));
 	var posterior = Enumerate(function(){
 	  var world = sample(interpreter(answer));
 	  return qud(world);
 	});
-	return KL(posterior, prior);
+	return qa.KL(posterior, prior);
       });
       factor(expectedKL * rationality);
       return question;
@@ -188,13 +187,13 @@ var QAmodel = function(conditionObj) {
   var pragmaticAnswerer = cache(function(question, trueWorld, rationality){
     var qudPosterior = Enumerate(function(){
       var qudName = qudPrior();
-      var qud = nameToQUD(qudName);
+      var qud = nameToQUD({qudName: qudName});
       var q_erp = explicitQuestioner(qudName, rationality);
       factor(q_erp.score([], question));
       return qudName;
     });
     return Enumerate(function(){
-      var qud = nameToQUD(sample(qudPosterior));
+      var qud = nameToQUD({qudName: sample(qudPosterior)});
       var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
@@ -206,16 +205,16 @@ var QAmodel = function(conditionObj) {
     });
   });
 
-  var pragmaticQuestioner = cache(function(qud_node, rationality) {
-    var qud = nameToQUD(qud_node);
+  var pragmaticQuestioner = cache(function(qudName, rationality) {
+    var qud = nameToQUD({qudName: qudName});
     return Enumerate(function(){
       var question = questionPrior();
       var prior = Enumerate(function(){
-        return qud(sample(worldPrior()));
+        return qud(worldPrior());
       });
       var expectedKL = mean(
         function(){
-          var trueWorld = sample(worldPrior);
+          var trueWorld = worldPrior();
           var answer = sample(pragmaticAnswerer(question, trueWorld, rationality));
           var posterior = Enumerate(function(){
             var world = sample(interpreter(answer));
@@ -230,8 +229,7 @@ var QAmodel = function(conditionObj) {
 
   var runAnswererModel = function(answererModel, question, rationality) {
     return Enumerate(function() {
-//      console.log(question);
-      var trueWorld = sample(worldPrior);
+      var trueWorld = worldPrior();
       var ansERP = answererModel(question, trueWorld, rationality);
       var ans = sample(ansERP);
       return ans.split("@")[0];
