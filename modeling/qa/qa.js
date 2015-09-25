@@ -22,7 +22,7 @@ var writeERP = function(erp, labels, filename) {
      var prob = Math.exp(erp.score([], v));
      if (prob > 0.0){
       if(v.slice(-1) === ".")
-        out = "A" + labels[0].slice(0,1) + ":" + v.split("@")[0];
+        out = "A" + labels[0].slice(0,1) + ":" + butLast(v);
       else if (v.slice(-1) === "?")
         out = "Q" + labels[0].slice(0,1) + ":"   + butLast(v).split("Is")[1].toLowerCase();
       else 

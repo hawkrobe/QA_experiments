@@ -85,12 +85,15 @@ var QAmodel = function(conditionObj) {
     };
   };
   
-  var nameToQUD = function(options){
-    var tax = options.salience ? options.salience : null;
-    var qudName = options.qudName;
-    return (_.contains(questionSpace, qudName) ? makeQUD(questionToNode(qudName), tax) :
-	    _.contains(qudSpace, qudName) ? makeQUD(qudName, tax) :
-	    console.error('unknown qud name', qudName));
+  var nameToQUD = function(qudName){
+    if(_.contains(questionSpace, qudName)) {
+      var salienceGuess = sampleSalienceAssignment(taxonomy);
+      return makeQUD(questionToNode(qudName), salienceGuess);
+    } else if (_.contains(qudSpace, qudName)) {
+      return makeQUD(qudName);
+    } else {
+      return console.error('unknown qud name', qudName);
+    }
   };
 
   var qudPrior = function() {
@@ -151,8 +154,7 @@ var QAmodel = function(conditionObj) {
 
   var explicitAnswerer = cache(function(question, trueWorld, rationality) {
     return Enumerate(function(){
-      var salienceGuess = sampleSalienceAssignment(taxonomy);
-      var qud = nameToQUD({qudName: question, salience: salienceGuess});
+      var qud = nameToQUD(question);
       var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
@@ -165,7 +167,7 @@ var QAmodel = function(conditionObj) {
   });
 
   var explicitQuestioner = cache(function(qudName, rationality) {
-    var qud = nameToQUD({qudName : qudName});
+    var qud = nameToQUD(qudName);
     return Enumerate(function(){
       var question = questionPrior();
       var prior = Enumerate(function(){
@@ -187,13 +189,13 @@ var QAmodel = function(conditionObj) {
   var pragmaticAnswerer = cache(function(question, trueWorld, rationality){
     var qudPosterior = Enumerate(function(){
       var qudName = qudPrior();
-      var qud = nameToQUD({qudName: qudName});
+      var qud = nameToQUD(qudName);
       var q_erp = explicitQuestioner(qudName, rationality);
       factor(q_erp.score([], question));
       return qudName;
     });
     return Enumerate(function(){
-      var qud = nameToQUD({qudName: sample(qudPosterior)});
+      var qud = nameToQUD(sample(qudPosterior));
       var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
@@ -206,7 +208,7 @@ var QAmodel = function(conditionObj) {
   });
 
   var pragmaticQuestioner = cache(function(qudName, rationality) {
-    var qud = nameToQUD({qudName: qudName});
+    var qud = nameToQUD(qudName);
     return Enumerate(function(){
       var question = questionPrior();
       var prior = Enumerate(function(){
@@ -232,7 +234,7 @@ var QAmodel = function(conditionObj) {
       var trueWorld = worldPrior();
       var ansERP = answererModel(question, trueWorld, rationality);
       var ans = sample(ansERP);
-      return ans.split("@")[0];
+      return ans.split("@")[0] + ".";
     });
   };
   

@@ -3,19 +3,19 @@
 
 var main = function(){
 
-  var rationalityPs = [1];//_.range(1, 20, 1);
+  var rationalityPs = _.range(1, 10, .1);
 
   var conditions = [{gameObj: expCondition1, type : "branching"},
-//                    {gameObj: expCondition2, type : "overlapping"},
-		    //                    {gameObj: expCondition3, type : "equivocal"}
+                   {gameObj: expCondition2, type : "overlapping"},
+		    {gameObj: expCondition3, type : "equivocal"}
 		   ];
   var fileName = "questionerPredictions.raw.csv";  
-//  qa.writeCSV([["modelLevel", "goal", "rationality", "response", "modelProb"]], fileName);
-
+  qa.writeCSV([["type", "modelLevel", "goal", "rationality", "response", "modelProb"]], fileName);
+  
   map(function(expCond) {
     // Set up file
     var model = QAmodel(expCond.gameObj);
-
+    
     map(function(rationality) {
       // Set up r to be nice
       var r = rationality.toFixed(1);
@@ -23,27 +23,23 @@ var main = function(){
       map(function(qudNode) {
         // // get relevant parameters
 
-//         var litQ = model.litQ;
-//         var erp = litQ(qudNode, r);
-//         var label = [expCond.type, "literal", "G" + expCond.type.slice(0,1) + ":" + qudNode, r];
-//         console.log(label);
-//         qa.printERP(erp);
-// //        qa.writeERP(erp, label, fileName)
+        var litQ = model.litQ;
+        var erp = litQ(qudNode, r);
+        var label = [expCond.type, "literal", "G" + expCond.type.slice(0,1) + ":" + qudNode, r];
+        console.log(label);
+        qa.writeERP(erp, label, fileName);
 
         var pragQ = model.pragQ;
-        var erp = pragQ(qudNode, 10);
-        var label = [expCond.type, "pragmatic", "G" + expCond.type.slice(0,1) + ":" + qudNode, 100];
+        var erp = pragQ(qudNode, 5);
+        var label = [expCond.type, "pragmatic", "G" + expCond.type.slice(0,1) + ":" + qudNode, r];
         console.log(label);
-        qa.printERP(erp);
-// //        qa.writeERP(erp, label, fileName)
+        qa.writeERP(erp, label, fileName);
 
-        // var expQ = model.expQ;
-        // var erp = expQ(qudNode, r);
-        // var label = [expCond.type, "explicit", "G" + expCond.type.slice(0,1) + ":" + qudNode, r];
-        // console.log(label);
-        // qa.printERP(erp);
-
-//        qa.writeERP(erp, label, fileName)
+        var expQ = model.expQ;
+        var erp = expQ(qudNode, r);
+        var label = [expCond.type, "explicit", "G" + expCond.type.slice(0,1) + ":" + qudNode, r];
+        console.log(label);
+        qa.writeERP(erp, label, fileName);
       }, model.qudSpace);
     }, rationalityPs);
   }, conditions);
