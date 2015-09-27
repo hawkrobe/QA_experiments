@@ -19,43 +19,57 @@ function make_slides(f) {
     name: "q_exp",
     present : _.shuffle(items), // from stim_list.js
     present_handle : function(item) {
-      // Set up page
-      $(".err1").hide();
-      $("#other").val(" ");
+      // Set trial variables
+      this.item = item;
+      this.label = _.sample(this.item.labels);
+      this.domain = this.item.domain;
+      this.type = this.item.type;
+      this.objects = _.shuffle(this.item.objects);
+      console.log(this.objects);
+      var localThis = this;
 
-      // Sample a possible label
-      var label = _.sample(item.labels);
-      
+      // Set up page
+      $('#instruct').text("Click the " + this.label + "!");
+
       // Change images
-      _.forEach(item.objects, function(obj) {
-	var img = {};
+      _.forEach(this.objects, function(obj) {
+	var img = new Image();
 	img.src = obj.url;
-	img.id = obj.name;
+	img.id = obj.name.replace(/\s+/g, '');
 	img.height = obj.height;
 	img.width = obj.width;
+	img.labelName = obj.name;
 	document.getElementById("images").appendChild(img);
+	localThis.addClickHandler(img);
       });
-
-      $('#instruct_button').show();
-      $('#instruct').text("Click the " + label + "!");
+      console.log(document.getElementById("images").childNodes);
     },
 
-    button : function() {
-      if ($('#select_box').val() == null) {
-        $(".err1").show();
-      } else {
-        $("#" + this.qud.split(" ")[0]).removeClass('border')
-        this.log_responses();
-        _stream.apply(this); //use _stream.apply(this); if and only if there is "present" data.
-      }
+    addClickHandler : function(img) {
+      var localThis = this;
+      $('#' + img.id).click(function(evt){
+	var objClicked = evt.toElement.labelName;
+	localThis.log_responses(objClicked);
+	_stream.apply(localThis);
+      });
+    },
+
+    removeAllImages : function() {
+      var childNodes = _.clone(document.getElementById("images").childNodes);
+      _.forEach(childNodes, function(obj) {
+    	console.log(obj);
+    	document.getElementById("images").removeChild(obj);
+      });
     },
     
-    log_responses : function() {
+    log_responses : function(objClicked) {
       exp.data_trials.push({
-        "trial_type" : "question",
-        "qud": this.qud,
-        "response" : $('#select_box')[0].value
+        "domain" : this.domain,
+        "type": this.type,
+	"label" : this.label,
+        "response" : objClicked
       });
+      this.removeAllImages();
     }
   });
 
@@ -83,7 +97,6 @@ function make_slides(f) {
           "trials" : exp.data_trials,
           "catch_trials" : exp.catch_trials,
           "system" : exp.system,
-          "condition" : exp.condition,
           "subject_information" : exp.subj_data,
           "time_in_minutes" : (Date.now() - exp.startT)/60000
       };
