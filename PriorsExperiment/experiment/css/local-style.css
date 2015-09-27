@@ -40,16 +40,8 @@
     margin: 0 0 5px;
 }
 
-#q_instructions {
-    height: 1050px;
-}
-
-#a_instructions {
-    height: 1050px;
-}
-
 #q_exp {
-    height: 600px;
+    height: 325px;
 }
 
 .border {
@@ -62,18 +54,6 @@
 
 .revealed {
     display: inline;
-}
-
-.err1 {
-    display: none;
-}
-
-.err2 {
-    display: none;
-}
-
-.err3 {
-    display: none;
 }
 
 hr {
