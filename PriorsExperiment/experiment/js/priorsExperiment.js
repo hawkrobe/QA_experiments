@@ -32,13 +32,17 @@ function make_slides(f) {
       $('#instruct').text("Click the " + this.label + "!");
 
       // Change images
-      _.forEach(this.objects, function(obj) {
+      this.images = _.map(this.objects, function(obj) {
 	var img = new Image();
 	img.src = obj.url;
 	img.id = obj.name.replace(/\s+/g, '');
 	img.height = obj.height;
 	img.width = obj.width;
 	img.labelName = obj.name;
+	return img
+      });
+
+      _.forEach(this.images, function(img) {
 	document.getElementById("images").appendChild(img);
 	localThis.addClickHandler(img);
       });
