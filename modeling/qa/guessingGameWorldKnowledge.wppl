@@ -31,7 +31,7 @@ var expCondition2 = {
       dalmatian : 0.25,
       siamese : 0.25,
       lion : 0.25,
-      siamese : 0.25
+      whale : 0.25
     },
     pet: {
       dalmatian: 0.5,
