@@ -25,28 +25,28 @@ function make_slides(f) {
       this.domain = this.item.domain;
       this.type = this.item.type;
       this.objects = _.shuffle(this.item.objects);
-      console.log(this.objects);
       var localThis = this;
 
       // Set up page
       $('#instruct').text("Click the " + this.label + "!");
 
+      this.images = [];
       // Change images
-      this.images = _.map(this.objects, function(obj) {
-	var img = new Image();
-	img.src = obj.url;
+      for(i = 0; i < this.objects.length; i++) {
+        var obj = this.objects[i]
+        var img = new Image(obj.height, obj.width);
+        img.src = obj.url;
 	img.id = obj.name.replace(/\s+/g, '');
-	img.height = obj.height;
-	img.width = obj.width;
 	img.labelName = obj.name;
-	return img
-      });
+        this.images.push(img);
+      };
 
       _.forEach(this.images, function(img) {
 	document.getElementById("images").appendChild(img);
+      });
+      _.forEach(this.images, function(img) {
 	localThis.addClickHandler(img);
       });
-      console.log(document.getElementById("images").childNodes);
     },
 
     addClickHandler : function(img) {
@@ -61,7 +61,6 @@ function make_slides(f) {
     removeAllImages : function() {
       var childNodes = _.clone(document.getElementById("images").childNodes);
       _.forEach(childNodes, function(obj) {
-    	console.log(obj);
     	document.getElementById("images").removeChild(obj);
       });
     },
@@ -136,7 +135,6 @@ function init() {
   
   //blocks of the experiment:
   exp.structure=[ "i0", "q_exp", 'subj_info', 'thanks'];
-  console.log(exp);
   exp.data_trials = [];
   //make corresponding slides:
   exp.slides = make_slides(exp);
