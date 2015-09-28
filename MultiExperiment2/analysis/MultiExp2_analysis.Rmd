@@ -275,7 +275,7 @@ optimalFit <- function(data, equal = FALSE) {
   
   prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
 
-print(prob_correlation)
+  print(prob_correlation)
   return(data %>% join(prob_correlation) %>% 
          filter(rationality == maximizingR))
 }
@@ -283,8 +283,13 @@ print(prob_correlation)
 
 Now we import the literal answer fits and tidy them up to eventually be joined
 ```{r}
-ansFits = optimalFit(inner_join(d_a, read.csv("analysis/predictions/answererPredictions.csv", sep = ','))) %>%
-  select(domain, modelLevel, type, utterance, response, empProb, rationality, modelProb)
+ansFits = optimalFit(
+  inner_join(d_a,
+             read.csv("../modeling/guessingGame/answererPredictions.csv", 
+                      sep = ','))
+  ) %>%
+  select(domain, modelLevel, type, utterance, 
+         response, empProb, rationality, modelProb)
 ```
 
 Now that each of these data sets is in a nice format, we can join them all together and plot their fits:
