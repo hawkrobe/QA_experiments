@@ -3,14 +3,14 @@
 
 var main = function(){
 
-  var rationalityPs = _.range(1, 10, .1);
-  var conditions = [{gameObj: expCondition1, type : "branching"},
-                    {gameObj: expCondition2, type : "overlapping"},
+  var rationalityPs = _.range(9, 10, .1);
+  var conditions = [//{gameObj: expCondition1, type : "branching"},
+                    //{gameObj: expCondition2, type : "overlapping"},
                     {gameObj: expCondition3, type : "equivocal"}
                    ];
   var fileName = "answererPredictions.raw.csv";
   
-  qa.writeCSV([["type", "modelLevel", "question", "rationality", "response", "modelProb"]], fileName);
+  qa.writeCSV([["type", "modelLevel", "utterance", "rationality", "response", "modelProb"]], fileName);
 
   map(function(expCond) {
     // Set up file
@@ -31,13 +31,13 @@ var main = function(){
 	qa.writeERP(erp, label, fileName);
 
         var pragA = model.pragA;
-	var erp = runAnswererModel(pragA, question, 5);
+	var erp = runAnswererModel(pragA, question, r);
         var label = [expCond.type, "pragmatic", "Q" + expCond.type.slice(0,1) + ":" + question, r];
         console.log(label);
 	qa.writeERP(erp, label, fileName);
 
         var expA = model.expA;		       
-	var erp = runAnswererModel(expA, question, 5);
+	var erp = runAnswererModel(expA, question, r);
         var label = [expCond.type,
        		     "explicit", "Q" + expCond.type.slice(0,1) + ":" + question, r];
 	console.log(label);
