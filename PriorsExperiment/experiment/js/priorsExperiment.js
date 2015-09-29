@@ -25,9 +25,12 @@ function make_slides(f) {
       this.domain = this.item.domain;
       this.type = this.item.type;
       this.objects = _.shuffle(this.item.objects);
+      this.images = [];
+
+      var imagesLoaded = 0;
       var localThis = this;
 
-      // Set up page
+      // Set up instruction
       $('#instruct').text("Click the " + this.label + "!");
 
       // Change images
@@ -37,9 +40,24 @@ function make_slides(f) {
         img.src = obj.url;
 	img.id = obj.name.replace(/\s+/g, '');
 	img.labelName = obj.name;
+	this.images.push(img);
 	document.getElementById("images").appendChild(img);
+	$('#' + img.id).hide();
+	img.onload = function() {
+	  imagesLoaded += 1;
+	  if(imagesLoaded == 4) {
+	    localThis.showImages();
+	  }
+	};
+	
 	localThis.addClickHandler(img);
       };
+    },
+
+    showImages : function() {
+      for(imgId = 0; imgId < 4; imgId++) {
+	$('#' + this.images[imgId].id).show();
+      }
     },
 
     addClickHandler : function(img) {
