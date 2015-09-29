@@ -30,7 +30,6 @@ function make_slides(f) {
       // Set up page
       $('#instruct').text("Click the " + this.label + "!");
 
-      this.images = [];
       // Change images
       for(i = 0; i < this.objects.length; i++) {
         var obj = this.objects[i]
@@ -38,15 +37,9 @@ function make_slides(f) {
         img.src = obj.url;
 	img.id = obj.name.replace(/\s+/g, '');
 	img.labelName = obj.name;
-        this.images.push(img);
-      };
-
-      _.forEach(this.images, function(img) {
 	document.getElementById("images").appendChild(img);
-      });
-      _.forEach(this.images, function(img) {
 	localThis.addClickHandler(img);
-      });
+      };
     },
 
     addClickHandler : function(img) {
