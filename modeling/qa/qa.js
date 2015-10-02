@@ -190,6 +190,41 @@ var isNodeInTree = function(node, tree){
   return findSubtree(node, tree) !== undefined;
 };
 
+var buildKnowledge = function(type, domain, assumeUniform) {
+  var tax = {};
+  // use appropriate knowledge
+  var knowledge = (assumeUniform ?
+		   require("./saliencyKnowledgeUniform.json") :
+		   require("./saliencyKnowledgeEmpirical.json"));
+  var relevantKnowledge = _.filter(knowledge, function(obj) {
+    return obj.type === type && obj.domain === domain;
+  });
+
+  // Add knowledge about labels to taxonomy
+  var relevantLabels =  _.unique(_.pluck(relevantKnowledge, 'label'));
+  console.log(relevantLabels);
+  for (var labelId = 0; labelId < relevantLabels.length; labelId++) {
+    var label = relevantLabels[labelId];
+    var labelMatches = _.filter(relevantKnowledge,
+				function(obj) {return obj.label == label;});
+    var probObj = {};
+    _.forEach(labelMatches, function(obj) {
+      probObj = _.extend(probObj, _.object([obj.response], [obj.prop]));
+    });
+    tax = _.extend(tax, _.object([label],[probObj]));
+  }
+  
+  // Add knowledge about responses to taxonomy
+  var relevantResponses = _.unique(_.pluck(relevantKnowledge, 'response'));
+  for (var responseId = 0; responseId < relevantResponses.length; responseId++) {
+    var response = relevantResponses[responseId];
+    tax = _.extend(tax, _.object([response], [_.object([response], [1])]));
+  }
+
+  console.log(tax);
+  return {taxonomy: tax, qudSpace : relevantResponses, labelSpace : relevantLabels};;
+};
+
 var butLast = function(xs){
   return xs.slice(0, xs.length-1);
 };
@@ -272,6 +307,7 @@ module.exports = {
   pickClosestNewspaperCafe: pickClosestNewspaperCafe,
   getEveryFifthElement : getEveryFifthElement,
   cartesianProductOf: cartesianProductOf,
+  buildKnowledge : buildKnowledge,
   TFCartesianProd : TFCartesianProd,
   isNodeInTree: isNodeInTree,
   findSubtree: findSubtree,
