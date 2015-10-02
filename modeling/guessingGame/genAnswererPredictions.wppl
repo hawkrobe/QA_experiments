@@ -3,48 +3,52 @@
 
 var main = function(){
 
-  var rationalityPs = _.range(9, 10, .1);
-  var conditions = [//{gameObj: expCondition1, type : "branching"},
-                    //{gameObj: expCondition2, type : "overlapping"},
-                    {gameObj: expCondition3, type : "equivocal"}
-                   ];
+  var rationalityPs = _.range(1, 10, .1);
+  var types = ["branching", "overlapping", "equivocal"];
+  var domains = ["artifact", "animals", "places", "plants"];
+ 
   var fileName = "answererPredictions.raw.csv";
   
-  qa.writeCSV([["type", "modelLevel", "utterance", "rationality", "response", "modelProb"]], fileName);
+  qa.writeCSV([["type", "domain", "modelLevel", "utterance", "rationality", "response", "modelProb"]], fileName);
 
-  map(function(expCond) {
-    // Set up file
-    var model = QAmodel(expCond.gameObj);
-    var runAnswererModel = model.runAnswererModel;
-    map(function(rationality) {
-      // Set up r to be nice
-      var r = rationality.toFixed(1);
+  map(function(type) {
+    map(function(domain) {
+      // Set up file
+      var model = QAmodel(type, domain, true);
+      var runAnswererModel = model.runAnswererModel;
+      map(function(rationality) {
+	// Set up r to be nice
+	var r = rationality.toFixed(1);
 
-      map(function(question) {
-        // // get relevant parameters
-        var questions = expCond.gameObj.questionSpace;
+	map(function(question) {
+          // // get relevant parameters
+	  var shortQuestion = qa.butLast(question.split("Is")[1].toLowerCase());
+          var questions = model.questionSpace;
 
-        var litA = model.litA;
-        var erp = runAnswererModel(litA, question, r);
-        var label = [expCond.type, "literal", "Q" + expCond.type.slice(0,1) + ":" + question, r];
-        console.log(label);
-	qa.writeERP(erp, label, fileName);
+          var litA = model.litA;
+          var erp = runAnswererModel(litA, question, r);
+          var label = [type, domain, "literal",
+		       shortQuestion, r];
+          console.log(label);
+	  qa.writeERP(erp, label, fileName);
 
-        var pragA = model.pragA;
-	var erp = runAnswererModel(pragA, question, r);
-        var label = [expCond.type, "pragmatic", "Q" + expCond.type.slice(0,1) + ":" + question, r];
-        console.log(label);
-	qa.writeERP(erp, label, fileName);
+          var pragA = model.pragA;
+	  var erp = runAnswererModel(pragA, question, r);
+          var label = [type, domain,"pragmatic",
+		       shortQuestion, r];
+          console.log(label);
+	  qa.writeERP(erp, label, fileName);
 
-        var expA = model.expA;		       
-	var erp = runAnswererModel(expA, question, r);
-        var label = [expCond.type,
-       		     "explicit", "Q" + expCond.type.slice(0,1) + ":" + question, r];
-	console.log(label);
-	qa.writeERP(erp, label, fileName);
-     }, model.questionSpace);
-    }, rationalityPs);
-  }, conditions);
+          var expA = model.expA;		       
+	  var erp = runAnswererModel(expA, question, r);
+          var label = [type,domain,"explicit",
+		       shortQuestion, r];
+	  console.log(label);
+	  qa.writeERP(erp, label, fileName);
+	}, model.questionSpace);
+      }, rationalityPs);
+    }, domains);
+  }, types);
   return 'done';
 };
 

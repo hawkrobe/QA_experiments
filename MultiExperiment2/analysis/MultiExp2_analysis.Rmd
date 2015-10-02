@@ -50,14 +50,6 @@ completedGames = (filteredD %>% group_by(gameID) %>%
 cat("We removed", length(unique(d$workerid)) - length(completedGames)*2, "games total")
 d <- filteredD %>% filter(gameID %in% completedGames) %>% 
      distinct(domain, goal, question, guess, answer, type, gameID)
-#     filter(numCompleted == 12) %>% 
-#     distinct(domain, goal, question, guess, answer, type, gameID)    
-# make counts 
-
-  
-    #group_by(gameID) %>% 
-#     count(workerid) %>%
-#     filter(n == 2)# %>%
 ```
 
 In order to compare different items in a convenient way, we're going to map the questions and answers to the corresponding node positions in the hierarchy. So, in 'branching' trials, for example, 'dalmatian', 'mansion', 'carrot', and 'couch' would all be treated the same.
@@ -276,18 +268,30 @@ optimalFit <- function(data, equal = FALSE) {
   prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
 
   print(prob_correlation)
-  return(data %>% join(prob_correlation) %>% 
+  return(data %>% inner_join(prob_correlation) %>% 
          filter(rationality == maximizingR))
 }
 ```
 
-Now we import the literal answer fits and tidy them up to eventually be joined
+Now we import the answer fits and tidy them up to eventually be joined
+
 ```{r}
-ansFits = optimalFit(
-  inner_join(d_a,
-             read.csv("../modeling/guessingGame/answererPredictions.csv", 
-                      sep = ','))
-  ) %>%
+answerModelOutput=read.csv("../modeling/guessingGame/answererPredictions.csv", 
+                            sep = ',') %>% 
+  mutate(question = as.character(utterance), 
+         answer = as.character(response)) 
+
+for(i in 1:length(answerModelOutput$type)) {
+  answerModelOutput[i,]$answer <- mapAnswer(answerModelOutput[i,])
+  answerModelOutput[i,]$question <- mapQuestion(answerModelOutput[i,])
+}
+
+answerModelOutput = answerModelOutput %>% 
+  mutate(utterance = as.factor(question),
+         response = as.factor(answer)) %>% 
+  select(type, domain, modelLevel, utterance, rationality, response, modelProb)
+
+ansFits = optimalFit(inner_join(d_a, answerModelOutput)) %>%
   select(domain, modelLevel, type, utterance, 
          response, empProb, rationality, modelProb)
 ```
