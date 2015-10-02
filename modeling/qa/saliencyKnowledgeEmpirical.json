@@ -1,0 +1,765 @@
+[
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "animal",
+    "response": "dalmatian",
+    "prop": 0.3478
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "animal",
+    "response": "poodle",
+    "prop": 0.1304
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "animal",
+    "response": "siamese cat",
+    "prop": 0.2826
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "animal",
+    "response": "whale",
+    "prop": 0.2391
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "dalmatian",
+    "response": "dalmatian",
+    "prop": 1
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "dog",
+    "response": "dalmatian",
+    "prop": 0.8182
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "dog",
+    "response": "poodle",
+    "prop": 0.1818
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "pet",
+    "response": "dalmatian",
+    "prop": 0.4615
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "pet",
+    "response": "poodle",
+    "prop": 0.1731
+  },
+  {
+    "domain": "animals",
+    "type": "branching",
+    "label": "pet",
+    "response": "siamese cat",
+    "prop": 0.3654
+  },
+  {
+    "domain": "animals",
+    "type": "equivocal",
+    "label": "fish",
+    "response": "angler fish",
+    "prop": 0.0918
+  },
+  {
+    "domain": "animals",
+    "type": "equivocal",
+    "label": "fish",
+    "response": "betta fish",
+    "prop": 0.2857
+  },
+  {
+    "domain": "animals",
+    "type": "equivocal",
+    "label": "fish",
+    "response": "goldfish",
+    "prop": 0.6224
+  },
+  {
+    "domain": "animals",
+    "type": "equivocal",
+    "label": "pet",
+    "response": "betta fish",
+    "prop": 0.0532
+  },
+  {
+    "domain": "animals",
+    "type": "equivocal",
+    "label": "pet",
+    "response": "dalmatian",
+    "prop": 0.883
+  },
+  {
+    "domain": "animals",
+    "type": "equivocal",
+    "label": "pet",
+    "response": "goldfish",
+    "prop": 0.0638
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "animal",
+    "response": "golden retriever",
+    "prop": 0.2708
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "animal",
+    "response": "house cat",
+    "prop": 0.2083
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "animal",
+    "response": "lion",
+    "prop": 0.4583
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "animal",
+    "response": "whale",
+    "prop": 0.0625
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "cat",
+    "response": "golden retriever",
+    "prop": 0.0204
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "cat",
+    "response": "house cat",
+    "prop": 0.9592
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "cat",
+    "response": "lion",
+    "prop": 0.0204
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "lion",
+    "response": "lion",
+    "prop": 1
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "pet",
+    "response": "golden retriever",
+    "prop": 0.475
+  },
+  {
+    "domain": "animals",
+    "type": "overlapping",
+    "label": "pet",
+    "response": "house cat",
+    "prop": 0.525
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "couch",
+    "response": "couch",
+    "prop": 1
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "furniture",
+    "response": "chair",
+    "prop": 0.102
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "furniture",
+    "response": "couch",
+    "prop": 0.7551
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "furniture",
+    "response": "table",
+    "prop": 0.1429
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "seat",
+    "response": "chair",
+    "prop": 0.7619
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "seat",
+    "response": "couch",
+    "prop": 0.2381
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "thing",
+    "response": "chair",
+    "prop": 0.16
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "thing",
+    "response": "couch",
+    "prop": 0.02
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "thing",
+    "response": "lawnmower",
+    "prop": 0.62
+  },
+  {
+    "domain": "artifact",
+    "type": "branching",
+    "label": "thing",
+    "response": "table",
+    "prop": 0.2
+  },
+  {
+    "domain": "artifact",
+    "type": "equivocal",
+    "label": "metal thing",
+    "response": "iron skillet",
+    "prop": 0.4673
+  },
+  {
+    "domain": "artifact",
+    "type": "equivocal",
+    "label": "metal thing",
+    "response": "metal chair",
+    "prop": 0.3551
+  },
+  {
+    "domain": "artifact",
+    "type": "equivocal",
+    "label": "metal thing",
+    "response": "metal stool",
+    "prop": 0.1776
+  },
+  {
+    "domain": "artifact",
+    "type": "equivocal",
+    "label": "seat",
+    "response": "metal chair",
+    "prop": 0.2471
+  },
+  {
+    "domain": "artifact",
+    "type": "equivocal",
+    "label": "seat",
+    "response": "metal stool",
+    "prop": 0.0588
+  },
+  {
+    "domain": "artifact",
+    "type": "equivocal",
+    "label": "seat",
+    "response": "wooden chair",
+    "prop": 0.6941
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "metal thing",
+    "response": "iron skillet",
+    "prop": 0.7
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "metal thing",
+    "response": "metal chair",
+    "prop": 0.3
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "seat",
+    "response": "metal chair",
+    "prop": 0.26
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "seat",
+    "response": "wooden chair",
+    "prop": 0.74
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "skillet",
+    "response": "iron skillet",
+    "prop": 1
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "thing",
+    "response": "iron skillet",
+    "prop": 0.2609
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "thing",
+    "response": "metal chair",
+    "prop": 0.1304
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "thing",
+    "response": "wooden chair",
+    "prop": 0.0217
+  },
+  {
+    "domain": "artifact",
+    "type": "overlapping",
+    "label": "thing",
+    "response": "wooden ruler",
+    "prop": 0.587
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "building",
+    "response": "cottage",
+    "prop": 0.0667
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "building",
+    "response": "mansion",
+    "prop": 0.2
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "building",
+    "response": "office",
+    "prop": 0.7333
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "house",
+    "response": "cottage",
+    "prop": 0.6981
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "house",
+    "response": "mansion",
+    "prop": 0.3019
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "mansion",
+    "response": "cottage",
+    "prop": 0.0189
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "mansion",
+    "response": "mansion",
+    "prop": 0.9811
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "place",
+    "response": "cottage",
+    "prop": 0.1707
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "place",
+    "response": "mansion",
+    "prop": 0.4146
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "place",
+    "response": "office",
+    "prop": 0.1707
+  },
+  {
+    "domain": "places",
+    "type": "branching",
+    "label": "place",
+    "response": "park",
+    "prop": 0.2439
+  },
+  {
+    "domain": "places",
+    "type": "equivocal",
+    "label": "cold place",
+    "response": "ice hotel room",
+    "prop": 0.0849
+  },
+  {
+    "domain": "places",
+    "type": "equivocal",
+    "label": "cold place",
+    "response": "snowy forest",
+    "prop": 0.4151
+  },
+  {
+    "domain": "places",
+    "type": "equivocal",
+    "label": "cold place",
+    "response": "snowy mountain",
+    "prop": 0.4906
+  },
+  {
+    "domain": "places",
+    "type": "equivocal",
+    "label": "cold place",
+    "response": "sunny beach",
+    "prop": 0.0094
+  },
+  {
+    "domain": "places",
+    "type": "equivocal",
+    "label": "outdoor place",
+    "response": "snowy forest",
+    "prop": 0.3372
+  },
+  {
+    "domain": "places",
+    "type": "equivocal",
+    "label": "outdoor place",
+    "response": "snowy mountain",
+    "prop": 0.1047
+  },
+  {
+    "domain": "places",
+    "type": "equivocal",
+    "label": "outdoor place",
+    "response": "sunny beach",
+    "prop": 0.5581
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "bar",
+    "response": "diner",
+    "prop": 0.0556
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "bar",
+    "response": "dive bar",
+    "prop": 0.1481
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "bar",
+    "response": "hotel lobby",
+    "prop": 0.7963
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "diner",
+    "response": "diner",
+    "prop": 0.973
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "diner",
+    "response": "dive bar",
+    "prop": 0.027
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "place",
+    "response": "diner",
+    "prop": 0.3409
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "place",
+    "response": "dive bar",
+    "prop": 0.1364
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "place",
+    "response": "hotel lobby",
+    "prop": 0.1818
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "place",
+    "response": "park",
+    "prop": 0.3409
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "restaurant",
+    "response": "diner",
+    "prop": 0.807
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "restaurant",
+    "response": "dive bar",
+    "prop": 0.0175
+  },
+  {
+    "domain": "places",
+    "type": "overlapping",
+    "label": "restaurant",
+    "response": "hotel lobby",
+    "prop": 0.1754
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "carrot",
+    "response": "carrot",
+    "prop": 1
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "food",
+    "response": "carrot",
+    "prop": 0.38
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "food",
+    "response": "dead flower",
+    "prop": 0.02
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "food",
+    "response": "tomatos",
+    "prop": 0.6
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "living plant",
+    "response": "carrot",
+    "prop": 0.0465
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "living plant",
+    "response": "dead flower",
+    "prop": 0.0233
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "living plant",
+    "response": "sunflower",
+    "prop": 0.3256
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "living plant",
+    "response": "tomatos",
+    "prop": 0.6047
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "plant",
+    "response": "carrot",
+    "prop": 0.08
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "plant",
+    "response": "dead flower",
+    "prop": 0.14
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "plant",
+    "response": "sunflower",
+    "prop": 0.32
+  },
+  {
+    "domain": "plants",
+    "type": "branching",
+    "label": "plant",
+    "response": "tomatos",
+    "prop": 0.46
+  },
+  {
+    "domain": "plants",
+    "type": "equivocal",
+    "label": "food",
+    "response": "burger",
+    "prop": 0.7708
+  },
+  {
+    "domain": "plants",
+    "type": "equivocal",
+    "label": "food",
+    "response": "carrot",
+    "prop": 0.1042
+  },
+  {
+    "domain": "plants",
+    "type": "equivocal",
+    "label": "food",
+    "response": "sunflower",
+    "prop": 0.0104
+  },
+  {
+    "domain": "plants",
+    "type": "equivocal",
+    "label": "food",
+    "response": "tomatos",
+    "prop": 0.1146
+  },
+  {
+    "domain": "plants",
+    "type": "equivocal",
+    "label": "plant",
+    "response": "carrot",
+    "prop": 0.0833
+  },
+  {
+    "domain": "plants",
+    "type": "equivocal",
+    "label": "plant",
+    "response": "sunflower",
+    "prop": 0.3021
+  },
+  {
+    "domain": "plants",
+    "type": "equivocal",
+    "label": "plant",
+    "response": "tomatos",
+    "prop": 0.6146
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "carrots",
+    "response": "carrots",
+    "prop": 1
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "food",
+    "response": "carrots",
+    "prop": 0.9756
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "food",
+    "response": "lettuce",
+    "prop": 0.0244
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "leaves",
+    "response": "lettuce",
+    "prop": 0.1754
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "leaves",
+    "response": "oak",
+    "prop": 0.8246
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "plant",
+    "response": "carrots",
+    "prop": 0.0517
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "plant",
+    "response": "flower",
+    "prop": 0.2586
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "plant",
+    "response": "lettuce",
+    "prop": 0.1552
+  },
+  {
+    "domain": "plants",
+    "type": "overlapping",
+    "label": "plant",
+    "response": "oak",
+    "prop": 0.5345
+  }
+]
