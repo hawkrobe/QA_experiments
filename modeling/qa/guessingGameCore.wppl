@@ -20,10 +20,11 @@ var condition = function(x){
  factor(x ? 0 : -Infinity);
 };
 
-var QAmodel = function(conditionObj) {
-  var taxonomy = conditionObj.taxonomy;
-  var qudSpace = conditionObj.qudSpace;
-  var labelSpace = conditionObj.labelSpace;
+var QAmodel = function(type, domain, assumeUniform) {
+  var knowledge = qa.buildKnowledge(type, domain, assumeUniform);
+  var taxonomy = knowledge.taxonomy;
+  var qudSpace = knowledge.qudSpace;
+  var labelSpace = knowledge.labelSpace;
   var locationAssignments = qa.permute([1,2,3,4]);
 
   // Takes a taxonomy object with saliency probabilities
