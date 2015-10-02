@@ -128,7 +128,6 @@ var QAmodel = function(type, domain, assumeUniform) {
   var literalAnswerer = cache(function(question, trueWorld, rationality) {
     return Enumerate(function(){
       var answer = answerPrior(trueWorld);
-//      console.log(answer);
       factor(interpreter(answer).score([], trueWorld) * rationality);
       return answer;
     });
