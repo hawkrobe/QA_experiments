@@ -1,0 +1,31 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+We have data from a saliency prior elicitation task where people see a message like "Click the dog!" and a set of four pictures, which may include more than one dog. 
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(jsonlite)
+setwd("~/Box Sync/stanford/research/goodman/q&a/PriorsExperiment/")
+```
+
+```{r}
+totalCounts = read.csv("data/priorsExperiment-trials.csv") %>% 
+  group_by(domain,type,label) %>%
+  summarize(total = n()) 
+
+proportions = read.csv("data/priorsExperiment-trials.csv") %>%
+  inner_join(totalCounts) %>%
+  group_by(domain,type,label,response) %>%
+  summarize(prop = n() / mean(total))
+```
+
+Generate json...
+
+```{r}
+json = toJSON(proportions, pretty = T)
+write(json,file = "saliencyKnowledge.json")
+```
