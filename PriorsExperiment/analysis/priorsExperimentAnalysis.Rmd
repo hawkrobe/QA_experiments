@@ -13,11 +13,35 @@ setwd("~/Box Sync/stanford/research/goodman/q&a/PriorsExperiment/")
 ```
 
 ```{r}
-totalCounts = read.csv("data/priorsExperiment-trials.csv") %>% 
+ps = read.csv("data/priorsExperiment-subject_information.csv")
+
+english_ps = (ps %>%
+  filter(language %in% c("english", "English")) %>%
+  filter(asses == "Yes"))$workerid
+
+cat("We removed", length(ps$workerid) - length(
+        (read.csv("data/priorsExperiment-subject_information.csv") %>%
+        filter(language %in% c("english", "English")))$workerid), 
+    "ps due to native language")
+
+cat("and", 
+    length(
+        (read.csv("data/priorsExperiment-subject_information.csv") %>%
+         filter(language %in% c("english", "English")))$workerid
+    ) - length(
+        (read.csv("data/priorsExperiment-subject_information.csv") %>%
+        filter(asses == "Yes") %>%
+        filter(language %in% c("english", "English")))$workerid
+    ), "more due to confusion")
+
+data =  read.csv("data/priorsExperiment-trials.csv") %>%
+  filter(workerid %in% english_ps) 
+
+totalCounts = data %>%
   group_by(domain,type,label) %>%
   summarize(total = n()) 
 
-proportions = read.csv("data/priorsExperiment-trials.csv") %>%
+proportions = data %>%
   inner_join(totalCounts) %>%
   group_by(domain,type,label,response) %>%
   summarize(prop = n() / mean(total))
@@ -27,5 +51,5 @@ Generate json...
 
 ```{r}
 json = toJSON(proportions, pretty = T)
-write(json,file = "saliencyKnowledge.json")
+write(json,file = "../modeling/qa/saliencyKnowledgeEmpirical.json")
 ```
