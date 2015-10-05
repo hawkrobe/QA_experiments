@@ -62,13 +62,14 @@ mapWordsToNodes <- function(d) {
   questionNodes = c()
   goalNodes = c()
   for(i in 1:length(d$workerid)) {
-    answerNodes <- append(answerNodes, mapAnswer(d[i,]))
-    questionNodes <- append(questionNodes, mapQuestion(d[i,]))
-    goalNodes <- append(goalNodes, mapGoal(d[i,]))
+    answerNodes <- append(answerNodes, mapAnswer(d[i,]$type, d[i,]$answer))
+    questionNodes <- append(questionNodes, 
+                            mapQuestion(d[i,]$type, d[i,]$question))
+    goalNodes <- append(goalNodes, mapGoal(d[i,]$type, d[i,]$goal))
   }
-  d$goalNodes = goalNodes
-  d$answerNodes = answerNodes
-  d$questionNodes = questionNodes
+  d$goalNodes = factor(goalNodes)
+  d$answerNodes = factor(answerNodes)
+  d$questionNodes = factor(questionNodes)
   return(d)
 }
 
@@ -103,9 +104,12 @@ getProbs <- function(data, QorA, R) {
   }
   
   outputData <- tempData %>% 
-     do(mutate(., count = ifelse(is.na(count), 0, count),
-                  empProb = count / sum(count),
-                  groupSize = sum(count)))
+    do(mutate(., count = ifelse(is.na(count), 0, count),
+                 empProb = count / sum(count),
+                 groupSize = sum(count))) %>%
+    ungroup() %>%
+    mutate(type = factor(type),
+           domain = factor(domain)); 
   return(outputData)
 }
 ```
@@ -119,19 +123,28 @@ d_q = d %>%
       group_by(domain, type, goal) %>%
       do(getProbs(data = ., QorA = 'q')) %>%
       select(goal, type, response, domain, count,
-             groupSize, empProb)
+             groupSize, empProb) %>%
+      ungroup() %>%
+      mutate(domain = factor(domain),
+             type = factor(type),
+             goal = ordered(goal, levels=c("G1","G2","G3","G4")))
+
 ```
 
 Tidy up answerer data...
 
 ```{r}
 d_a = d %>% 
-      mutate(response = ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
-      mutate(utterance = ordered(questionNodes,levels = c("Q1","Q2","Q3","Q4"))) %>%
+      mutate(response=ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
+      mutate(utterance=ordered(questionNodes,levels=c("Q1","Q2","Q3","Q4"))) %>%
       group_by(domain, type, utterance) %>%
       do(getProbs(data = ., QorA = 'a')) %>%
       select(utterance, type, response, domain, count,
-             groupSize, empProb)
+             groupSize, empProb) %>%
+      ungroup() %>%
+      mutate(domain = factor(domain),
+             type = factor(type),
+             utterance = ordered(utterance, levels=c("Q1","Q2","Q3","Q4")))
 ```
 
 How well do the different domains correlate?
@@ -186,7 +199,7 @@ test_G4_q
 # Examine domain-level effects
 (d_q %>% 
    group_by(goal, domain, type, response) %>% 
-   summarize(count = sum(count))) %>% 
+   summarize(count = sum(count)) %>% 
    filter(type == "equivocal" 
           & goal %in% c("G2", "G3") 
           & response %in% c("Q1", "Q2")) %>% 
@@ -225,7 +238,7 @@ chisq.test(subset(overall_distribution,
 # Examine domain-level effects
 (d_q %>% 
    group_by(goal, domain, type, response) %>% 
-   summarize(count = sum(count))) %>% 
+   summarize(count = sum(count)) %>% 
    filter(type == "equivocal" 
           & goal %in% c("G2", "G3") 
           & response %in% c("Q1", "Q2")) %>% 
@@ -265,8 +278,10 @@ optimalFit <- function(data, equal = FALSE) {
     select(modelLevel, maximizingR, correlation)
   # add literal back in w/ correlation = NA
   
-  prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
-
+  if(!any(prob_correlation$modelLevel == "literal")) {
+    prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
+  }
+  
   print(prob_correlation)
   return(data %>% inner_join(prob_correlation) %>% 
          filter(rationality == maximizingR))
@@ -276,19 +291,16 @@ optimalFit <- function(data, equal = FALSE) {
 Now we import the answer fits and tidy them up to eventually be joined
 
 ```{r}
-answerModelOutput=read.csv("../modeling/guessingGame/answererPredictions.csv", 
+# Have to vectorize these operations: for loop takes ages
+vectorizedMapAnswer <- Vectorize(mapAnswer);
+vectorizedMapQuestion <- Vectorize(mapQuestion);
+answerModelOutput=read.csv("../modeling/guessingGame/answererPredictionsUnif.csv", 
                             sep = ',') %>% 
   mutate(question = as.character(utterance), 
-         answer = as.character(response)) 
-
-for(i in 1:length(answerModelOutput$type)) {
-  answerModelOutput[i,]$answer <- mapAnswer(answerModelOutput[i,])
-  answerModelOutput[i,]$question <- mapQuestion(answerModelOutput[i,])
-}
-
-answerModelOutput = answerModelOutput %>% 
-  mutate(utterance = as.factor(question),
-         response = as.factor(answer)) %>% 
+         answer = as.character(response)) %>%
+  do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(utterance = as.factor(question), response = as.factor(answer)) %>% 
   select(type, domain, modelLevel, utterance, rationality, response, modelProb)
 
 ansFits = optimalFit(inner_join(d_a, answerModelOutput)) %>%
@@ -337,10 +349,21 @@ answer_plots = (ggplot(all_ans, aes(x = modelProb, y = empProb))
 answer_plots               
 ```
 
-Now we import the literal questioner fits and tidy them up to eventually be joined
+Now we import the questioner fits and tidy them up to eventually be joined
 
 ```{r}
-questFits = optimalFit(inner_join(d_q, read.csv("analysis/predictions/questionerPredictions.csv", sep = ','))) %>%
+vectorizedMapGoal <- Vectorize(mapGoal);
+
+questionModelOutput=read.csv("../modeling/guessingGame/questionerPredictionsUnif.csv", sep = ',') %>%
+  mutate(goal = as.character(goal),
+         question = as.character(response)) %>%
+  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
+  select(type, domain, modelLevel, goal, rationality, response, modelProb)
+
+         
+questFits = optimalFit(inner_join(d_q, questionModelOutput)) %>%
   select(type, domain, modelLevel, goal, response, empProb, modelProb)
 ```
 
@@ -383,17 +406,6 @@ question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
                               lab = labelDataFrame$correlation)))
 question_plots               
 #dev.off()
-```
-
-Put these next to each other
-```{r}
-# pdf("model_fits_grid.pdf")
-# grid.newpage()
-# grid.draw(rbind(ggplotGrob(question_plots), ggplotGrob(answer_plots), size="last"))
-# grid.draw(textGrob("Empirical probability", rot = 90, vjust = 1, 
-#                    x = unit(0.01, "npc"), y = unit(0.5, "npc"),
-#                    gp=gpar(fontsize=20)))
-# dev.off()
 ```
 
 Model + data bar plots
@@ -621,13 +633,198 @@ png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
 dev.off()
 ```
 
-Actually do statistical test to show that they're different...
+Now we're going to reanalyze this data using empirical priors:
 
 ```{r}
-empiricalProbs = subset(plottableQ, 
-                        plottableQ$src == "empirical" &
-                        plottableQ$type == "overlapping" & 
-                        plottableQ$goal == "G2")
-empiricalProbs
-testStat = $prob
+answerModelOutput=read.csv("../modeling/guessingGame/answererPredictionsEmp.csv", 
+                            sep = ',') %>% 
+  mutate(question = as.character(utterance), 
+         answer = as.character(response)) %>%
+  do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(utterance = as.factor(question), response = as.factor(answer)) %>% 
+  select(type, domain, modelLevel, utterance, rationality, response, modelProb)
+
+ansFits = optimalFit(inner_join(d_a, answerModelOutput)) %>%
+  select(domain, modelLevel, type, utterance, 
+         response, empProb, rationality, modelProb)
+```
+
+Now that each of these data sets is in a nice format, we can join them all together and plot their fits:
+
+```{r}
+# join them all together
+all_ans = d_a %>% 
+  inner_join(ansFits, by = c('domain', 'type', 'utterance', 'response', 'empProb')) %>%
+  mutate(modelLevel = ordered(modelLevel, 
+                          levels = c("literal", "explicit", "pragmatic"))) %>%
+  select(type, domain, utterance, response, empProb, modelLevel, modelProb) 
+
+# Since they won't let us annotate nicely...
+  
+labelDataFrame = all_ans %>% 
+   group_by(modelLevel) %>% 
+   summarise(correlation = paste("r =", round(cor(empProb, 
+                                                  modelProb, method = 'pearson'), 2)))
+
+answer_plots = (ggplot(all_ans, aes(x = modelProb, y = empProb))
+  + theme(text = element_text(size = 20),
+          axis.text.x = element_text(angle=90, vjust=1))
+  + xlab("Model predicted probability")
+  + ylim(0,1)
+  + ylab("")
+  + geom_point(aes(colour = domain))
+  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+  + ggtitle("Answerers")
+  + geom_smooth(method = "lm")
+  + facet_grid( ~ modelLevel)
+  + geom_text(aes(x,y,label=lab),
+              data=data.frame(x = .75, y = .25,
+                              modelLevel = labelDataFrame$modelLevel,
+                              lab = labelDataFrame$correlation))
+  + theme_bw())
+answer_plots               
+```
+
+```{r}
+# first, average over domains
+collapsed_a <- d %>% 
+    mutate(response = ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
+    mutate(utterance = ordered(questionNodes,levels = c("Q1","Q2","Q3","Q4"))) %>%
+    group_by(type, utterance) %>%
+    do(getProbsAndCIs(data = ., QorA = 'a', R = 1000)) %>%
+    mutate(empirical = empProb) %>%
+    select(utterance, type, response, count, lower_ci, upper_ci,
+           groupSize, empirical)
+
+pragModelPreds = ansFits %>% 
+  group_by(utterance, type, modelLevel, response) %>% 
+  summarize(model = mean(modelProb)) %>% 
+  filter(modelLevel == "pragmatic")
+
+plottableA = collapsed_a %>% 
+  inner_join(pragModelPreds, by = c('utterance','type','response')) %>%
+  select(utterance, type, response, empirical, model, lower_ci, upper_ci) %>%
+  gather(src, prob, empirical, model) %>% 
+  do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
+  do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
+
+# png('../writing/2015/fyp-report/exp4AnsResults.png',
+#      width = 2000, height=1000,res = 300, pointsize = 12)
+
+dodge <- position_dodge(width=0.9)
+g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
+      + geom_bar(position = dodge, stat = "identity") 
+      + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                      position = dodge, width = .25)
+      + facet_grid(type ~ utterance)
+      + ggtitle("Pragmatic Answerer"))
+g
+# dev.off()
+```
+
+Now make the questioner plot
+
+```{r}
+questionModelOutput=read.csv("../modeling/guessingGame/questionerPredictionsEmp.csv", sep = ',') %>%
+  mutate(goal = as.character(goal),
+         question = as.character(response)) %>%
+  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
+  select(type, domain, modelLevel, goal, rationality, response, modelProb)
+
+         
+questFits = optimalFit(inner_join(d_q, questionModelOutput)) %>%
+  select(type, domain, modelLevel, goal, response, empProb, modelProb)
+```
+
+
+```{r}
+# join them all together
+all_qs = d_q %>% 
+  inner_join(questFits, by = c('type', 'domain', 'goal', 'response', 'empProb')) %>%
+  mutate(modelLevel = ordered(modelLevel, 
+                               levels = c("literal", "explicit", "pragmatic"))) %>%
+  select(type, domain, goal, response, empProb, modelLevel, modelProb) 
+  #distinct(type, domain, goal, response, modelLevel, modelProb)
+
+# Since they won't let us annotate nicely...
+  
+labelDataFrame = all_qs %>% 
+   group_by(modelLevel) %>% 
+   summarise(correlation = paste("r =", round(cor(empProb, 
+                                                  modelProb, method = 'pearson'), 2)))
+
+#jpeg(filename="../writing/2015/cogsci/questionerFits.jpeg")
+question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
+  + theme(text = element_text(size = 20),
+          axis.text.x = element_text(angle=90, vjust=1))
+#          axis.text.x = element_blank(), axis.ticks = element_blank())
+#          plot.margin=unit(c(1,1,-1,1), "cm"))
+  + ylim(0,1)
+  + xlab("Model Predicted Probability")
+  + ylab("Empirical Probability")
+  + geom_point(aes(colour = domain))
+  + ggtitle("Questioner model fits")
+  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  + geom_smooth(method = "lm")
+  + facet_grid( ~ modelLevel)
+  + geom_text(aes(x,y,label=lab),
+              data=data.frame(x = .75, y = .25,
+                              modelLevel = labelDataFrame$modelLevel,
+                              lab = labelDataFrame$correlation)))
+question_plots               
+#dev.off()
+```
+
+zoom in on overlapping condition
+
+```{r}
+collapsed_q <- d %>% 
+    mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
+    mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
+    group_by(goal,type, domain) %>%
+    filter(type == "overlapping") %>%
+    do(getProbsAndCIs(data = ., QorA = 'q', R = 1000)) %>%
+    mutate(empirical = empProb) %>%
+    select(goal, domain, type, response, count, lower_ci, upper_ci, 
+           groupSize, empirical)
+
+pragModelPreds = questFits %>% 
+  group_by(goal, type, modelLevel, domain, response) %>% 
+  summarize(pragmaticModel = mean(modelProb)) %>% 
+  filter(modelLevel == "pragmatic")
+
+expModelPreds = questFits %>% 
+  group_by(goal, type, modelLevel, domain, response) %>% 
+  summarize(explicitModel = mean(modelProb)) %>% 
+  filter(modelLevel == "explicit")
+
+plottableQ = collapsed_q %>% 
+  inner_join(pragModelPreds, by = c('goal', 'type', 'response')) %>%
+  inner_join(expModelPreds, by = c('goal', 'type', 'response')) %>%
+  select(goal, domain, type, response, lower_ci, upper_ci, groupSize,
+         empirical, pragmaticModel, explicitModel) %>%
+  gather(src, prob, empirical, pragmaticModel, explicitModel) %>%
+  filter(goal == "G2") %>%
+  do(mutate(., lower_ci = ifelse(src %in% c("pragmaticModel", "explicitModel"), 
+                                 NA, lower_ci))) %>%
+  do(mutate(., upper_ci = ifelse(src %in% c("pragmaticModel", "explicitModel"),
+                                 NA, upper_ci)))
+
+# png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
+#      width = 2000, height=1000,res = 300, pointsize = 16)
+
+(ggplot(plottableQ, aes(x = response, y = prob, fill = src))
+ + geom_bar(position = dodge, stat= 'identity')
+ + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                 position = dodge, width =.25)
+ + geom_hline(yintercept = 0.48)
+ + ggtitle("Overlapping model comparison")
+ + facet_grid(~ domain)
+ + theme_bw()
+ + scale_fill_manual(values = c("#B2DF8A", "#A6CEE3", "#62A0CA")))
+# dev.off()
 ```
