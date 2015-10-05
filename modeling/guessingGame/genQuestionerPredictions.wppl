@@ -34,7 +34,7 @@ var main = function(){
             qa.writeERP(expERP, expLabel, fileName);
 
             var pragQ = model.pragQ;
-            var pragERP = pragQ(qudNode, 5);
+            var pragERP = pragQ(qudNode, r);
             var pragLabel = [type, domain, "pragmatic", qudNode, r];
             qa.writeERP(pragERP, pragLabel, fileName);
 
