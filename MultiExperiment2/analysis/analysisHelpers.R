@@ -134,3 +134,168 @@ mapGoal <- function(type, goal) {
     stop(cat("Unrecognized type", type))
   }
 }
+
+mapWordsToNodes <- function(d) {
+  answerNodes = c()
+  questionNodes = c()
+  goalNodes = c()
+  for(i in 1:length(d$workerid)) {
+    answerNodes <- append(answerNodes, mapAnswer(d[i,]$type, d[i,]$answer))
+    questionNodes <- append(questionNodes, 
+                            mapQuestion(d[i,]$type, d[i,]$question))
+    goalNodes <- append(goalNodes, mapGoal(d[i,]$type, d[i,]$goal))
+  }
+  d$goalNodes = factor(goalNodes)
+  d$answerNodes = factor(answerNodes)
+  d$questionNodes = factor(questionNodes)
+  return(d)
+}
+
+## This function takes a raw questioner data set ('q') or an answerer dataset ('a')
+## and estimates the emperical probability of each response
+##
+## Note that this currently does not collapse over any aspect of the experiment.
+## Below, the function getProbsAndCIs does so.
+getProbs <- function(data, QorA, R) {
+  if(QorA == "q") {
+    tempData <- data %>% group_by(domain, type, goal, response) %>% 
+      summarize(count = n()) %>%
+      right_join(expand.grid(response = levels(data$response),
+                             type = levels(factor(data$type)),
+                             domain = levels(factor(data$domain)),
+                             goal = levels(factor(data$goal)))) 
+  } else if(QorA == "a") {
+    tempData <- data %>% group_by(domain, type, utterance, response) %>% 
+      summarize(count = n()) %>%
+      right_join(expand.grid(response = levels(data$response),
+                             type = levels(factor(data$type)),
+                             domain = levels(factor(data$domain)),
+                             utterance = levels(factor(data$utterance)))) 
+  } else {
+    stop(cat("Did not specify Q or A:", QorA))
+  }
+  
+  outputData <- tempData %>% 
+    do(mutate(., count = ifelse(is.na(count), 0, count),
+              empProb = count / sum(count),
+              groupSize = sum(count))) %>%
+    ungroup() %>%
+    mutate(type = factor(type),
+           domain = factor(domain)); 
+  return(outputData)
+}
+
+# called a bunch of times on questioner data set to bootstrap CI
+Qprobs <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  pseudocount <- 0#runif(1, max = .25)
+  c <- d %>% 
+    group_by(type, goal, response) %>% 
+    summarize(count = n()) %>%
+    right_join(expand.grid(response = levels(d$response),
+                           type = levels(factor(d$type)),
+                           goal = levels(factor(d$goal)))) %>% 
+    do(mutate(., countp1 = ifelse(is.na(count), 
+                                  pseudocount, count + pseudocount),
+              count = ifelse(is.na(count), 0, count),
+              empProb = countp1 / sum(countp1)))
+  return(c$empProb)
+}
+
+# called a bunch of times on answerer data set to bootstrap CI
+Aprobs <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  pseudocount <- 0#runif(1, max = .25)
+  c <- d %>% 
+    group_by(type, utterance, response) %>% 
+    summarize(count = n()) %>%
+    right_join(expand.grid(response = levels(d$response),
+                           type = levels(factor(d$type)),
+                           utterance = levels(factor(d$utterance)))) %>% 
+    do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
+              count = ifelse(is.na(count), 0, count),
+              empProb = countp1 / sum(countp1)))  
+  return(c$empProb)
+} 
+
+## This function takes a raw questioner data set ('q') or an answerer dataset ('a')
+## and estimates the emperical probability of each response, along with 
+## bootstrapped confidence intervals
+##
+## Note that this currently does not collapse over any aspect of the experiment.
+## If we want to do that in the future, will just group by fewer things before 
+## summarizing
+getProbsAndCIs <- function(data, QorA, R) {
+  if(QorA == "q") {
+    tempData <- data %>% group_by(type, goal, response) %>% 
+      summarize(count = n()) %>%
+      right_join(expand.grid(response = levels(data$response),
+                             type = levels(factor(data$type)),
+                             goal = levels(factor(data$goal)))) 
+  } else if(QorA == "a") {
+    tempData <- data %>% group_by(type, utterance, response) %>% 
+      summarize(count = n()) %>%
+      right_join(expand.grid(response = levels(data$response),
+                             type = levels(factor(data$type)),
+                             utterance = levels(factor(data$utterance)))) 
+  } else {
+    stop(cat("Did not specify Q or A:", QorA))
+  }
+  
+  outputData <- tempData %>% 
+    do(mutate(., count = ifelse(is.na(count), 0, count),
+              empProb = count / sum(count),
+              groupSize = sum(count)))
+  
+  print(outputData)
+  # Get confidence intervals
+  print(QorA)
+  if(QorA == "q") {
+    bootObj <-  boot(data = data,statistic = Qprobs,R=R)
+  } else {
+    bootObj <-  boot(data = data,statistic = Aprobs,R=R)
+  }
+  
+  print(bootObj)
+  upper_ci <- c()
+  lower_ci <- c()
+  for(i in 1:4) {
+    lower = boot.ci(bootObj, index = i, type = "perc")$percent[4]
+    upper = boot.ci(bootObj, index = i, type = "perc")$percent[5]
+    if(is.null(lower) | is.null(upper)) {
+      lower = outputData$empProb[i]
+      upper = outputData$empProb[i]
+    }
+    lower_ci = append(lower_ci, lower)
+    upper_ci = append(upper_ci, upper)
+  }
+  
+  outputData$lower_ci = lower_ci
+  outputData$upper_ci = upper_ci
+  
+  return(outputData)
+}
+
+# Expect two columns that end with _prob (i.e. emp_prob and model_prob)
+optimalFit <- function(data, equal = FALSE) {
+  prob_correlation <- data %>%
+    group_by(modelLevel, rationality) %>%
+    filter(rationality > 1) %>%
+    summarise(correlation = cor(modelProb, empProb, method = 'pearson')) %>%
+    mutate(m = max(correlation)) %>%
+    ungroup() %>%
+    filter(m == correlation) %>%
+    mutate(maximizingR = rationality) %>%
+    group_by(modelLevel, correlation) %>%
+    summarize(maximizingR = min(maximizingR)) %>%
+    select(modelLevel, maximizingR, correlation)
+  # add literal back in w/ correlation = NA
+  
+  if(!any(prob_correlation$modelLevel == "literal")) {
+    prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
+  }
+  
+  print(prob_correlation)
+  return(data %>% inner_join(prob_correlation) %>% 
+           filter(rationality == maximizingR))
+}

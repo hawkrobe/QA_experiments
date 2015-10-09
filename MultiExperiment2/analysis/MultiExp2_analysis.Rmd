@@ -57,64 +57,10 @@ In order to compare different items in a convenient way, we're going to map the 
 
 ```{r}
 source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
-mapWordsToNodes <- function(d) {
-  answerNodes = c()
-  questionNodes = c()
-  goalNodes = c()
-  for(i in 1:length(d$workerid)) {
-    answerNodes <- append(answerNodes, mapAnswer(d[i,]$type, d[i,]$answer))
-    questionNodes <- append(questionNodes, 
-                            mapQuestion(d[i,]$type, d[i,]$question))
-    goalNodes <- append(goalNodes, mapGoal(d[i,]$type, d[i,]$goal))
-  }
-  d$goalNodes = factor(goalNodes)
-  d$answerNodes = factor(answerNodes)
-  d$questionNodes = factor(questionNodes)
-  return(d)
-}
-
 d <- mapWordsToNodes(d)
 ```
 
-We're also going to estimate empirical probabilities for each response, conditioned on the domain, type, and goal of the trial. To get confidence intervals for these estimates, we'll use the bootstrap.
-
-```{r}
-## This function takes a raw questioner data set ('q') or an answerer dataset ('a')
-## and estimates the emperical probability of each response
-##
-## Note that this currently does not collapse over any aspect of the experiment.
-## Below, the function getProbsAndCIs does so.
-getProbs <- function(data, QorA, R) {
-  if(QorA == "q") {
-    tempData <- data %>% group_by(domain, type, goal, response) %>% 
-         summarize(count = n()) %>%
-         right_join(expand.grid(response = levels(data$response),
-                                type = levels(factor(data$type)),
-                                domain = levels(factor(data$domain)),
-                                goal = levels(factor(data$goal)))) 
-  } else if(QorA == "a") {
-    tempData <- data %>% group_by(domain, type, utterance, response) %>% 
-         summarize(count = n()) %>%
-         right_join(expand.grid(response = levels(data$response),
-                                type = levels(factor(data$type)),
-                                domain = levels(factor(data$domain)),
-                                utterance = levels(factor(data$utterance)))) 
-  } else {
-    stop(cat("Did not specify Q or A:", QorA))
-  }
-  
-  outputData <- tempData %>% 
-    do(mutate(., count = ifelse(is.na(count), 0, count),
-                 empProb = count / sum(count),
-                 groupSize = sum(count))) %>%
-    ungroup() %>%
-    mutate(type = factor(type),
-           domain = factor(domain)); 
-  return(outputData)
-}
-```
-
-Tidy up questioner data...
+We're also going to estimate empirical probabilities for each response, conditioned on the domain, type, and goal of the trial. To get confidence intervals for these estimates, we'll use the bootstrap. Tidy up questioner data...
 
 ```{r}
 d_q = d %>% 
@@ -258,37 +204,7 @@ chisq.test(subset(overall_distribution,
 Fitting rationality parameters
 ------------------------------
 
-First, we define this function that takes a data frame and computes which parameter values optimize the correlation between model and data.
-
-```{r}
-# Expect two columns that end with _prob (i.e. emp_prob and model_prob)
-optimalFit <- function(data, equal = FALSE) {
-  prob_correlation <- data %>%
-#     group_by(modelLevel, rationality, goal, response, modelProb) %>%
-#     summarise(empProb = mean(empProb)) %>%
-    group_by(modelLevel, rationality) %>%
-    filter(rationality > 1) %>%
-    summarise(correlation = cor(modelProb, empProb, method = 'pearson')) %>%
-    mutate(m = max(correlation)) %>%
-    ungroup() %>%
-    filter(m == correlation) %>%
-    mutate(maximizingR = rationality) %>%
-    group_by(modelLevel, correlation) %>%
-    summarize(maximizingR = min(maximizingR)) %>%
-    select(modelLevel, maximizingR, correlation)
-  # add literal back in w/ correlation = NA
-  
-  if(!any(prob_correlation$modelLevel == "literal")) {
-    prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
-  }
-  
-  print(prob_correlation)
-  return(data %>% inner_join(prob_correlation) %>% 
-         filter(rationality == maximizingR))
-}
-```
-
-Now we import the answer fits and tidy them up to eventually be joined
+First, we define this function that takes a data frame and computes which parameter values optimize the correlation between model and data. Now we import the answer fits and tidy them up to eventually be joined
 
 ```{r}
 # Have to vectorize these operations: for loop takes ages
@@ -325,7 +241,7 @@ all_ans = d_a %>%
 # Since they won't let us annotate nicely...
   
 labelDataFrame = all_ans %>% 
-   group_by(type, modelLevel) %>% 
+   group_by(modelLevel) %>% 
    summarise(correlation = paste("r =", round(cor(empProb, 
                                                   modelProb, method = 'pearson'), 2)))
 
@@ -340,12 +256,12 @@ answer_plots = (ggplot(all_ans, aes(x = modelProb, y = empProb))
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Answerers")
   + geom_smooth(method = "lm")
-  + facet_grid(type ~ modelLevel)
+  + facet_grid( ~ modelLevel)
   + geom_text(aes(x,y,label=lab),
               data=data.frame(x = .75, y = .25,
                               modelLevel = labelDataFrame$modelLevel,
-                              type = labelDataFrame$type,
-                              lab = labelDataFrame$correlation)))
+                              lab = labelDataFrame$correlation))
+  + theme_bw())
 answer_plots               
 ```
 
@@ -381,7 +297,7 @@ all_qs = d_q %>%
 # Since they won't let us annotate nicely...
   
 labelDataFrame = all_qs %>% 
-   group_by(type, modelLevel) %>% 
+   group_by(modelLevel) %>% 
    summarise(correlation = paste("r =", round(cor(empProb, 
                                                   modelProb, method = 'pearson'), 2)))
 
@@ -398,12 +314,12 @@ question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
   + ggtitle("Questioner model fits")
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + geom_smooth(method = "lm")
-  + facet_grid(type ~ modelLevel)
+  + facet_grid( ~ modelLevel)
   + geom_text(aes(x,y,label=lab),
               data=data.frame(x = .75, y = .25,
                               modelLevel = labelDataFrame$modelLevel,
-                              type = labelDataFrame$type,
-                              lab = labelDataFrame$correlation)))
+                              lab = labelDataFrame$correlation))
+  + theme_bw())
 question_plots               
 #dev.off()
 ```
@@ -412,99 +328,6 @@ Model + data bar plots
 ----------------------
 
 Plot for pragmatic questioner. These bar graphs will help show what our model is getting right and what it's getting wrong.
-
-```{r}
- # called a bunch of times on questioner data set to bootstrap CI
-Qprobs <- function(data, indices) {
-  d <- data[indices,] # allows boot to select sample 
-  pseudocount <- 0#runif(1, max = .25)
-  c <- d %>% 
-       group_by(type, goal, response) %>% 
-       summarize(count = n()) %>%
-       right_join(expand.grid(response = levels(d$response),
-                              type = levels(factor(d$type)),
-                              goal = levels(factor(d$goal)))) %>% 
-       do(mutate(., countp1 = ifelse(is.na(count), 
-                                     pseudocount, count + pseudocount),
-                    count = ifelse(is.na(count), 0, count),
-                   empProb = countp1 / sum(countp1)))
-  return(c$empProb)
-}
-
-# called a bunch of times on answerer data set to bootstrap CI
-Aprobs <- function(data, indices) {
-  d <- data[indices,] # allows boot to select sample 
-  pseudocount <- 0#runif(1, max = .25)
-  c <- d %>% 
-       group_by(type, utterance, response) %>% 
-       summarize(count = n()) %>%
-       right_join(expand.grid(response = levels(d$response),
-                              type = levels(factor(d$type)),
-                              utterance = levels(factor(d$utterance)))) %>% 
-       do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
-                    count = ifelse(is.na(count), 0, count),
-                    empProb = countp1 / sum(countp1)))  
-  return(c$empProb)
-} 
-
-## This function takes a raw questioner data set ('q') or an answerer dataset ('a')
-## and estimates the emperical probability of each response, along with 
-## bootstrapped confidence intervals
-##
-## Note that this currently does not collapse over any aspect of the experiment.
-## If we want to do that in the future, will just group by fewer things before 
-## summarizing
-getProbsAndCIs <- function(data, QorA, R) {
-  if(QorA == "q") {
-    tempData <- data %>% group_by(type, goal, response) %>% 
-         summarize(count = n()) %>%
-         right_join(expand.grid(response = levels(data$response),
-                                type = levels(factor(data$type)),
-                                goal = levels(factor(data$goal)))) 
-  } else if(QorA == "a") {
-    tempData <- data %>% group_by(type, utterance, response) %>% 
-         summarize(count = n()) %>%
-         right_join(expand.grid(response = levels(data$response),
-                                type = levels(factor(data$type)),
-                                utterance = levels(factor(data$utterance)))) 
-  } else {
-    stop(cat("Did not specify Q or A:", QorA))
-  }
-  
-  outputData <- tempData %>% 
-     do(mutate(., count = ifelse(is.na(count), 0, count),
-                  empProb = count / sum(count),
-                  groupSize = sum(count)))
-
-  print(outputData)
-  # Get confidence intervals
-  print(QorA)
-  if(QorA == "q") {
-    bootObj <-  boot(data = data,statistic = Qprobs,R=R)
-  } else {
-    bootObj <-  boot(data = data,statistic = Aprobs,R=R)
-  }
-
-  print(bootObj)
-  upper_ci <- c()
-  lower_ci <- c()
-  for(i in 1:4) {
-    lower = boot.ci(bootObj, index = i, type = "perc")$percent[4]
-    upper = boot.ci(bootObj, index = i, type = "perc")$percent[5]
-    if(is.null(lower) | is.null(upper)) {
-      lower = outputData$empProb[i]
-      upper = outputData$empProb[i]
-    }
-    lower_ci = append(lower_ci, lower)
-    upper_ci = append(upper_ci, upper)
-  }
-
-  outputData$lower_ci = lower_ci
-  outputData$upper_ci = upper_ci
-
-  return(outputData)
-}
-```
 
 ```{r}
 # first, average over domains
@@ -528,8 +351,8 @@ plottableQ = collapsed_q %>% inner_join(pragModelPreds, by = c('goal', 'type', '
   do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
   do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
 
-png('../writing/2015/fyp-report/exp4QuestResults.png',
-     width = 2000, height=1000,res = 300, pointsize = 12)
+#png('../writing/2015/fyp-report/exp4QuestResults.png',
+#     width = 2000, height=1000,res = 300, pointsize = 12)
 dodge <- position_dodge(width=0.9)
 g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
       + geom_bar(position = dodge, stat = "identity") 
@@ -538,7 +361,7 @@ g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
       + facet_grid(type ~ goal)
       + ggtitle("Pragmatic Questioner"))
 g
-dev.off()
+#dev.off()
 
 ```
 
@@ -567,8 +390,8 @@ plottableA = collapsed_a %>%
   do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
   do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
 
-png('../writing/2015/fyp-report/exp4AnsResults.png',
-     width = 2000, height=1000,res = 300, pointsize = 12)
+#png('../writing/2015/fyp-report/exp4AnsResults.png',
+#     width = 2000, height=1000,res = 300, pointsize = 12)
 
 dodge <- position_dodge(width=0.9)
 g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
@@ -578,7 +401,7 @@ g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
       + facet_grid(type ~ utterance)
       + ggtitle("Pragmatic Answerer"))
 g
-dev.off()
+#dev.off()
 ```
 
 zoom in on overlapping condition
@@ -619,8 +442,8 @@ plottableQ = collapsed_q %>%
   do(mutate(., upper_ci = ifelse(src %in% c("pragmaticModel", "explicitModel"),
                                  NA, upper_ci)))
 
-png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
-     width = 2000, height=1000,res = 300, pointsize = 16)
+#png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
+#     width = 2000, height=1000,res = 300, pointsize = 16)
 
 (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
  + geom_bar(position = dodge, stat= 'identity')
@@ -630,201 +453,6 @@ png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
  + ggtitle("Overlapping model comparison")
  + theme_bw()
  + scale_fill_manual(values = c("#B2DF8A", "#A6CEE3", "#62A0CA")))
-dev.off()
-```
-
-Now we're going to reanalyze this data using empirical priors:
-
-```{r}
-answerModelOutput=read.csv("../modeling/guessingGame/answererPredictionsEmp.csv", 
-                            sep = ',') %>% 
-  mutate(question = as.character(utterance), 
-         answer = as.character(response)) %>%
-  do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
-  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-  mutate(utterance = as.factor(question), response = as.factor(answer)) %>% 
-  select(type, domain, modelLevel, utterance, rationality, response, modelProb)
-
-ansFits = optimalFit(inner_join(d_a, answerModelOutput)) %>%
-  select(domain, modelLevel, type, utterance, 
-         response, empProb, rationality, modelProb)
-```
-
-Now that each of these data sets is in a nice format, we can join them all together and plot their fits:
-
-```{r}
-# join them all together
-all_ans = d_a %>% 
-  inner_join(ansFits, by = c('domain', 'type', 'utterance', 'response', 'empProb')) %>%
-  mutate(modelLevel = ordered(modelLevel, 
-                          levels = c("literal", "explicit", "pragmatic"))) %>%
-  select(type, domain, utterance, response, empProb, modelLevel, modelProb) 
-
-# Since they won't let us annotate nicely...
-  
-labelDataFrame = all_ans %>% 
-   group_by(modelLevel) %>% 
-   summarise(correlation = paste("r =", round(cor(empProb, 
-                                                  modelProb, method = 'pearson'), 2)))
-
-answer_plots = (ggplot(all_ans, aes(x = modelProb, y = empProb))
-  + theme(text = element_text(size = 20),
-          axis.text.x = element_text(angle=90, vjust=1))
-  + xlab("Model predicted probability")
-  + ylim(0,1)
-  + ylab("")
-  + geom_point(aes(colour = domain))
-  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-  + ggtitle("Answerers")
-  + geom_smooth(method = "lm")
-  + facet_grid( ~ modelLevel)
-  + geom_text(aes(x,y,label=lab),
-              data=data.frame(x = .75, y = .25,
-                              modelLevel = labelDataFrame$modelLevel,
-                              lab = labelDataFrame$correlation))
-  + theme_bw())
-answer_plots               
-```
-
-```{r}
-# first, average over domains
-collapsed_a <- d %>% 
-    mutate(response = ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
-    mutate(utterance = ordered(questionNodes,levels = c("Q1","Q2","Q3","Q4"))) %>%
-    group_by(type, utterance) %>%
-    do(getProbsAndCIs(data = ., QorA = 'a', R = 1000)) %>%
-    mutate(empirical = empProb) %>%
-    select(utterance, type, response, count, lower_ci, upper_ci,
-           groupSize, empirical)
-
-pragModelPreds = ansFits %>% 
-  group_by(utterance, type, modelLevel, response) %>% 
-  summarize(model = mean(modelProb)) %>% 
-  filter(modelLevel == "pragmatic")
-
-plottableA = collapsed_a %>% 
-  inner_join(pragModelPreds, by = c('utterance','type','response')) %>%
-  select(utterance, type, response, empirical, model, lower_ci, upper_ci) %>%
-  gather(src, prob, empirical, model) %>% 
-  do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
-  do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
-
-# png('../writing/2015/fyp-report/exp4AnsResults.png',
-#      width = 2000, height=1000,res = 300, pointsize = 12)
-
-dodge <- position_dodge(width=0.9)
-g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
-      + geom_bar(position = dodge, stat = "identity") 
-      + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
-                      position = dodge, width = .25)
-      + facet_grid(type ~ utterance)
-      + ggtitle("Pragmatic Answerer"))
-g
 # dev.off()
 ```
 
-Now make the questioner plot
-
-```{r}
-questionModelOutput=read.csv("../modeling/guessingGame/questionerPredictionsEmp.csv", sep = ',') %>%
-  mutate(goal = as.character(goal),
-         question = as.character(response)) %>%
-  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
-  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-  mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
-  select(type, domain, modelLevel, goal, rationality, response, modelProb)
-
-         
-questFits = optimalFit(inner_join(d_q, questionModelOutput)) %>%
-  select(type, domain, modelLevel, goal, response, empProb, modelProb)
-```
-
-
-```{r}
-# join them all together
-all_qs = d_q %>% 
-  inner_join(questFits, by = c('type', 'domain', 'goal', 'response', 'empProb')) %>%
-  mutate(modelLevel = ordered(modelLevel, 
-                               levels = c("literal", "explicit", "pragmatic"))) %>%
-  select(type, domain, goal, response, empProb, modelLevel, modelProb) 
-  #distinct(type, domain, goal, response, modelLevel, modelProb)
-
-# Since they won't let us annotate nicely...
-  
-labelDataFrame = all_qs %>% 
-   group_by(modelLevel) %>% 
-   summarise(correlation = paste("r =", round(cor(empProb, 
-                                                  modelProb, method = 'pearson'), 2)))
-
-#jpeg(filename="../writing/2015/cogsci/questionerFits.jpeg")
-question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
-  + theme(text = element_text(size = 20),
-          axis.text.x = element_text(angle=90, vjust=1))
-#          axis.text.x = element_blank(), axis.ticks = element_blank())
-#          plot.margin=unit(c(1,1,-1,1), "cm"))
-  + ylim(0,1)
-  + xlab("Model Predicted Probability")
-  + ylab("Empirical Probability")
-  + geom_point(aes(colour = domain))
-  + ggtitle("Questioner model fits")
-  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-  + geom_smooth(method = "lm")
-  + facet_grid( ~ modelLevel)
-  + geom_text(aes(x,y,label=lab),
-              data=data.frame(x = .75, y = .25,
-                              modelLevel = labelDataFrame$modelLevel,
-                              lab = labelDataFrame$correlation)))
-question_plots               
-#dev.off()
-```
-
-zoom in on overlapping condition
-
-```{r}
-collapsed_q <- d %>% 
-    mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
-    mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
-    group_by(goal,type, domain) %>%
-    filter(type == "overlapping") %>%
-    do(getProbsAndCIs(data = ., QorA = 'q', R = 1000)) %>%
-    mutate(empirical = empProb) %>%
-    select(goal, domain, type, response, count, lower_ci, upper_ci, 
-           groupSize, empirical)
-
-pragModelPreds = questFits %>% 
-  group_by(goal, type, modelLevel, domain, response) %>% 
-  summarize(pragmaticModel = mean(modelProb)) %>% 
-  filter(modelLevel == "pragmatic")
-
-expModelPreds = questFits %>% 
-  group_by(goal, type, modelLevel, domain, response) %>% 
-  summarize(explicitModel = mean(modelProb)) %>% 
-  filter(modelLevel == "explicit")
-
-plottableQ = collapsed_q %>% 
-  inner_join(pragModelPreds, by = c('goal', 'type', 'response')) %>%
-  inner_join(expModelPreds, by = c('goal', 'type', 'response')) %>%
-  select(goal, domain, type, response, lower_ci, upper_ci, groupSize,
-         empirical, pragmaticModel, explicitModel) %>%
-  gather(src, prob, empirical, pragmaticModel, explicitModel) %>%
-  filter(goal == "G2") %>%
-  do(mutate(., lower_ci = ifelse(src %in% c("pragmaticModel", "explicitModel"), 
-                                 NA, lower_ci))) %>%
-  do(mutate(., upper_ci = ifelse(src %in% c("pragmaticModel", "explicitModel"),
-                                 NA, upper_ci)))
-
-# png(filename = "../writing/2015/fyp-report/OverlappingModelComparison.png",
-#      width = 2000, height=1000,res = 300, pointsize = 16)
-
-(ggplot(plottableQ, aes(x = response, y = prob, fill = src))
- + geom_bar(position = dodge, stat= 'identity')
- + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
-                 position = dodge, width =.25)
- + geom_hline(yintercept = 0.48)
- + ggtitle("Overlapping model comparison")
- + facet_grid(~ domain)
- + theme_bw()
- + scale_fill_manual(values = c("#B2DF8A", "#A6CEE3", "#62A0CA")))
-# dev.off()
-```
