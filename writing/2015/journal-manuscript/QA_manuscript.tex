@@ -107,7 +107,9 @@ Similarly, questions like ``where are you?'' permit answers at many degrees of s
 In the game, two players were placed in a virtual world where they were instructed to collect cards with six consecutive numbers from the same suit. Each player could only hold three cards at a time, and neither player could see the other, thereby requiring the players to explicitly coordinate their locations. 
 Using an information-theoretic measure to quantify a response's degree of specificity, Potts found that answers tended to be more specific when the questioner was trying to meet up or direct the answerer to a specific card, and less specific when developing a general search strategy. 
 
-There are a number of other phenomena that have motivated formal pragmatic accounts of answers, but which have not been studied experimentally. 
+\todo[inline]{rdh: Also cite Potts's 2009 paper that builds a corpus of indirect answers?}
+
+There are a number of other intuitive phenomena that have motivated formal pragmatic accounts of answers, but which have not been studied experimentally. 
 For example, identification questions like ``who is X?'' can be resolved in many ways  \cite{BoerLycan75_KnowingWho, Gerbrandy00_Identity, Aloni05_ConceptualCovers}. 
 If an undergraduate asked ``Who is Noam Chomsky?'' in an introductory course, it would be appropriate to respond ``The MIT professor who wrote \emph{Aspects of the Theory of Syntax}'' or ``The father of modern linguistics.'' If a potential donor asked the same question at an MIT fundraiser, though, it would be more appropriate to point at Chomsky in the crowd. 
 Similarly, if a child asks ``What's that?'' while pointing at a common household object, a parent's response will be much different than if one of their adult friends asked the same question. More specific \emph{wh}-questions like ``Who passed the examination?'' have also been studied extensively in developing linguistic theories: answers can be understood to mean either an \emph{exhaustive} or \emph{selective} list of relevant entities \cite{SchulzVanRooij06_ExhaustiveInterpretation}.
@@ -120,7 +122,11 @@ However, questioners must also select between many alternative questions in orde
 
 \todo[inline]{ndg: need a clearer explanation of why van rooij isn't enough / why it needs to be merged into the RSA framework.}
 
-The above probabilistic model of question and answer behavior bears some resemblance to recent decision theoretic \cite{VogelBodoiaPottsJurafsky13_GricePOMDP} and game theoretic \cite{Franke13_GameTheoryPragmatics} models of pragmatic reasoning in language use. In particular, all these approaches emphasize \emph{inference} about a partner's underlying mental state. In this respect, these theories contrast with the interactive alignment model \cite{PickeringGarrod04_BBS_Dialogue} and competing dynamical systems models of dialogue \cite<e.g.>{FusaroliTylen15_Synergy}, where coordination occurs through a low-level process of priming and adjusting to a partner's syntactic, lexical, and phonological choices. 
+\todo[inline]{rdh: should probably cite/discuss old-school question-answering models from comp. ling. and AI, e.g. Green \& Carberry (1994), Lehnert (1977), Allen \& Perrault, (1980)}
+
+\todo[inline]{rdh: this section should be more structured. Maybe start with those old-school rule-based plan-inference models, then talk about questions and QUDs in the context of dialogue models, then work in linguistics on questions per se, then van Rooij, then finally the recent Bayesian/game theoretic stuff?}
+
+The probabilistic model we present below bears some resemblance to recent decision theoretic \cite{VogelBodoiaPottsJurafsky13_GricePOMDP} and game theoretic \cite{Franke13_GameTheoryPragmatics} models of pragmatic reasoning in language use. In particular, all these approaches emphasize \emph{inference} about a partner's underlying mental state. In this respect, these theories contrast with the interactive alignment model \cite{PickeringGarrod04_BBS_Dialogue} and competing dynamical systems models of dialogue \cite<e.g.>{FusaroliTylen15_Synergy}, where coordination occurs through a low-level process of priming and adjusting to a partner's syntactic, lexical, and phonological choices. 
 
 While there is a growing literature on dialogue models in general, far less attention has been devoted to the specifics of question and answer dynamics \emph{per se}. The primary theoretical work in this area derives from formal linguistic theories, which focused on the notion of informativeness. In Groenendijk and Stokhof's\citeyear{GroenendijkStokhof84_SemanticsOfQuestions} foundational work on question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others \cite{Ginzburg95_ResolvingQuestions} have pointed out, this predicts that wh-questions like ``Where can I buy an Italian newspaper?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location. Clearly, this is not the case: a single nearby location would suffice. These theories also cannot account for contextual variation in what counts as a useful answer.
 
@@ -134,6 +140,8 @@ While there is a growing literature on dialogue models in general, far less atte
 \end{figure*}
 
 More recent theories have tried to fix these problems by introducing some consideration of the questioner's goals. \citeA{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals as a decision problem faced by the questioner. A useful answer under this decision theoretic account is one that maximizes the expected value of the questioner's decision problem. A useful question is one that induces a sufficiently fine-grained partition, optimally distinguishing the worlds relevant to the decision problem. While this framework elegantly accounts for the context-dependence and relevance-maximization of question and answer behavior, it assumes that the questioner's decision problem is known a priori by the answerer. \todo{ndg: check.} If this were the case, the act of asking questions would seem irrelevant: why wouldn't the answerer directly tell the questioner which action to take?
+
+\todo[inline]{rdh: Just found a paper by Stevens et al, 2014 (in SEMDIAL proceedings) that presents a model where the answerer infers the questioner's decision problem and generates an indirect answer, but they do it in a game theoretic framework; this includes a Bayesian step to compute $P(d|q)$, the likelihood of a decision problem given a question utterance}
 
 Our models are an effort to expand on this core idea in a probabilistic framework, which also provides a mechanism for the answerer to \emph{infer} the `decision problem.' 
 The RSA framework has already been applied to account for diverse pragmatic phenomena including scalar implicature\cite{GoodmanStuhlmuller13_KnowledgeImplicature}, 
@@ -498,34 +506,14 @@ While the questioner component of our model was critical to the pragmatic answer
 \includegraphics[scale = .3]{Exp3GuesserView}
 \includegraphics[scale = .3]{Exp3HelperView}
 \end{center}
-\caption{Exp.~3 interfaces, for the questioner (top) and answerer (bottom).}
+\caption{Exp.~1 interfaces, for the questioner (top) and answerer (bottom).}
 \label{fig:exp3views}
 \end{figure*}
-
-%
-%\begin{figure}[t!]
-%\begin{center}
-%\includegraphics[scale=.75]{Exp1ModelFits.pdf}
-%\end{center}
-%\vspace{-.5cm}
-%\caption{Full space of models, and their correlations with the data from Exp.~1. Questioner models in the first row reason about the answerers directly below them, and the pragmatic answerer reasons about the explicit questioner.}
-%\label{fig:Exp1ModelSpace}
-%\vspace{-.15cm}
-%\end{figure}
-%
 
 
 In order to simultaneously test how questioners choose questions when faced with a particular goal and how answerers respond  under uncertainty about this goal, we used a guessing-game task played by two players: a questioner and an answerer. In this game, $4$ animals (a dalmatian, a poodle, a cat, and a whale) were hidden behind $4$ gates. These animals corresponded to different levels in a class hierarchy (see Fig.~\ref{fig:taskhierarchy}). The questioner received a private goal of finding one of the objects (e.g. `find the poodle'), and the answerer (but not the questioner) knew the location of each object. Before choosing a gate, the questioner asked the answerer a single question, chosen from a restricted set of options, and the answerer responded by revealing the object behind a single gate. This restriction on the question space was motivated by one of the key features of our first opening example: when the most direct question (``can I eat your food?'') is suppressed due to politeness, utterance length, complexity, or some other intervening factor, questioners must rely instead on an indirect question. 
 
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .11]{exp3QuestResultsPragmatic.png}
-\includegraphics[scale = .11]{exp3AnsResultsPragmatic.png}
-\end{center}
-\caption{Exp.~1 results and model fits, for the best-performing questioner (left) and answerer (right) models. Error bars are 95\% bootstrapped confidence intervals.}
-\label{fig:exp3res}
-\end{figure*}
-This set of restricted options was critical to distinguishing between the pragmatic and explicit variants of our model. If all questions were equally available, both our `explicit' and `pragmatic' questioner models would prefer the most direct one and would therefore be indistinguishable. To see how they make different predictions in the presence of restrictions, suppose the question `Where's the poodle?' was not available the questioner. If the questioner asked `Where's the dog?', the poodle and dalmatian would be considered equally good options by an explicit answerer because they are both dogs. However, the pragmatic answerer could reason that if the questioner was truly interested in the location of the dalmatian, he would have \emph{asked} about the dalmatian. Because he didn't, he must be interested in the other valid response that he lacks a direct question for: the poodle. Using these differing predictions, Experiment 1 was designed to distinguish between the explicit and pragmatic answerers. Similar logic allows it to also distinguish between the explicit and pragmatic questioners.
+This set of restricted options was critical to distinguishing between the pragmatic and explicit variants of our model. If all questions were equally available, both our `explicit' and `pragmatic' questioner models would prefer the most direct one and would therefore be indistinguishable. To see how they make different predictions in the presence of restrictions, suppose the question `Where's the poodle?' was not available the questioner. If the questioner asked `Where's the dog?', the poodle and dalmatian would be considered equally good options by an explicit answerer because they are both dogs. However, the pragmatic answerer could reason that if the questioner was truly interested in the location of the dalmatian, he would have \emph{asked} about the dalmatian. Because he didn't, he must be interested in the other valid response that he lacks a direct question for: the poodle. Using these differing predictions, Experiment 1 was designed to distinguish between the explicit and pragmatic answerers. 
 
 \section{Exp.~1: Interactive Questions and Answers}
 
@@ -535,6 +523,30 @@ from Amazon's Mechanical Turk to participate in this task: 25 were assigned to t
 
 \subsubsection{Stimuli \& Procedure} In terms of our model parameters, the world space $\mathcal{W}$ was the set of $4! = 24$ possible assignments of four objects to four gates. The goal space $\mathcal{G}$ was the set of four objects that the questioner could be trying to find: `dalmatian,' `poodle,' `siamese cat,' and `whale.' These objects correspond to the leaves of the tree in Fig.~\ref{fig:taskhierarchy}. The answer space $\mathcal{A}$ was the set of four gates that the answerer could  reveal. The restricted question space $\mathcal{Q}$ contained the set of highlighted nodes in the taxonomy: `dalmatian?', `dog?', `pet?', and `animal?' (see Figure \ref{fig:taskhierarchy}). 
 
+The procedure was designed to accommodate real-time player-to-player interaction following \citeA{Hawkins14_RealTimeWebExperiments}. All players passed a short quiz on the game instructions and were immediately redirected to the game interface: the first player to join was assigned to be a ``questioner'' (which we called a ``guesser'' in the cover story) and told to wait until a second player was available. Once another player joined, they were assigned to be an ``answerer'' (or ``helper'') and the game began. 
+
+The questioner and answerer interfaces are displayed in Figure \ref{fig:exp3views}. Chat messages were printed on the left side of the screen, and players used the right side as a workspace to view goals, ask questions, and respond with answers. At the beginning of each trial, the wheel on the questioner's screen (Figure \ref{fig:exp3views}, top) would spin and select one of the four goals at random. The questioner then clicked and dragged words onto the line in the ``Question box'' to ask a question to help them find this goal. The answerer saw these words being dragged in real time. Once the questioner clicked the `send' button, the resulting question appeared in the chat log and control was passed to the answerer, who clicked on one of the four gates to automatically send a response containing the location of the chosen object (e.g. ``The whale is behind gate 3.'') Finally, the questioner was asked to guess which gate they believed the goal object was behind. 
+
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .11]{exp3QuestResultsPragmatic.png}
+\includegraphics[scale = .11]{exp3AnsResultsPragmatic.png}
+\end{center}
+\caption{Exp.~1 results and model fits, for the best-performing questioner (left) and answerer (right) models. Error bars are 95\% bootstrapped confidence intervals.}
+\label{fig:exp3res}
+\end{figure*}
+
+Each participant provided responses for four trials, where object locations were shuffled and a new goal was randomly selected for each trial. Thus, questioners could be given the same goal on multiple trials, preventing `process of elimination' reasoning about what the goal may be.
+
+
+
+
+\subsubsection{Results}
+%\red{check for effect of Q/A block order.}
+Results for the questioner role are shown alongside model predictions in Fig.~\ref{fig:exp3res} (left). We find that questioners systematically prefer to ask different questions given different goals, even as those questions become more indirect. $\chi^2$ tests over each of the four response distributions show a significant divergence from uniform. Questioners preferentially ask about the `dalmatian' given the  dalmatian goal, ${\chi^2(3) = 77}, {p < .001}$, about the `dog' given the poodle goal, ${\chi^2(3) = 50}, {p <.001}$, about the `pet' given the cat goal, ${\chi^2(3) = 47},  {p <.001}$, and about the `animal' when given the whale goal, ${\chi^2(3) = 39}, {p <.001}$. Note that there was a high level of agreement between participants on the best question to ask: questioner responses were not particularly graded.
+
+Results for the answerer role are shown in Fig.~\ref{fig:exp3res} (right). Answerers are highly sensitive to the constraints of the questioner, giving information about the dalmatian when asked about a `dalmatian', ${\chi^2(3) = 102}, {p <.001}$, about the poodle when asked about a `dog', ${\chi^2(3) = 47}, {p <.001}$, about the cat when asked about a `pet', ${\chi^2(3) = 45}, {p<.001}$, and about the whale when asked about an `animal', ${\chi^2(3) = 31}, {p < .001}$. In the next section, we compare these results to the predictions of our family of models (Fig. \ref{fig:Exp3ModelSpace}). 
+
 \begin{figure*}[t!]
 \begin{center}
 \includegraphics[scale=.75]{Exp3ModelFits.pdf}
@@ -543,18 +555,6 @@ from Amazon's Mechanical Turk to participate in this task: 25 were assigned to t
 \label{fig:Exp3ModelSpace}
 \end{figure*}
 
-The procedure was designed to accommodate real-time player-to-player interaction following \citeA{Hawkins14_RealTimeWebExperiments}. All players passed a short quiz on the game instructions and were immediately redirected to the game interface: the first player to join was assigned to be a ``questioner'' (which we called a ``guesser'' in the cover story) and told to wait until a second player was available. Once another player joined, they were assigned to be an ``answerer'' (or ``helper'') and the game began. 
-
-The questioner and answerer interfaces are displayed in Figure \ref{fig:exp3views}. Chat messages were printed on the left side of the screen, and players used the right side as a workspace to view goals, ask questions, and respond with answers. At the beginning of each trial, the wheel on the questioner's screen (Figure \ref{fig:exp3views}, top) would spin and select one of the four goals at random. The questioner then clicked and dragged words onto the line in the ``Question box'' to ask a question to help them find this goal. The answerer saw these words being dragged in real time. Once the questioner clicked the `send' button, the resulting question appeared in the chat log and control was passed to the answerer, who clicked on one of the four gates to automatically send a response containing the location of the chosen object (e.g. ``The whale is behind gate 3.'') Finally, the questioner was asked to guess which gate they believed the goal object was behind. 
-
-Each participant provided responses for four trials, where object locations were shuffled and a new goal was randomly selected for each trial. Thus, questioners could be given the same goal on multiple trials, preventing `process of elimination' reasoning about what the goal may be.
-
-\subsubsection{Results}
-%\red{check for effect of Q/A block order.}
-Results for the questioner role are shown alongside model predictions in Fig.~\ref{fig:exp3res} (left). We find that questioners systematically prefer to ask different questions given different goals, even as those questions become more indirect. $\chi^2$ tests over each of the four response distributions show a significant divergence from uniform. Questioners preferentially ask about the `dalmatian' given the  dalmatian goal, ${\chi^2(3) = 77}, {p < .001}$, about the `dog' given the poodle goal, ${\chi^2(3) = 50}, {p <.001}$, about the `pet' given the cat goal, ${\chi^2(3) = 47},  {p <.001}$, and about the `animal' when given the whale goal, ${\chi^2(3) = 39}, {p <.001}$. Note that there was a high level of agreement between participants on the best question to ask: questioner responses were not particularly graded.
-
-Results for the answerer role are shown in Fig.~\ref{fig:exp3res} (right). Answerers are highly sensitive to the constraints of the questioner, giving information about the dalmatian when asked about a `dalmatian', ${\chi^2(3) = 102}, {p <.001}$, about the poodle when asked about a `dog', ${\chi^2(3) = 47}, {p <.001}$, about the cat when asked about a `pet', ${\chi^2(3) = 45}, {p<.001}$, and about the whale when asked about an `animal', ${\chi^2(3) = 31}, {p < .001}$. In the next section, we compare these results to the predictions of our family of models (Fig. \ref{fig:Exp3ModelSpace}). 
-
 \subsubsection{Model comparison}
 
 Each model was run with uniform prior probability over worlds, goals, questions, and answers, and with equal cost for all utterances. The goal projection for goal object $o$ is given by $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. 
@@ -562,7 +562,7 @@ Each model was run with uniform prior probability over worlds, goals, questions,
 The explicit meaning of the question ``Where's the $x$?'' maps a world $w$ to the location of the salient object of type $x$. This implements the standard formal semantics of \emph{the}: the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world. Pragmatically, the use of a definite article \emph{presupposes} the salience of some object. Thus our explicit QUD is: 
 $$\textrm{\den{Where is the N?}} = q_{N}(w) = \textrm{loc}(s_N,w)$$ where $s_N$ is the salient object of category $N$. 
 
-Because the answerer does not know \emph{a priori} which object is the salient one, they draw an object from a saliency distribution, given the category in the noun phrase $s_N \sim \mathcal{S}(o | N)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to an object, and so on. For current purposes, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:taskhierarchy}). In experiment 3, we will collect empirical saliency priors, and show how this improves the model's fit.
+Because the answerer does not know \emph{a priori} which object is the salient one, they draw an object from a saliency distribution, given the category in the noun phrase $s_N \sim \mathcal{S}(o | N)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to an object, and so on. For current purposes, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:taskhierarchy}).\footnote{Later, in experiment 3, we will collect empirical saliency priors, and show how this affects the model's fit.}
 
 Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
 
@@ -600,7 +600,7 @@ In response to these shortcomings, we designed a follow-up experiment, which tes
 from Amazon's Mechanical Turk to participate in this task. Fifty participants were excluded due to a server crash that terminated the task before completion. Two additional participants were excluded because they were not non-native English speakers. This left 74 unique completed games.
 
 
-\subsubsection{Stimuli \& Procedure} A set of twelve items were created by crossing four domains (animals, plants, places, and artifacts) with three hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}). For each item, there was a set of four goal objects in $\mathcal{G}$, which appeared on the wheel for the questioners, four question labels in $\mathcal{Q}$ that the questioner could use to ask about their assigned goal, and four answers in $\mathcal{A}$ corresponding to the four items in $\mathcal{G}$ that appear on the wheel.\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \url{https://github.com/hawkrobe/Q\_and\_A/blob/master/MultiExperiment2/stimuliLabels.pdf}} 
+\subsubsection{Stimuli \& Procedure} A set of twelve items were created by crossing four domains (animals, plants, places, and artifacts) with three hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}). For each item, there was a set of four goal objects in $\mathcal{G}$, which appeared on the wheel for the questioners, four question labels in $\mathcal{Q}$ that the questioner could use to ask about their assigned goal, and four answers in $\mathcal{A}$ corresponding to the four items in $\mathcal{G}$ that appear on the wheel.\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \scriptsize	\url{https://github.com/hawkrobe/Q\_and\_A/stimuliLabels.pdf}} 
 
 	\begin{figure*}[t!]
 \begin{center}
@@ -704,10 +704,11 @@ This can be explained as a typicality effect. A dalmatian is a far more typical 
 We recruited 192 participants from Amazon's Mechanical Turk to participate in this task. 13 participants were excluded after reporting a non-English native language, and 15 more were excluded due to self-reported confusion over the instructions. This left 164 participants.
 
 \subsection{Stimuli \& Procedure}
-For each trial, participants were presented with a set of four pictures and asked to ``Click the $X$.'' Each participant provided a response for twelve trials, corresponding to the twelve items from Exp. 2 (three hierarchy structures crossed with four domains). The four pictures corresponded to the four goal objects of the given item; we used the same pictures that were displayed in Exp. 2 on the questioner's goal wheel and the answerer's `gates.' The instruction ``Click the $X$'' for a given item was formed by sampling one of the four category nouns that could be used to form a question in Exp. 2 (the highlighted nodes in Fig. \ref{fig:hierarchyStructures}). In this way, no participant saw the same set of objects more than once. The order of trials and positions of pictures within trials were randomized.
+For each trial, participants were presented with a set of four pictures and asked to ``Click the $X$.'' Each participant provided a response for twelve trials, corresponding to the twelve items from Exp. 2 (three hierarchy structures crossed with four domains). The four pictures corresponded to the four goal objects of the given item; we used the same pictures that were displayed in Exp. 2 on the questioner's goal wheel and the answerer's `gates.' The instruction ``Click the $X$'' for a given item was formed by sampling one of the four category nouns that could be used to form a question in Exp. 2 (the highlighted nodes in Fig. \ref{fig:hierarchyStructures}). In this way, no participant saw the same set of objects more than once (although some images occur in multiple sets). The order of trials and positions of pictures within trials were randomized.
 
 \subsection{Results}
 
+To test our null hypothesis of uniform saliency priors, we performed $\chi^2$ goodness of fit tests on the response distribution for each label. This amounted to 32 tests, since 
 
 \subsection{Discussion}
 
