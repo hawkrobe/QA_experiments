@@ -11,6 +11,7 @@
 \usepackage{listings}
 \usepackage{multirow}
 \usepackage{todonotes}
+\usepackage{svg}
 
 \newcommand{\den}[2][]{
 \(
@@ -637,6 +638,16 @@ The resulting questioner and answerer interfaces are displayed in Figure \ref{fi
 
 First, we note that there was high correlation in response probabilities across domains for both questioners and answerers (see Table \ref{table:experiment4correlations}). Thus, in examining the results below we will collapse across domains for simplicity of analysis. Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
 
+\todo[inline]{rdh: I'm convinced there's a better way to present these results.}
+
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .75]{Exp2QuestResults}
+\includegraphics[scale = .75]{Exp2AnsResults}
+\end{center}
+\caption{Exp.~2 results and model fits, for the best-performing questioner (left) and answerer (right) models, collapsing over the different domains. Error bars represent bootstrapped 95\% confidence intervals.}
+\label{fig:exp4res}
+\end{figure*}
 In the `equivocal' condition (Figure \ref{fig:hierarchyStructures}(a)), the questioner chose whether to ask about the `pet' or the `fish'; two of the goal animals were `pet fish' belonging to both categories, while the other two animals were just a pet (e.g. a dalmatian) or just a fish (e.g. a deep-sea angler fish), respectively. We found that when trying to find the object that was only a pet or only a fish, participants preferred to ask `pet', $\chi^2(1) = 67, p < 0.001$, or `fish,' $\chi^2(1) = 57, p < 0.001$, respectively. Answerers, in turn, revealed the location of the `dalmatian' when asked about the `pet', $\chi^2(3) = 238, p < 0.001$, and the location of the `angler fish' when asked about the `fish,' $\chi^2(3) = 142, p < 0.001$. 
 
 For the two objects belonging to both categories (i.e. the two `pet fish'), where we expected questioners to have no preference, we found strong variability across domains -- in the `animal' domain, for example, 85\% of questioners asked about the `fish' when given one of the `pet fish' goals, compared to only 15\% asking about the `pet,' $\chi^2(1) = 15, p < 0.001$. In the `artifacts' domain, on the other hand, questioners had no preference between asking about the `seat' or `metal thing' when the objects (metal chairs) fell into both categories, $\chi^2(1) = 0.4, p = 0.52$. This suggests that saliency distributions may \emph{not} be uniform for all domains and labels (see Experiment 3).
@@ -645,49 +656,40 @@ In the `overlapping' condition (Figure \ref{fig:hierarchyStructures}(b)), questi
 
 In the `branching' hierarchy (Figure \ref{fig:hierarchyStructures}(c)), we replicated our findings from Experiment 1 with a broader set of items: questioners strongly prefer to ask about the `dalmatian' when trying to find the dalmatian, $\chi^2(3) = 190, p < 0.001$, about the `dog' when trying to find the poodle, $\chi^2(3) = 152, p < 0.001$, about the `pet' when trying to find the siamese cat, $\chi^2(3) = 168, p < 0.001$, and about the `animal' when trying to find the whale, $\chi^2(3) = 210, p < 0.001$. Answerers behave identically to the results of Experiment 1, $p < 0.001$.
 
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .25]{Exp4QuestResults}
-\includegraphics[scale = .25]{Exp4AnsResults}
-\end{center}
-\caption{Exp.~2 results and model fits, for the best-performing questioner (left) and answerer (right) models, collapsing over the different domains. Error bars represent bootstrapped 95\% confidence intervals.}
-\label{fig:exp4res}
-\end{figure*}
+
 
 \subsubsection{Model comparison}
 
 %
 \begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale=.57]{Exp4QuestFits.jpeg}
-\includegraphics[scale=.57]{Exp4AnsFits.jpeg}
+\includegraphics[scale=1]{Exp2UnifPriorAnsFits}
+\includegraphics[scale=1]{Exp2UnifPriorQuestFits}
 \end{center}
 \caption{Full space of models, and their correlations with the data from Exp.~2, broken down by item and type.}
-\label{fig:Exp4ModelSpace}
+\label{fig:Exp2ModelSpace}
 \end{figure*}
 %
 
-Model comparison was conducted in the same way as in Experiment 1. However, to avoid overfitting and to reduce the number of free parameters that would result from separately fitting rationality parameters for each item, we pool together data from all hierarchy structures and domains and fit the single rationality parameter for each model to jointly optimize model-data correlations across all items in this pooled dataset. 
+Model comparison was conducted in the same way as in Experiment 1. To avoid overfitting and to reduce the number of free parameters that would result from separately fitting rationality parameters for each item, we pool together data from all hierarchy structures and domains and fit the single rationality parameter for each model to jointly optimize model-data correlations across all items in this pooled dataset. 
 %
 \begin{figure*}[t!]
 \begin{center}
 \includegraphics[scale=.25]{OverlappingModelComparison.png}
 \end{center}
 \vspace{-.5cm}
-\caption{Full space of models, and their correlations with the data from Exp.~2, broken down by item and type.}
+\caption{Comparison of our explicit and pragmatic questioner models on the critical overlapping condition.  Error bars represent bootstrapped 95\% confidence intervals.}
 \label{fig:Exp4ZoomedIn}
 \vspace{-.15cm}
 \end{figure*}
 %
-These model-data fits, broken down by model level and hierarchy structure, are displayed in Figure \ref{fig:Exp4ModelSpace}. We can immediately rule out the literal answerer and literal questioner, which predict a uniform distribution of responses. We also find that the explicit answerer models fit the data significantly worse than the pragmatic answerer model in all hierarchy structures, with $r = 0.67$ compared to $r = 0.96$ in the `branching' hierarchy, $r = 0.44$ compared to $r = 0.92$ in the `equivocal' hierarchy, and $r = 0.68$ compared with $r = 0.86$ in the `overlapping' hierarchy, respectively. 
+These model-data fits are displayed in Figure \ref{fig:Exp2ModelSpace}. We can immediately rule out the literal answerer and literal questioner, which predict a uniform distribution of responses within each condition. We also find that the pragmatic answerer model fits the data significantly better than the pragmatic answerer model, with $r = 0.88$ compared with $r = 0.65$ (Zou's 95\% confidence interval $= [0.16, 0.32]$). 
 
-Turning to the questioner predictions, we again find that both explicit and pragmatic models provide excellent but essentially indistinguishable fits, with $r = 0.97$ compared with $0.98$ in the `branching' hierarchy, $r = 0.90$ compared with $r = 0.90$ in the `equivocal hierarchy', and $r = 0.95$ compared with $0.94$ in the `overlapping' hierarchy, respectively. 
-
-However, because we designed the overlapping structure to provide a critical test for the questioner models, it is not the overall correlation we are interested in, it is the particular distribution of responses to ``G2'' (the ``house cat'' in the animal domain). Since ``house cat'' is not available as a question, the explicit model (as well as the heuristic strategy discussed above) predicts that the two parents, ``pet'' and ``cat'' will be equally likely. This happens because the explicit answerer would be equally likely to reveal the location of the house cat in response to ``pet'' and ``cat,'' which each have two children. 
+Turning to the questioner predictions, we again find that both explicit and pragmatic models provide excellent but essentially indistinguishable fits, with $r = 0.95$ compared with $0.96$ (Zou's 95\% confidence interval $= [-0.02, 0.01]$). However, because we designed the overlapping structure to provide a critical test for the questioner models, it is not the overall correlation we are interested in, it is the particular distribution of responses to ``G2'' (the ``house cat'' in the animal domain). Since ``house cat'' is not available as a question, the explicit model (as well as the heuristic strategy discussed above) predicts that the two parents, ``pet'' and ``cat'' will be equally likely. This happens because the explicit answerer would be equally likely to reveal the location of the house cat in response to ``pet'' and ``cat,'' which each have two children. 
 
 The pragmatic questioner model, however, predicts that ``cat'' will be preferred over ``pet'', because the other child of ``cat'' -- the lion -- is pragmatically blocked by the pragmatic answerer. When the pragmatic answerer hears ``cat'' they reason that if the questioner's underlying goal were the ``lion'' they would have \emph{said} lion; because they didn't, they must mean the other cat. Thus, we have a pair of sharply distinguishable predictions: the explicit model predicts that ``pet'' and ``cat'' will be equally likely and the pragmatic model predicts an asymmetry where ``cat'' is the preferred label. 
 
-In Figure \ref{fig:Exp4ZoomedIn}, we zoom in on this critical condition and display both models' predictions next to the empirical data, with bootstrapped 95\% confidence intervals. For these analyses, we excluded the `places' domain both because it was flagged as an outlier early in the analysis and because our stimulus design led to a confound in the `overlapping' condition, which we discuss further below. We find that the pragmatic model makes the correct qualitative prediction -- the mean probability of responding ``Q2'' ($p_{Q2} = 0.77, n = 52, 95\%\textrm{ bootstrapped CI }= [0.65, 0.88])$ in this condition is significantly different from the mean probability of responding ``Q3'' ($p_{Q3} = 0.15, n = 52, 05\% \textrm{ bootstrapped CI }=[0.06, 0.25]$), as predicted by the pragmatic model. We also see that it makes a relatively good quantitative prediction, with the predicted probability lying within the 95\% confidence interval of the empirical estimate for both the ``Q2'' and ``Q3'' responses. Recall that a single free parameter $\alpha$ for each model was fit to maximize correlations for the entire (pooled) dataset.
+In Figure \ref{fig:Exp4ZoomedIn}, we zoom in on this critical condition and display both models' predictions next to the empirical data, with bootstrapped 95\% confidence intervals. For these analyses, we excluded the `places' domain both because it was flagged as an outlier early in the analysis and because our stimulus choice led to a confound in the `overlapping' condition, which we discuss further below. We find that the pragmatic model makes the correct qualitative prediction -- the mean probability of responding ``Q2'' ($p_{Q2} = 0.77, n = 52, 95\%\textrm{ bootstrapped CI }= [0.65, 0.88])$ in this condition is significantly different from the mean probability of responding ``Q3'' ($p_{Q3} = 0.15, n = 52, 95\% \textrm{ bootstrapped CI }=[0.06, 0.25]$), as predicted by the pragmatic model. We also see that it makes a relatively good quantitative prediction, with the predicted probability lying within the 95\% confidence interval of the empirical estimate for both the ``Q2'' and ``Q3'' responses. Recall that a single free parameter $\alpha$ for each model was fit to maximize correlations for the entire (pooled) dataset.
 
 
 \subsubsection{Discussion}
@@ -696,7 +698,11 @@ We have replicated the results of Experiment 1, and shown that these results gen
 
 We also find that while overall fits are good, all our models fail to capture graded responses across different domains. This is especially striking in the `equivocal' condition where all our models predict a symmetry in questioner behavior for the two goals where the questions options are equally uninformative. Instead, we found a high degree of variability across domains. To some extent, this is expected from a model with only a single parameter fit for all domains simultaneously. We could have fit separate rationality parameters for each domain to capture domain-level differences. However, we expect that this variability can be accounted for in a more principled way by the saliency prior. Our assumption of uniformity may be incorrect. Indeed, we found that when questioners were trying to find a pet goldfish, 85\% of participants preferred the label `fish' to the label `pet,' even though both are technically true. 
 
-This can be explained as a typicality effect. A dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}, hence a questioner considering this knowledge as common ground would know that asking ``Where is the pet?'' would tend to elicit useless information about the dalmatian. Instead, they would ask about the `fish' category, where a goldfish is a highly typical example. In Experiment 3, we collect data about participants' saliency knowledge. We then recompute our model's predictions using empirical saliency priors as common ground, in  place of our previous assumption of uniform saliency within a category.
+This could be explained as a typicality effect. A dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}, hence a questioner considering this knowledge as common ground would know that asking ``Where is the pet?'' would tend to elicit useless information about the dalmatian. Instead, they would ask about the `fish' category, where a goldfish is a highly typical example. 
+
+Typicality effects could also potentially be driving the divergence from a uniform response distribution in the overlapping condition, which we took to be evidence of pragmatic questioner behavior. For example, we expect a house cat to be a much more typical exemplar of the category `cat' than a lion. Hence, participants may not be choosing the house cat in this item for pragmatic reasons; they may just be selecting the more salient member of the category. If this were the case, including saliency knowledge in our explicit questioner and answerer model should give rise to the same predictions as the pragmatic models and `explain away' the pragmatic effects.
+
+In Experiment 3, we collect data about participants' saliency knowledge. We then recompute our model's predictions using empirical saliency priors as common ground, in  place of our previous assumption of uniform saliency within a category. We use these new predictions to test (1) whether our models more appropriately capture item-level variability and (2) whether the saliency-enriched explicit model can explain the data as well as the pragmatic model.
 
 \section{Exp.~3: Saliency Knowledge}
 
@@ -708,9 +714,27 @@ For each trial, participants were presented with a set of four pictures and aske
 
 \subsection{Results}
 
-To test our null hypothesis of uniform saliency priors, we performed $\chi^2$ goodness of fit tests on the response distribution for each label. This amounted to 32 tests, since 
+To test our null hypothesis of uniform saliency priors, we performed $\chi^2$ goodness of fit tests on the response distribution for each label: a total of 32 tests. We found that 69\% of these tests rejected the null hypothesis of uniformity at a (Bonferroni-corrected) significance level of $\alpha = 0.05/32 = 0.002$. 
+
+We re-did our model comparison using these empirical priors instead of uniform priors. These fits are shown in Figure \ref{fig:Exp2ModelSpaceEmpPriors}. We find that the pragmatic answerer model provides a significantly better fit to the data than the explicit model, with $r=0.91$, compared to $0.72$ (Zou's 95\% confidence interval $= [0.13, 0.27]$). The pragmatic questioner model also provides a slightly better fit to the data than the explicit model, with $r = 0.92$ compared to $0.89$ (Zou's 95\% confidence interval $= [0.01, 0.06]$). 
+
+\todo[inline]{rdh: other analyses include (1) introducing another parameter ($\beta$?) that squashes and interpolates between the uniform and empirical prior, (2) creating a hybrid answerer that reasons about a mixture of explicit and pragmatic answerers, then infers the weight of that mixture.}
+%
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale=1]{Exp2EmpPriorAnsFits}
+\includegraphics[scale=1]{Exp2EmpPriorQuestFits}
+\end{center}
+\caption{Full space of models, using empirical priors collected in Experiment 3, and their correlations with the data from Exp.~2.}
+\label{fig:Exp2ModelSpaceEmpPriors}
+\end{figure*}
+%
 
 \subsection{Discussion}
+
+\todo[inline]{rdh: talk about the two points flagged in the previous discussion. (1) The salience-enriched explicit models are still not as good as the pragmatic models, hence saliency alone can't account for our results. (2) We were able to capture the item-level variability much better with empirical priors, at the cost of introducing some extra noise (e.g. the model-data correlations for both explicit and pragmatic questioners went down)}
+
+\todo[inline]{rdh: Talk about the fact that this task still inevitably introduces pragmatic demands (i.e. when someone tells you to ``Click the $X$'' you think about the alternatives and what the experimenter would consider the salient one), but that a Bayesian data analysis might be able to tease the true prior out. }
 
 \section{General discussion}
 \label{sec:gd}
@@ -721,15 +745,13 @@ Questioner behavior, however, appeared to be more sensitive to the experimental 
 
 We also found that at least in certain scenarios like the overlapping hierarchy condition of Exp~.2, questioners systematically relied on higher-order pragmatic reasoning about what inferences an answerer would make about their own underlying goals when deciding what question to ask. Note that this behavior also could not be explained by the heuristic strategy raised in the earlier experiments: if questioners just ruled out labels that did not apply (e.g. ``lion''), they would have no mechanism for deciding between the two equally-good parent labels (``pet'' and ``cat'') to pick out their goal. It will ultimately be important to explore the mixture of explicit- and pragmatic-questioning across an even larger range of situations: these issues may be a product of our artificial game paradigm, or they may be reflective of real tendencies in language use, raising novel questions about audience design in question-answer behavior.
 
-\todo[inline]{ndg: somewhere (discussion?) explore whether this notion of goals is enough to capture all kinds of questions.}
+\todo[inline]{ndg: somewhere (discussion?) explore whether our notion of goals is enough to capture all kinds of questions.}
 
-\todo[inline]{rdh: Address different ways of setting up model (e.g. fixed-point, Clark `joint project'?)}
+\todo[inline]{rdh: Address different ways we could have set up model that don't require recursive reasoning (e.g. Shiffrin's idea about a joint project, Landy's idea about a fixed point?)}
 
-\todo[inline]{rdh: discuss differences with van rooy more broadly?}
+\todo[inline]{rdh: discuss differences with van rooy \& decision theory approach more broadly?}
 
-\todo[inline]{rdh: discuss issues with use of definite article in question: `the animal?' or `that animal?' presupposes the existence of a salient animal, while `an animal?' or `one of the animals?' would not.}
-
-\todo[inline]{rdh: discuss different ways we can relax assumptions of the model to capture different kinds of effects. e.g. we implicitly assume knowledge is fixed and in common ground. What if there was uncertainty over what the other person knew? Could we then model teacher-student interactions?}
+\todo[inline]{rdh: discuss different ways we can relax assumptions of the model to capture different kinds of effects. e.g. we implicitly assume knowledge is fixed and in common ground. What if there was uncertainty over what the other person knew? Could we then model teacher-student interactions? Or child-parent interactions where the parent already knows the answer to the question (e.g. }
 
 \todo[inline]{rdh: discuss how our assumptions may or may not really scale up, e.g. how do you possibly populate the space of QUDs outside of our game context or a rigid social interaction like asking for the time or buying something? Topic modeling? How do you populate the space of alternative questions or alternative answers? Conditional frequency in some corpus?}
 
