@@ -245,16 +245,19 @@ labelDataFrame = all_ans %>%
    summarise(correlation = paste("r =", round(cor(empProb, 
                                                   modelProb, method = 'pearson'), 2)))
 
+pdf(file="../writing/2015/journal-manuscript/figures/Exp2UnifPriorAnsFits.pdf",
+     width = 7, height = 3)
+
 answer_plots = (ggplot(all_ans, aes(x = modelProb, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
   + xlab("Model predicted probability")
   + ylim(0,1)
-  + ylab("")
-  + geom_point(aes(colour = domain))
+  + ylab("Empirical Probability")
+  + geom_point(aes(colour = domain, shape = type))
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-  + ggtitle("Answerers")
+  + ggtitle("Answerer Model Fits")
   + geom_smooth(method = "lm")
   + facet_grid( ~ modelLevel)
   + geom_text(aes(x,y,label=lab),
@@ -262,7 +265,8 @@ answer_plots = (ggplot(all_ans, aes(x = modelProb, y = empProb))
                               modelLevel = labelDataFrame$modelLevel,
                               lab = labelDataFrame$correlation))
   + theme_bw())
-answer_plots               
+answer_plots         
+dev.off()
 ```
 
 Now we import the questioner fits and tidy them up to eventually be joined
@@ -301,7 +305,8 @@ labelDataFrame = all_qs %>%
    summarise(correlation = paste("r =", round(cor(empProb, 
                                                   modelProb, method = 'pearson'), 2)))
 
-#jpeg(filename="../writing/2015/cogsci/questionerFits.jpeg")
+pdf(file="../writing/2015/journal-manuscript/figures/Exp2UnifPriorQuestFits.pdf",
+     width = 7, height = 3)
 question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
@@ -310,8 +315,8 @@ question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
   + ylim(0,1)
   + xlab("Model Predicted Probability")
   + ylab("Empirical Probability")
-  + geom_point(aes(colour = domain))
-  + ggtitle("Questioner model fits")
+  + geom_point(aes(colour = domain, shape = type))
+  + ggtitle("Questioner Model Fits")
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + geom_smooth(method = "lm")
   + facet_grid( ~ modelLevel)
@@ -321,7 +326,23 @@ question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
                               lab = labelDataFrame$correlation))
   + theme_bw())
 question_plots               
-#dev.off()
+dev.off()
+```
+
+Test whether one fit is significantly better than another fit
+
+```{r}
+library(cocor)
+empSet = subset(all_ans, modelLevel == "pragmatic")$empProb
+expSet = subset(all_ans, modelLevel == "explicit")$modelProb
+pragSet = subset(all_ans, modelLevel == "pragmatic")$modelProb
+cocor(~ empirical + expModel | empirical + pragModel, data.frame(empirical = empSet, expModel = expSet, pragModel = pragSet))
+
+empSet = subset(all_qs, modelLevel == "pragmatic")$empProb
+expSet = subset(all_qs, modelLevel == "explicit")$modelProb
+pragSet = subset(all_qs, modelLevel == "pragmatic")$modelProb
+cocor(~ empirical + expModel | empirical + pragModel, data.frame(empirical = empSet, expModel = expSet, pragModel = pragSet))
+
 ```
 
 Model + data bar plots
@@ -351,17 +372,18 @@ plottableQ = collapsed_q %>% inner_join(pragModelPreds, by = c('goal', 'type', '
   do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
   do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
 
-#png('../writing/2015/fyp-report/exp4QuestResults.png',
-#     width = 2000, height=1000,res = 300, pointsize = 12)
+pdf('../writing/2015/journal-manuscript/exp2QuestResults.pdf',
+    width = 8, height=4)
 dodge <- position_dodge(width=0.9)
 g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
       + geom_bar(position = dodge, stat = "identity") 
       + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
                       position = dodge, width = .25)
       + facet_grid(type ~ goal)
-      + ggtitle("Pragmatic Questioner"))
+      + ggtitle("Pragmatic Questioner")
+      + theme_bw())
 g
-#dev.off()
+dev.off()
 
 ```
 
@@ -390,8 +412,8 @@ plottableA = collapsed_a %>%
   do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
   do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
 
-#png('../writing/2015/fyp-report/exp4AnsResults.png',
-#     width = 2000, height=1000,res = 300, pointsize = 12)
+pdf('../writing/2015/journal-manuscript/exp2AnsResults.pdf',
+    width = 8, height=4)
 
 dodge <- position_dodge(width=0.9)
 g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
@@ -399,9 +421,10 @@ g <- (ggplot(plottableA, aes(x = response, y = prob, fill = src))
       + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
                       position = dodge, width = .25)
       + facet_grid(type ~ utterance)
-      + ggtitle("Pragmatic Answerer"))
+      + ggtitle("Pragmatic Answerer")
+      + theme_bw())
 g
-#dev.off()
+dev.off()
 ```
 
 zoom in on overlapping condition
@@ -412,7 +435,7 @@ collapsed_q <- d %>%
     mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
     group_by(goal,type) %>%
     filter(type == "overlapping") %>%
-#    filter(domain != "places") %>%
+    filter(domain != "places") %>%
     do(getProbsAndCIs(data = ., QorA = 'q', R = 1000)) %>%
     mutate(empirical = empProb) %>%
     select(goal, type, response, count, lower_ci, upper_ci, 
