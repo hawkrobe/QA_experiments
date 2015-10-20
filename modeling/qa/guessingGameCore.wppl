@@ -20,8 +20,11 @@ var condition = function(x){
  factor(x ? 0 : -Infinity);
 };
 
-var QAmodel = function(type, domain, assumeUniform) {
-  var knowledge = qa.buildKnowledge(type, domain, assumeUniform);
+// our model has two parameters: rationality controls how strongly
+// optimizing an agent is; beta controls to what extent participants draw from an
+// empirical prior (1) vs. a uniform prior (0) on saliency. 
+var QAmodel = function(type, domain, rationality,  beta) {
+  var knowledge = qa.buildKnowledge(type, domain);
   var taxonomy = knowledge.taxonomy;
   var qudSpace = knowledge.qudSpace;
   var labelSpace = knowledge.labelSpace;
@@ -31,8 +34,10 @@ var QAmodel = function(type, domain, assumeUniform) {
   // and picks one item from each label to be 'the salient one'
   var sampleSalienceAssignment = function(tax) {
     return mapObject(function(label, probObj) {
-      var saliencyPrior = categoricalERP(_.values(probObj), _.keys(probObj));
-      var salientItem = sample(saliencyPrior);
+      var transformedProbs = qa.normalizeArray(map(
+	function(v){return Math.pow(v,beta);},
+	_.values(probObj)));
+      var salientItem = categorical(transformedProbs, _.keys(probObj));
       return salientItem;
     }, tax);
   };
@@ -125,7 +130,7 @@ var QAmodel = function(type, domain, assumeUniform) {
     return truthfulAnswerPrior;
   };
 
-  var literalAnswerer = cache(function(question, trueWorld, rationality) {
+  var literalAnswerer = cache(function(question, trueWorld) {
     return Enumerate(function(){
       var answer = answerPrior(trueWorld);
       factor(interpreter(answer).score([], trueWorld) * rationality);
@@ -133,14 +138,14 @@ var QAmodel = function(type, domain, assumeUniform) {
     });
   });
 
-  var literalQuestioner = cache(function(qud_node, rationality) {
+  var literalQuestioner = cache(function(qud_node) {
     var qud = nameToQUD(qud_node);
     return Enumerate(function(){
       var question = questionPrior();
       var prior = Enumerate(function(){return qud(worldPrior());});
       var expectedKL = mean(function(){
         var trueWorld = worldPrior();
-        var answer = sample(literalAnswerer(question, trueWorld, rationality));
+        var answer = sample(literalAnswerer(question, trueWorld));
         var posterior = Enumerate(function(){
           var world = sample(interpreter(answer));
           return qud(world);
@@ -152,7 +157,7 @@ var QAmodel = function(type, domain, assumeUniform) {
     });
   });
 
-  var explicitAnswerer = cache(function(question, trueWorld, rationality) {
+  var explicitAnswerer = cache(function(question, trueWorld) {
     return Enumerate(function(){
       var qud = nameToQUD(question);
       var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
@@ -166,7 +171,7 @@ var QAmodel = function(type, domain, assumeUniform) {
     });
   });
 
-  var explicitQuestioner = cache(function(qudName, rationality) {
+  var explicitQuestioner = cache(function(qudName) {
     var qud = nameToQUD(qudName);
     return Enumerate(function(){
       var question = questionPrior();
@@ -174,7 +179,7 @@ var QAmodel = function(type, domain, assumeUniform) {
 	return qud(worldPrior());});
       var expectedKL = mean(function(){
 	var trueWorld = worldPrior();
-	var answer = sample(explicitAnswerer(question, trueWorld, rationality));
+	var answer = sample(explicitAnswerer(question, trueWorld));
 	var posterior = Enumerate(function(){
 	  var world = sample(interpreter(answer));
 	  return qud(world);
@@ -186,11 +191,11 @@ var QAmodel = function(type, domain, assumeUniform) {
     });
   });
 
-  var pragmaticAnswerer = cache(function(question, trueWorld, rationality){
+  var pragmaticAnswerer = cache(function(question, trueWorld){
     var qudPosterior = Enumerate(function(){
       var qudName = qudPrior();
       var qud = nameToQUD(qudName);
-      var q_erp = explicitQuestioner(qudName, rationality);
+      var q_erp = explicitQuestioner(qudName);
       factor(q_erp.score([], question));
       return qudName;
     });
@@ -207,7 +212,7 @@ var QAmodel = function(type, domain, assumeUniform) {
     });
   });
 
-  var pragmaticQuestioner = cache(function(qudName, rationality) {
+  var pragmaticQuestioner = cache(function(qudName) {
     var qud = nameToQUD(qudName);
     return Enumerate(function(){
       var question = questionPrior();
@@ -217,7 +222,7 @@ var QAmodel = function(type, domain, assumeUniform) {
       var expectedKL = mean(
         function(){
           var trueWorld = worldPrior();
-          var answer = sample(pragmaticAnswerer(question, trueWorld, rationality));
+          var answer = sample(pragmaticAnswerer(question, trueWorld));
           var posterior = Enumerate(function(){
             var world = sample(interpreter(answer));
             return qud(world);
@@ -229,10 +234,10 @@ var QAmodel = function(type, domain, assumeUniform) {
     });
   });
 
-  var runAnswererModel = function(answererModel, question, rationality) {
+  var runAnswererModel = function(answererModel, question) {
     return Enumerate(function() {
       var trueWorld = worldPrior();
-      var ansERP = answererModel(question, trueWorld, rationality);
+      var ansERP = answererModel(question, trueWorld);
       var ans = sample(ansERP);
       return ans.split("@")[0] + ".";
     });
