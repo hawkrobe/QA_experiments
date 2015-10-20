@@ -1,0 +1,94 @@
+// Run as:
+// webppl BayesianDataAnalysisAnswerer.wppl --require ../qa
+
+var questionToLabel = function(question) {
+  return qa.butLast(question).split("Is")[1].toLowerCase();
+};
+
+// Condition on data, jointly infer two params:
+// 1. alpha, a global rationality param
+// 2. beta, which interpolates between the emp prior and uniform prior
+//
+// might eventually want to have a questioner that reasons about BOTH
+// the explicit and pragmatic answerers, and weights them so we can
+// infer that weight
+var inferParams = function() {
+  var data = qa.readCSV("../../MultiExperiment2/data/"
+			+ "MultiExp2_BayesianAnalysisInput.csv");
+  var types = ["branching", "overlapping", "equivocal"];
+  var domains = ["artifact", "animals", "places", "plants"];
+
+  var outputERP = MH(function(){
+    var alpha = uniform(0,20);
+    var beta = uniform(0,1);
+
+    var items = qa.cartesianProductOf([types, domains]);
+    var score = sum(map(function(item) {
+      var model = QAmodel(item[0], item[1], alpha, beta);
+      return sum(map(function(question) {
+	var itemData = qa.getSubset(data, item[0], item[1], questionToLabel(question));
+	var runAnswererModel = model.runAnswererModel;
+	var pragA = model.pragA;
+	var pragERP = runAnswererModel(pragA, question);
+	return sum(map(function(dataRow) {
+	  var localScore = pragERP.score([], dataRow[5] + ".");
+	  return localScore;
+	}, itemData));
+      }, model.questionSpace));
+    }, items));
+    console.log(score);
+    factor(score);
+    return [alpha, beta];
+  }, 50);
+
+  qa.printERP(outputERP);
+};
+
+inferParams();
+
+// var main = function(){
+
+//   // setting ranges
+
+//   map(function(assumeUniform) {
+//     // different files for different priors
+//     var fileName = "BayesianAnswerer.raw.csv";
+//     qa.writeCSV([["type", "domain", "modelLevel",
+// 		  "utterance", "rationality", "response", "modelProb"]], fileName);
+//     map(function(type) {
+//       map(function(domain) {
+// 	// Set up file
+// 	map(function(rationality) {
+// 	  // Set up r to be nice
+// 	  var r = rationality.toFixed(1);
+// 	  var model = QAmodel(type, domain, r, beta);
+// 	  var runAnswererModel = model.runAnswererModel;
+
+// 	  map(function(question) {
+//             // // get relevant parameters
+// 	    var shortQuestion = qa.butLast(question.split("Is")[1].toLowerCase());
+
+//             var litA = model.litA;
+//             var litERP = runAnswererModel(litA, question);
+//             var litLabel = [type, domain, "literal", shortQuestion, r];
+// 	    qa.writeERP(litERP, litLabel, fileName);
+
+//             var pragA = model.pragA;
+// 	    var pragERP = runAnswererModel(pragA, question);
+//             var pragLabel = [type, domain,"pragmatic", shortQuestion, r];
+// 	    qa.writeERP(pragERP, pragLabel, fileName);
+
+//             var expA = model.expA;		       
+// 	    var expERP = runAnswererModel(expA, question);
+// 	    var expLabel = [type,domain,"explicit", shortQuestion, r];
+// 	    qa.writeERP(expERP, expLabel, fileName);
+	    
+// 	  }, model.questionSpace);
+// 	}, rationalityPs);
+//       }, domains);
+//     }, types);
+//   }, uniformSettings);
+//   return 'done';
+// };
+
+//main();
