@@ -127,7 +127,7 @@ However, questioners must also select between many alternative questions in orde
 
 \todo[inline]{rdh: this section should be more structured. Maybe start with those old-school rule-based plan-inference models, then talk about questions and QUDs in the context of dialogue models, then work in linguistics on questions per se, then van Rooij, then finally the recent Bayesian/game theoretic stuff?}
 
-The probabilistic model we present below bears some resemblance to recent decision theoretic \cite{VogelBodoiaPottsJurafsky13_GricePOMDP} and game theoretic \cite{Franke13_GameTheoryPragmatics} models of pragmatic reasoning in language use. In particular, all these approaches emphasize \emph{inference} about a partner's underlying mental state. In this respect, these theories contrast with the interactive alignment model \cite{PickeringGarrod04_BBS_Dialogue} and competing dynamical systems models of dialogue \cite<e.g.>{FusaroliTylen15_Synergy}, where coordination occurs through a low-level process of priming and adjusting to a partner's syntactic, lexical, and phonological choices. 
+The probabilistic model we present below bears some resemblance to recent decision theoretic \cite{VogelBodoiaPottsJurafsky13_GricePOMDP} and game theoretic \cite{Franke13_GameTheoryPragmatics} models of pragmatic reasoning in language use. In particular, all these approaches emphasize \emph{inference} about a partner's underlying mental state. In this respect, these theories contrast with the interactive alignment model \cite{PickeringGarrod04_BBS_Dialogue} and competing dynamical systems models of dialogue \cite<e.g.>{FusaroliTylen15_Synergy}, where coordination occurs through a low-level process of priming and adjusting to a partner's syntactic, lexical, and phonological choices. 
 
 While there is a growing literature on dialogue models in general, far less attention has been devoted to the specifics of question and answer dynamics \emph{per se}. The primary theoretical work in this area derives from formal linguistic theories, which focused on the notion of informativeness. In Groenendijk and Stokhof's\citeyear{GroenendijkStokhof84_SemanticsOfQuestions} foundational work on question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others \cite{Ginzburg95_ResolvingQuestions} have pointed out, this predicts that wh-questions like ``Where can I buy an Italian newspaper?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location. Clearly, this is not the case: a single nearby location would suffice. These theories also cannot account for contextual variation in what counts as a useful answer.
 
@@ -716,16 +716,20 @@ For each trial, participants were presented with a set of four pictures and aske
 
 To test our null hypothesis of uniform saliency priors, we performed $\chi^2$ goodness of fit tests on the response distribution for each label: a total of 32 tests. We found that 69\% of these tests rejected the null hypothesis of uniformity at a (Bonferroni-corrected) significance level of $\alpha = 0.05/32 = 0.002$. 
 
-We re-did our model comparison using these empirical priors instead of uniform priors. These fits are shown in Figure \ref{fig:Exp2ModelSpaceEmpPriors}. We find that the pragmatic answerer model provides a significantly better fit to the data than the explicit model, with $r=0.91$, compared to $0.72$ (Zou's 95\% confidence interval $= [0.13, 0.27]$). The pragmatic questioner model also provides a slightly better fit to the data than the explicit model, with $r = 0.92$ compared to $0.89$ (Zou's 95\% confidence interval $= [0.01, 0.06]$). 
+We carried out a model comparison using these empirical priors instead of uniform priors. The fits are shown in Figure \ref{fig:Exp2ModelSpaceEmpPriors}. We find that the pragmatic answerer model provides a significantly better fit to the data than the explicit model, with $r=0.91$, compared to $0.72$ (Zou's 95\% confidence interval $= [0.13, 0.27]$). The pragmatic questioner model also provides a slightly better fit to the data than the explicit model, with $r = 0.92$ compared to $0.89$ (Zou's 95\% confidence interval $= [0.01, 0.06]$). 
 
-\todo[inline]{rdh: other analyses include (1) introducing another parameter ($\beta$?) that squashes and interpolates between the uniform and empirical prior, (2) creating a hybrid answerer that reasons about a mixture of explicit and pragmatic answerers, then infers the weight of that mixture.}
+For a more precise test of whether participants are using uniform priors or the distributions we measured empirically, we conducted a Bayesian data analysis of our questioner and answerer models. For the purposes of this analysis, we model the saliency prior as a mixture of the uniform distribution assumed in earlier experiments and the saliency distribution we empirically measured in Experiment 3. We introduce a parameter $\beta \in [0,1]$ controlling the mixture weight, and infer both $\beta$ and the rationality parameter $\alpha$ by conditioning on our observed data. We assume $$\beta \sim Unif(0,1)$$ $$\alpha \sim Unif(0,20)$$ and use MCMC to estimate the most likely parameter values.
+
+ \todo[inline]{TODO: Report posterior predictive dists for responses and highest-posterior density intervals for $\alpha$ and $\beta$.}
+
+ \todo[inline]{TODO: create a hybrid answerer that reasons about a mixture of explicit and pragmatic answerers, then infer the weight of that mixture to get more precise test of what kind of answerer questioners are reasoning about.}
 %
 \begin{figure*}[t!]
 \begin{center}
 \includegraphics[scale=1]{Exp2EmpPriorAnsFits}
 \includegraphics[scale=1]{Exp2EmpPriorQuestFits}
 \end{center}
-\caption{Full space of models, using empirical priors collected in Experiment 3, and their correlations with the data from Exp.~2.}
+\caption{\todo[inline]{Bootstrap horizontal and vertical error bars} Full space of models, using empirical priors collected in Experiment 3, and their correlations with the data collected in Exp.~2.}
 \label{fig:Exp2ModelSpaceEmpPriors}
 \end{figure*}
 %
@@ -734,7 +738,7 @@ We re-did our model comparison using these empirical priors instead of uniform p
 
 \todo[inline]{rdh: talk about the two points flagged in the previous discussion. (1) The salience-enriched explicit models are still not as good as the pragmatic models, hence saliency alone can't account for our results. (2) We were able to capture the item-level variability much better with empirical priors, at the cost of introducing some extra noise (e.g. the model-data correlations for both explicit and pragmatic questioners went down)}
 
-\todo[inline]{rdh: Talk about the fact that this task still inevitably introduces pragmatic demands (i.e. when someone tells you to ``Click the $X$'' you think about the alternatives and what the experimenter would consider the salient one), but that a Bayesian data analysis might be able to tease the true prior out. }
+\todo[inline]{rdh: Talk about the fact that this task still inevitably introduces pragmatic demands (i.e. when someone tells you to ``Click the $X$'' you think about the alternatives and what the experimenter would consider the salient one), and that a further Bayesian data analysis might be able to tease the true prior out by modeling that task as well }
 
 \section{General discussion}
 \label{sec:gd}
