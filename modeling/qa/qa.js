@@ -5,7 +5,7 @@ var fs = require('fs');
 var babyparse = require('babyparse');
 
 function readCSV(filename){
-  return babyparse.parse(fs.readFileSync(filename, 'utf8'));
+  return babyparse.parse(fs.readFileSync(filename, 'utf8')).data;
 };
 
 function writeCSV(jsonCSV, filename){
@@ -136,9 +136,10 @@ var cartesianProductOf = function(listOfLists) {
 
 var getSubset = function(data, type, domain, question) {
   return _.filter(data, function(row) {
-    return (row[1] === domain &&
-	    row[4] === question &&
-	    row[6] === type);
+    var cond =  (row[1] === domain &&
+		 row[3] === question &&
+		 row[6] === type);
+    return cond;
   });
 };
 
@@ -223,6 +224,8 @@ var buildTax = function(knowledge, labels, responses) {
     var response = responses[responseId];
     tax = _.extend(tax, _.object([response], [_.object([response], [1])]));
   }
+
+  return tax;
 };
 
 var buildKnowledge = function(type, domain) {
