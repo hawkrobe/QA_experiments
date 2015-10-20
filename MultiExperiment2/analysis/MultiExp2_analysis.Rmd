@@ -50,6 +50,8 @@ completedGames = (filteredD %>% group_by(gameID) %>%
 cat("We removed", length(unique(d$workerid)) - length(completedGames)*2, "games total")
 d <- filteredD %>% filter(gameID %in% completedGames) %>% 
      distinct(domain, goal, question, guess, answer, type, gameID)
+write.csv(d, file = "./data/MultiExp2_BayesianAnalysisInput.csv",
+          row.names = F)
 ```
 
 In order to compare different items in a convenient way, we're going to map the questions and answers to the corresponding node positions in the hierarchy. So, in 'branching' trials, for example, 'dalmatian', 'mansion', 'carrot', and 'couch' would all be treated the same.
@@ -64,7 +66,7 @@ We're also going to estimate empirical probabilities for each response, conditio
 
 ```{r}
 d_q = d %>% 
-      mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
+      mutate(response=ordered(questionNodes, levels=c("Q1","Q2","Q3","Q4"))) %>%
       mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
       group_by(domain, type, goal) %>%
       do(getProbs(data = ., QorA = 'q')) %>%
