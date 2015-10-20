@@ -134,6 +134,14 @@ var cartesianProductOf = function(listOfLists) {
   }, [ [] ]);
 };
 
+var getSubset = function(data, type, domain, question) {
+  return _.filter(data, function(row) {
+    return (row[1] === domain &&
+	    row[4] === question &&
+	    row[6] === type);
+  });
+};
+
 // recursively traverse object; return all keys
 var nodes = function(obj){
   if (obj === null){
@@ -189,24 +197,21 @@ var isNodeInTree = function(node, tree){
   return findSubtree(node, tree) !== undefined;
 };
 
-var buildKnowledge = function(type, domain, assumeUniform) {
-  var tax = {};
-  // use appropriate knowledge
-  var knowledge = (assumeUniform ?
-		   require("./saliencyKnowledgeUniform.json") :
-		   require("./saliencyKnowledgeEmpirical.json"));
-  var relevantKnowledge = _.filter(knowledge, function(obj) {
-    return obj.type === type && obj.domain === domain;
+var normalizeArray = function(xs) {
+  var Z = sum(xs);
+  return xs.map(function(x) {
+    return x / Z;
   });
+};
 
+var buildTax = function(knowledge, labels, responses) {
   // Add knowledge about labels to taxonomy
-  var relevantLabels =  _.unique(_.pluck(relevantKnowledge, 'label'));
-  console.log(relevantLabels);
-  for (var labelId = 0; labelId < relevantLabels.length; labelId++) {
-    var label = relevantLabels[labelId];
-    var labelMatches = _.filter(relevantKnowledge,
-				function(obj) {return obj.label == label;});
+  var tax = {};
+
+  for (var labelId = 0; labelId < labels.length; labelId++) {
     var probObj = {};
+    var label = labels[labelId];
+    var labelMatches = _.filter(knowledge, function(obj) {return obj.label == label;});
     _.forEach(labelMatches, function(obj) {
       probObj = _.extend(probObj, _.object([obj.response], [obj.prop]));
     });
@@ -214,14 +219,28 @@ var buildKnowledge = function(type, domain, assumeUniform) {
   }
   
   // Add knowledge about responses to taxonomy
-  var relevantResponses = _.unique(_.pluck(relevantKnowledge, 'response'));
-  for (var responseId = 0; responseId < relevantResponses.length; responseId++) {
-    var response = relevantResponses[responseId];
+  for (var responseId = 0; responseId < responses.length; responseId++) {
+    var response = responses[responseId];
     tax = _.extend(tax, _.object([response], [_.object([response], [1])]));
   }
+};
 
-  console.log(tax);
-  return {taxonomy: tax, qudSpace : relevantResponses, labelSpace : relevantLabels};;
+var buildKnowledge = function(type, domain) {
+  // use appropriate knowledge
+  var unifKnowledge = require("./saliencyKnowledgeUniform.json");
+  var empKnowledge = require("./saliencyKnowledgeEmpirical.json");
+  var filterFunc = function(obj) {
+    return obj.type === type && obj.domain === domain;
+  };
+  var relevantUnifKnowledge = _.filter(unifKnowledge, filterFunc);
+  var relevantEmpKnowledge = _.filter(empKnowledge, filterFunc);
+  var relevantResponses = _.unique(_.pluck(relevantEmpKnowledge, 'response'));
+  var relevantLabels =  _.unique(_.pluck(relevantEmpKnowledge, 'label'));
+  var unifTax = buildTax(relevantUnifKnowledge, relevantLabels, relevantResponses);
+  var empTax = buildTax(relevantEmpKnowledge, relevantLabels, relevantResponses);
+
+  return {empTaxonomy: empTax, unifTaxonomy : unifTax,
+	  qudSpace : relevantResponses, labelSpace : relevantLabels};
 };
 
 var butLast = function(xs){
@@ -318,5 +337,7 @@ module.exports = {
   writeCSV: writeCSV,
   appendCSV: appendCSV,
   writeERP: writeERP,
+  normalizeArray: normalizeArray,
+  getSubset: getSubset,
   orderIsEqual: orderIsEqual
 };
