@@ -34,7 +34,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   // Takes a taxonomy object with saliency probabilities
   // and picks one item from each label to be 'the salient one'
   var sampleSalienceAssignment = function() {
-    var tax = flip(beta) ? unifTaxonomy : empTaxonomy;
+    var tax = flip(beta) ? empTaxonomy : unifTaxonomy;
     return mapObject(function(label, probObj) {
       var transformedProbs = qa.normalizeArray(map(
 	function(v){return Math.pow(v,beta);},
