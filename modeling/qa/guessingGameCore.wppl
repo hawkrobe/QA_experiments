@@ -25,14 +25,16 @@ var condition = function(x){
 // empirical prior (1) vs. a uniform prior (0) on saliency. 
 var QAmodel = function(type, domain, rationality,  beta) {
   var knowledge = qa.buildKnowledge(type, domain);
-  var taxonomy = knowledge.taxonomy;
+  var unifTaxonomy = knowledge.unifTaxonomy;
+  var empTaxonomy = knowledge.empTaxonomy;
   var qudSpace = knowledge.qudSpace;
   var labelSpace = knowledge.labelSpace;
   var locationAssignments = qa.permute([1,2,3,4]);
 
   // Takes a taxonomy object with saliency probabilities
   // and picks one item from each label to be 'the salient one'
-  var sampleSalienceAssignment = function(tax) {
+  var sampleSalienceAssignment = function() {
+    var tax = flip(beta) ? unifTaxonomy : empTaxonomy;
     return mapObject(function(label, probObj) {
       var transformedProbs = qa.normalizeArray(map(
 	function(v){return Math.pow(v,beta);},
@@ -93,7 +95,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   
   var nameToQUD = function(qudName){
     if(_.contains(questionSpace, qudName)) {
-      var salienceGuess = sampleSalienceAssignment(taxonomy);
+      var salienceGuess = sampleSalienceAssignment();
       return makeQUD(questionToNode(qudName), salienceGuess);
     } else if (_.contains(qudSpace, qudName)) {
       return makeQUD(qudName);
