@@ -16,7 +16,7 @@ function appendCSV(jsonCSV, filename){
   fs.appendFileSync(filename, babyparse.unparse(jsonCSV) + '\n');
 }
 
-var writeERP = function(erp, labels, filename) {
+var writeERP = function(erp, labels, filename, fixed) {
   var data = _.filter(erp.support().map(
    function(v) {
      var prob = Math.exp(erp.score([], v));
@@ -27,7 +27,7 @@ var writeERP = function(erp, labels, filename) {
         out = butLast(v).split("Is")[1].toLowerCase();
       else 
         out = v
-      return labels.concat([out, String(prob.toFixed(2))]);
+      return labels.concat([out, String(prob.toFixed(fixed))]);
 
     } else {
       return [];
