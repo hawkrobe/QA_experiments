@@ -32,7 +32,8 @@ var inferParams = function() {
       var runAnswererModel = model.runAnswererModel;
       var pragA = model.pragA;
       return sum(map(function(question) {
-	var itemData = qa.getSubset(data, item[0], item[1], questionToLabel(question));
+	var itemData = qa.getSubset(data, {type:item[0], domain: item[1],
+					   question:questionToLabel(question)});
 	var pragERP = runAnswererModel(pragA, question);
 	var score = sum(map(function(dataRow) {
 	  var localScore = pragERP.score([], dataRow[5] + ".");
