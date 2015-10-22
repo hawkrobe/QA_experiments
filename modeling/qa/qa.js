@@ -134,13 +134,24 @@ var cartesianProductOf = function(listOfLists) {
   }, [ [] ]);
 };
 
-var getSubset = function(data, type, domain, question) {
-  return _.filter(data, function(row) {
-    var cond =  (row[1] === domain &&
-		 row[3] === question &&
-		 row[6] === type);
-    return cond;
-  });
+var getSubset = function(data, options) {
+  var type = options.type, domain = options.domain,
+      question = options.question, goal = options.goal;
+  var cond;
+  if (question) {
+    cond = function(row) {
+      return (row[1] === domain &&
+	      row[3] === question &&
+	      row[6] === type);
+    };
+  } else if (goal) {
+    cond = function(row) {
+      return (row[1] === domain &&
+	      row[2] === goal &&
+	      row[6] === type);
+    };
+  }
+  return _.filter(data, cond);
 };
 
 // recursively traverse object; return all keys
