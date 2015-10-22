@@ -1,0 +1,89 @@
+// Run as:
+// webppl genQuestionerPredictions.wppl --require ../qa
+
+var inferParams = function() {
+  var data = qa.readCSV("../../MultiExperiment2/data/"
+			+ "MultiExp2_BayesianAnalysisInput.csv");
+  qa.writeCSV([["alpha", "beta", "type", "domain",
+		"goal", "response", "modelProb"]], "BayesianPragQuestionerSupp.csv");
+  qa.writeCSV([["alpha", "beta", "expVsPrag"]], "BayesianPragQuestionerResults.json");
+  var types = ["branching", "overlapping", "equivocal"];
+  var domains = ["artifact", "animals", "places", "plants"];
+  var items = qa.cartesianProductOf([types, domains]);
+
+  var outputERP = MCMC(function(){
+    // Sample params
+    var alpha = uniform(0,20);
+    var beta = uniform(0,1);
+    var expVsPrag = uniform(0,1);
+   
+    var score = sum(map(function(item) {
+      var model = QAmodel(item[0], item[1], alpha, beta);
+      return sum(map(function(qud) {
+	var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
+	var questionerERP = runTFBTQuestioner(qud, expVsPrag);
+	var score = sum(map(function(dataRow) {
+	  var localScore = questionerERP.score([], dataRow[5] + ".");
+	  return localScore;
+	}, itemData));
+	qa.writeERP(questionerERP, [alpha, beta, item[0], item[1], qud],
+		    "BayesianPragQuestionerSupp.csv");
+	return score;
+      }, model.qudSpace));
+    }, items));
+    factor(score);
+    return [alpha, beta, expVsPrag];
+  }, {samples: 1000, verbose: true});
+  outputERP.print();
+  qa.writeERP(outputERP, [], "BayesianPragQuestionerResults.json");
+
+};
+
+inferParams();
+
+var main = function(){
+
+  var rationalityPs = _.range(1, 10, .1);
+  var types = ["branching", "overlapping", "equivocal"];
+  var domains = ["artifact", "animals", "places", "plants"];
+  var uniformSettings = [true, false];
+  
+  map(function(assumeUniform) {
+    // Set up file
+    var uniformStr = assumeUniform ? "Unif" : "Emp";
+    var fileName = "questionerPredictions" + uniformStr + ".raw.csv";  
+    qa.writeCSV([["type", "domain", "modelLevel",
+		  "goal", "rationality", "response", "modelProb"]], fileName);
+    map(function(type) {
+      map(function(domain) {
+	var model = QAmodel(type, domain, assumeUniform);
+	
+	map(function(rationality) {
+	  // Set up r to be nice
+	  var r = rationality.toFixed(1);
+
+	  map(function(qudNode) {
+	    var litQ = model.litQ;
+            var litERP = litQ(qudNode, r);
+            var litLabel = [type, domain, "literal", qudNode, r];
+            qa.writeERP(litERP, litLabel, fileName);
+
+	    var expQ = model.expQ;
+            var expERP = expQ(qudNode, r);
+            var expLabel = [type, domain, "explicit", qudNode, r];
+            qa.writeERP(expERP, expLabel, fileName);
+
+            var pragQ = model.pragQ;
+            var pragERP = pragQ(qudNode, r);
+            var pragLabel = [type, domain, "pragmatic", qudNode, r];
+            qa.writeERP(pragERP, pragLabel, fileName);
+
+	  }, model.qudSpace);
+	}, rationalityPs);
+      }, domains);
+    }, types);
+  }, uniformSettings);
+  return 'done';
+};
+
+main();
