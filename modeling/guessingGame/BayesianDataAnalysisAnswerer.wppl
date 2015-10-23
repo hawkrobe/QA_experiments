@@ -12,91 +12,57 @@ var questionToLabel = function(question) {
 // might eventually want to have a questioner that reasons about BOTH
 // the explicit and pragmatic answerers, and weights them so we can
 // infer that weight
-var inferParams = function() {
-  var data = qa.readCSV("../../MultiExperiment2/data/"
-			+ "MultiExp2_BayesianAnalysisInput.csv");
-  qa.writeCSV([["alpha", "beta", "type", "domain",
-		"utterance", "response", "modelProb"]], "BayesianPragAnswererSupp.csv");
-  qa.writeCSV([["alpha", "beta"]], "BayesianPragAnswererResults.json");
-  var types = ["branching", "overlapping", "equivocal"];
-  var domains = ["artifact", "animals", "places", "plants"];
 
-  var outputERP = MCMC(function(){
-    var alpha = uniform(0,20);
-    var beta = uniform(0,1);
+var data = qa.readCSV("../../MultiExperiment2/data/"
+	              + "MultiExp2_BayesianAnalysisInput.csv");
 
-    var items = qa.cartesianProductOf([types, domains]);
+var types = ["branching", "overlapping", "equivocal"];
+var domains = ["artifact", "animals", "places", "plants"];
+var items = qa.cartesianProductOf([types, domains]);
 
-    var score = sum(map(function(item) {
-      var model = QAmodel(item[0], item[1], alpha, beta);
-      var runAnswererModel = model.runAnswererModel;
-      var pragA = model.pragA;
-      return sum(map(function(question) {
-	var itemData = qa.getSubset(data, {type:item[0], domain: item[1],
-					   question:questionToLabel(question)});
-	var pragERP = runAnswererModel(pragA, question);
-	var score = sum(map(function(dataRow) {
-	  var localScore = pragERP.score([], dataRow[5] + ".");
-	  return localScore;
-	}, itemData));
-	qa.writeERP(pragERP, [alpha, beta, item[0], item[1], questionToLabel(question)],
-		    "BayesianPragAnswererSupp.csv");
-	return score;
-      }, model.questionSpace));
-    }, items));
-    factor(score);
-    return [alpha, beta];
-  }, {samples: 1000, verbose: true});
-  outputERP.print();
-  qa.writeERP(outputERP, [], "BayesianPragAnswererResults.json");
+var modelAnalysis = function() {
+  // Sample params
+  var alpha = uniform(0,20);
+  var beta = uniform(0,1);
 
+  // Run model and condition on data
+  var score = sum(map(function(item) {
+    var model = QAmodel(item[0], item[1], alpha, beta);
+    var runAnswererModel = model.runAnswererModel;
+    var pragA = model.pragA;
+    return sum(map(function(question) {
+      var itemData = qa.getSubset(data, {type:item[0], domain: item[1],
+					 question: questionToLabel(question)});
+      var pragERP = runAnswererModel(pragA, question);
+      var score = sum(map(function(dataRow) {
+	var localScore = pragERP.score([], dataRow[5] + ".");
+	return localScore;
+      }, itemData));
+
+      // Store predictions
+      foreach(pragERP.support([]),function(s){
+	query.add(["predictive", questionToLabel(question), item[0], item[1], s],
+		  Math.exp(pragERP.score([], s)))
+      })
+      return score;
+    }, model.questionSpace));
+  }, items));
+
+  query.add(["parameter", "alpha", "global", "global", "global"], alpha);
+  query.add(["parameter", "beta", "global", "global", "global"], beta);
+
+  factor(score);
+
+  return query;
 };
 
-inferParams();
+var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
 
-// var main = function(){
+console.log('inference complete... printing');
 
-//   // setting ranges
+var outfile = "BayesianAnswererAnalysis.csv";
 
-//   map(function(assumeUniform) {
-//     // different files for different priors
-//     var fileName = "BayesianAnswerer.raw.csv";
-//     qa.writeCSV([["type", "domain", "modelLevel",
-// 		  "utterance", "rationality", "response", "modelProb"]], fileName);
-//     map(function(type) {
-//       map(function(domain) {
-// 	// Set up file
-// 	map(function(rationality) {
-// 	  // Set up r to be nice
-// 	  var r = rationality.toFixed(1);
-// 	  var model = QAmodel(type, domain, r, beta);
-// 	  var runAnswererModel = model.runAnswererModel;
+qa.bayesianErpWriter(outputERP, outfile, ["paramType", "parameter", "item1", "item2", 
+					  "value", "prob"]);
 
-// 	  map(function(question) {
-//             // // get relevant parameters
-// 	    var shortQuestion = qa.butLast(question.split("Is")[1].toLowerCase());
-
-//             var litA = model.litA;
-//             var litERP = runAnswererModel(litA, question);
-//             var litLabel = [type, domain, "literal", shortQuestion, r];
-// 	    qa.writeERP(litERP, litLabel, fileName);
-
-//             var pragA = model.pragA;
-// 	    var pragERP = runAnswererModel(pragA, question);
-//             var pragLabel = [type, domain,"pragmatic", shortQuestion, r];
-// 	    qa.writeERP(pragERP, pragLabel, fileName);
-
-//             var expA = model.expA;		       
-// 	    var expERP = runAnswererModel(expA, question);
-// 	    var expLabel = [type,domain,"explicit", shortQuestion, r];
-// 	    qa.writeERP(expERP, expLabel, fileName);
-	    
-// 	  }, model.questionSpace);
-// 	}, rationalityPs);
-//       }, domains);
-//     }, types);
-//   }, uniformSettings);
-//   return 'done';
-// };
-
-//main();
+console.log('output written to ' + outfile);

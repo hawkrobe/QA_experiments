@@ -33,9 +33,10 @@ var main = function(){
             var litA = model.litA;
             var litERP = runAnswererModel(litA, question);
             var litLabel = [type, domain, "literal", shortQuestion, r];
-	    qa.writeERP(litERP, litLabel, fileName);
+	    qa.writeERP(litERP, litLabel, fileName, 2);
 
             var pragA = model.pragA;
+
 	    var pragERP = runAnswererModel(pragA, question);
             var pragLabel = [type, domain, "pragmatic", shortQuestion, r];
 	    qa.writeERP(pragERP, pragLabel, fileName);
@@ -43,8 +44,7 @@ var main = function(){
             var expA = model.expA;		       
 	    var expERP = runAnswererModel(expA, question);
 	    var expLabel = [type, domain, "explicit", shortQuestion, r];
-	    qa.writeERP(expERP, expLabel, fileName);
-	    
+	    qa.writeERP(expERP, expLabel, fileName);	    
 	  }, model.questionSpace);
 	}, rationalityPs);
       }, domains);

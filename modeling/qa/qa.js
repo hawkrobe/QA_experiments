@@ -16,7 +16,7 @@ function appendCSV(jsonCSV, filename){
   fs.appendFileSync(filename, babyparse.unparse(jsonCSV) + '\n');
 }
 
-var writeERP = function(erp, labels, filename) {
+var writeERP = function(erp, labels, filename, fixed) {
   var data = _.filter(erp.support().map(
    function(v) {
      var prob = Math.exp(erp.score([], v));
@@ -27,7 +27,7 @@ var writeERP = function(erp, labels, filename) {
         out = butLast(v).split("Is")[1].toLowerCase();
       else 
         out = v
-      return labels.concat([out, String(prob.toFixed(2))]);
+      return labels.concat([out, String(prob.toFixed(fixed))]);
 
     } else {
       return [];
@@ -36,6 +36,30 @@ var writeERP = function(erp, labels, filename) {
   ), function(v) {return v.length > 0;});
   appendCSV(data, filename);
 };
+
+var bayesianErpWriter = function(erp, filename, header) {
+  console.log('writing to csv')
+  var supp = erp.support([]);
+  var csvFile = fs.openSync(filename, 'w');
+  fs.writeSync(csvFile, header + '\n')
+  supp.forEach(function(s) {
+    supportWriter(s, Math.exp(erp.score([], s)), csvFile);})
+  fs.closeSync(csvFile);
+  console.log('writing complete.')
+}
+
+var supportWriter = function(s, p, handle) {
+  var sLst = _.pairs(s);
+  var l = sLst.length;
+
+  for (var i = 0; i < l; i++) {
+    fs.writeSync(handle, sLst[i].join(',')+','+p+'\n');
+  }
+}
+
+var capitalize = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 var sum = function(xs){
   if (xs.length == 0) {
@@ -261,6 +285,8 @@ var butLast = function(xs){
   return xs.slice(0, xs.length-1);
 };
 
+
+
 var printERP = function(erp) {
   erp.support().map(
     function(v) {
@@ -351,7 +377,9 @@ module.exports = {
   writeCSV: writeCSV,
   appendCSV: appendCSV,
   writeERP: writeERP,
+  bayesianErpWriter: bayesianErpWriter,
   normalizeArray: normalizeArray,
   getSubset: getSubset,
+  capitalize: capitalize,
   orderIsEqual: orderIsEqual
 };
