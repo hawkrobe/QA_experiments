@@ -4,7 +4,7 @@
 var data = qa.readCSV("../../../MultiExperiment2/data/"
 		      + "MultiExp2_BayesianAnalysisInput.csv");
 var types = ["overlapping"];//["branching", "overlapping", "equivocal"];
-var domains = ["animals"];//["artifact", "animals", "places", "plants"];
+var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
@@ -35,13 +35,13 @@ var modelAnalysis = function() {
   console.log(score);
   factor(score);
 
-  return {predictive: query.table, params : {alpha: alpha, beta: beta, expVsPrag: expVsPrag}};//query;//{params : [alpha, beta, expVsPrag], predictive: query};
+  return {predictive: query.table, params : {alpha: alpha, beta: beta, expVsPrag: expVsPrag}};
 };
 
-var outputERP = MCMC(modelAnalysis, {samples: 50, burn: 0, verbose: true});
+var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
 
 console.log(outputERP.toJSON());
 console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP);
+qa.bayesianErpWriter(outputERP, "BayesianQuestionerAnalysis");
 

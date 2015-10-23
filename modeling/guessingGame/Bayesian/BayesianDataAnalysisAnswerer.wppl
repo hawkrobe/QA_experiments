@@ -13,7 +13,7 @@ var questionToLabel = function(question) {
 // the explicit and pragmatic answerers, and weights them so we can
 // infer that weight
 
-var data = qa.readCSV("../../MultiExperiment2/data/"
+var data = qa.readCSV("../../../MultiExperiment2/data/"
 	              + "MultiExp2_BayesianAnalysisInput.csv");
 
 var types = ["branching", "overlapping", "equivocal"];
@@ -41,28 +41,20 @@ var modelAnalysis = function() {
 
       // Store predictions
       foreach(pragERP.support([]),function(s){
-	query.add(["predictive", questionToLabel(question), item[0], item[1], s],
-		  Math.exp(pragERP.score([], s)))
+        query.add([questionToLabel(question), item[0], item[1], s],
+		   Math.exp(pragERP.score([], s)))
       })
       return score;
     }, model.questionSpace));
   }, items));
 
-  query.add(["parameter", "alpha", "global", "global", "global"], alpha);
-  query.add(["parameter", "beta", "global", "global", "global"], beta);
-
   factor(score);
 
-  return query;
+  return {predictive: query.table, params : {alpha: alpha, beta: beta}};
 };
 
 var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
 
 console.log('inference complete... printing');
 
-var outfile = "BayesianAnswererAnalysis.csv";
-
-qa.bayesianErpWriter(outputERP, outfile, ["paramType", "parameter", "item1", "item2", 
-					  "value", "prob"]);
-
-console.log('output written to ' + outfile);
+qa.bayesianErpWriter(outputERP, "BayesianAnswererAnalysis");
