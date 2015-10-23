@@ -20,6 +20,16 @@ var condition = function(x){
  factor(x ? 0 : -Infinity);
 };
 
+var foreach = function(lst, fn) {
+  var foreach_ = function(i) {
+    if (i < lst.length) {
+      fn(lst[i]);
+      foreach_(i + 1);
+    }
+  };
+  foreach_(0);
+};
+
 // our model has two parameters: rationality controls how strongly
 // optimizing an agent is; beta controls to what extent participants draw from an
 // empirical prior (1) vs. a uniform prior (0) on saliency. 
@@ -243,9 +253,9 @@ var QAmodel = function(type, domain, rationality,  beta) {
       var expectedKL = mean(
         function(){
           var trueWorld = worldPrior();
-	  var pragERP = pragmaticAnswerer(question, trueWorld);
-	  var explicitERP = explicitAnswerer(question, trueWorld);
-          var answer = (flip(expVsPrag) ? sample(pragERP) : sample(explicitERP));
+          var answer = (expVsPrag ? 
+	      	        sample(pragmaticAnswerer(question, trueWorld)) : 
+ 			sample(explicitAnswerer(question, trueWorld)));
           var posterior = Enumerate(function(){
             var world = sample(interpreter(answer));
             return qud(world);
@@ -274,6 +284,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
           pragA : pragmaticAnswerer,
           litA : literalAnswerer,
           expA: explicitAnswerer,
-	  runAnswererModel: runAnswererModel
+	  runAnswererModel: runAnswererModel,
+	  runTFBTQuestioner: runTFBTQuestioner
 	 };
 };
