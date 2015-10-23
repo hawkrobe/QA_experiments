@@ -1,7 +1,7 @@
 // Run as:
 // webppl genQuestionerPredictions.wppl --require ../qa
 
-var data = qa.readCSV("../../MultiExperiment2/data/"
+var data = qa.readCSV("../../../MultiExperiment2/data/"
 		      + "MultiExp2_BayesianAnalysisInput.csv");
 var types = ["overlapping"];//["branching", "overlapping", "equivocal"];
 var domains = ["animals"];//["artifact", "animals", "places", "plants"];
