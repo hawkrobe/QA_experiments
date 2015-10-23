@@ -1,89 +1,54 @@
 // Run as:
 // webppl genQuestionerPredictions.wppl --require ../qa
 
-var inferParams = function() {
-  var data = qa.readCSV("../../MultiExperiment2/data/"
-			+ "MultiExp2_BayesianAnalysisInput.csv");
-  qa.writeCSV([["alpha", "beta", "type", "domain",
-		"goal", "response", "modelProb"]], "BayesianPragQuestionerSupp.csv");
-  qa.writeCSV([["alpha", "beta", "expVsPrag"]], "BayesianPragQuestionerResults.json");
-  var types = ["branching", "overlapping", "equivocal"];
-  var domains = ["artifact", "animals", "places", "plants"];
-  var items = qa.cartesianProductOf([types, domains]);
+var data = qa.readCSV("../../MultiExperiment2/data/"
+		      + "MultiExp2_BayesianAnalysisInput.csv");
+var types = ["branching", "overlapping", "equivocal"];
+var domains = ["artifact", "animals", "places", "plants"];
+var items = qa.cartesianProductOf([types, domains]);
 
-  var outputERP = MCMC(function(){
-    // Sample params
-    var alpha = uniform(0,20);
-    var beta = uniform(0,1);
-    var expVsPrag = uniform(0,1);
-   
-    var score = sum(map(function(item) {
-      var model = QAmodel(item[0], item[1], alpha, beta);
-      return sum(map(function(qud) {
-	var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
-	var questionerERP = runTFBTQuestioner(qud, expVsPrag);
-	var score = sum(map(function(dataRow) {
-	  var localScore = questionerERP.score([], dataRow[5] + ".");
-	  return localScore;
-	}, itemData));
-	qa.writeERP(questionerERP, [alpha, beta, item[0], item[1], qud],
-		    "BayesianPragQuestionerSupp.csv");
-	return score;
-      }, model.qudSpace));
-    }, items));
-    factor(score);
-    return [alpha, beta, expVsPrag];
-  }, {samples: 1000, verbose: true});
-  outputERP.print();
-  qa.writeERP(outputERP, [], "BayesianPragQuestionerResults.json");
-
-};
-
-inferParams();
-
-var main = function(){
-
-  var rationalityPs = _.range(1, 10, .1);
-  var types = ["branching", "overlapping", "equivocal"];
-  var domains = ["artifact", "animals", "places", "plants"];
-  var uniformSettings = [true, false];
+var modelAnalysis = function() {
+  // Sample params
+  var alpha = uniform(0,20);
+  var beta = uniform(0,1);
+  var expVsPrag = flip(0.5);
   
-  map(function(assumeUniform) {
-    // Set up file
-    var uniformStr = assumeUniform ? "Unif" : "Emp";
-    var fileName = "questionerPredictions" + uniformStr + ".raw.csv";  
-    qa.writeCSV([["type", "domain", "modelLevel",
-		  "goal", "rationality", "response", "modelProb"]], fileName);
-    map(function(type) {
-      map(function(domain) {
-	var model = QAmodel(type, domain, assumeUniform);
-	
-	map(function(rationality) {
-	  // Set up r to be nice
-	  var r = rationality.toFixed(1);
+  // Run model and condition on data
+  var score = sum(map(function(item) {
+    var model = QAmodel(item[0], item[1], alpha, beta);
+    var runTFBTQuestioner = model.runTFBTQuestioner;
+    return sum(map(function(qud) {
+      var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
+      var questionerERP = runTFBTQuestioner(qud, expVsPrag);
+      var score = sum(map(function(dataRow) {
+	return questionerERP.score([], "whereIs" + qa.capitalize(dataRow[3]) + "?");
+      }, itemData));
+      
+      // Store predictions
+      foreach(questionerERP.support([]),function(s){
+	query.add(["predictive", qud, item[0], item[1], s],
+		  Math.exp(questionerERP.score([], s)))
+      })
+      return score;
+    }, model.qudSpace));
+  }, items));
 
-	  map(function(qudNode) {
-	    var litQ = model.litQ;
-            var litERP = litQ(qudNode, r);
-            var litLabel = [type, domain, "literal", qudNode, r];
-            qa.writeERP(litERP, litLabel, fileName);
+  // Store params
+  query.add(["parameter", "alpha", "global", "global", "global"], alpha);
+  query.add(["parameter", "beta", "global", "global", "global"], beta);
+  query.add(["parameter", "expVsPrag", "global", "global", "global"], expVsPrag);
 
-	    var expQ = model.expQ;
-            var expERP = expQ(qudNode, r);
-            var expLabel = [type, domain, "explicit", qudNode, r];
-            qa.writeERP(expERP, expLabel, fileName);
+  factor(score);
 
-            var pragQ = model.pragQ;
-            var pragERP = pragQ(qudNode, r);
-            var pragLabel = [type, domain, "pragmatic", qudNode, r];
-            qa.writeERP(pragERP, pragLabel, fileName);
-
-	  }, model.qudSpace);
-	}, rationalityPs);
-      }, domains);
-    }, types);
-  }, uniformSettings);
-  return 'done';
+  return query
 };
 
-main();
+var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
+
+console.log('inference complete... printing')
+
+var outfile = "BayesianQuestionerAnalysis.csv"
+
+qa.bayesianErpWriter(outputERP, outfile, ["paramType", "parameter", "item1", 
+						 "item2", "value", "prob"])
+console.log('output written to ' + outfile)
