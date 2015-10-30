@@ -3,15 +3,15 @@
 
 var data = qa.readCSV("../../MultiExperiment2/data/"
 		      + "MultiExp2_BayesianAnalysisInput.csv");
-var types = ["branching", "overlapping", "equivocal"];
-var domains = ["artifact", "animals", "places", "plants"];
+var types = ["overlapping"];//["branching", "overlapping", "equivocal"];
+var domains = ["animals"];//["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
   var alpha = uniform(0,20);
   var beta = uniform(0,1);
-  var expVsPrag = flip(0.5);
+  var expVsPrag = uniform(0,1);  
   
   // Run model and condition on data
   var score = sum(map(function(item) {
@@ -26,29 +26,22 @@ var modelAnalysis = function() {
       
       // Store predictions
       foreach(questionerERP.support([]),function(s){
-	query.add(["predictive", qud, item[0], item[1], s],
-		  Math.exp(questionerERP.score([], s)))
-      })
+	query.add([qud, item[0], item[1], s], Math.exp(questionerERP.score([], s)));
+      });
       return score;
     }, model.qudSpace));
   }, items));
 
-  // Store params
-  query.add(["parameter", "alpha", "global", "global", "global"], alpha);
-  query.add(["parameter", "beta", "global", "global", "global"], beta);
-  query.add(["parameter", "expVsPrag", "global", "global", "global"], expVsPrag);
-
+  console.log(score);
   factor(score);
 
-  return query
+  return {predictive: query.table, params : {alpha: alpha, beta: beta, expVsPrag: expVsPrag}};//query;//{params : [alpha, beta, expVsPrag], predictive: query};
 };
 
-var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
+var outputERP = MCMC(modelAnalysis, {samples: 50, burn: 0, verbose: true});
 
-console.log('inference complete... printing')
+console.log(outputERP.toJSON());
+console.log('inference complete... printing');
 
-var outfile = "BayesianQuestionerAnalysis.csv"
+qa.bayesianErpWriter(outputERP);
 
-qa.bayesianErpWriter(outputERP, outfile, ["paramType", "parameter", "item1", 
-						 "item2", "value", "prob"])
-console.log('output written to ' + outfile)

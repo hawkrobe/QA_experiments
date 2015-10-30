@@ -37,16 +37,24 @@ var writeERP = function(erp, labels, filename, fixed) {
   appendCSV(data, filename);
 };
 
-var bayesianErpWriter = function(erp, filename, header) {
-  console.log('writing to csv')
+// Note this is highly specific to a single type of erp
+var bayesianErpWriter = function(erp) {
+  var predictiveFile = fs.openSync("BayesianQuestionerAnalysisPredictives.csv", 'w');
+  fs.writeSync(predictiveFile, ["parameter", "item1", 
+				"item2", "value", "prob"] + '\n');
+
+  var paramFile = fs.openSync("BayesianQuestionerAnalysisParams.csv", 'w');
+  fs.writeSync(paramFile, ["parameter", "value", "prob"] + '\n');
+
   var supp = erp.support([]);
-  var csvFile = fs.openSync(filename, 'w');
-  fs.writeSync(csvFile, header + '\n')
   supp.forEach(function(s) {
-    supportWriter(s, Math.exp(erp.score([], s)), csvFile);})
-  fs.closeSync(csvFile);
-  console.log('writing complete.')
-}
+    supportWriter(s.predictive, Math.exp(erp.score([], s)), predictiveFile);
+    supportWriter(s.params, Math.exp(erp.score([], s)), paramFile);
+  });
+  fs.closeSync(predictiveFile);
+  fs.closeSync(paramFile);
+  console.log('writing complete.');
+};
 
 var supportWriter = function(s, p, handle) {
   var sLst = _.pairs(s);
