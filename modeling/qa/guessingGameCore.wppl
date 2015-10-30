@@ -253,7 +253,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
       var expectedKL = mean(
         function(){
           var trueWorld = worldPrior();
-          var answer = (expVsPrag ? 
+          var answer = (flip(expVsPrag) ? 
 	      	        sample(pragmaticAnswerer(question, trueWorld)) : 
  			sample(explicitAnswerer(question, trueWorld)));
           var posterior = Enumerate(function(){
