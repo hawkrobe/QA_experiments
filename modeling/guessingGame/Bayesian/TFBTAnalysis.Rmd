@@ -28,7 +28,7 @@ options("scipen"=10)
 ### Load in model results
 
 ```{r}
-m<-read.csv("guessingGame/BayesianQuestionerAnalysis.csv", sep = ",", row.names = NULL)
+m<-read.csv("guessingGame/Bayesian/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(m)
 m.samples <- m[rep(row.names(m), m$prob*samples), 1:6]
