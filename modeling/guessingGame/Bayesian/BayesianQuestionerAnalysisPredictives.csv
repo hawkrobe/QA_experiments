@@ -1,0 +1,449 @@
+paramType,parameter,item1,item2,value,prob
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.963302468977848,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0019990594578742104,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.002208002066234585,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.03249046949804288,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.06225678447747139,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.00020450226969701007,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9351021798510497,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0024365334017809426,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.000006857784058573151,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9995381273706716,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.00019458068500390136,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0002604341602665284,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.04351886432721438,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.04380135136021752,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.04455048595113448,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.8681292983614333,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9602998167080743,0.06
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.002098453747453421,0.06
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.002400234448778125,0.06
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.03520149509569415,0.06
+predictive,house cat,overlapping,animals,whereIsPet?,0.03428263314248322,0.06
+predictive,house cat,overlapping,animals,whereIsLion?,0.00011059294822544126,0.06
+predictive,house cat,overlapping,animals,whereIsCat?,0.964377526671857,0.06
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0012292472374343811,0.06
+predictive,lion,overlapping,animals,whereIsPet?,0.0000070431782116168395,0.06
+predictive,lion,overlapping,animals,whereIsLion?,0.9995144779735134,0.06
+predictive,lion,overlapping,animals,whereIsCat?,0.00009916143228004433,0.06
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00037931741599531946,0.06
+predictive,whale,overlapping,animals,whereIsPet?,0.05835427719852799,0.06
+predictive,whale,overlapping,animals,whereIsLion?,0.0583319456453259,0.06
+predictive,whale,overlapping,animals,whereIsCat?,0.058949327077041896,0.06
+predictive,whale,overlapping,animals,whereIsAnimal?,0.8243644500791039,0.06
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9996196739549579,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00006868277166168407,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.00007005627919253362,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.0002415869941890024,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.0000958543231853295,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.00002748505256320969,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9998417717087841,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.000034888915468539946,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.00001963972878469863,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9999275467392938,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.000024769988518027436,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.000028043543403654823,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.000125557845233499,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.00012517365191747114,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.0001361826216436519,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.999613085881206,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9987957142227097,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00009084556127991999,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.00009414663506844994,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.0010192935809428705,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.00008203749871955989,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.000044690709477388576,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9998190542463075,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.00005421754549614767,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.00004174906465861726,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9998467392311664,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.000042754164566910945,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00006875753960790552,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.001107456298952126,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.0009332715608398939,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.0009413644474704265,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9970179076927375,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9996181196265478,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00006996971161289186,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0000713430305866618,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.00024056763125366795,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.00009941045319548846,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.00002711470114578663,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9998389547149702,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.000034520130688592755,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.000019152455405118522,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9999292796123488,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.00002432674993752083,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.000027241182307764017,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.00011881874036888308,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.00011920415288611024,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.00013031964228955915,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9996316574644558,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9848381952697727,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0010647342347532582,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0011860365309332497,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.01291103396454087,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsPet?,0.01126788512404844,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsLion?,0.00008964018635461436,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsCat?,0.9879964221113879,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0006460525782078013,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsPet?,0.000008606576087484632,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsLion?,0.9996972085432547,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsCat?,0.00007925960502095287,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0002149252756363382,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsPet?,0.017760712378155734,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsLion?,0.01777811207274188,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsCat?,0.018263867451105392,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9461973080979968,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9963526548949272,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00038046706596635207,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0004097969285015986,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.0028570811106059858,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.0018754969964525007,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.000057202383095281,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.997854028712293,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0002132719081587923,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.000011666227104999023,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9998397389316871,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.00005058820296759761,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00009800663824095582,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.00271663714089289,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.002721635307558533,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.0028629024447574232,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9916988251067909,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9992831709110129,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00011327309114418913,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.00011730962263592699,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.000486246375207763,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsPet?,0.00022912935656262495,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsLion?,0.00003353524787297204,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsCat?,0.9996793973895878,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.00005793800597553536,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsPet?,0.000016636246658344257,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsLion?,0.999914217015416,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsCat?,0.000029952644869773883,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00003919409305617802,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsPet?,0.00028961922793371164,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsLion?,0.00029044308091124486,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsCat?,0.00031406713618431113,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9991058705549709,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9963607630058546,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0005339961984103304,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0005541209687266804,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.0025511198270070723,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.0010256150448322556,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.00015968122292422861,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9985507768649668,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0002639268672769296,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.00008311724396559237,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9996015133390135,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.00013872097530148573,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00017664844171926865,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.0013942770553329099,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.0013893840025852374,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.0015428522638414417,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9956734866782398,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9946269187822263,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0005052191010528384,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0005332332977165426,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.004334628819003566,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsPet?,0.0005977151790875778,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsLion?,0.00015731556574490656,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsCat?,0.9990018232787959,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.00024314597637176637,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsPet?,0.00011783421322097633,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsLion?,0.9994370642975242,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsCat?,0.00014454233522704632,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00030055915402735326,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsPet?,0.004465549469210717,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsLion?,0.003938164886020625,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsCat?,0.004062769619330648,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9875335160254375,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9963083382926584,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0005635175836478921,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0005837872343794036,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.0025443568893136624,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsPet?,0.0011625447771597215,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsLion?,0.00016109487963144944,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsCat?,0.9984064942272386,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0002698661159693713,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsPet?,0.00007939862246194534,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsLion?,0.9996174690808409,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsCat?,0.000138074205491883,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00016505809120538688,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsPet?,0.001227611160105847,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsLion?,0.0012440968890234246,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsCat?,0.0014028224444144264,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9961254695064563,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9960640879627353,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00048670640460038607,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0005086445425535635,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.002940561090110114,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsPet?,0.0007369003912199703,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsLion?,0.00015737574515986897,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsCat?,0.9988551358704889,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0002505879931315984,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsPet?,0.00009795530691050891,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsLion?,0.9995347327242738,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsCat?,0.00014155225426394334,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0002257597145513499,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsPet?,0.002298104501446802,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsLion?,0.0021581968877370495,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsCat?,0.0022975243684396065,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9932461742423767,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.965812323204352,0.16
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.004053020277480744,0.16
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.00426195503896816,0.16
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.02587270147919994,0.16
+predictive,house cat,overlapping,animals,whereIsPet?,0.005904100906524812,0.16
+predictive,house cat,overlapping,animals,whereIsLion?,0.0013606259449930392,0.16
+predictive,house cat,overlapping,animals,whereIsCat?,0.990670885050457,0.16
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0020643880980248754,0.16
+predictive,lion,overlapping,animals,whereIsPet?,0.000884036594525312,0.16
+predictive,lion,overlapping,animals,whereIsLion?,0.9961302146675395,0.16
+predictive,lion,overlapping,animals,whereIsCat?,0.001184353369617786,0.16
+predictive,lion,overlapping,animals,whereIsAnimal?,0.001801395368316887,0.16
+predictive,whale,overlapping,animals,whereIsPet?,0.018077001932879304,0.16
+predictive,whale,overlapping,animals,whereIsLion?,0.016588591907795505,0.16
+predictive,whale,overlapping,animals,whereIsCat?,0.018223156197475797,0.16
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9471112499618493,0.16
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9605336932174927,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0070222299016352695,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.007441540821244632,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.025002536059627246,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.023852659378655473,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.001941584917377107,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.970454018094892,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0037517376090753203,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.0006522340411486077,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9969574578721239,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.001342122676422082,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0010481854103052645,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.00642569109119716,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.007064227140865288,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.009907011558105657,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9766030702098318,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9611453286097144,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.003872215984749795,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.004090229044324334,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.03089222636121106,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.004685313654855483,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.001297013259802717,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9921198051098576,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0018978679754842885,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.0009639649732779763,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.995736651814435,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.001162473489244128,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.002136909723043165,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.02671152832191919,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.023186715719037417,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.024580624652508737,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9255211313065345,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9528878991725179,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00469112835123941,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.005009676901727112,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.03741129557451571,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsPet?,0.006350493027613695,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsLion?,0.001244178071306948,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsCat?,0.990293019276731,0.04000000000000001
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.00211230962434888,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsPet?,0.0008464733875734435,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsLion?,0.9954993442452927,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsCat?,0.001111850534297727,0.04000000000000001
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0025423318328363573,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsPet?,0.03532808688965422,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsLion?,0.03114453474672418,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsCat?,0.032806722133743776,0.04000000000000001
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9007206562298775,0.04000000000000001
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9691365227067131,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0030788932910160776,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.00321041555112545,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.024574168451145597,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.0032658605096396163,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0013617234730599254,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9937016218561331,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0016707941611669456,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.001124341589353543,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.995911158028693,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.0012253155823770707,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0017391847995760607,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.01901230781475578,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.01620360117753087,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.01730814396661482,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9474759470410986,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9720998511046393,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.003182182297486013,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0033137040130252087,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.021404262584850113,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsPet?,0.0037128346516391644,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsLion?,0.0013501493125500895,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsCat?,0.9932441372488456,0.07999999999999999
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0016928787869649423,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsPet?,0.001053563080925751,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsLion?,0.9961970749450431,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsCat?,0.001186662634986326,0.07999999999999999
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0015626993390449272,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsPet?,0.01428233019041554,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsLion?,0.01268890017822676,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsCat?,0.013905259766633465,0.07999999999999999
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9591235098647247,0.07999999999999999
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.954698955687013,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0050034296179060035,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.005329909241722033,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.03496770545335836,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.008089546967348838,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0013231880258163745,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9881981410815346,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0023891239253001307,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.0007797651121874576,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9957068468924846,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.0011670026311411475,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0023463853641870333,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.02974836116942736,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.027176695198426724,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.029146191398620402,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9139287522335253,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9468253552764888,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.009502727236487951,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.010130913927506676,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.03354100355951681,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.06392693085803601,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.003118326409788337,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9249172081225989,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.00803753460957668,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.0005435102327654216,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.996328617347818,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.002102561978111743,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0010253104413062634,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.008143285836882359,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.009073789438181157,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.01359755569677568,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9691853690281609,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.933061342182421,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.010651252891816393,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.011193415677838239,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.04509398924792497,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.11156609839407478,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.004248009650799921,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.8700641469366763,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.014121745018449408,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.00046970981686254604,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9948963078721381,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.0033931648357699348,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0012408174752299257,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.015279585393590594,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.016596619557015413,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.022608137529458127,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.945515657519936,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9343731431637508,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.010248613065861526,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.01076387569189033,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.04461436807849666,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.09369024413524453,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0037996726888837825,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.8902900553280436,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.012220027847827818,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.00047824948219584253,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9951359469790796,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.0030597381292623927,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.001326065409461783,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.016281676182762383,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.01759035647542715,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.023247908341573868,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9428800590002361,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9392504201301305,0.06
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.009834889236282148,0.06
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.010365062562282609,0.06
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.04054962807130497,0.06
+predictive,house cat,overlapping,animals,whereIsPet?,0.07854045821923035,0.06
+predictive,house cat,overlapping,animals,whereIsLion?,0.0034704841527497397,0.06
+predictive,house cat,overlapping,animals,whereIsCat?,0.9076933651170846,0.06
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.010295692510935078,0.06
+predictive,lion,overlapping,animals,whereIsPet?,0.0005013885096606841,0.06
+predictive,lion,overlapping,animals,whereIsLion?,0.995592807031298,0.06
+predictive,lion,overlapping,animals,whereIsCat?,0.0026604892353306324,0.06
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0012453152237122257,0.06
+predictive,whale,overlapping,animals,whereIsPet?,0.01338538553697484,0.06
+predictive,whale,overlapping,animals,whereIsLion?,0.014569303866087974,0.06
+predictive,whale,overlapping,animals,whereIsCat?,0.01977914414618594,0.06
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9522661664507514,0.06
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9454047206549123,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0065251933373151145,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.00697834974382564,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.04109173626394693,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.015741247340383874,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0015092561871736538,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9793246484568953,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0034248480155472777,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.0006317735565782416,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9955687435749283,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.0013198311651127733,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0024796517033810633,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.03339630540644186,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.032025002731505624,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.03481119895988052,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.8997674929021724,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.944957314132494,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00808010433879524,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.008515522855054813,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.03844705867365562,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.038557697304065185,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0023674675281914917,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9528973135726743,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0061775215950682204,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.000547473236897842,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9958856972900708,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.0019395075262722543,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.0016273219467575865,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.01820674157420511,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.019063731251808085,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.023076477207538224,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9396530499664485,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9891893057878188,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.001475508225373341,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0015380148955775339,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.007797171091230051,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.009306701239283732,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0003149761832937678,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9894177619394973,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0009605606379260839,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.00005350936806904237,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9994736862127189,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.00026190524037882345,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00021089917883374712,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.00317296445407438,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.0033649568411437117,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.003921803066177989,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9895402756386035,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.9915843907570576,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.0012439405485229881,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.001292379850603325,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.005879288843816366,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.006189970203521875,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0002642875221843727,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9928578129032376,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0006879293710563595,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.000057169003552715306,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9995470537744986,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.00021583163819491354,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00017994558375283599,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.002059858443990993,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.002199564549383129,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.002609900170162675,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9931306768364629,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsPet?,0.989420363866547,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsLion?,0.00145404582546964,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsCat?,0.0015152147590598985,0.020000000000000004
+predictive,golden retriever,overlapping,animals,whereIsAnimal?,0.007610375548923218,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsPet?,0.008986552161436786,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsLion?,0.0003102779226479696,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsCat?,0.9897697344341803,0.020000000000000004
+predictive,house cat,overlapping,animals,whereIsAnimal?,0.0009334354817339455,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsPet?,0.00005381462517831648,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsLion?,0.9994805602197727,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsCat?,0.00025758447259546395,0.020000000000000004
+predictive,lion,overlapping,animals,whereIsAnimal?,0.00020804068245254773,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsPet?,0.0030574585451652605,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsLion?,0.00324437854350224,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsCat?,0.00378710023258806,0.020000000000000004
+predictive,whale,overlapping,animals,whereIsAnimal?,0.9899110626787447,0.020000000000000004
