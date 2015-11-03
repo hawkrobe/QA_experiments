@@ -6,8 +6,8 @@ output: html_document
 To analyze the output of a webppl program for bayesian data analysis
 
 ```{r}
-setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling")
-
+setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling/guessingGame")
+library(ggplot2)
 library(coda)
 library(purrr)
 estimate_mode <- function(s) {
@@ -28,15 +28,36 @@ options("scipen"=10)
 ### Load in model results
 
 ```{r}
-m<-read.csv("guessingGame/Bayesian/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
+qparams<-read.csv("Bayesian/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
 samples = 1000
-str(m)
-m.samples <- m[rep(row.names(m), m$prob*samples), 1:6]
+str(qparams)
+qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
 
 ```
 
 ```{r}
-ggplot(m.params, aes(x=prob))+
-    geom_histogram(binwidth = .1)+
-    facet_wrap(~parameter, scales='free')
+ggplot(qparams.samples, aes(x=value))+
+    geom_histogram(data =subset(qparams.samples, parameter == "alpha"), binwidth = .09)+
+    geom_histogram(data=subset(qparams.samples, parameter == "beta"), binwidth = .025)+
+    geom_histogram(data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .04)+
+    facet_grid(~parameter, scales = 'free') +
+    theme_bw()
 ```
+
+```{r}
+aparams<-read.csv("Bayesian/BayesianAnswererAnalysisParams.csv", sep = ",", row.names = NULL)
+samples = 1000
+str(aparams)
+aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:2]
+
+```
+
+```{r}
+ggplot(aparams.samples, aes(x=value))+
+    geom_histogram(data =subset(aparams.samples, parameter == "alpha"), binwidth = .25)+
+    geom_histogram(data=subset(aparams.samples, parameter == "beta"), binwidth = .025)+
+    facet_grid(~parameter, scales = 'free') +
+    theme_bw()
+```
+
+### Predictives
