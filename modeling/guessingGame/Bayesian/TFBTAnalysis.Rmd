@@ -6,8 +6,9 @@ output: html_document
 To analyze the output of a webppl program for bayesian data analysis
 
 ```{r}
-setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling/guessingGame")
+setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling")
 library(ggplot2)
+library(dplyr)
 library(coda)
 library(purrr)
 estimate_mode <- function(s) {
@@ -28,7 +29,7 @@ options("scipen"=10)
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("Bayesian/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
+qparams<-read.csv("guessingGame/Bayesian/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(qparams)
 qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
@@ -36,16 +37,20 @@ qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:
 ```
 
 ```{r}
+pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
+     width = 6, height = 3)
 ggplot(qparams.samples, aes(x=value))+
-    geom_histogram(data =subset(qparams.samples, parameter == "alpha"), binwidth = .09)+
+    geom_histogram(data =subset(qparams.samples, parameter == "alpha"), binwidth = .15)+
     geom_histogram(data=subset(qparams.samples, parameter == "beta"), binwidth = .025)+
     geom_histogram(data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .04)+
+    ggtitle("Questioner Parameter Posteriors (1000 iterations)") +
     facet_grid(~parameter, scales = 'free') +
     theme_bw()
+dev.off()
 ```
 
 ```{r}
-aparams<-read.csv("Bayesian/BayesianAnswererAnalysisParams.csv", sep = ",", row.names = NULL)
+aparams<-read.csv("guessingGame/Bayesian/BayesianAnswererAnalysisParams.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(aparams)
 aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:2]
@@ -53,11 +58,41 @@ aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:
 ```
 
 ```{r}
+pdf(file="../writing/2015/journal-manuscript/figures/AnswererParamPosteriors.pdf",
+     width = 6, height = 3)
 ggplot(aparams.samples, aes(x=value))+
     geom_histogram(data =subset(aparams.samples, parameter == "alpha"), binwidth = .25)+
     geom_histogram(data=subset(aparams.samples, parameter == "beta"), binwidth = .025)+
+    ggtitle("Answerer Parameter Posteriors (1000 iterations)") +
     facet_grid(~parameter, scales = 'free') +
     theme_bw()
+dev.off()
 ```
 
 ### Predictives
+
+```{r}
+source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
+apredictive<-read.csv("guessingGame/Bayesian/BayesianAnswererAnalysisPredictives.csv", sep = ",", row.names = NULL)
+apredictive.samples <- apredictive[rep(row.names(apredictive), 
+                                       apredictive$MCMCprob*samples), 1:5] %>%
+  mutate(question = as.character(parameter), 
+         answer = substr(as.character(value), 1, nchar(as.character(value)) - 1),
+         type = as.character(item1),
+         domain = as.character(item2)) %>%
+  do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(utterance = as.factor(question), response = as.factor(answer)) %>% 
+  select(type, domain, utterance, response, prob)
+
+apredictive.pp <- apredictive.samples %>%
+  group_by(type, domain, utterance, response) %>%
+  summarize(MAP = estimate_mode(prob),
+            credHigh = HPDhi(prob),
+            credLow = HPDlo(prob)) 
+
+ggplot(apredictive.pp, aes(x=MAP,color=response))+
+  geom_bar(stat = 'identity')+
+  xlim(0,1)
+
+```
