@@ -726,7 +726,7 @@ To test our null hypothesis of uniform saliency priors, we performed $\chi^2$ go
 
 We carried out a model comparison using these empirical priors instead of uniform priors. The fits are shown in Figure \ref{fig:Exp2ModelSpaceEmpPriors}. We find that the pragmatic answerer model provides a significantly better fit to the data than the explicit model, with $r=0.91$, compared to $0.72$ (Zou's 95\% confidence interval $= [0.13, 0.27]$). The pragmatic questioner model also provides a slightly better fit to the data than the explicit model, with $r = 0.92$ compared to $0.89$ (Zou's 95\% confidence interval $= [0.01, 0.06]$). 
 
-For a more precise test of whether participants are using uniform priors or the distributions we measured empirically, we conducted a Bayesian data analysis of our questioner and answerer models. For the purposes of this analysis, we model the saliency prior as a mixture of the uniform distribution assumed in earlier experiments and the saliency distribution we empirically measured in Experiment 3. We introduce a parameter $\beta \in [0,1]$ controlling the mixture weight, and infer both $\beta$ and the rationality parameter $\alpha$ by conditioning on our observed data. We assume $$\beta \sim Unif(0,1)$$ $$\alpha \sim Unif(0,20)$$ and use MCMC to estimate the most likely parameter values.
+For a more precise test of whether participants are using uniform priors or the distributions we measured empirically, we conducted a Bayesian data analysis of our questioner and answerer models. For the purposes of this analysis, we model the saliency prior as a mixture of the uniform distribution assumed in earlier experiments and the saliency distribution we empirically measured in Experiment 3. We introduce a parameter $\beta \in [0,1]$ controlling the mixture weight, and infer both $\beta$ and the rationality parameter $\alpha$ by conditioning on our observed data. We assume $$\beta \sim Unif(0,1)$$ $$\alpha \sim Unif(0,20)$$ and use MCMC to estimate the most likely parameter values (see Figure \ref{fig:BayesianParamPosteriors}) .
 
  \todo[inline]{TODO: Report posterior predictive dists for responses and highest-posterior density intervals for $\alpha$ and $\beta$.}
 
@@ -741,7 +741,14 @@ For a more precise test of whether participants are using uniform priors or the 
 \label{fig:Exp2ModelSpaceEmpPriors}
 \end{figure*}
 %
-
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale=1]{AnswererParamPosteriors.pdf}
+\includegraphics[scale=1]{QuestionerParamPosteriors.pdf}
+\end{center}
+\caption{Param Posteriros}
+\label{fig:BayesianParamPosteriors}
+\end{figure*}
 \subsection{Discussion}
 
 \todo[inline]{rdh: talk about the two points flagged in the previous discussion. (1) The salience-enriched explicit models are still not as good as the pragmatic models, hence saliency alone can't account for our results. (2) We were able to capture the item-level variability much better with empirical priors, at the cost of introducing some extra noise (e.g. the model-data correlations for both explicit and pragmatic questioners went down)}
