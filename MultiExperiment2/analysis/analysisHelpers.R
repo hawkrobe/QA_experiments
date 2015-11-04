@@ -1,3 +1,6 @@
+library(boot)
+library(memoise)
+
 equivocalFarLeftAnswers <- c("wooden chair", "burger", "dalmatian", "sunny beach")
 equivocalNearLeftAnswers <- c("metal chair", "tomatos", "betta fish", "snowy forest")
 equivocalNearRightAnswers <- c("metal stool", "carrot", "goldfish", "snowy mountain")
@@ -135,6 +138,9 @@ mapGoal <- function(type, goal) {
   }
 }
 
+vectorizedMapAnswer <- Vectorize(mapAnswer);
+vectorizedMapQuestion <- Vectorize(mapQuestion);
+
 mapWordsToNodes <- function(d) {
   answerNodes = c()
   questionNodes = c()
@@ -185,16 +191,43 @@ getProbs <- function(data, QorA, R) {
   return(outputData)
 }
 
+emptyAnswerGrid <- function(d, collapseDomain) {
+  if(collapseDomain) {
+    g <- expand.grid(response = levels(factor(d$response)),
+                     type = levels(factor(d$type)),
+                     utterance = levels(factor(d$utterance)));
+  } else {
+    g <- expand.grid(response = levels(d$response),
+                     domain = levels(factor(d$domain)),
+                     type = levels(factor(d$type)),
+                     utterance = levels(factor(d$utterance)))
+  }
+  return(g)
+};
+
+emptyQuestionGrid <- function(d, collapseDomain) {
+  if(collapseDomain) {
+    g <- expand.grid(response = levels(factor(d$response)),
+                     type = levels(factor(d$type)),
+                     goal = levels(factor(d$goal)));
+  } else {
+    g <- expand.grid(response = levels(d$response),
+                     domain = levels(factor(d$domain)),
+                     type = levels(factor(d$type)),
+                     goal = levels(factor(d$goal)))
+  }
+  return(g)
+};
+
 # called a bunch of times on questioner data set to bootstrap CI
-Qprobs <- function(data, indices) {
+Qprobs <- function(collapseDomains, data, indices) {
   d <- data[indices,] # allows boot to select sample 
   pseudocount <- 0#runif(1, max = .25)
+  emptyGrid <- emptyQuestionGrid(d, collapseDomains)
   c <- d %>% 
-    group_by(type, goal, response) %>% 
+    group_by(response) %>% 
     summarize(count = n()) %>%
-    right_join(expand.grid(response = levels(d$response),
-                           type = levels(factor(d$type)),
-                           goal = levels(factor(d$goal)))) %>% 
+    right_join(emptyGrid) %>% 
     do(mutate(., countp1 = ifelse(is.na(count), 
                                   pseudocount, count + pseudocount),
               count = ifelse(is.na(count), 0, count),
@@ -203,18 +236,18 @@ Qprobs <- function(data, indices) {
 }
 
 # called a bunch of times on answerer data set to bootstrap CI
-Aprobs <- function(data, indices) {
+Aprobs <- function(collapseDomains, data, indices) {
   d <- data[indices,] # allows boot to select sample 
   pseudocount <- 0#runif(1, max = .25)
-  c <- d %>% 
-    group_by(type, utterance, response) %>% 
+  emptyGrid <- emptyAnswerGrid(d, collapseDomains)
+  c <- d %>%
+    group_by(response) %>%
     summarize(count = n()) %>%
-    right_join(expand.grid(response = levels(d$response),
-                           type = levels(factor(d$type)),
-                           utterance = levels(factor(d$utterance)))) %>% 
+    right_join(emptyGrid) %>%
     do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
               count = ifelse(is.na(count), 0, count),
               empProb = countp1 / sum(countp1)))  
+  print(c$empProb)
   return(c$empProb)
 } 
 
@@ -225,37 +258,29 @@ Aprobs <- function(data, indices) {
 ## Note that this currently does not collapse over any aspect of the experiment.
 ## If we want to do that in the future, will just group by fewer things before 
 ## summarizing
-getProbsAndCIs <- function(data, QorA, R) {
-  if(QorA == "q") {
-    tempData <- data %>% group_by(type, goal, response) %>% 
-      summarize(count = n()) %>%
-      right_join(expand.grid(response = levels(data$response),
-                             type = levels(factor(data$type)),
-                             goal = levels(factor(data$goal)))) 
-  } else if(QorA == "a") {
-    tempData <- data %>% group_by(type, utterance, response) %>% 
-      summarize(count = n()) %>%
-      right_join(expand.grid(response = levels(data$response),
-                             type = levels(factor(data$type)),
-                             utterance = levels(factor(data$utterance)))) 
+getProbsAndCIs <- function(data, QorA, R = 1000, collapseDomains) {
+  str(data);
+  if(QorA == "a") {
+    emptyGrid = emptyAnswerGrid(data, collapseDomains)
   } else {
-    stop(cat("Did not specify Q or A:", QorA))
-  }
-  
-  outputData <- tempData %>% 
+    emptyGrid = emptyQuestionGrid(data, collapseDomains)
+  };
+  outputData <- data %>% 
+    group_by(response) %>%
+    summarize(count = n()) %>%
+    right_join(emptyGrid) %>%
     do(mutate(., count = ifelse(is.na(count), 0, count),
               empProb = count / sum(count),
               groupSize = sum(count)))
-  
-  print(outputData)
+  print(outputData);
+#   
   # Get confidence intervals
-  print(QorA)
   if(QorA == "q") {
-    bootObj <-  boot(data = data,statistic = Qprobs,R=R)
+    bootObj <-  boot(data = data,statistic = Qprobs,R=R, collapseDomains=collapseDomains)
   } else {
-    bootObj <-  boot(data = data,statistic = Aprobs,R=R)
+    bootObj <-  boot(data = data,statistic = Aprobs,R=R, collapseDomains=collapseDomains)
   }
-  
+  print("done bootstrapping")
   print(bootObj)
   upper_ci <- c()
   lower_ci <- c()

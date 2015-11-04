@@ -26,6 +26,56 @@ HPDlo<- function(s){
 options("scipen"=10) 
 ```
 
+### Load in empirical data
+
+```{r}
+ps = read.csv("../MultiExperiment2/data/MultiExp2_compiled-subject_information.csv",
+              sep = ',', header = TRUE)
+mturk = read.csv("../MultiExperiment2/data/MultiExp2_compiled-mturk.csv",
+                 sep=',', header= TRUE) %>%
+  mutate(gameID = Answer.id) %>%
+  select(workerid, gameID)
+d = read.csv("../MultiExperiment2/data/MultiExp2_compiled-trials_clean.csv",  
+             sep = ',', header = TRUE) %>%
+  right_join(mturk, by = 'workerid')
+english_ps <- (ps %>% 
+               filter(nativeEnglish == "yes"))$workerid
+cat("We removed", length(ps$workerid) - length(english_ps), "ps due to language")
+#trialsCompleted = d %>% count(workerid) %>% mutate(numCompleted = n)
+filteredD = d %>% filter(workerid %in% english_ps) %>% 
+       filter(answer != "NA") 
+completedGames = (filteredD %>% group_by(gameID) %>% 
+                    count(gameID) %>% mutate(numCompleted = n) %>% 
+                    filter(numCompleted == 24))$gameID
+cat("We removed", length(unique(d$workerid)) - length(completedGames)*2, "games total")
+d <- filteredD %>% filter(gameID %in% completedGames) %>% 
+     distinct(domain, goal, question, guess, answer, type, gameID)
+source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
+d <- mapWordsToNodes(d)
+d_q = d %>% 
+      mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
+      mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
+      group_by(domain, type, goal) %>%
+      do(getProbsAndCIs(data = ., QorA = 'q', R = 5, FALSE)) %>%
+      select(goal, type, response, domain, count,
+             groupSize, empProb) %>%
+      ungroup() %>%
+      mutate(domain = factor(domain),
+             type = factor(type),
+             goal = ordered(goal, levels=c("G1","G2","G3","G4")))
+d_a = d %>% 
+      mutate(response=ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
+      mutate(utterance=ordered(questionNodes,levels=c("Q1","Q2","Q3","Q4"))) %>%
+      group_by(domain, type, utterance) %>%
+      do(getProbsAndCIs(data = ., QorA = 'a', R = 5, FALSE)) %>%
+      select(utterance, type, response, domain, count,
+             groupSize, empProb) %>%
+      ungroup() %>%
+      mutate(domain = factor(domain),
+             type = factor(type),
+             utterance = ordered(utterance, levels=c("Q1","Q2","Q3","Q4")))
+```
+
 ### Load in model results
 
 ```{r}
@@ -89,10 +139,24 @@ apredictive.pp <- apredictive.samples %>%
   group_by(type, domain, utterance, response) %>%
   summarize(MAP = estimate_mode(prob),
             credHigh = HPDhi(prob),
-            credLow = HPDlo(prob)) 
+            credLow = HPDlo(prob)) %>%
+  right_join(d_a)
+  
 
-ggplot(apredictive.pp, aes(x=MAP,color=response))+
-  geom_bar(stat = 'identity')+
-  xlim(0,1)
-
+answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
+  + theme(text = element_text(size = 20),
+          axis.text.x = element_text(angle=90, vjust=1))
+  + xlab("Model predicted probability")
+  + ylim(0,1)
+  + ylab("Empirical Probability")
+  + geom_point(aes(colour = domain, shape = type))
+  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+  + ggtitle("Answerer Model Fits (Empirical Priors)")
+  + geom_smooth(method = "lm")
+#   + geom_text(aes(x,y,label=lab),
+#               data=data.frame(x = .75, y = .25,
+#                               modelLevel = labelDataFrame$modelLevel,
+#                               lab = labelDataFrame$correlation))
+  + theme_bw())
 ```
