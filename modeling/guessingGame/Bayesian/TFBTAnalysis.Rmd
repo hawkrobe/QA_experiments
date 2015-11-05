@@ -56,10 +56,11 @@ d_q = d %>%
       mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
       mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
       group_by(domain, type, goal) %>%
-      do(getProbsAndCIs(data = ., QorA = 'q', R = 5, FALSE)) %>%
-      select(goal, type, response, domain, count,
+      do(getProbsAndCIs(data = ., QorA = 'q', R = 1000, FALSE)) %>%
+      select(goal, type, response, domain, count, lower_ci, upper_ci,
              groupSize, empProb) %>%
       ungroup() %>%
+      filter(!(type == "equivocal" & (response == "Q3" | response == "Q4"))) %>%
       mutate(domain = factor(domain),
              type = factor(type),
              goal = ordered(goal, levels=c("G1","G2","G3","G4")))
@@ -67,8 +68,8 @@ d_a = d %>%
       mutate(response=ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
       mutate(utterance=ordered(questionNodes,levels=c("Q1","Q2","Q3","Q4"))) %>%
       group_by(domain, type, utterance) %>%
-      do(getProbsAndCIs(data = ., QorA = 'a', R = 5, FALSE)) %>%
-      select(utterance, type, response, domain, count,
+      do(getProbsAndCIs(data = ., QorA = 'a', R = 1000, FALSE)) %>%
+      select(utterance, type, response, domain, count, lower_ci, upper_ci,
              groupSize, empProb) %>%
       ungroup() %>%
       mutate(domain = factor(domain),
@@ -142,6 +143,7 @@ apredictive.pp <- apredictive.samples %>%
             credLow = HPDlo(prob)) %>%
   right_join(d_a)
   
+cor(apredictive.pp$MAP, apredictive.pp$empProb)
 
 answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + theme(text = element_text(size = 20),
@@ -149,14 +151,55 @@ answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + xlab("Model predicted probability")
   + ylim(0,1)
   + ylab("Empirical Probability")
+  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci, alpha = .25)) 
+  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow, alpha = .25))
   + geom_point(aes(colour = domain, shape = type))
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-  + ggtitle("Answerer Model Fits (Empirical Priors)")
+  + ggtitle("Answerer Posterior Predictive")
   + geom_smooth(method = "lm")
-#   + geom_text(aes(x,y,label=lab),
-#               data=data.frame(x = .75, y = .25,
-#                               modelLevel = labelDataFrame$modelLevel,
-#                               lab = labelDataFrame$correlation))
+  + geom_text(aes(x=.75,y=.25,label="r=0.92"))
   + theme_bw())
+answer_plots
+```
+
+```{r}
+qpredictive<-read.csv("guessingGame/Bayesian/BayesianQuestionerAnalysisPredictives.csv", sep = ",", row.names = NULL)
+qpredictive.samples <- qpredictive[rep(row.names(qpredictive), 
+                                       qpredictive$MCMCprob*samples), 1:5] %>%
+  mutate(goal = as.character(parameter), 
+         question = as.character(value),
+         type = as.character(item1),
+         domain = as.character(item2)) %>%
+  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
+  select(type, domain, goal, response, prob)
+
+qpredictive.pp <- qpredictive.samples %>%
+  group_by(type, domain, goal, response) %>%
+  summarize(MAP = estimate_mode(prob),
+            credHigh = HPDhi(prob),
+            credLow = HPDlo(prob)) %>%
+  right_join(d_q, by = c("goal","type","domain","response")) %>%
+  filter(type == "overlapping")
+  
+cor(qpredictive.pp$MAP, qpredictive.pp$empProb)
+
+question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
+  + theme(text = element_text(size = 20),
+          axis.text.x = element_text(angle=90, vjust=1))
+  + xlab("Model predicted probability")
+  + ylim(0,1)
+  + ylab("Empirical Probability")
+  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci, alpha = .25)) 
+  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow, alpha = .25))
+  + geom_point(aes(colour = domain, shape = type))
+  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+  + ggtitle("Questioner Posterior Predictive")
+  + geom_smooth(method = "lm")
+  + geom_text(aes(x=.75,y=.25,label="r=0.92"))
+  + theme_bw())
+question_plots
 ```
