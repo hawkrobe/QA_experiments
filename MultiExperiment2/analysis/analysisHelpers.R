@@ -140,6 +140,7 @@ mapGoal <- function(type, goal) {
 
 vectorizedMapAnswer <- Vectorize(mapAnswer);
 vectorizedMapQuestion <- Vectorize(mapQuestion);
+vectorizedMapGoal <- Vectorize(mapGoal);
 
 mapWordsToNodes <- function(d) {
   answerNodes = c()
@@ -247,7 +248,6 @@ Aprobs <- function(collapseDomains, data, indices) {
     do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
               count = ifelse(is.na(count), 0, count),
               empProb = countp1 / sum(countp1)))  
-  print(c$empProb)
   return(c$empProb)
 } 
 
@@ -272,7 +272,6 @@ getProbsAndCIs <- function(data, QorA, R = 1000, collapseDomains) {
     do(mutate(., count = ifelse(is.na(count), 0, count),
               empProb = count / sum(count),
               groupSize = sum(count)))
-  print(outputData);
 #   
   # Get confidence intervals
   if(QorA == "q") {
@@ -280,8 +279,6 @@ getProbsAndCIs <- function(data, QorA, R = 1000, collapseDomains) {
   } else {
     bootObj <-  boot(data = data,statistic = Aprobs,R=R, collapseDomains=collapseDomains)
   }
-  print("done bootstrapping")
-  print(bootObj)
   upper_ci <- c()
   lower_ci <- c()
   for(i in 1:4) {
