@@ -80,7 +80,7 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
+qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(qparams)
 qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
@@ -101,7 +101,7 @@ dev.off()
 ```
 
 ```{r}
-aparams<-read.csv("guessingGame/Bayesian/BayesianAnswererAnalysisParams.csv", sep = ",", row.names = NULL)
+aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisParams.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(aparams)
 aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:2]
