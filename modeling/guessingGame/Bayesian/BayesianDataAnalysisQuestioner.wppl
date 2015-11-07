@@ -45,5 +45,5 @@ var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
 console.log(outputERP.toJSON());
 console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP, "BayesianQuestionerAnalysis");
+qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis");
 
