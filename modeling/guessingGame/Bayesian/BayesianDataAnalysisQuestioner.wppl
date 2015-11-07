@@ -3,7 +3,7 @@
 
 var data = qa.readCSV("../../../MultiExperiment2/data/"
 		      + "MultiExp2_BayesianAnalysisInput.csv");
-var types = ["branching"];// ["branching", "overlapping", "equivocal"];
+var types = ["branching", "overlapping", "equivocal"];
 var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
