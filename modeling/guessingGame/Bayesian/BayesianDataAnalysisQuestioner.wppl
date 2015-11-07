@@ -3,7 +3,7 @@
 
 var data = qa.readCSV("../../../MultiExperiment2/data/"
 		      + "MultiExp2_BayesianAnalysisInput.csv");
-var types = ["overlapping", "branching", "overlapping", "equivocal"];
+var types = ["branching"];// ["branching", "overlapping", "equivocal"];
 var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
@@ -12,6 +12,7 @@ var modelAnalysis = function() {
   var alpha = uniform(0,20);
   var beta = uniform(0,1);
   var expVsPrag = uniform(0,1);  
+  var coinFlip = flip(expVsPrag);  
   
   // Run model and condition on data
   var score = sum(map(function(item) {
@@ -19,7 +20,7 @@ var modelAnalysis = function() {
     var runTFBTQuestioner = model.runTFBTQuestioner;
     return sum(map(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
-      var questionerERP = runTFBTQuestioner(qud, expVsPrag);
+      var questionerERP = runTFBTQuestioner(qud, coinFlip);
       var score = sum(map(function(dataRow) {
 	return questionerERP.score([], "whereIs" + qa.capitalize(dataRow[3]) + "?");
       }, itemData));

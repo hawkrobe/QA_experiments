@@ -243,7 +243,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
     });
   });
 
-  var runTFBTQuestioner = function(qudName, expVsPrag) {
+  var runTFBTQuestioner = function(qudName, coinFlip) {
     var qud = nameToQUD(qudName);
     return Enumerate(function(){
       var question = questionPrior();
@@ -253,7 +253,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
       var expectedKL = mean(
         function(){
           var trueWorld = worldPrior();
-          var answer = (flip(expVsPrag) ? 
+          var answer = (coinFlip ? 
 	      	        sample(pragmaticAnswerer(question, trueWorld)) : 
  			sample(explicitAnswerer(question, trueWorld)));
           var posterior = Enumerate(function(){
