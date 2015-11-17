@@ -80,7 +80,7 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams.csv", sep = ",", row.names = NULL)
+qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_flipOutsideAllTypes.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(qparams)
 qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
@@ -91,9 +91,15 @@ qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:
 pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
      width = 6, height = 3)
 ggplot(qparams.samples, aes(x=value))+
-    geom_histogram(data =subset(qparams.samples, parameter == "alpha"), binwidth = .15)+
-    geom_histogram(data=subset(qparams.samples, parameter == "beta"), binwidth = .025)+
-    geom_histogram(data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .04)+
+    geom_histogram(aes(y=..density..),data =subset(qparams.samples, parameter == "alpha"), binwidth = .12, colour="black", fill="white")+
+    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "beta"), binwidth = .05, colour="black", fill="white")+
+    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .04, colour="black", fill="white")+
+    geom_density(data =subset(qparams.samples, parameter == "alpha"), adjust = 3,
+                 alpha=.2, fill="#FF6666")+
+    geom_density(data=subset(qparams.samples, parameter == "beta"), adjust = 3,
+                 alpha=.2, fill="#FF6666")+
+    geom_density(data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 0.4,
+                 alpha=.2, fill="#FF6666")+
     ggtitle("Questioner Parameter Posteriors (1000 iterations)") +
     facet_grid(~parameter, scales = 'free') +
     theme_bw()
@@ -124,7 +130,7 @@ dev.off()
 
 ```{r}
 source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
-apredictive<-read.csv("guessingGame/Bayesian/BayesianAnswererAnalysisPredictives.csv", sep = ",", row.names = NULL)
+apredictive<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisPredictives.csv", sep = ",", row.names = NULL)
 apredictive.samples <- apredictive[rep(row.names(apredictive), 
                                        apredictive$MCMCprob*samples), 1:5] %>%
   mutate(question = as.character(parameter), 
@@ -145,6 +151,8 @@ apredictive.pp <- apredictive.samples %>%
   
 cor(apredictive.pp$MAP, apredictive.pp$empProb)
 
+pdf(file="../writing/2015/journal-manuscript/figures/AnswererPredictive.pdf",
+         width = 6, height = 3)
 answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
@@ -161,10 +169,11 @@ answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + geom_text(aes(x=.75,y=.25,label="r=0.92"))
   + theme_bw())
 answer_plots
+dev.off()
 ```
 
 ```{r}
-qpredictive<-read.csv("guessingGame/Bayesian/BayesianQuestionerAnalysisPredictives.csv", sep = ",", row.names = NULL)
+qpredictive<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisPredictives_flipOutsideAllTypes.csv", sep = ",", row.names = NULL)
 qpredictive.samples <- qpredictive[rep(row.names(qpredictive), 
                                        qpredictive$MCMCprob*samples), 1:5] %>%
   mutate(goal = as.character(parameter), 
@@ -181,11 +190,12 @@ qpredictive.pp <- qpredictive.samples %>%
   summarize(MAP = estimate_mode(prob),
             credHigh = HPDhi(prob),
             credLow = HPDlo(prob)) %>%
-  right_join(d_q, by = c("goal","type","domain","response")) %>%
-  filter(type == "overlapping")
-  
+  right_join(d_q, by = c("goal","type","domain","response")) 
+
 cor(qpredictive.pp$MAP, qpredictive.pp$empProb)
 
+pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive.pdf",
+         width = 6, height = 3)
 question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
@@ -199,7 +209,8 @@ question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Questioner Posterior Predictive")
   + geom_smooth(method = "lm")
-  + geom_text(aes(x=.75,y=.25,label="r=0.92"))
+  + geom_text(aes(x=.75,y=.25,label="r=0.976"))
   + theme_bw())
 question_plots
+dev.off()
 ```

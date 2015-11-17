@@ -28,7 +28,7 @@ var modelAnalysis = function() {
       // Store predictions
       foreach(questionerERP.support([]),function(s){
 	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
-	query.add([qud, item[0], item[1], s], Math.exp(questionerERP.score([], s)));
+	query.add([qud, item[0], item[1], strippedQuestion], Math.exp(questionerERP.score([], s)));
       });
       return score;
     }, model.qudSpace));
