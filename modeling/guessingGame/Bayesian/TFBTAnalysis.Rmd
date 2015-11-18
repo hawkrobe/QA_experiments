@@ -80,7 +80,7 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_flipOutsideAllTypes.csv", sep = ",", row.names = NULL)
+qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_diffBeta.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(qparams)
 qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
@@ -91,14 +91,14 @@ qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:
 pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
      width = 6, height = 3)
 ggplot(qparams.samples, aes(x=value))+
-    geom_histogram(aes(y=..density..),data =subset(qparams.samples, parameter == "alpha"), binwidth = .12, colour="black", fill="white")+
-    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "beta"), binwidth = .05, colour="black", fill="white")+
-    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .04, colour="black", fill="white")+
-    geom_density(data =subset(qparams.samples, parameter == "alpha"), adjust = 3,
+    geom_histogram(aes(y=..density..),data =subset(qparams.samples, parameter == "alpha" & value <= 9), binwidth = .25, colour="black", fill="white")+
+    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "beta"), binwidth = .045, colour="black", fill="white")+
+    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .1, colour="black", fill="white")+
+    geom_density(data =subset(qparams.samples, parameter == "alpha" & value <= 9), adjust = 1.25,
                  alpha=.2, fill="#FF6666")+
-    geom_density(data=subset(qparams.samples, parameter == "beta"), adjust = 3,
+    geom_density(data=subset(qparams.samples, parameter == "beta"), adjust = 2,
                  alpha=.2, fill="#FF6666")+
-    geom_density(data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 0.4,
+    geom_density(data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 1,
                  alpha=.2, fill="#FF6666")+
     ggtitle("Questioner Parameter Posteriors (1000 iterations)") +
     facet_grid(~parameter, scales = 'free') +
@@ -115,15 +115,19 @@ aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:
 ```
 
 ```{r}
-pdf(file="../writing/2015/journal-manuscript/figures/AnswererParamPosteriors.pdf",
-     width = 6, height = 3)
+#pdf(file="../writing/2015/journal-manuscript/figures/AnswererParamPosteriors.pdf",
+     #width = 6, height = 3)
 ggplot(aparams.samples, aes(x=value))+
-    geom_histogram(data =subset(aparams.samples, parameter == "alpha"), binwidth = .25)+
-    geom_histogram(data=subset(aparams.samples, parameter == "beta"), binwidth = .025)+
+    geom_histogram(aes(y=..density..), data =subset(aparams.samples, parameter == "alpha" & value <= 10), binwidth = .25, colour="black", fill="white")+
+    geom_histogram(aes(y=..density..), data=subset(aparams.samples, parameter == "beta"), binwidth = .04, colour="black", fill="white")+
+    geom_density(data =subset(aparams.samples, parameter == "alpha" & value < 10), adjust = 2,
+                 alpha=.2, fill="#FF6666")+
+    geom_density(data=subset(aparams.samples, parameter == "beta"), adjust = 2,
+                 alpha=.2, fill="#FF6666")+
     ggtitle("Answerer Parameter Posteriors (1000 iterations)") +
     facet_grid(~parameter, scales = 'free') +
     theme_bw()
-dev.off()
+#dev.off()
 ```
 
 ### Predictives
@@ -159,8 +163,8 @@ answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + xlab("Model predicted probability")
   + ylim(0,1)
   + ylab("Empirical Probability")
-  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci, alpha = .25)) 
-  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow, alpha = .25))
+  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
+  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
   + geom_point(aes(colour = domain, shape = type))
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
@@ -192,9 +196,9 @@ qpredictive.pp <- qpredictive.samples %>%
             credLow = HPDlo(prob)) %>%
   right_join(d_q, by = c("goal","type","domain","response")) 
 
-cor(qpredictive.pp$MAP, qpredictive.pp$empProb)
+qcor <- round(cor(qpredictive.pp$MAP, qpredictive.pp$empProb), 2)
 
-pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive.pdf",
+pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive_beta.pdf",
          width = 6, height = 3)
 question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + theme(text = element_text(size = 20),
@@ -202,14 +206,14 @@ question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + xlab("Model predicted probability")
   + ylim(0,1)
   + ylab("Empirical Probability")
-  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci, alpha = .25)) 
-  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow, alpha = .25))
+  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
+  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
   + geom_point(aes(colour = domain, shape = type))
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Questioner Posterior Predictive")
   + geom_smooth(method = "lm")
-  + geom_text(aes(x=.75,y=.25,label="r=0.976"))
+  + geom_text(aes(x=.75,y=.25,label=paste("r=",qcor)))
   + theme_bw())
 question_plots
 dev.off()
