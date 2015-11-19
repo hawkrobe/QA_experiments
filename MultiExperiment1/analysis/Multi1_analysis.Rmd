@@ -7,7 +7,7 @@ Set wd
 
 ```{r}
 library(knitr)
-opts_knit$set(root.dir = '/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment3/')
+opts_knit$set(root.dir = '/Users/rxdh/Box Sync/stanford/research/goodman/q&a/MultiExperiment1/')
 setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/MultiExperiment1/")
 library(tidyr)
 library(dplyr)
@@ -142,7 +142,7 @@ optimalFit <- function(data, equal = FALSE) {
 
 Now we import the literal answer fits and tidy them up to eventually be joined
 ```{r}
-lit_ans_fits = join(d_a,read.csv("analysis/model_prediction/litAnswererRationalityWhale.csv", sep = ',')) %>%
+lit_ans_fits = right_join(d_a,read.csv("analysis/model_prediction/litAnswererRationalityWhale.csv", sep = ',')) %>%
   #mutate(model_prob = jitter(model_prob)) %>%
   mutate(answerR = ansR) %>% # This looks sketchy, but we know that these parameters don't matter...
   mutate(questionR = ansR) %>%
@@ -155,7 +155,7 @@ lit_ans_fits = optimalFit(lit_ans_fits) %>%
 Next we import the explicit answer fits and tidy them up
 
 ```{r}
-exp_ans_fits = optimalFit(join(d_a, 
+exp_ans_fits = optimalFit(right_join(d_a, 
                           read.csv("analysis/model_prediction/expAnswererRationalityWhale.csv", 
                                     sep =',')), T) %>%
   mutate(explicit_cor = cor(emp_prob, model_prob)) %>%
@@ -165,7 +165,7 @@ exp_ans_fits = optimalFit(join(d_a,
 Finally, we import the pragmatic answer fits and tidy them up
 
 ```{r}
-prag_ans_fits = optimalFit(join(d_a, read.csv("analysis/model_prediction/pragAnswererRationalityWhale.csv", sep =',')), equal = T) %>% 
+prag_ans_fits = optimalFit(right_join(d_a, read.csv("analysis/model_prediction/pragAnswererRationalityWhale.csv", sep =',')), equal = T) %>% 
   mutate(pragmatic_cor = cor(emp_prob, model_prob)) %>%
   rename(pragmatic_ansR = answerR, pragmatic_qR = questionR, pragmatic_prob = model_prob) 
 ```
@@ -175,9 +175,9 @@ Now that each of these data sets is in a nice format, we can join them all toget
 ```{r}
 # join them all together
 all_ans = d_a %>% 
-  join(lit_ans_fits) %>% 
-  join(exp_ans_fits) %>% 
-  join(prag_ans_fits) %>%
+  right_join(lit_ans_fits) %>% 
+  right_join(exp_ans_fits) %>% 
+  right_join(prag_ans_fits) %>%
   gather(condition.1, model_prob, 
          explicit_prob, pragmatic_prob, lit_prob) %>%
   separate(condition.1, c("model_level", "type")) %>%
@@ -223,7 +223,7 @@ cocor(~ empirical + expModel | empirical + pragModel, data.frame(empirical = emp
 Now we import the literal questioner fits and tidy them up to eventually be joined
 
 ```{r}
-lit_quest_fits = join(d_q,read.csv("analysis/model_prediction/litQuestionerRationalityWhale.csv", sep = ',')) %>%
+lit_quest_fits = right_join(d_q,read.csv("analysis/model_prediction/litQuestionerRationalityWhale.csv", sep = ',')) %>%
   mutate(answerR = ansR) %>% # This looks sketchy, but we know that these parameters don't matter...
   mutate(questionR = ansR) %>%
   select(goal, response, emp_prob, answerR, questionR, model_prob)
@@ -236,7 +236,7 @@ lit_quest_fits = optimalFit(lit_quest_fits, T) %>%
 Next we import the explicit answer fits and tidy them up
 
 ```{r}
-exp_quest_fits = optimalFit(join(d_q, read.csv("analysis/model_prediction/expQuestionerRationalityWhale.csv", sep =',')), T) %>%
+exp_quest_fits = optimalFit(right_join(d_q, read.csv("analysis/model_prediction/expQuestionerRationalityWhale.csv", sep =',')), T) %>%
   mutate(explicit_cor = cor(emp_prob, model_prob)) %>%
   rename(explicit_ansR = answerR, explicit_qR = questionR, explicit_prob = model_prob) 
 ```
@@ -244,8 +244,7 @@ exp_quest_fits = optimalFit(join(d_q, read.csv("analysis/model_prediction/expQue
 Finally, we import the pragmatic answer fits and tidy them up
 
 ```{r}
-prag_quest_fits = optimalFit(join(d_q, 
-                          read.csv("analysis/model_prediction/pragQuestionerRationalityWhale.csv", 
+prag_quest_fits = optimalFit(right_join(d_q,                           read.csv("analysis/model_prediction/pragQuestionerRationalityWhale.csv", 
                                    sep =',')), T) %>% 
   mutate(pragmatic_cor = cor(emp_prob, model_prob)) %>%
   rename(pragmatic_ansR = answerR, pragmatic_qR = questionR, pragmatic_prob = model_prob) 
