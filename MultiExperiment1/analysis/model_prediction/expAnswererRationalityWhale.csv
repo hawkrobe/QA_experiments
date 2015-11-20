@@ -1,5 +1,5 @@
 utterance,answerR,questionR,response,model_prob
-mammal,1,1,siamese cat,0.28
+pet,1,1,siamese cat,0.28
 pet,1,1,poodle,0.28
 pet,1,1,whale,0.17
 pet,1,1,dalmatian,0.28

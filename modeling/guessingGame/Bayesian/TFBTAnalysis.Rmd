@@ -80,10 +80,19 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_diffBeta.csv", sep = ",", row.names = NULL)
+qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_flipOutsideAllTypes.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(qparams)
 qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
+md = estimate_mode(subset(qparams.samples, parameter == "beta")$value)
+md_hi = HPDhi(subset(qparams.samples, parameter == "beta")$value)
+md_low = HPDlo(subset(qparams.samples, parameter == "beta")$value)
+cat("beta = ", md) 
+cat("95% HPD interval = [", md_low, ",", md_hi, "]")
+
+estimate_mode(subset(qparams.samples, parameter == "beta")$value)
+HPDhi(subset(qparams.samples, parameter == "beta")$value)
+HPDlo(subset(qparams.samples, parameter == "beta")$value)
 
 ```
 
@@ -111,23 +120,26 @@ aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisParams.csv
 samples = 1000
 str(aparams)
 aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:2]
+estimate_mode(subset(aparams.samples, parameter == "beta")$value)
+HPDhi(subset(aparams.samples, parameter == "beta")$value)
+HPDlo(subset(aparams.samples, parameter == "beta")$value)
 
 ```
 
 ```{r}
-#pdf(file="../writing/2015/journal-manuscript/figures/AnswererParamPosteriors.pdf",
-     #width = 6, height = 3)
+# pdf(file="../writing/2015/journal-manuscript/figures/AnswererParamPosteriors.pdf",
+#      width = 6, height = 3)
 ggplot(aparams.samples, aes(x=value))+
-    geom_histogram(aes(y=..density..), data =subset(aparams.samples, parameter == "alpha" & value <= 10), binwidth = .25, colour="black", fill="white")+
-    geom_histogram(aes(y=..density..), data=subset(aparams.samples, parameter == "beta"), binwidth = .04, colour="black", fill="white")+
-    geom_density(data =subset(aparams.samples, parameter == "alpha" & value < 10), adjust = 2,
+    geom_histogram(aes(y=..density..), data =subset(aparams.samples, parameter == "alpha" ), binwidth = .1, colour="black", fill="white")+
+    geom_histogram(aes(y=..density..), data=subset(aparams.samples, parameter == "beta"), binwidth = .035, colour="black", fill="white")+
+    geom_density(data =subset(aparams.samples, parameter == "alpha" ), adjust = 1,
                  alpha=.2, fill="#FF6666")+
     geom_density(data=subset(aparams.samples, parameter == "beta"), adjust = 2,
                  alpha=.2, fill="#FF6666")+
     ggtitle("Answerer Parameter Posteriors (1000 iterations)") +
     facet_grid(~parameter, scales = 'free') +
     theme_bw()
-#dev.off()
+# dev.off()
 ```
 
 ### Predictives
@@ -153,7 +165,7 @@ apredictive.pp <- apredictive.samples %>%
             credLow = HPDlo(prob)) %>%
   right_join(d_a)
   
-cor(apredictive.pp$MAP, apredictive.pp$empProb)
+acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
 
 pdf(file="../writing/2015/journal-manuscript/figures/AnswererPredictive.pdf",
          width = 6, height = 3)
@@ -170,7 +182,7 @@ answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Answerer Posterior Predictive")
   + geom_smooth(method = "lm")
-  + geom_text(aes(x=.75,y=.25,label="r=0.92"))
+  + geom_text(aes(x=.75,y=.25,label=acor))
   + theme_bw())
 answer_plots
 dev.off()
