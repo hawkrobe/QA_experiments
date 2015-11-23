@@ -33,7 +33,7 @@ var foreach = function(lst, fn) {
 // our model has two parameters: rationality controls how strongly
 // optimizing an agent is; beta controls to what extent participants draw from an
 // empirical prior (1) vs. a uniform prior (0) on saliency. 
-var QAmodel = function(type, domain, rationality,  beta) {
+var QAmodel = function(type, domain, rationality,  betaFlip) {
   var knowledge = qa.buildKnowledge(type, domain);
   var unifTaxonomy = knowledge.unifTaxonomy;
   var empTaxonomy = knowledge.empTaxonomy;
@@ -44,9 +44,10 @@ var QAmodel = function(type, domain, rationality,  beta) {
   // Takes a taxonomy object with saliency probabilities
   // and picks one item from each label to be 'the salient one'
   var sampleSalienceAssignment = function() {
-    var tax = flip(beta) ? empTaxonomy : unifTaxonomy;
+    var tax = betaFlip ? empTaxonomy : unifTaxonomy;
     return mapObject(function(label, probObj) {
-      var salientItem = categorical(_.values(probObj), _.keys(probObj));
+      var vals = _.values(probObj);
+      var salientItem = categorical(vals, _.keys(probObj));
       return salientItem;
     }, tax);
   };
