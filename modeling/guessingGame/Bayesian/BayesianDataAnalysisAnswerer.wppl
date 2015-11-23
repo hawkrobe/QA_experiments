@@ -24,10 +24,11 @@ var modelAnalysis = function() {
   // Sample params
   var alpha = uniform(0,20);
   var beta = uniform(0,1);
+  var betaFlip = flip(beta);
 
   // Run model and condition on data
   var score = sum(map(function(item) {
-    var model = QAmodel(item[0], item[1], alpha, beta);
+    var model = QAmodel(item[0], item[1], alpha, betaFlip);
     var runAnswererModel = model.runAnswererModel;
     var pragA = model.pragA;
     return sum(map(function(question) {
