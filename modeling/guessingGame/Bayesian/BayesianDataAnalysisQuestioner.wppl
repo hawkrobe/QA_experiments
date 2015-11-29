@@ -12,36 +12,37 @@ var modelAnalysis = function() {
   var alpha = uniform(0,20);
   var beta = uniform(0,1);
   var expVsPrag = uniform(0,1);  
-  var betaFlip = flip(beta);
   var expPragFlip = flip(expVsPrag);  
   
   // Run model and condition on data
   var score = sum(map(function(item) {
-    var model = QAmodel(item[0], item[1], alpha, betaFlip);
+    var model = QAmodel(item[0], item[1], alpha, beta);
     var runTFBTQuestioner = model.runTFBTQuestioner;
     return sum(map(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
       var questionerERP = runTFBTQuestioner(qud, expPragFlip);
-      var score = sum(map(function(dataRow) {
+      var internalScore = sum(map(function(dataRow) {
        	  return questionerERP.score([], "whereIs" + qa.capitalize(dataRow[3]) + "?");
       }, itemData));
       // Store predictions
       foreach(questionerERP.support([]),function(s){
 	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
-	query.add([qud, item[0], item[1], strippedQuestion], Math.exp(questionerERP.score([], s)));
+	query.add([qud, item[0], item[1], strippedQuestion],
+		  Math.exp(questionerERP.score([], s)));
       });
-      return score;
+      return internalScore;
     }, model.qudSpace));
   }, items));
-
+  console.log("total score:", score);
   factor(score);
-  return {predictive: query.table, params : {alpha: alpha, beta: beta, expVsPrag: expVsPrag}};
+  return {predictive: query.table,
+	  params : {alpha: alpha, beta: beta, expVsPrag: expPragFlip}};
 };
 
-var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
+var outputERP = MCMC(modelAnalysis, {samples: 100, burn: 0, verbose: true});
 
 console.log(outputERP.toJSON());
 console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis");
+//qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis");
 
