@@ -80,43 +80,45 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_flipOutsideAllTypes.csv", sep = ",", row.names = NULL)
+qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_flipBothOutside10000.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(qparams)
 qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
 md = estimate_mode(subset(qparams.samples, parameter == "beta")$value)
-md_hi = HPDhi(subset(qparams.samples, parameter == "beta")$value)
-md_low = HPDlo(subset(qparams.samples, parameter == "beta")$value)
+md_hi = round(HPDhi(subset(qparams.samples, parameter == "beta")$value), 3)
+md_low = round(HPDlo(subset(qparams.samples, parameter == "beta")$value), 3)
 cat("beta = ", md) 
 cat("95% HPD interval = [", md_low, ",", md_hi, "]")
 
-estimate_mode(subset(qparams.samples, parameter == "beta")$value)
-HPDhi(subset(qparams.samples, parameter == "beta")$value)
-HPDlo(subset(qparams.samples, parameter == "beta")$value)
+md = estimate_mode(subset(qparams.samples, parameter == "expVsPrag")$value)
+md_hi = round(HPDhi(subset(qparams.samples, parameter == "expVsPrag")$value), 3)
+md_low = round(HPDlo(subset(qparams.samples, parameter == "expVsPrag")$value), 3)
+cat("expVsPrag = ", md) 
+cat("95% HPD interval = [", md_low, ",", md_hi, "]")
 
 ```
 
 ```{r}
-pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
-     width = 6, height = 3)
+#pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
+     #width = 6, height = 3)
 ggplot(qparams.samples, aes(x=value))+
-    geom_histogram(aes(y=..density..),data =subset(qparams.samples, parameter == "alpha" & value <= 9), binwidth = .25, colour="black", fill="white")+
+    geom_histogram(aes(y=..density..),data =subset(qparams.samples, parameter == "alpha"), binwidth = .25, colour="black", fill="white")+
     geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "beta"), binwidth = .045, colour="black", fill="white")+
     geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .1, colour="black", fill="white")+
-    geom_density(data =subset(qparams.samples, parameter == "alpha" & value <= 9), adjust = 1.25,
-                 alpha=.2, fill="#FF6666")+
-    geom_density(data=subset(qparams.samples, parameter == "beta"), adjust = 2,
-                 alpha=.2, fill="#FF6666")+
-    geom_density(data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 1,
-                 alpha=.2, fill="#FF6666")+
+#     geom_density(data =subset(qparams.samples, parameter == "alpha" & value <= 9), adjust = 1.25,
+#                  alpha=.2, fill="#FF6666")+
+#     geom_density(data=subset(qparams.samples, parameter == "beta"), adjust = 2,
+#                  alpha=.2, fill="#FF6666")+
+#     geom_density(data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 1,
+#                  alpha=.2, fill="#FF6666")+
     ggtitle("Questioner Parameter Posteriors (1000 iterations)") +
     facet_grid(~parameter, scales = 'free') +
     theme_bw()
-dev.off()
+#dev.off()
 ```
 
 ```{r}
-aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisParams.csv", sep = ",", row.names = NULL)
+aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisParams_betaFlipOutside.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(aparams)
 aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:2]
@@ -146,7 +148,7 @@ ggplot(aparams.samples, aes(x=value))+
 
 ```{r}
 source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
-apredictive<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisPredictives.csv", sep = ",", row.names = NULL)
+apredictive<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisPredictives_betaFlipOutside.csv", sep = ",", row.names = NULL)
 apredictive.samples <- apredictive[rep(row.names(apredictive), 
                                        apredictive$MCMCprob*samples), 1:5] %>%
   mutate(question = as.character(parameter), 
@@ -167,8 +169,8 @@ apredictive.pp <- apredictive.samples %>%
   
 acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
 
-pdf(file="../writing/2015/journal-manuscript/figures/AnswererPredictive.pdf",
-         width = 6, height = 3)
+#pdf(file="../writing/2015/journal-manuscript/figures/AnswererPredictive.pdf",
+#         width = 6, height = 3)
 answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
@@ -185,11 +187,11 @@ answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
   + geom_text(aes(x=.75,y=.25,label=acor))
   + theme_bw())
 answer_plots
-dev.off()
+#dev.off()
 ```
 
 ```{r}
-qpredictive<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisPredictives_flipOutsideAllTypes.csv", sep = ",", row.names = NULL)
+qpredictive<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisPredictives_flipBothOutside10000.csv", sep = ",", row.names = NULL)
 qpredictive.samples <- qpredictive[rep(row.names(qpredictive), 
                                        qpredictive$MCMCprob*samples), 1:5] %>%
   mutate(goal = as.character(parameter), 
@@ -210,8 +212,8 @@ qpredictive.pp <- qpredictive.samples %>%
 
 qcor <- round(cor(qpredictive.pp$MAP, qpredictive.pp$empProb), 2)
 
-pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive_beta.pdf",
-         width = 6, height = 3)
+#pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive_beta.pdf",
+#         width = 6, height = 3)
 question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
@@ -228,5 +230,5 @@ question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + geom_text(aes(x=.75,y=.25,label=paste("r=",qcor)))
   + theme_bw())
 question_plots
-dev.off()
+#dev.off()
 ```
