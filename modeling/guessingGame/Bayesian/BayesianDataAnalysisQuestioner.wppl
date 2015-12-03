@@ -39,10 +39,10 @@ var modelAnalysis = function() {
 	  params : {alpha: alpha, beta: beta, expVsPrag: expPragFlip}};
 };
 
-var outputERP = MCMC(modelAnalysis, {samples: 100, burn: 0, verbose: true});
+var outputERP = MCMC(modelAnalysis, {samples: 10000, burn: 0, verbose: true});
 
 console.log(outputERP.toJSON());
 console.log('inference complete... printing');
 
-//qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis");
+qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis");
 
