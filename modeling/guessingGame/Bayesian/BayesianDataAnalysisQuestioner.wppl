@@ -36,7 +36,7 @@ var modelAnalysis = function() {
   console.log("total score:", score);
   factor(score);
   return {predictive: query.table,
-	  params : {alpha: alpha, beta: beta, expVsPrag: expPragFlip}};
+	  params : {alpha: alpha, beta: beta, expVsPrag: expVsPrag}};
 };
 
 var outputERP = MCMC(modelAnalysis, {samples: 10000, burn: 0, verbose: true});
