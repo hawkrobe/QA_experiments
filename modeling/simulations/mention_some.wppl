@@ -231,7 +231,7 @@ var pragmaticAnswerer = function(context, question, trueWorld){
   });
 };
 
-world = {'cafe1' : [3, false],
+var world = {'cafe1' : [3, false],
          'cafe2' : [1, true],
          'cafe3' : [3, true],
          'cafe4' : [3, true]}
