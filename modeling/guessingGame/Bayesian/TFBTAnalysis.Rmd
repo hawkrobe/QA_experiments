@@ -80,41 +80,54 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_flipBothOutside10000.csv", sep = ",", row.names = NULL)
-samples = 1000
+qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_final.csv", sep = ",", row.names = NULL)
+samples = 10000
 str(qparams)
 qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
-md = estimate_mode(subset(qparams.samples, parameter == "beta")$value)
-md_hi = round(HPDhi(subset(qparams.samples, parameter == "beta")$value), 3)
-md_low = round(HPDlo(subset(qparams.samples, parameter == "beta")$value), 3)
+
+alphaSubset = subset(qparams.samples, parameter == "alpha")$value
+md = estimate_mode(as.numeric(alphaSubset))
+md_hi = round(HPDhi(as.numeric(alphaSubset)), 3)
+md_low = round(HPDlo(as.numeric(alphaSubset)), 3)
+cat("alpha = ", md) 
+cat("95% HPD interval = [", md_low, ",", md_hi, "]")
+
+betaSubset = subset(qparams.samples, parameter == "beta")$value
+md = estimate_mode(as.numeric(betaSubset))
+md_hi = round(HPDhi(as.numeric(betaSubset)), 3)
+md_low = round(HPDlo(as.numeric(betaSubset)), 3)
 cat("beta = ", md) 
 cat("95% HPD interval = [", md_low, ",", md_hi, "]")
 
-md = estimate_mode(subset(qparams.samples, parameter == "expVsPrag")$value)
-md_hi = round(HPDhi(subset(qparams.samples, parameter == "expVsPrag")$value), 3)
-md_low = round(HPDlo(subset(qparams.samples, parameter == "expVsPrag")$value), 3)
+eVpSubset = subset(qparams.samples, parameter == "expVsPrag")$value
+md = estimate_mode(as.numeric(eVpSubset))
+md_hi = round(HPDhi(as.numeric(eVpSubset)), 3)
+md_low = round(HPDlo(as.numeric(eVpSubset)), 3)
 cat("expVsPrag = ", md) 
 cat("95% HPD interval = [", md_low, ",", md_hi, "]")
 
 ```
 
 ```{r}
-#pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
-     #width = 6, height = 3)
-ggplot(qparams.samples, aes(x=value))+
-    geom_histogram(aes(y=..density..),data =subset(qparams.samples, parameter == "alpha"), binwidth = .25, colour="black", fill="white")+
-    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "beta"), binwidth = .045, colour="black", fill="white")+
-    geom_histogram(aes(y=..density..),data=subset(qparams.samples, parameter == "expVsPrag"),binwidth = .1, colour="black", fill="white")+
-#     geom_density(data =subset(qparams.samples, parameter == "alpha" & value <= 9), adjust = 1.25,
-#                  alpha=.2, fill="#FF6666")+
-#     geom_density(data=subset(qparams.samples, parameter == "beta"), adjust = 2,
-#                  alpha=.2, fill="#FF6666")+
-#     geom_density(data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 1,
-#                  alpha=.2, fill="#FF6666")+
-    ggtitle("Questioner Parameter Posteriors (1000 iterations)") +
-    facet_grid(~parameter, scales = 'free') +
+pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
+     width = 6, height = 3)
+ggplot(qparams.samples, aes(x=value)) +
+    geom_histogram(data =subset(qparams.samples, parameter == "alpha"), 
+                   binwidth = .3, colour="black", fill="white")+
+    geom_histogram(data=subset(qparams.samples, parameter == "beta"), 
+                   binwidth = .025, colour="black", fill="white")+
+    geom_histogram(data=subset(qparams.samples, parameter == "expVsPrag"),
+                   binwidth = .05, colour="black", fill="white")+
+    geom_density(aes(y=.3*..count..), data =subset(qparams.samples, parameter == "alpha"), adjust = 3.5,
+                 alpha=.2, fill="#FF6666")+
+    geom_density(aes(y=.025*..count..),data=subset(qparams.samples, parameter == "beta"), adjust = 3.5,
+                 alpha=.2, fill="#FF6666")+
+    geom_density(aes(y=.05*..count..),data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 2,
+                 alpha=.2, fill="#FF6666")+
+    ggtitle("Questioner Parameter Posteriors (10000 iterations)") +
+    facet_grid(~parameter, scales = 'free_x') +
     theme_bw()
-#dev.off()
+dev.off()
 ```
 
 ```{r}
@@ -191,7 +204,7 @@ answer_plots
 ```
 
 ```{r}
-qpredictive<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisPredictives_flipBothOutside10000.csv", sep = ",", row.names = NULL)
+qpredictive<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisPredictives_final.csv", sep = ",", row.names = NULL)
 qpredictive.samples <- qpredictive[rep(row.names(qpredictive), 
                                        qpredictive$MCMCprob*samples), 1:5] %>%
   mutate(goal = as.character(parameter), 
@@ -212,8 +225,8 @@ qpredictive.pp <- qpredictive.samples %>%
 
 qcor <- round(cor(qpredictive.pp$MAP, qpredictive.pp$empProb), 2)
 
-#pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive_beta.pdf",
-#         width = 6, height = 3)
+pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive.pdf",
+        width = 6, height = 3)
 question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
@@ -230,5 +243,5 @@ question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + geom_text(aes(x=.75,y=.25,label=paste("r=",qcor)))
   + theme_bw())
 question_plots
-#dev.off()
+dev.off()
 ```
