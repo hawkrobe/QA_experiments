@@ -3,5 +3,9 @@
   "main" : "qa.js",
   "webppl": {
     "wppl": ["guessingGameCore.wppl", "guessingGameWorldKnowledge.wppl"]
+  },
+  "dependencies": {
+    "underscore" : "~1.7.0",
+    "babyparse" : "*"
   }
 }
