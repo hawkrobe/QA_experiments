@@ -1,5 +1,4 @@
 \documentclass[12pt, floatsintext, jou]{apa6}
-
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[outdir=./]{epstopdf}
@@ -29,13 +28,15 @@
 
 \linespread{1}
 \usepackage{textcomp}
+\usepackage{lingmacros}
 
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 \graphicspath{{./figures/}}
  
  \definecolor{Green}{RGB}{10,200,100}
 \newcommand{\ndg}[1]{\textcolor{Green}{[ndg: #1]}}  
- 
+
+
 \makeatother
 
 \title{Why do you ask? \\ Good questions provoke informative answers.}
@@ -54,18 +55,42 @@
 \begin{document}
 \maketitle
 \section{Introduction}
+Asking questions is one of our most valuable methods of gathering information and learning from others. 
+At a very young age, children can strategically select \emph{who} to ask \cite{LegareEtAl13_QuestionsChildhood} and \emph{what} to ask \cite{ChouinardHarrisMaratsos07_ChildrenQuestions, RuggeriLombrozo15_ChildrenAdaptQuestions} in order to solve problems and test theories \cite{CallananOakes92_PreschoolerQuestions, GopnikMeltzoffKuhl99_ScientistCrib}. 
+Robots that ask questions to clarify commands \cite{DeitsTellex___Roy13_HumanRobotDialog} or obtain assistance with a task \cite{FongThorpeBaur03_RobotQuestions} make for better collaborators. 
+In tutoring scenarios, students who ask better questions tend to be more successful \cite{GraesserPerson94_QuestionAskingTutoring}, and scientists who design their studies to ask better questions can obtain much more informative results \cite{ClarkSchober92_InfluencingAnswers, MyungPitt09_OED}.
 
-\begin{enumerate}[(1)]
-\item Scenario: Q is hungry and wants A's apple.\\Q: ``Are you gonna eat that apple?''\\ A: ``Oh, go ahead!''
-\item Scenario: Q is looking for a copy of \emph{Oh, The Places You'll Go!} to give to her son at graduation.\\ Q: ``Do you know how to get to the campus bookstore?''\\ A: ``It's way on the other side of campus, but there's a shop just down the street with a better selection.''
-\item Scenario: Q is at office hours and wants to learn calculus.\\ Q: ``What's wrong with my answer to \#1?''\\ A: ``Well, let me remind you how to compute a derivative...''
-\end{enumerate}
+In order for questions to be so useful, answerers must respond in kind. 
+This is straightforward in some cases. 
+For direct, factual questions, a helpful answerer can use the literal meaning of the question, which specifies a particular gap in the questioner's knowledge, and respond with the requested piece of information if it is known: 
+\enumsentence{
+	Q: Who was the 16th president of the U.S.?\\
+	A: Abraham Lincoln.}
+This response strategy has been implemented in sophisticated semantic parsers that extract the logical form of the query and efficiently search a database for an entity that satisfies it \cite<e.g.>{BerantChouFrostigLiang13_FreebaseQAPairs}. 
 
-In these three exchanges, Q strategically chooses an \emph{indirect question}, yet still manages to send a signal to A about her intentions. 
-A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. 
-There are many reasons why we ask indirect questions: the direct question may be impolite or embarrassing, as in (1) and (2), it may be too long or costly to fully explain, as in (2), or we may just not know enough about the topic we're interested in to articulate our interests, as in (3). 
-Depending on the circumstances, an answerer can adjust their response to be over- or under-informative with respect to the direct question, or to address a different question altogether. 
-This subtle interplay highlights the prevalence of social reasoning in everyday dialogue and raises two specific questions for formal models of language: What makes a question useful? And what makes an answer helpful? 
+Many questions in everyday conversation, however, are not so straightforward to answer. 
+For indirect speech acts, the questioner typically will not be satisfied with a simple yes/no answer; they expect the answerer to go \emph{beyond} the literal meaning to address the questioner's true interests \cite{Clark79_IndirectSpeechActs}:  
+\enumsentence{
+	Q: Do you know the time?\\
+	A: It's a quarter past 3.}
+\enumsentence{
+	Q: Do you know how to get to the campus bookstore?\\ 
+	A: It's way on the other side of campus, but there's a shop just down the street with a better selection.}
+ 
+Indeed, answerers often go beyond the literal meaning even for \emph{direct} questions. A recent corpus study found that 14\% of responses to direct yes/no questions used a full statement instead of a simple ``yes'' or ``no'' \cite{DeMarneffeGrimmPotts09_IndirectAnswersCorpus}:
+
+\enumsentence{
+	Q: Is it in Dallas?\\	A: Uh, it's in Lewisville.}
+
+Finally, there's a class of questions familiar to any classroom instructor, where the questioner apparently doesn't even know what their true interests are:
+
+\enumsentence{
+	Q: What's wrong with my answer to \#1?\\ 
+	A: Well, let me remind you how to compute a derivative...}
+
+In all of the above exchanges, Q strategically chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. The direct question or request may be impolite or embarrassing, it may be too long or costly to fully explain, or we may just not know enough about the topic we're interested in to articulate our interests.
+
+A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, they can adjust their response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle interplay highlights the prevalence of social reasoning in everyday dialogue and raises two specific questions for formal models of language: What makes a question useful? And what makes an answer helpful? 
 
 Recent work on Rational Speech Act (RSA) models \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature} has mathematically formalized pragmatic language understanding as a form of recursive Bayesian inference, where listeners reason about speakers who choose utterances that maximize information gained by an imagined listener.
 In this paper we extend the RSA framework to address simple question-answer dialogs.
@@ -532,7 +557,7 @@ from Amazon's Mechanical Turk to participate in this task: 25 were assigned to t
 
 \subsubsection{Stimuli \& Procedure} In terms of our model parameters, the world space $\mathcal{W}$ was the set of $4! = 24$ possible assignments of four objects to four gates. The goal space $\mathcal{G}$ was the set of four objects that the questioner could be trying to find: `dalmatian,' `poodle,' `siamese cat,' and `whale.' These objects correspond to the leaves of the tree in Fig.~\ref{fig:taskhierarchy}. The answer space $\mathcal{A}$ was the set of four gates that the answerer could  reveal. The restricted question space $\mathcal{Q}$ contained the set of highlighted nodes in the taxonomy: `dalmatian?', `dog?', `pet?', and `animal?' (see Figure \ref{fig:taskhierarchy}). 
 
-The procedure was designed to accommodate real-time player-to-player interaction following \citeA{Hawkins14_RealTimeWebExperiments}. All players passed a short quiz on the game instructions and were immediately redirected to the game interface: the first player to join was assigned to be a ``questioner'' (which we called a ``guesser'' in the cover story) and told to wait until a second player was available. Once another player joined, they were assigned to be an ``answerer'' (or ``helper'') and the game began. 
+The procedure was designed to accommodate real-time player-to-player interaction following \citeA{Hawkins15_RealTimeWebExperiments}. All players passed a short quiz on the game instructions and were immediately redirected to the game interface: the first player to join was assigned to be a ``questioner'' (which we called a ``guesser'' in the cover story) and told to wait until a second player was available. Once another player joined, they were assigned to be an ``answerer'' (or ``helper'') and the game began. 
 
 The questioner and answerer interfaces are displayed in Figure \ref{fig:exp3views}. Chat messages were printed on the left side of the screen, and players used the right side as a workspace to view goals, ask questions, and respond with answers. At the beginning of each trial, the wheel on the questioner's screen (Figure \ref{fig:exp3views}, top) would spin and select one of the four goals at random. The questioner then clicked and dragged words onto the line in the ``Question box'' to ask a question to help them find this goal. The answerer saw these words being dragged in real time. Once the questioner clicked the `send' button, the resulting question appeared in the chat log and control was passed to the answerer, who clicked on one of the four gates to automatically send a response containing the location of the chosen object (e.g. ``The whale is behind gate 3.'') Finally, the questioner was asked to guess which gate they believed the goal object was behind. 
 
