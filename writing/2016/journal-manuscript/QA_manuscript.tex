@@ -45,7 +45,7 @@
 \affiliation{Stanford University} 
 
 
-\abstract{What makes a question useful? What makes an answer helpful? Linguistic theories have highlighted \emph{goal-relevance} as a key to explaining question-answer behavior. In this paper, we propose a computational cognitive model formalizing how answerers reason about possible goals motivating a question and how questioners, in turn, reason about answerers. We test this model against simpler models based on three different pieces of evidence: First, we explore three classic effects in psycholinguistics that show an \emph{answerer}'s level of informativeness varies with the inferred questioner goal. Second, we use a real-time, multi-player communication game to jointly test predictions made by the questioner and answerer components of our model. Third, we conduct a Bayesian data analysis on our model to estimate the extent to which different components are necessary. We find that sophisticated pragmatic reasoning is needed to account for some critical aspects of the data. People can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests. The best model accurately fits our complex behavioral data, providing a promising direction for understanding the dynamics of human question-answer dialogue.
+\abstract{What makes a question useful? What makes an answer helpful? Linguistic theories have highlighted \emph{goal-relevance} as a key to explaining question-answer behavior. In this paper, we propose a computational cognitive model formalizing how answerers reason about possible goals motivating a question and how questioners, in turn, reason about answerers. We test this model against simpler models based on three different pieces of evidence: First, we explore four classic effects in psycholinguistics that show an \emph{answerer}'s level of informativeness varies with the inferred questioner goal. Second, we use a real-time, multi-player communication game to jointly test predictions made by the questioner and answerer components of our model. Third, we conduct a Bayesian data analysis on our model to estimate the extent to which different components are necessary. We find that sophisticated pragmatic reasoning is needed to account for some critical aspects of the data. Spreakers can use questions to provide cues to the answerer about their interest, and can select answers that are informative about inferred interests. The best model accurately fits our complex behavioral data, providing a promising direction for understanding the dynamics of human question-answer dialogue.
 }
 
 \keywords{pragmatics, language, computational modeling}
@@ -73,14 +73,15 @@ For indirect speech acts, the questioner typically will not be satisfied with a 
 \enumsentence{
 	Q: Do you know the time?\\
 	A: It's a quarter past 3.}
-\enumsentence{
-	Q: Do you know how to get to the campus bookstore?\\ 
-	A: It's way on the other side of campus, but there's a shop just down the street with a better selection.}
+%\enumsentence{
+%	Q: Do you know how to get to the campus bookstore?\\ 
+%	A: It's on the other side of campus, but there's a shop just down the street with a better selection.}
  
 Indeed, answerers often go beyond the literal meaning even for \emph{direct} questions. A recent corpus study found that 14\% of responses to direct yes/no questions used a full statement instead of a simple ``yes'' or ``no'' \cite{DeMarneffeGrimmPotts09_IndirectAnswersCorpus}:
 
 \enumsentence{
-	Q: Is it in Dallas?\\	A: Uh, it's in Lewisville.}
+	Q: Is it in Dallas?\\
+	A: Uh, it's in Lewisville.}
 
 Finally, there's a class of questions familiar to any classroom instructor, where the questioner apparently doesn't even know what their true interests are:
 
@@ -88,24 +89,14 @@ Finally, there's a class of questions familiar to any classroom instructor, wher
 	Q: What's wrong with my answer to \#1?\\ 
 	A: Well, let me remind you how to compute a derivative...}
 
-In all of the above exchanges, Q strategically chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. The direct question or request may be impolite or embarrassing, it may be too long or costly to fully explain, or we may just not know enough about the topic we're interested in to articulate our interests.
+What do these exchanges have in common? Q strategically chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
 
-A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, they can adjust their response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle interplay highlights the prevalence of social reasoning in everyday dialogue and raises two specific questions for formal models of language: What makes a question useful? And what makes an answer helpful? 
-
-Recent work on Rational Speech Act (RSA) models \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature} has mathematically formalized pragmatic language understanding as a form of recursive Bayesian inference, where listeners reason about speakers who choose utterances that maximize information gained by an imagined listener.
-In this paper we extend the RSA framework to address simple question-answer dialogs.
-The immediate challenge in doing so is that the speaker utility in RSA is based on direct information provided by an utterance---since questions don't provide direct information\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}, we must say what utility they do have. 
+A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle interplay highlights the centrality of social reasoning to everyday dialogue and raises two specific questions for formal models of language behavior: What makes a question useful? And what makes an answer helpful? 
 
 We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems}, that the value of a question is the extent to which it can be expected to elicit useful information later in the dialogue. 
-More specifically, for the questioner, the value of a question is the expected information gained about her interests, given the set of likely answers it may provoke. 
-This diverges from regular RSA in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation.
+More specifically, for the questioner, the value of a question is the expected information gained about her interests, given the set of likely answers it may provoke. The value of an answer, then, is the extent to which it resolves questioner uncertainty over the goal-relevant aspect of the world. 
 
-To fully specify this questioner we need a model of the answerer, which can serve as both the model assumed by a questioner, and as a model of answer behavior itself. We explore three increasingly sophisticated, answerer models. The simplest agent, the literal answerer, simply attempts to be informative about the world, ignoring the question;   
-the explicit answerer attempts to be informative with respect to the surface sematics of the question asked (without inferring the questioner's underlying interests);  
-the pragmatic answerer infers the most likely underlying interests of the questioner, and then informatively addresses those interests.
-The latter model uses an extension of RSA to reason about the topic of conversation, as proposed by \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}; it goes beyond previous work by using the explicit question as a (potentially indirect) cue to this topic. 
-
-\ndg{this first part of intro is nice, but maybe a little too model focussed. may want to spend a bit more space saying why questions are important, and what previous expt work has found? or just leave out some of the model details here, since they'll come back later...}
+Our contribution in this paper is twofold. First, we formalize this theory of question-answer behavior in a probabilistic model of language understanding as social reasoning and formally compare our model against other proposals, providing a first step toward more general models of dialogue. Second, we address a longstanding paucity of data on \emph{questioner} behavior by running a set of real-time, multi-player communication games in which we simultaneously observe both ends of the dialogue. % where the answerer \emph{infers} this goal from the question utterance, and to what extent the questioner is reasoning about the answerer when choosing their question. 
 
 %
 
@@ -113,43 +104,34 @@ The rest of this paper is structured as follows. First, we review previous exper
 %we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
 %We then formally individuate literal, explicit, and pragmatic models in this family, which represent different hypotheses about how questioners and answerers reason about their task. 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
-Because data on \emph{questioner} behavior is relatively sparse, and these classic results did not sufficiently engage the questioner component of our model, we collected data in a real-time, multi-player communication task allowing us to manipulate private goals, potential questions, and potential answers. After testing the predictions of the different models on data from a simple version of the task, we scale up this paradigm to an experiment using a wider variety of goal sets, question sets, and answer sets. We dedicate particular attention in this task to one critical condition in which the three questioner models make different predictions, allowing us to distinguish between them.
-%We find that the most sophisticated, pragmatic models best account for human performance.
-%derive predictions for a  of experiments using a novel guessing-game task, and compare these predictions to human performance. 
-%In one phase of the task, we require participants to ask a question (from a fixed set of possible questions), given a decision problem. In the second phase, we require participants to give an answer (from a fixed set of possible answers) to a question (from a fixed set of possible questions). 
-We close with a brief discussion of how our approach grounds question-asking and answering in social cognition, noting the potential scalability of our framework to problems in natural language understanding and active learning.
-\ndg{probably also want to connect a bit to dialog / discourse stuff in GD?}
+Because data on \emph{questioner} behavior is relatively sparse, and these classic results did not sufficiently test the questioner component of our model, we collected data in a real-time, multi-player communication task allowing us to manipulate private goals, potential questions, and potential answers. After testing the predictions of the different models on data from a simple version of the task, we use our models to discover conditions that disambiguate our hypotheses in a second experiment using a wider set of stimuli.
+We close with a brief discussion of how our approach grounds question-asking and answering in social cognition, noting the potential scalability of our framework to more complex discourse contexts, natural language understanding, and active learning.
 
 
 \subsection{Empirical background}
 
 A number of psycholinguistic studies have provided evidence that answerers are both sensitive to a questioner's goals and attempt to be informative with respect to those goals.
-For instance, in Clark's \citeyear{Clark79_IndirectSpeechActs} classic study, researchers called liquor merchants and opened the conversation with one of two sentences to set context: ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). They then asked, ``Does a fifth of Jim Beam cost more than \$5?'' Merchants gave a literal yes/no answer significantly more often in the latter condition than the former, where an exact price was more common. 
-When provided with the five dollar context, the merchant inferred that the questioner's goal was literally to find out whether or not they could afford the whiskey, hence a simple `yes'  sufficed. 
-In the uninformative context, however, the merchant inferred that the questioner's goal was just to buy whiskey, so the exact price was the most relevant response \cite{Clark79_IndirectSpeechActs}. 
+For instance, in Clark's \citeyear{Clark79_IndirectSpeechActs} classic study, researchers called liquor merchants and asked ``Does a fifth of Jim Beam cost more than \$5?'' Before asking the question, they provided some context for their call by saying either ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). 
+These contexts signaled different speaker goals. In the uninformative condition, the goal is simply to buy whiskey, hence the exact price would be useful information; in the five dollar condition, the goal was literally to find out whether or not the speaker could \emph{afford} the whiskey, so a yes/no answer would suffice. 
+If merchants inferred these goals from the context signal and responded with respect to these goals, we would expect different types of answers in the two conditions. Indeed, merchants gave a literal yes/no answer significantly more often in the latter condition than the former, where an exact price was more common. 
 
-Context and questioner goals have also been implicated in accounts of answers to questions like ``Do you have the time?'' that permit answers with different degrees of approximation to the true time \cite{DerHenstCarlesSperber02_RelevanceTellingTime, GibbsBryant08_OptimalRelevance}. 
-To study answerer behavior, \citeA{DerHenstCarlesSperber02_RelevanceTellingTime} approached people in public places and asked for the time. Participants typically rounded their answers to the nearest 5 or 10 minute interval, even when they were wearing a digital watch. 
-This showed that answerers were not simply reducing their \emph{own} effort, since rounding a time displayed on a digital watch requires an extra processing step. 
-Furthermore, if the experimenter indicated that they had an appointment at a given time, they found that answers were more likely to be precise when the true time was closer to the appointment time.  
-In a later study, \citeA{GibbsBryant08_OptimalRelevance} introduced a condition in which this question was preceded by the statement ``My watch stopped,'' and found that answerers were more likely to make their response precise to the minute. 
-An approximate time is sufficiently informative with respect to most common goals, like making it to a meeting on time, yet answerers were able to adjust their response after inferring a less common goal, like setting a watch, which required more precise information.
+Goals can also be inferred from non-linguistic environmental cues. For instance, \citeA{DerHenstCarlesSperber02_RelevanceTellingTime} investigated answers to questions like ``Do you have the time?'' that permit answers with different degrees of approximation to the true time \cite<see also>{GibbsBryant08_OptimalRelevance}. In a baseline condition, participants who were approached in public typically rounded their answers to the nearest 5 or 10 minute interval even when they were wearing a digital watch. 
+%This showed that answerers were not simply reducing their \emph{own} effort, since rounding a time displayed on a digital watch requires an extra processing step. 
+When the experimenter mentioned that they had an appointment at a given time, however, they found that answers were more likely to be precise when the true time was closer to the appointment time, indicating sensitivity to implicit time-related goals such as knowing whether to hurry.  
+%In a later study,  introduced a condition in which this question was preceded by the statement ``My watch stopped,'' and found that answerers were more likely to make their response precise to the minute. 
+%An approximate time is sufficiently informative with respect to most common goals, like making it to a meeting on time, yet answerers were able to adjust their response after inferring a less common goal, like setting a watch, which required more precise information.
 
-Similarly, questions like ``where are you?'' permit answers at many degrees of specificity: \emph{the United States}, \emph{my apartment}, and \emph{by the big tree} are each perfectly appropriate in some context (and highly inappropriate in others). 
-\citeA{Potts12_CardsDialogueCorpus} investigated the relationship between questioner goals and answerer sensitivity using the Cards corpus, a collection of transcripts and associated contextual information from a two-person collaborative game. 
-In the game, two players were placed in a virtual world where they were instructed to collect cards with six consecutive numbers from the same suit. Each player could only hold three cards at a time, and neither player could see the other, thereby requiring the players to explicitly coordinate their locations. 
-Using an information-theoretic measure to quantify a response's degree of specificity, Potts found that answers tended to be more specific when the questioner was trying to meet up or direct the answerer to a specific card, and less specific when developing a general search strategy. 
+% investigated the relationship between questioner goals and answerer sensitivity using the Cards corpus, a collection of transcripts and associated contextual information from a two-person collaborative game. 
+%In the game, two players were placed in a virtual world where they were instructed to collect cards with six consecutive numbers from the same suit. Each player could only hold three cards at a time, and neither player could see the other, thereby requiring the players to explicitly coordinate their locations. 
+%Using an information-theoretic measure to quantify a response's degree of specificity, Potts found that answers tended to be more specific when the questioner was trying to meet up or direct the answerer to a specific card, and less specific when developing a general search strategy. 
 
-\todo[inline]{rdh: Also cite Potts's 2009 paper that builds a corpus of indirect answers?}
-
-There are a number of other intuitive phenomena that have motivated formal pragmatic accounts of answers, but which have not been studied experimentally. 
-For example, identification questions like ``who is X?'' can be resolved in many ways  \cite{BoerLycan75_KnowingWho, Gerbrandy00_Identity, Aloni05_ConceptualCovers}. 
-If an undergraduate asked ``Who is Noam Chomsky?'' in an introductory course, it would be appropriate to respond ``The MIT professor who wrote \emph{Aspects of the Theory of Syntax}'' or ``The father of modern linguistics.'' If a potential donor asked the same question at an MIT fundraiser, though, it would be more appropriate to point at Chomsky in the crowd. 
+Linguists interested in pragmatic accounts of answerer behavior have noted a number of additional scenarios with more nebulous goals. Questions like ``where are you?'' permit answers at many degrees of specificity: \emph{the United States}, \emph{my apartment}, and \emph{by the big tree} are each perfectly appropriate in some context and highly inappropriate in others \cite{Potts12_CardsDialogueCorpus}. Identification questions like ``who is X?'' can be resolved in many ways  \cite{BoerLycan75_KnowingWho, Gerbrandy00_Identity, Aloni05_ConceptualCovers}. 
+For example, if an undergraduate asked ``Who is Noam Chomsky?'' in an introductory course, it would be appropriate to respond ``The MIT professor who wrote \emph{Aspects of the Theory of Syntax}'' or ``The father of modern linguistics.'' If a potential donor asked the same question at an MIT fundraiser, though, it would be more appropriate to point at Chomsky in the crowd. 
 Similarly, if a child asks ``What's that?'' while pointing at a common household object, a parent's response will be much different than if one of their adult friends asked the same question. More specific \emph{wh}-questions like ``Who passed the examination?'' have also been studied extensively in developing linguistic theories: answers can be understood to mean either an \emph{exhaustive} or \emph{selective} list of relevant entities \cite{SchulzVanRooij06_ExhaustiveInterpretation}.
 
 % "WHY ARE WE DOING THIS?" paragraph
 Collectively, this work suggests that \emph{social inference} is a critical aspect of question-asking and answering. Note that the vast majority of prior work on question-answer behavior has focused on the \emph{answerer}, holding the question constant and investigating the effect of different contexts. 
-However, questioners must also select between many alternative questions in order to achieve their goal, and their utterance serves as a signal that prompts a relevant response from the answerer. While it is clear that the answerer uses questioner goals, it remains unclear how the answerer \emph{infers} this goal from the question utterance, and to what extent the questioner is reasoning about the answerer when choosing their question. 
+However, questioners must also select between many alternative questions in order to achieve their goal, and their utterance serves as a signal that prompts a relevant response from the answerer. 
 
 \subsection{Modeling background}
 
@@ -177,7 +159,17 @@ More recent theories have tried to fix these problems by introducing some consid
 
 \todo[inline]{rdh: Just found a paper by Stevens et al, 2014 (in SEMDIAL proceedings) that presents a model where the answerer infers the questioner's decision problem and generates an indirect answer, but they do it in a game theoretic framework; this includes a Bayesian step to compute $P(d|q)$, the likelihood of a decision problem given a question utterance}
 
-Our models are an effort to expand on this core idea in a probabilistic framework, which also provides a mechanism for the answerer to \emph{infer} the `decision problem.' 
+Our models are an effort to expand on this core idea in a probabilistic framework, which also provides a mechanism for the answerer to \emph{infer} the `decision problem.'  Recent work on Rational Speech Act (RSA) models \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature} has mathematically formalized pragmatic language understanding as a form of recursive Bayesian inference, where listeners reason about speakers who choose utterances that maximize information gained by an imagined listener.
+In this paper we extend the RSA framework to address simple question-answer dialogs.
+Questions pose a challenge for rational models of language use, since questions -- as utterance -- don't provide direct information to the listener\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. We must say what utility they do have. 
+
+This diverges from regular RSA in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation.
+
+To fully specify this questioner we need a model of the answerer, which can serve as both the model assumed by a questioner, and as a model of answer behavior itself. We explore three increasingly sophisticated, answerer models. The simplest agent, the literal answerer, simply attempts to be informative about the world, ignoring the question;   
+the explicit answerer attempts to be informative with respect to the surface sematics of the question asked (without inferring the questioner's underlying interests);  
+the pragmatic answerer infers the most likely underlying interests of the questioner, and then informatively addresses those interests.
+The latter model uses an extension of RSA to reason about the topic of conversation, as proposed by \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}; it goes beyond previous work by using the explicit question as a (potentially indirect) cue to this topic. 
+
 The RSA framework has already been applied to account for diverse pragmatic phenomena including scalar implicature\cite{GoodmanStuhlmuller13_KnowledgeImplicature}, 
 interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}, 
 non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords} and irony \cite{KaoGoodman15_IronyCogSci}, 
