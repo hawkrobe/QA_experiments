@@ -56,20 +56,18 @@
 \maketitle
 \section{Introduction}
 Asking questions is one of our most valuable methods of gathering information and learning from others. 
-At a very young age, children can strategically select \emph{who} to ask \cite{LegareEtAl13_QuestionsChildhood} and \emph{what} to ask \cite{ChouinardHarrisMaratsos07_ChildrenQuestions, RuggeriLombrozo15_ChildrenAdaptQuestions} in order to solve problems and test theories \cite{CallananOakes92_PreschoolerQuestions, GopnikMeltzoffKuhl99_ScientistCrib}. 
+At a very young age, children can strategically select \emph{who} to ask \cite{LegareEtAl13_QuestionsChildhood} and \emph{what} to ask \cite{ChouinardHarrisMaratsos07_ChildrenQuestions, RuggeriLombrozo15_ChildrenAdaptQuestions} in order to solve problems and test lay theories \cite{CallananOakes92_PreschoolerQuestions, GopnikMeltzoffKuhl99_ScientistCrib}. 
 Robots that ask questions to clarify commands \cite{DeitsTellex___Roy13_HumanRobotDialog} or obtain assistance with a task \cite{FongThorpeBaur03_RobotQuestions} make for better collaborators. 
 In tutoring scenarios, students who ask better questions tend to be more successful \cite{GraesserPerson94_QuestionAskingTutoring}, and scientists who design their studies to ask better questions can obtain much more informative results \cite{ClarkSchober92_InfluencingAnswers, MyungPitt09_OED}.
 
-In order for questions to be so useful, answerers must respond in kind. 
-This is straightforward in some cases. 
-For direct, factual questions, a helpful answerer can use the literal meaning of the question, which specifies a particular gap in the questioner's knowledge, and respond with the requested piece of information if it is known: 
+A question is only as useful as its answer, however, and not all answers are created equal. How, then, does an answerer select from the broad range of possible responses? This is straightforward in some cases. For direct, factual questions, for example, an answerer can use the explicit meaning of the question, which specifies a particular gap in the questioner's knowledge, and respond with the requested piece of information if it is known: 
 \enumsentence{
 	Q: Who was the 16th president of the U.S.?\\
 	A: Abraham Lincoln.}
 This response strategy has been implemented in sophisticated semantic parsers that extract the logical form of the query and efficiently search a database for an entity that satisfies it \cite<e.g.>{BerantChouFrostigLiang13_FreebaseQAPairs}. 
 
 Many questions in everyday conversation, however, are not so straightforward to answer. 
-For indirect speech acts, the questioner typically will not be satisfied with a simple yes/no answer; they expect the answerer to go \emph{beyond} the literal meaning to address the questioner's true interests \cite{Clark79_IndirectSpeechActs}:  
+For a class of questions called indirect speech acts, the questioner typically will not be satisfied with a simple yes/no answer; they expect the answerer to go \emph{beyond} the literal meaning to address the questioner's true interests \cite{Clark79_IndirectSpeechActs}:  
 \enumsentence{
 	Q: Do you know the time?\\
 	A: It's a quarter past 3.}
@@ -89,14 +87,14 @@ Finally, there's a class of questions familiar to any classroom instructor, wher
 	Q: What's wrong with my answer to \#1?\\ 
 	A: Well, let me remind you how to compute a derivative...}
 
-What do these exchanges have in common? Q strategically chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
+ What do these exchanges have in common? Q strategically chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
 
-A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle interplay highlights the centrality of social reasoning to everyday dialogue and raises two specific questions for formal models of language behavior: What makes a question useful? And what makes an answer helpful? 
+A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle interplay between a questioner choosing a question to ask and an answerer choosing  a response raises two specific questions for formal models of language behavior: What makes a question useful? And what makes an answer helpful? 
 
 We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems}, that the value of a question is the extent to which it can be expected to elicit useful information later in the dialogue. 
 More specifically, for the questioner, the value of a question is the expected information gained about her interests, given the set of likely answers it may provoke. The value of an answer, then, is the extent to which it resolves questioner uncertainty over the goal-relevant aspect of the world. 
 
-Our contribution in this paper is twofold. First, we formalize this theory of question-answer behavior in a probabilistic model of language understanding as social reasoning and formally compare our model against other proposals, providing a first step toward more general models of dialogue. Second, we address a longstanding paucity of data on \emph{questioner} behavior by running a set of real-time, multi-player communication games in which we simultaneously observe both ends of the dialogue. % where the answerer \emph{infers} this goal from the question utterance, and to what extent the questioner is reasoning about the answerer when choosing their question. 
+Our contribution in this paper is threefold. First, while psychologists have learned quite a bit about questioner behavior and answerer behavior by studying the two processes in isolation, we argue that there are significant theoretical benefits in viewing them as deeply intertwined social inferences. Second, we formalize this theoretical view of question-answer behavior in a probabilistic model of language understanding as social reasoning. This is the first time that such language models have been extended beyond single utterances and hence provides a first step toward modeling longer dialogues. Third, we address a longstanding paucity of data on \emph{questioner} behavior by running a set of real-time, multi-player communication games in which we simultaneously observe both ends of the dialogue. 
 
 %
 
