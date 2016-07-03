@@ -19,7 +19,7 @@ function appendCSV(jsonCSV, filename){
 var writeERP = function(erp, labels, filename, fixed) {
   var data = _.filter(erp.support().map(
    function(v) {
-     var prob = Math.exp(erp.score([], v));
+     var prob = Math.exp(erp.score(v));
      if (prob > 0.0){
       if(v.slice(-1) === ".")
         out = butLast(v);
@@ -46,10 +46,10 @@ var bayesianErpWriter = function(erp, filePrefix) {
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
   fs.writeSync(paramFile, ["parameter", "value", "MCMCprob"] + '\n');
 
-  var supp = erp.support([]);
+  var supp = erp.support();
   supp.forEach(function(s) {
-    supportWriter(s.predictive, Math.exp(erp.score([], s)), predictiveFile);
-    supportWriter(s.params, Math.exp(erp.score([], s)), paramFile);
+    supportWriter(s.predictive, Math.exp(erp.score(s)), predictiveFile);
+    supportWriter(s.params, Math.exp(erp.score(s)), paramFile);
   });
   fs.closeSync(predictiveFile);
   fs.closeSync(paramFile);
@@ -58,6 +58,7 @@ var bayesianErpWriter = function(erp, filePrefix) {
 
 var supportWriter = function(s, p, handle) {
   var sLst = _.pairs(s);
+  console.log(sLst);
   var l = sLst.length;
 
   for (var i = 0; i < l; i++) {
@@ -82,11 +83,11 @@ var sum = function(xs){
 };
 
 var KL = function(erpTrue, erpApprox){
-  var values = erpTrue.support([]);
+  var values = erpTrue.support();
   var xs = values.map(
     function(value){
-      var p = Math.exp(erpTrue.score([], value));
-      var q = Math.exp(erpApprox.score([], value));
+      var p = Math.exp(erpTrue.score(value));
+      var q = Math.exp(erpApprox.score(value));
       if (p == 0.0){
         return 0.0;
       } else {
@@ -298,7 +299,7 @@ var butLast = function(xs){
 var printERP = function(erp) {
   erp.support().map(
     function(v) {
-      var prob = Math.exp(erp.score([], v));
+      var prob = Math.exp(erp.score(v));
       if (prob > 0.0){
         console.log({val: v, prob: prob});
       }
@@ -328,14 +329,14 @@ var getEveryFifthElement = function(list) {
 }
 
 var erpOrder = function(erp){
-  var scores = erp.support([]).map(function(v){
-    return erp.score([], v);
+  var scores = erp.support().map(function(v){
+    return erp.score(v);
   });
   return sortWithIndices(scores).sortIndices;
 };
 
 var orderIsEqual = function(erp1, erp2){
-  assert.ok(arraysEqual(erp1.support([]), erp2.support([])));
+  assert.ok(arraysEqual(erp1.support(), erp2.support()));
   return arraysEqual(erpOrder(erp1), erpOrder(erp2));
 };
 

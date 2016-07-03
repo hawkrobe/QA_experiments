@@ -3,7 +3,7 @@ var uniformDraw = function (xs) {
 };
 
 var mean = function(thunk){
-  return expectation(Enumerate(thunk), function(v){return v;});
+  return expectation(Infer({method: 'enumerate'}, thunk), function(v){return v;});
 };
 
 var negate = function(predicate){
@@ -30,6 +30,48 @@ var foreach = function(lst, fn) {
   foreach_(0);
 };
 
+// For some reason, this breaks when you put it in the header...
+// var savePredictive = function (questionerERP, qud, item){
+//   foreach(questionerERP.support([]),function(s){
+//     var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
+//     query.add([qud, item[0], item[1], strippedQuestion],
+// 	      Math.exp(questionerERP.score(s)));
+//   });
+// };
+
+// var getPredictive = function() {
+//  return query.table;
+//};
+
+
+var questionToNode = cache(function(utterance){
+  var temp = qa.butLast(utterance).split("Is");
+  var node = temp[1].toLowerCase();
+  return node;
+});
+
+var locationAssignments = qa.permute([1,2,3,4]);
+
+var taxonomyAnswerMeaning = cache(function(utterance){
+  var temp = utterance.split("@");
+  var node = temp[0];
+  var location = qa.butLast(temp[1]);
+  return function(world){
+    return world[node] == location; 
+  };
+});
+
+var isTaxonomyAnswer = cache(function(qudSpace, x){
+  return ((last(x) === '.') &
+	  (_.contains(qudSpace, qa.butLast(x).split("@")[0])));
+});
+
+var meaning = cache(function(qudSpace, utterance){
+  return (isTaxonomyAnswer(qudSpace, utterance) ? taxonomyAnswerMeaning(utterance) :
+          utterance === 'null' ? function(w){return true;} :
+          undefined);
+});
+
 // our model has two parameters: rationality controls how strongly
 // optimizing an agent is; beta controls to what extent participants draw from an
 // empirical prior (1) vs. a uniform prior (0) on saliency. 
@@ -39,7 +81,6 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var empTaxonomy = knowledge.empTaxonomy;
   var qudSpace = knowledge.qudSpace;
   var labelSpace = knowledge.labelSpace;
-  var locationAssignments = qa.permute([1,2,3,4]);
 
   // Takes a taxonomy object with saliency probabilities
   // and picks one item from each label to be 'the salient one'
@@ -62,37 +103,17 @@ var QAmodel = function(type, domain, rationality,  beta) {
     return 'whereIs' + v.charAt(0).toUpperCase() + v.slice(1) + '?';
   };
 
-  var questionSpace = Enumerate(function(){
+  var questionSpace = Infer({method: 'enumerate'}, function(){
     return questionPrior();
   }).support();
-  
-  var questionToNode = function(utterance){
-    var temp = qa.butLast(utterance).split("Is");
-    var node = temp[1].toLowerCase();
-    return node;
-  };
 
   var answerPrior = function(world){
     var loc = uniformDraw([1,2,3,4]);
     var leaf = uniformDraw(_.keys(world));
     return leaf + '@' + loc + ".";
   };
-
-  var isTaxonomyAnswer = function(x){
-    return ((last(x) === '.') &
-	    (_.contains(qudSpace, qa.butLast(x).split("@")[0])));
-  };
   
-  var taxonomyAnswerMeaning = function(utterance){
-    var temp = utterance.split("@");
-    var node = temp[0];
-    var location = qa.butLast(temp[1]);
-    return function(world){
-      return world[node] == location; 
-    };
-  };
-
-    // returns a function that maps world to the gate we should pick to find
+  // returns a function that maps world to the gate we should pick to find
   // a leaf under the given node
   var makeQUD = function(node, tax) {
     return function(world){
@@ -115,52 +136,53 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var qudPrior = function() {
     return uniformDraw(qudSpace);
   };
-  
-  var meaning = cache(function(utterance){
-    return (isTaxonomyAnswer(utterance) ? taxonomyAnswerMeaning(utterance) :
-            utterance === 'null' ? function(w){return true;} :
-            undefined);
-  });
 
+  var constructProjectedWorldPrior = cache(function(qud_node) {
+    var qud = nameToQUD(qud_node);
+    return Infer({method: 'enumerate'}, function(){
+      return qud(worldPrior());
+    });
+  });
+ 
   var interpreter = cache(function(answer){
-    return Enumerate(function(){
+    return Infer({method: 'enumerate'}, function(){
       var world = worldPrior();
-      var answerMeaning = meaning(answer);
+      var answerMeaning = meaning(qudSpace, answer);
       condition(answerMeaning(world));
       return world;
     });
   });
-
+  
   var makeTruthfulAnswerPrior = cache(function(trueWorld) {
-    var truthfulAnswerPrior = Enumerate(function(){
+    var truthfulAnswerPrior = Infer({method: 'enumerate'}, function(){
       var answer = answerPrior(trueWorld);
-      factor(interpreter(answer).score([], trueWorld));
+      factor(interpreter(answer).score(trueWorld));
       return answer;
     });
     return truthfulAnswerPrior;
   });
 
   var literalAnswerer = cache(function(question, trueWorld) {
-    return Enumerate(function(){
+    return Infer({method: 'enumerate'}, function(){
       var answer = answerPrior(trueWorld);
-      factor(interpreter(answer).score([], trueWorld) * rationality);
+      factor(interpreter(answer).score(trueWorld) * rationality);
       return answer;
     });
   });
-
+  
   var literalQuestioner = cache(function(qud_node) {
     var qud = nameToQUD(qud_node);
-    return Enumerate(function(){
+    var projectedWorldPrior = constructProjectedWorldPrior(qud_node);
+    return Infer({method: 'enumerate'}, function(){
       var question = questionPrior();
-      var prior = Enumerate(function(){return qud(worldPrior());});
       var expectedKL = mean(function(){
         var trueWorld = worldPrior();
         var answer = sample(literalAnswerer(question, trueWorld));
-        var posterior = Enumerate(function(){
+        var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
           var world = sample(interpreter(answer));
           return qud(world);
         });
-        return qa.KL(posterior, prior);
+        return qa.KL(projectedWorldPosterior, projectedWorldPrior);
       });
       factor(expectedKL * rationality);
       return question;
@@ -168,9 +190,10 @@ var QAmodel = function(type, domain, rationality,  beta) {
   });
 
   var explicitAnswerer = cache(function(question, trueWorld) {
-    return Enumerate(function(){
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
+    return Infer({method: 'enumerate'}, function(){
+      // Remember this is stochastic for a question...
       var qud = nameToQUD(question);
-      var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
 	var inferredWorld = sample(interpreter(answer));
@@ -183,18 +206,17 @@ var QAmodel = function(type, domain, rationality,  beta) {
 
   var explicitQuestioner = cache(function(qudName) {
     var qud = nameToQUD(qudName);
-    return Enumerate(function(){
+    var projectedWorldPrior = constructProjectedWorldPrior(qudName);
+    return Infer({method: 'enumerate'}, function(){
       var question = questionPrior();
-      var prior = Enumerate(function(){
-	return qud(worldPrior());});
       var expectedKL = mean(function(){
 	var trueWorld = worldPrior();
 	var answer = sample(explicitAnswerer(question, trueWorld));
-	var posterior = Enumerate(function(){
+	var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
 	  var world = sample(interpreter(answer));
 	  return qud(world);
 	});
-	return qa.KL(posterior, prior);
+	return qa.KL(projectedWorldPosterior, projectedWorldPrior);
       });
       factor(expectedKL * rationality);
       return question;
@@ -202,16 +224,16 @@ var QAmodel = function(type, domain, rationality,  beta) {
   });
 
   var pragmaticAnswerer = cache(function(question, trueWorld){
-    var qudPosterior = Enumerate(function(){
+    var qudPosterior = Infer({method: 'enumerate'}, function(){
       var qudName = qudPrior();
       var qud = nameToQUD(qudName);
       var q_erp = explicitQuestioner(qudName);
-      factor(q_erp.score([], question));
+      factor(q_erp.score(question));
       return qudName;
     });
-    return Enumerate(function(){
+    var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
+    return Infer({method: 'enumerate'}, function(){
       var qud = nameToQUD(sample(qudPosterior));
-      var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
       var answer = sample(truthfulAnswerPrior);
       var score = mean(function(){
 	var inferredWorld = sample(interpreter(answer));
@@ -224,52 +246,46 @@ var QAmodel = function(type, domain, rationality,  beta) {
 
   var pragmaticQuestioner = cache(function(qudName) {
     var qud = nameToQUD(qudName);
-    return Enumerate(function(){
+    var projectedWorldPrior = constructProjectedWorldPrior(qudName);
+    return Infer({method: 'enumerate'}, function(){
       var question = questionPrior();
-      var prior = Enumerate(function(){
-        return qud(worldPrior());
-      });
-      var expectedKL = mean(
-        function(){
-          var trueWorld = worldPrior();
-          var answer = sample(pragmaticAnswerer(question, trueWorld));
-          var posterior = Enumerate(function(){
-            var world = sample(interpreter(answer));
-            return qud(world);
-          });
-          return qa.KL(posterior, prior);
+      var expectedKL = mean(function(){
+        var trueWorld = worldPrior();
+        var answer = sample(pragmaticAnswerer(question, trueWorld));
+        var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
+          var world = sample(interpreter(answer));
+          return qud(world);
         });
+        return qa.KL(projectedWorldPosterior, projectedWorldPrior);
+      });
       factor(expectedKL * rationality);
       return question;
     });
   });
 
-  var runTFBTQuestioner = function(qudName, coinFlip) {
+  var runTFBTQuestioner = cache(function(qudName, coinFlip) {
     var qud = nameToQUD(qudName);
-    return Enumerate(function(){
+    var projectedWorldPrior = constructProjectedWorldPrior(qudName);
+    return Infer({method: 'enumerate'}, function(){
       var question = questionPrior();
-      var prior = Enumerate(function(){
-        return qud(worldPrior());
-      });
-      var expectedKL = mean(
-        function(){
-          var trueWorld = worldPrior();
-          var answer = (coinFlip ? 
-	      	        sample(pragmaticAnswerer(question, trueWorld)) : 
- 			sample(explicitAnswerer(question, trueWorld)));
-          var posterior = Enumerate(function(){
-            var world = sample(interpreter(answer));
-            return qud(world);
-          });
-          return qa.KL(posterior, prior);
+      var expectedKL = mean(function(){
+        var trueWorld = worldPrior();
+        var answer = (coinFlip ?
+		      sample(pragmaticAnswerer(question, trueWorld)) :
+		      sample(explicitAnswerer(question, trueWorld)));
+        var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
+          var world = sample(interpreter(answer));
+          return qud(world);
         });
+        return qa.KL(projectedWorldPosterior, projectedWorldPrior);
+      });
       factor(expectedKL * rationality);
       return question;
     });    
-  };
+  });
   
   var runAnswererModel = function(answererModel, question) {
-    return Enumerate(function() {
+    return Infer({method: 'enumerate'}, function() {
       var trueWorld = worldPrior();
       var ansERP = answererModel(question, trueWorld);
       var ans = sample(ansERP);
