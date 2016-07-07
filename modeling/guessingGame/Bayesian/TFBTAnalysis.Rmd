@@ -15,10 +15,12 @@ estimate_mode <- function(s) {
   d <- density(s)
   return(d$x[which.max(d$y)])
 }
+
 HPDhi<- function(s){
   m <- HPDinterval(mcmc(s))
   return(m["var1","upper"])
 }
+
 HPDlo<- function(s){
   m <- HPDinterval(mcmc(s))
   return(m["var1","lower"])
@@ -80,65 +82,50 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysisParams_final.csv", sep = ",", row.names = NULL)
-samples = 10000
-str(qparams)
-qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2]
+qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysis_Strict_Params.csv", sep = ",", row.names = NULL)
 
-alphaSubset = subset(qparams.samples, parameter == "alpha")$value
-md = estimate_mode(as.numeric(alphaSubset))
-md_hi = round(HPDhi(as.numeric(alphaSubset)), 3)
-md_low = round(HPDlo(as.numeric(alphaSubset)), 3)
-cat("alpha = ", md) 
-cat("95% HPD interval = [", md_low, ",", md_hi, "]")
+samples = 1000
+qparams %>% 
+    filter(parameter == "expVsPrag") %>%
+    group_by(value) %>%
+    summarize(prob = sum(MCMCprob))
 
-betaSubset = subset(qparams.samples, parameter == "beta")$value
-md = estimate_mode(as.numeric(betaSubset))
-md_hi = round(HPDhi(as.numeric(betaSubset)), 3)
-md_low = round(HPDlo(as.numeric(betaSubset)), 3)
-cat("beta = ", md) 
-cat("95% HPD interval = [", md_low, ",", md_hi, "]")
+qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2] %>%
+  filter(parameter != "expVsPrag") %>%
+  mutate(value = factorToNumeric(value))
 
-eVpSubset = subset(qparams.samples, parameter == "expVsPrag")$value
-md = estimate_mode(as.numeric(eVpSubset))
-md_hi = round(HPDhi(as.numeric(eVpSubset)), 3)
-md_low = round(HPDlo(as.numeric(eVpSubset)), 3)
-cat("expVsPrag = ", md) 
-cat("95% HPD interval = [", md_low, ",", md_hi, "]")
-
-```
-
-```{r}
-pdf(file="../writing/2015/journal-manuscript/figures/QuestionerParamPosteriors.pdf",
-     width = 6, height = 3)
-ggplot(qparams.samples, aes(x=value)) +
-    geom_histogram(data =subset(qparams.samples, parameter == "alpha"), 
-                   binwidth = .3, colour="black", fill="white")+
-    geom_histogram(data=subset(qparams.samples, parameter == "beta"), 
-                   binwidth = .025, colour="black", fill="white")+
-    geom_histogram(data=subset(qparams.samples, parameter == "expVsPrag"),
-                   binwidth = .05, colour="black", fill="white")+
-    geom_density(aes(y=.3*..count..), data =subset(qparams.samples, parameter == "alpha"), adjust = 3.5,
-                 alpha=.2, fill="#FF6666")+
-    geom_density(aes(y=.025*..count..),data=subset(qparams.samples, parameter == "beta"), adjust = 3.5,
-                 alpha=.2, fill="#FF6666")+
-    geom_density(aes(y=.05*..count..),data=subset(qparams.samples, parameter == "expVsPrag"),adjust = 2,
-                 alpha=.2, fill="#FF6666")+
-    ggtitle("Questioner Parameter Posteriors (10000 iterations)") +
-    facet_grid(~parameter, scales = 'free_x') +
+qparams.samples%>%
+  ggplot(aes(x = value))+
+    geom_histogram(aes(y=..density..), fill = 'white', color = 'black')+
+    geom_density(aes(y=..density..), alpha = .2,  fill="#FF6666") +
+    facet_wrap(~parameter, scales = 'free') +
     theme_bw()
-dev.off()
+
+qparams.samples %>% 
+  group_by(parameter) %>%
+  summarize(mode = estimate_mode(value),
+            md_lo = round(HPDlo(value), 3),
+            md_hi = round(HPDhi(value), 3))
 ```
 
 ```{r}
-aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisParams_betaFlipOutside.csv", sep = ",", row.names = NULL)
+aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysisParams.csv", sep = ",", row.names = NULL)
 samples = 1000
 str(aparams)
 aparams.samples <- aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:2]
-estimate_mode(subset(aparams.samples, parameter == "beta")$value)
-HPDhi(subset(aparams.samples, parameter == "beta")$value)
-HPDlo(subset(aparams.samples, parameter == "beta")$value)
 
+aparams.samples %>%
+  ggplot(aes(x = value))+
+    geom_histogram(aes(y=..density..), fill = 'white', color = 'black')+
+    geom_density(aes(y=..density..), alpha = .2,  fill="#FF6666") +
+    facet_wrap(~parameter, scales = 'free') +
+    theme_bw()
+
+aparams.samples %>% 
+  group_by(parameter) %>%
+  summarize(mode = estimate_mode(value),
+            md_lo = round(HPDlo(value), 3),
+            md_hi = round(HPDhi(value), 3))
 ```
 
 ```{r}
@@ -178,7 +165,7 @@ apredictive.pp <- apredictive.samples %>%
   summarize(MAP = estimate_mode(prob),
             credHigh = HPDhi(prob),
             credLow = HPDlo(prob)) %>%
-  right_join(d_a)
+  right_join(d_a, by = c("response"))
   
 acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
 
