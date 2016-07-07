@@ -22,13 +22,12 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = uniform(0,20);
-  var beta = uniform(0,1);
-  var betaFlip = flip(beta);
+  var alpha = sample(UniformDrift({a:0,b:20,r:.25}));
+  var beta = sample(UniformDrift({a:0,b:1,r:.1}));
 
   // Run model and condition on data
   var score = sum(map(function(item) {
-    var model = QAmodel(item[0], item[1], alpha, betaFlip);
+    var model = QAmodel(item[0], item[1], alpha, beta);
     var runAnswererModel = model.runAnswererModel;
     var pragA = model.pragA;
     return sum(map(function(question) {
@@ -36,15 +35,15 @@ var modelAnalysis = function() {
 					 question: questionToLabel(question)});
       var pragERP = runAnswererModel(pragA, question);
       var score = sum(map(function(dataRow) {
-	var localScore = pragERP.score([], dataRow[5] + ".");
+	var localScore = pragERP.score(dataRow[5] + ".");
 	return localScore;
       }, itemData));
 
       // Store predictions
-      foreach(pragERP.support([]),function(s){
+      foreach(pragERP.support(),function(s){
         query.add([questionToLabel(question), item[0], item[1], s],
-		   Math.exp(pragERP.score([], s)))
-      })
+		  Math.exp(pragERP.score(s)));
+      });
       return score;
     }, model.questionSpace));
   }, items));
@@ -54,8 +53,9 @@ var modelAnalysis = function() {
   return {predictive: query.table, params : {alpha: alpha, beta: beta}};
 };
 
-var outputERP = MCMC(modelAnalysis, {samples: 1000, burn: 0, verbose: true});
+var outputERP = Infer({method: 'MCMC', samples: 10000, burn: 1000, verbose: true},
+		      modelAnalysis);
 
 console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP, "data/BayesianAnswererAnalysis");
+qa.bayesianErpWriter(outputERP, "data/BayesianAnswererAnalysis_drift_");

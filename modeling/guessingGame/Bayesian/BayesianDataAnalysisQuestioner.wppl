@@ -36,7 +36,7 @@ var modelAnalysis = function() {
 	  params : {alpha: alpha, beta: beta, expVsPrag: expPragFlip}};
 };
 
-var outputERP = Infer({method: "MCMC", samples: 1000, burn: 100, verbose: true},
+var outputERP = Infer({method: "MCMC", samples: 10000, burn: 1000, verbose: true},
 		      modelAnalysis);
 
 console.log(outputERP.toJSON());
