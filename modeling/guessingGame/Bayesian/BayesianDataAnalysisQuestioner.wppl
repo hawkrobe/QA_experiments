@@ -9,7 +9,7 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = sample(UniformDrift({a: 0, b: 20, r: .25}));
+  var alpha = sample(UniformDrift({a: 0, b: 20, r: 2}));
   var beta = sample(UniformDrift({a: 0, b: 1, r: .1}));
   var expPragFlip = sample(Bernoulli({p: .5}));
   
@@ -36,7 +36,7 @@ var modelAnalysis = function() {
 	  params : {alpha: alpha, beta: beta, expVsPrag: expPragFlip}};
 };
 
-var outputERP = Infer({method: "MCMC", samples: 10000, burn: 1000, verbose: true},
+var outputERP = Infer({method: "MCMC", samples: 10, burn: 0, verbose: true},
 		      modelAnalysis);
 
 console.log(outputERP.toJSON());
