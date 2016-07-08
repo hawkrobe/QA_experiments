@@ -5,24 +5,17 @@ var questionToLabel = function(question) {
   return qa.butLast(question).split("Is")[1].toLowerCase();
 };
 
-// Condition on data, jointly infer two params:
-// 1. alpha, a global rationality param
-// 2. beta, which interpolates between the emp prior and uniform prior
-//
-// might eventually want to have a questioner that reasons about BOTH
-// the explicit and pragmatic answerers, and weights them so we can
-// infer that weight
-
 var data = qa.readCSV("../../../MultiExperiment2/data/"
 	              + "MultiExp2_BayesianAnalysisInput.csv");
 
+console.log("loaded data");
 var types = ["branching", "overlapping", "equivocal"];
 var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = sample(UniformDrift({a:0,b:20,r:.25}));
+  var alpha = sample(UniformDrift({a:0,b:20,r:2}));
   var beta = sample(UniformDrift({a:0,b:1,r:.1}));
 
   // Run model and condition on data
@@ -53,7 +46,7 @@ var modelAnalysis = function() {
   return {predictive: query.table, params : {alpha: alpha, beta: beta}};
 };
 
-var outputERP = Infer({method: 'MCMC', samples: 10000, burn: 1000, verbose: true},
+var outputERP = Infer({method: 'MCMC', samples: 3, burn: 0, verbose: true},
 		      modelAnalysis);
 
 console.log('inference complete... printing');
