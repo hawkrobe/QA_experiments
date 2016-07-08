@@ -9,8 +9,8 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = sample(UniformDrift({a: 0, b: 20, r: 2}));
-  var beta = sample(UniformDrift({a: 0, b: 1, r: .1}));
+  var alpha = sample(UniformDrift({a: 0, b: 20, r: 2.5}));
+  var beta = sample(UniformDrift({a: 0, b: 1, r: .2}));
   var expPragFlip = sample(Bernoulli({p: .5}));
   
   // Run model and condition on data
@@ -32,14 +32,15 @@ var modelAnalysis = function() {
     }, model.qudSpace));
   }, items));
   factor(score);
+  console.log([alpha, beta, expPragFlip]);
+  console.log(score);
   return {predictive: query.table,
 	  params : {alpha: alpha, beta: beta, expVsPrag: expPragFlip}};
 };
 
-var outputERP = Infer({method: "MCMC", samples: 10, burn: 0, verbose: true},
+var outputERP = Infer({method: "MCMC", samples: 50, burn: 5, verbose: true},
 		      modelAnalysis);
 
-console.log(outputERP.toJSON());
 console.log('inference complete... printing');
 
 qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis_Strict_");

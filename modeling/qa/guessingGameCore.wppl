@@ -268,11 +268,12 @@ var QAmodel = function(type, domain, rationality,  beta) {
 	    pragmaticQuestioner(qudName) :
 	    explicitQuestioner(qudName));
   });
-  
+
   var runAnswererModel = cache(function(question, coinFlip) {
-    // The actual locations are irrelevant, so we don't bother enumerating over them
-    var exampleWorld = worldPrior();
+    // Want to know average behavior across all possible world
+    // (technically pretty dumb since they're all symmetric...)
     return Infer({method: 'enumerate'}, function() {
+      var exampleWorld = worldPrior();
       var ansERP = (coinFlip ?
 		    pragmaticAnswerer(question, exampleWorld) :
 		    explicitAnswerer(question, exampleWorld));
