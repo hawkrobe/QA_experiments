@@ -21,7 +21,7 @@ var modelAnalysis = function() {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
       var questionerERP = runTFBTQuestioner(qud, expPragFlip);
       // Save predictives
-      foreach(questionerERP.support([]),function(s){
+      foreach(questionerERP.support(),function(s){
 	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
 	query.add([qud, item[0], item[1], strippedQuestion],
 		  Math.exp(questionerERP.score(s)));
