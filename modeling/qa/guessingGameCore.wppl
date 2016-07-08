@@ -264,34 +264,22 @@ var QAmodel = function(type, domain, rationality,  beta) {
   });
 
   var runTFBTQuestioner = cache(function(qudName, coinFlip) {
-    var qud = nameToQUD(qudName);
-    var projectedWorldPrior = constructProjectedWorldPrior(qudName);
-    return Infer({method: 'enumerate'}, function(){
-      var question = questionPrior();
-      var expectedKL = mean(function(){
-        var trueWorld = worldPrior();
-        var answer = (coinFlip ?
-		      sample(pragmaticAnswerer(question, trueWorld)) :
-		      sample(explicitAnswerer(question, trueWorld)));
-        var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
-          var world = sample(interpreter(answer));
-          return qud(world);
-        });
-        return qa.KL(projectedWorldPosterior, projectedWorldPrior);
-      });
-      factor(expectedKL * rationality);
-      return question;
-    });    
+    return (coinFlip ?
+	    pragmaticQuestioner(qudName) :
+	    explicitQuestioner(qudName));
   });
   
-  var runAnswererModel = function(question, coinFlip) {
+  var runAnswererModel = cache(function(question, coinFlip) {
+    // The actual locations are irrelevant, so we don't bother enumerating over them
+    var exampleWorld = worldPrior();
     return Infer({method: 'enumerate'}, function() {
-      var trueWorld = worldPrior();
-      var ansERP = answererModel(question, trueWorld);
+      var ansERP = (coinFlip ?
+		    pragmaticAnswerer(question, exampleWorld) :
+		    explicitAnswerer(question, exampleWorld));
       var ans = sample(ansERP);
       return ans.split("@")[0] + ".";
     });
-  };
+  });
   
   return {qudSpace : qudSpace,
           questionSpace : questionSpace,
