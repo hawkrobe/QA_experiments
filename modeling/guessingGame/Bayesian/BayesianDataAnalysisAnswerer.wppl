@@ -17,27 +17,25 @@ var modelAnalysis = function() {
   // Sample params
   var alpha = sample(UniformDrift({a:0,b:20,r:2}));
   var beta = sample(UniformDrift({a:0,b:1,r:.1}));
-
+  var expPragFlip = sample(Bernoulli({p: .5}));
+  
   // Run model and condition on data
   var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
     var runAnswererModel = model.runAnswererModel;
-    var pragA = model.pragA;
     return sum(map(function(question) {
       var itemData = qa.getSubset(data, {type:item[0], domain: item[1],
 					 question: questionToLabel(question)});
-      var pragERP = runAnswererModel(pragA, question);
-      var score = sum(map(function(dataRow) {
-	var localScore = pragERP.score(dataRow[5] + ".");
+      var answererERP = runAnswererModel(question, expPragFlip);
+      // Store predictions
+      foreach(answererERP.support(),function(s){
+        query.add([questionToLabel(question), item[0], item[1], s],
+		  Math.exp(answererERP.score(s)));
+      });
+      return sum(map(function(dataRow) {
+	var localScore = answererERP.score(dataRow[5] + ".");
 	return localScore;
       }, itemData));
-
-      // Store predictions
-      foreach(pragERP.support(),function(s){
-        query.add([questionToLabel(question), item[0], item[1], s],
-		  Math.exp(pragERP.score(s)));
-      });
-      return score;
     }, model.questionSpace));
   }, items));
 
