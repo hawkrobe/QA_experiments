@@ -81,7 +81,10 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var empTaxonomy = knowledge.empTaxonomy;
   var qudSpace = knowledge.qudSpace;
   var labelSpace = knowledge.labelSpace;
-
+  
+  // To cut down on computational complexity, we fix a location assignment
+  var exampleWorld = _.object(qudSpace, [1,2,3,4]);
+	
   // Takes a taxonomy object with saliency probabilities
   // and picks one item from each label to be 'the salient one'
   var sampleSalienceAssignment = function() {
@@ -273,7 +276,6 @@ var QAmodel = function(type, domain, rationality,  beta) {
     // Want to know average behavior across all possible world
     // (technically pretty dumb since they're all symmetric...)
     return Infer({method: 'enumerate'}, function() {
-      var exampleWorld = worldPrior();
       var ansERP = (coinFlip ?
 		    pragmaticAnswerer(question, exampleWorld) :
 		    explicitAnswerer(question, exampleWorld));
