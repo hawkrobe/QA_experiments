@@ -11,7 +11,8 @@ var modelAnalysis = function() {
   // Sample params
   var alpha = sample(UniformDrift({a: 0, b: 20, r: 2.5}));
   var beta = sample(UniformDrift({a: 0, b: 1, r: .2}));
-  var expPragFlip = sample(Bernoulli({p: .5}));
+  var expPragWeight = sample(UniformDrift({a: 0, b: 1, r: .2}));
+  var expPragFlip = sample(Bernoulli({p: expPragWeight}));
   
   // Run model and condition on data
   var score = sum(map(function(item) {

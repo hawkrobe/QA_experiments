@@ -17,7 +17,8 @@ var modelAnalysis = function() {
   // Sample params
   var alpha = sample(UniformDrift({a:0,b:20,r:2.5}));
   var beta = sample(UniformDrift({a:0,b:1,r:.2}));
-  var expPragFlip = sample(Bernoulli({p: .5}));
+  var expPragWeight = sample(UniformDrift({a:0,b:1,r:.2}));
+  var expPragFlip = sample(Bernoulli({p: expPragWeight}));
 
   // Run model and condition on data
   var score = sum(map(function(item) {
@@ -33,6 +34,7 @@ var modelAnalysis = function() {
         query.add([questionToLabel(question), item[0], item[1], s],
       		  Math.exp(answererERP.score(s)));
       });
+
       return sum(map(function(dataRow) {
   	var localScore = answererERP.score(dataRow[5] + ".");
   	return localScore;
@@ -40,17 +42,17 @@ var modelAnalysis = function() {
     }, model.questionSpace));
   }, items));
   
-  console.log([alpha,beta,expPragFlip]);
+  console.log([alpha,beta,expPragWeight]);
   console.log(score);
   factor(score);
 
   return {predictive: query.table, 
-	  params : {alpha: alpha, beta: beta, expPragFlip: expPragFlip}};
+	  params : {alpha: alpha, beta: beta, expPragWeight: expPragWeight}};
 };
 
-var outputERP = Infer({method: 'MCMC', samples: 10000, burn: 1000, verbose: true},
+var outputERP = Infer({method: 'MCMC', samples: 10, burn: 10, verbose: true},
 		      modelAnalysis);
 
 console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP, "data/BayesianAnswererAnalysis_Strict_");
+qa.bayesianErpWriter(outputERP, "data/BayesianAnswererAnalysis_loose_");
