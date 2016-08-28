@@ -15,9 +15,9 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = sample(UniformDrift({a:0,b:20,r:2.5}));
-  var beta = sample(UniformDrift({a:0,b:1,r:.2}));
-  var expPragWeight = sample(UniformDrift({a:0,b:1,r:.2}));
+  var alpha = uniformDraw([10]); // uniformDraw(_.range(0, 20.01, 10));
+  var beta = uniformDraw([.5, 1]); // uniformDraw(_.range(0, 1.01, 0.5));
+  var expPragWeight = uniformDraw([.5, 1]); // uniformDraw(_.range(0,1.01, 0.5));
   var expPragFlip = sample(Bernoulli({p: expPragWeight}));
 
   // Run model and condition on data
@@ -42,17 +42,18 @@ var modelAnalysis = function() {
     }, model.questionSpace));
   }, items));
   
-  console.log([alpha,beta,expPragWeight]);
+  console.log([alpha,beta,expPragWeight, expPragFlip]);
   console.log(score);
   factor(score);
 
   return {predictive: query.table, 
-	  params : {alpha: alpha, beta: beta, expPragWeight: expPragWeight}};
+	  params : {alpha: alpha, beta: beta,
+		    expPragWeight: expPragWeight,
+		    expPragFlip: expPragFlip}};
 };
 
-var outputERP = Infer({method: 'MCMC', samples: 10, burn: 10, verbose: true},
-		      modelAnalysis);
+var outputERP = Infer({method: 'enumerate'}, modelAnalysis);
 
-console.log('inference complete... printing');
+// console.log('inference complete... printing');
 
 qa.bayesianErpWriter(outputERP, "data/BayesianAnswererAnalysis_loose_");
