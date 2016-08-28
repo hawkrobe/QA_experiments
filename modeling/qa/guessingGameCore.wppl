@@ -273,12 +273,13 @@ var QAmodel = function(type, domain, rationality,  beta) {
   });
 
   var runAnswererModel = cache(function(question, coinFlip) {
-    // Want to know average behavior across all possible world
-    // (technically pretty dumb since they're all symmetric...)
+    // Want to know behavior marginalized across all possible world
+    // because of symmetry, we can just use an example world
+    var ansERP = (coinFlip ?
+		  pragmaticAnswerer(question, exampleWorld) :
+		  explicitAnswerer(question, exampleWorld));
+    // We marganilize over location information, again because of symmetry
     return Infer({method: 'enumerate'}, function() {
-      var ansERP = (coinFlip ?
-		    pragmaticAnswerer(question, exampleWorld) :
-		    explicitAnswerer(question, exampleWorld));
       var ans = sample(ansERP);
       return ans.split("@")[0] + ".";
     });
