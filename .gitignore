@@ -1,7 +1,6 @@
 .DS_Store
 .RData
 .Rhistory
-stanford-corenlp-python
 auth.json
 node_modules
 *~
@@ -20,3 +19,6 @@ writing/2015/cogsci-revision/cogsci_qa_revision.pdf
 *.key
 *.out
 reimbursement/
+.Rproj.user
+*.Rproj
+*/QA_manuscript.pdf
