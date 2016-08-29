@@ -58,7 +58,6 @@ var bayesianErpWriter = function(erp, filePrefix) {
 
 var supportWriter = function(s, p, handle) {
   var sLst = _.pairs(s);
-  console.log(sLst);
   var l = sLst.length;
 
   for (var i = 0; i < l; i++) {
