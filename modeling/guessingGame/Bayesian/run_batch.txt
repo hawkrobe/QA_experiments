@@ -30,4 +30,6 @@
 #################
 
 #now run normal batch commands
+module load nodejs
+PATH=$PATH:$HOME/Q_and_A/modeling/node_modules/webppl/
 webppl BayesianDataAnalysisAnswerer.wppl --require ../../qa
