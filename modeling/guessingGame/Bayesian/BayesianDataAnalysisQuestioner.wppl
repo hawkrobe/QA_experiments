@@ -9,11 +9,12 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = sample(UniformDrift({a: 0, b: 20, r: 2.5}));
-  var beta = sample(UniformDrift({a: 0, b: 1, r: .2}));
-  var expPragWeight = sample(UniformDrift({a: 0, b: 1, r: .2}));
+  var alpha = uniformDraw(_.range(0, 15.01, 0.5));
+  var beta = uniformDraw(_.range(0, 1.01, 0.1));
+  var expPragWeight = uniformDraw(_.range(0, 1.01, 0.1));
   var expPragFlip = sample(Bernoulli({p: expPragWeight}));
-  
+
+  globalStore.predictives = {};  
   // Run model and condition on data
   var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
@@ -24,25 +25,27 @@ var modelAnalysis = function() {
       // Save predictives
       foreach(questionerERP.support(),function(s){
 	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
-	query.add([qud, item[0], item[1], strippedQuestion],
-		  Math.exp(questionerERP.score(s)));
+	var key = [qud, item[0], item[1], strippedQuestion].join(",");
+	var newPair = _.object([key], [Math.exp(questionerERP.score(s))]);
+	globalStore.predictives = _.extend(globalStore.predictives, newPair);
       });
+      
       return sum(map(function(dataRow) {
        	return questionerERP.score("whereIs" + qa.capitalize(dataRow[3]) + "?");
       }, itemData));
     }, model.qudSpace));
   }, items));
   factor(score);
-  console.log([alpha, beta, expPragFlip]);
-  console.log(score);
-  return {predictive: query.table,
-	  params : {alpha: alpha, beta: beta, expVsPrag: expPragFlip}};
+  console.log([alpha, beta, expPragWeight, expPragFlip]);
+  return {predictive: globalStore.predictives,
+	  params : {alpha: alpha, beta: beta,
+	  	    expVsPragWeight: expPragWeight,
+		    expPragFlip: expPragFlip}};
 };
 
-var outputERP = Infer({method: "MCMC", samples: 50, burn: 5, verbose: true},
-		      modelAnalysis);
+var outputERP = Infer({method: 'enumerate'}, modelAnalysis);
 
 console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis_Strict_");
+qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis_loose_");
 
