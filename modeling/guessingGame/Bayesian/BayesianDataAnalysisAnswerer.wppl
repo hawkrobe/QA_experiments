@@ -15,11 +15,11 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = uniformDraw(_.range(0, 20.01, 0.5));
-  var beta = uniformDraw(_.range(0, 1.01, 0.1));
-  var expPragWeight = uniformDraw(_.range(0,1.01, 0.1));
-  var expPragFlip = sample(Bernoulli({p: expPragWeight}));
-
+  var alpha = uniformDraw([10, 15])// _.range(0, 20.01, 0.5));
+  var beta = uniformDraw([.5, 1]) //_.range(0, 1.01, 0.1));
+  var expPragWeight = 0 //uniformDraw(_.range(0,1.01, 0.1));
+  var expPragFlip = false //sample(Bernoulli({p: expPragWeight}));
+  globalStore.predictives = [];
   // Run model and condition on data
   var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
@@ -31,8 +31,8 @@ var modelAnalysis = function() {
 
       // Store predictions
       foreach(answererERP.support(),function(s){
-        query.add([questionToLabel(question), item[0], item[1], s],
-      		  Math.exp(answererERP.score(s)));
+        globalStore.predictives.push([questionToLabel(question), item[0], item[1], s],
+                                      Math.exp(answererERP.score(s)));
       });
 
       return sum(map(function(dataRow) {
@@ -46,7 +46,7 @@ var modelAnalysis = function() {
   console.log(score);
   factor(score);
 
-  return {predictive: query.table, 
+  return {predictive: globalStore.predictives, 
 	  params : {alpha: alpha, beta: beta,
 		    expPragWeight: expPragWeight,
 		    expPragFlip: expPragFlip}};
