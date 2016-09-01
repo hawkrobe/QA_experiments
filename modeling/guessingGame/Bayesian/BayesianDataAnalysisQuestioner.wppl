@@ -14,12 +14,14 @@ var modelAnalysis = function() {
   var expPragWeight = uniformDraw(_.range(0, 1.01, 0.1));
   var expPragFlip = sample(Bernoulli({p: expPragWeight}));
 
-  globalStore.predictives = {};  
+  globalStore.predictives = {};
+  console.log([alpha, beta, expPragWeight, expPragFlip]);
+
   // Run model and condition on data
-  var score = sum(map(function(item) {
+  var score = reduce(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
     var runTFBTQuestioner = model.runTFBTQuestioner;
-    return sum(map(function(qud) {
+    return reduce(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
       var questionerERP = runTFBTQuestioner(qud, expPragFlip);
       // Save predictives
@@ -29,14 +31,13 @@ var modelAnalysis = function() {
 	var newPair = _.object([key], [Math.exp(questionerERP.score(s))]);
 	globalStore.predictives = _.extend(globalStore.predictives, newPair);
       });
-      
-      return sum(map(function(dataRow) {
+      return reduce(function(dataRow) {
        	return questionerERP.score("whereIs" + qa.capitalize(dataRow[3]) + "?");
-      }, itemData));
-    }, model.qudSpace));
-  }, items));
+      }, 0, itemData);
+    }, 0, model.qudSpace);
+  }, 0, items);
+
   factor(score);
-  console.log([alpha, beta, expPragWeight, expPragFlip]);
   return {predictive: globalStore.predictives,
 	  params : {alpha: alpha, beta: beta,
 	  	    expVsPragWeight: expPragWeight,
