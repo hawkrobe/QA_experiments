@@ -10,7 +10,6 @@ library(knitr)
 opts_knit$set(root.dir = '/Users/rxdh/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/')
 setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/")
 library(tidyr)
-library(plyr)
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
@@ -212,7 +211,7 @@ First, we define this function that takes a data frame and computes which parame
 # Have to vectorize these operations: for loop takes ages
 vectorizedMapAnswer <- Vectorize(mapAnswer);
 vectorizedMapQuestion <- Vectorize(mapQuestion);
-answerModelOutput=read.csv("../modeling/guessingGame/answererPredictionsUnif.csv", 
+answerModelOutput=read.csv("../modeling/guessingGame/ModelPreds/answererPredictionsUnif.csv", 
                             sep = ',') %>% 
   mutate(question = as.character(utterance), 
          answer = as.character(response)) %>%
@@ -276,7 +275,7 @@ Now we import the questioner fits and tidy them up to eventually be joined
 ```{r}
 vectorizedMapGoal <- Vectorize(mapGoal);
 
-questionModelOutput=read.csv("../modeling/guessingGame/questionerPredictionsUnif.csv", sep = ',') %>%
+questionModelOutput=read.csv("../modeling/guessingGame/ModelPreds/questionerPredictionsUnif.csv", sep = ',') %>%
   mutate(goal = as.character(goal),
          question = as.character(response)) %>%
   do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
@@ -307,8 +306,8 @@ labelDataFrame = all_qs %>%
    summarise(correlation = paste("r =", round(cor(empProb, 
                                                   modelProb, method = 'pearson'), 2)))
 
-pdf(file="../writing/2015/journal-manuscript/figures/Exp2UnifPriorQuestFits.pdf",
-     width = 7, height = 3)
+#pdf(file="../writing/2015/journal-manuscript/figures/Exp2UnifPriorQuestFits.pdf",
+#     width = 7, height = 3)
 question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
   + theme(text = element_text(size = 20),
           axis.text.x = element_text(angle=90, vjust=1))
@@ -328,7 +327,7 @@ question_plots = (ggplot(all_qs, aes(x = modelProb, y = empProb))
                               lab = labelDataFrame$correlation))
   + theme_bw())
 question_plots               
-dev.off()
+#dev.off()
 ```
 
 Test whether one fit is significantly better than another fit
@@ -374,8 +373,8 @@ plottableQ = collapsed_q %>% inner_join(pragModelPreds, by = c('goal', 'type', '
   do(mutate(., lower_ci = ifelse(src == "model", NA, lower_ci))) %>%
   do(mutate(., upper_ci = ifelse(src == "model", NA, upper_ci)))
 
-pdf('../writing/2015/journal-manuscript/figures/exp2QuestResults.pdf',
-    width = 8, height=4)
+#pdf('../writing/2015/journal-manuscript/figures/exp2QuestResults.pdf',
+    #width = 8, height=4)
 dodge <- position_dodge(width=0.9)
 g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
       + geom_bar(position = dodge, stat = "identity") 
@@ -385,7 +384,7 @@ g <- (ggplot(plottableQ, aes(x = response, y = prob, fill = src))
       + ggtitle("Pragmatic Questioner")
       + theme_bw())
 g
-dev.off()
+#dev.off()
 
 ```
 
