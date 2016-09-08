@@ -15,10 +15,9 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = uniformDraw(_.range(0, 20.01, 0.5));
-  var beta = uniformDraw(_.range(0, 1.01, 0.1));
-  var expPragWeight = uniformDraw(_.range(0,1.01, 0.1));
-  var expPragFlip = sample(Bernoulli({p: expPragWeight}));
+  var alpha = uniformDraw(_.range(0, 10.01, 0.1));
+  var beta = uniformDraw(_.range(0, 1.01, 0.05));
+  var expPragFlip = flip();
   globalStore.predictives = {};
   // Run model and condition on data
   var score = sum(map(function(item) {
@@ -43,12 +42,11 @@ var modelAnalysis = function() {
     }, model.questionSpace));
   }, items));
   
-  console.log([alpha,beta,expPragWeight, expPragFlip]);
+  console.log([alpha,beta,expPragFlip]);
   factor(score);
 
   return {predictive: globalStore.predictives, 
 	  params : {alpha: alpha, beta: beta,
-		    expPragWeight: expPragWeight,
 		    expPragFlip: expPragFlip}};
 };
 
