@@ -167,17 +167,11 @@ getProbs <- function(data, QorA, R) {
   if(QorA == "q") {
     tempData <- data %>% group_by(domain, type, goal, response) %>% 
       summarize(count = n()) %>%
-      right_join(expand.grid(response = levels(data$response),
-                             type = levels(factor(data$type)),
-                             domain = levels(factor(data$domain)),
-                             goal = levels(factor(data$goal)))) 
+      complete(response, type, domain, goal)
   } else if(QorA == "a") {
     tempData <- data %>% group_by(domain, type, utterance, response) %>% 
       summarize(count = n()) %>%
-      right_join(expand.grid(response = levels(data$response),
-                             type = levels(factor(data$type)),
-                             domain = levels(factor(data$domain)),
-                             utterance = levels(factor(data$utterance)))) 
+      complete(response, type, domain, utterance)
   } else {
     stop(cat("Did not specify Q or A:", QorA))
   }
@@ -228,7 +222,7 @@ Qprobs <- function(collapseDomains, data, indices) {
   c <- d %>% 
     group_by(response) %>% 
     summarize(count = n()) %>%
-    right_join(emptyGrid) %>% 
+    right_join(emptyGrid, by = "response") %>% 
     do(mutate(., countp1 = ifelse(is.na(count), 
                                   pseudocount, count + pseudocount),
               count = ifelse(is.na(count), 0, count),
@@ -244,7 +238,7 @@ Aprobs <- function(collapseDomains, data, indices) {
   c <- d %>%
     group_by(response) %>%
     summarize(count = n()) %>%
-    right_join(emptyGrid) %>%
+    right_join(emptyGrid, by = "response") %>%
     do(mutate(., countp1 = ifelse(is.na(count), pseudocount, count + pseudocount),
               count = ifelse(is.na(count), 0, count),
               empProb = countp1 / sum(countp1)))  
@@ -259,7 +253,6 @@ Aprobs <- function(collapseDomains, data, indices) {
 ## If we want to do that in the future, will just group by fewer things before 
 ## summarizing
 getProbsAndCIs <- function(data, QorA, R = 1000, collapseDomains) {
-  str(data);
   if(QorA == "a") {
     emptyGrid = emptyAnswerGrid(data, collapseDomains)
   } else {
@@ -268,7 +261,7 @@ getProbsAndCIs <- function(data, QorA, R = 1000, collapseDomains) {
   outputData <- data %>% 
     group_by(response) %>%
     summarize(count = n()) %>%
-    right_join(emptyGrid) %>%
+    right_join(emptyGrid, by = "response") %>%
     do(mutate(., count = ifelse(is.na(count), 0, count),
               empProb = count / sum(count),
               groupSize = sum(count)))
