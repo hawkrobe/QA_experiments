@@ -9,7 +9,7 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = uniformDraw(_.range(0, 15.01, 0.5));
+  var alpha = uniformDraw(_.range(0, 15.01, 1));
   var beta = uniformDraw(_.range(0, 1.01, 0.1));
   var expPragWeight = uniformDraw(_.range(0, 1.01, 0.1));
   var expPragFlip = sample(Bernoulli({p: expPragWeight}));
