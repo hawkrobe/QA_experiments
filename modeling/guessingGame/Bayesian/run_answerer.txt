@@ -3,13 +3,13 @@
 #all commands that start with SBATCH contain commands that are just used by SLURM for scheduling
 #################
 #set a job name
-#SBATCH --job-name=questions
+#SBATCH --job-name=answerer
 #################
 #a file for job output, you can check job progress
-#SBATCH --output=questions.out
+#SBATCH --output=answerer.out
 #################
 # a file for errors from the job
-#SBATCH --error=questions.err
+#SBATCH --error=answerer.err
 #################
 #time you think you need; default is one hour; max is 48 hours
 #SBATCH --time=48:00:00
