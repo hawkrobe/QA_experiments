@@ -9,19 +9,21 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = uniformDraw(_.range(0, 15.01, 1));
-  var beta = uniformDraw(_.range(0, 1.01, 0.1));
-  var expPragWeight = uniformDraw(_.range(0, 1.01, 0.1));
-  var expPragFlip = sample(Bernoulli({p: expPragWeight}));
+  var rawAlpha = uniformDraw(_.range(0, 15.01, .5)),
+      alpha = Number.parseFloat(rawAlpha.toFixed(2));
+  var rawBeta = uniformDraw(_.range(0, 1.01, 0.1)),
+      beta = Number.parseFloat(rawBeta.toFixed(2));
+//  var expPragWeight = uniformDraw(_.range(0, 1.01, 0.1));
+  var expPragFlip = sample(Bernoulli({p: .5}));
 
   globalStore.predictives = {};
-  console.log([alpha, beta, expPragWeight, expPragFlip]);
+  console.log([alpha, beta, expPragFlip]);
 
   // Run model and condition on data
-  var score = reduce(function(item) {
+  var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
     var runTFBTQuestioner = model.runTFBTQuestioner;
-    return reduce(function(qud) {
+    return sum(map(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
       var questionerERP = runTFBTQuestioner(qud, expPragFlip);
       // Save predictives
@@ -31,16 +33,15 @@ var modelAnalysis = function() {
 	var newPair = _.object([key], [Math.exp(questionerERP.score(s))]);
 	globalStore.predictives = _.extend(globalStore.predictives, newPair);
       });
-      return reduce(function(dataRow) {
+      return sum(map(function(dataRow) {
        	return questionerERP.score("whereIs" + qa.capitalize(dataRow[3]) + "?");
-      }, 0, itemData);
-    }, 0, model.qudSpace);
-  }, 0, items);
-
+      }, itemData));
+    }, model.qudSpace));
+  }, items));
+  console.log(score)
   factor(score);
   return {predictive: globalStore.predictives,
 	  params : {alpha: alpha, beta: beta,
-	  	    expVsPragWeight: expPragWeight,
 		    expPragFlip: expPragFlip}};
 };
 
