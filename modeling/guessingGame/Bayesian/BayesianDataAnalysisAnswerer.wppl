@@ -15,9 +15,11 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var alpha = uniformDraw(_.range(0, 10.01, 0.1));
-  var beta = uniformDraw(_.range(0, 1.01, 0.05));
-  var expPragFlip = flip();
+  var rawAlpha = uniformDraw(_.range(0, 10.01, 0.1)),
+      alpha = Number.parseFloat(rawAlpha.toFixed(2));
+  var rawBeta = uniformDraw(_.range(0, 1.01, 0.05)),
+      beta = Number.parseFloat(rawBeta.toFixed(2));
+  var expPragFlip = sample(Bernoulli({p: .5}))
   globalStore.predictives = {};
   // Run model and condition on data
   var score = sum(map(function(item) {
@@ -27,7 +29,6 @@ var modelAnalysis = function() {
       var itemData = qa.getSubset(data, {type:item[0], domain: item[1],
   					 question: questionToLabel(question)});
       var answererERP = runAnswererModel(question, expPragFlip);
-
       // Store predictions
       foreach(answererERP.support(),function(s){
 	var key = [questionToLabel(question), item[0], item[1], s].join(",");
