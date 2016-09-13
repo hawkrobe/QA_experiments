@@ -9,15 +9,14 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var rawAlpha = uniformDraw(_.range(0, 15.01, .5)),
+  var rawAlpha = uniformDraw(_.range(0, 20.01, .25)),
       alpha = Number.parseFloat(rawAlpha.toFixed(2));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.1)),
+  var rawBeta = uniformDraw(_.range(0, 1.01, 0.05)),
       beta = Number.parseFloat(rawBeta.toFixed(2));
 //  var expPragWeight = uniformDraw(_.range(0, 1.01, 0.1));
-  var expPragFlip = sample(Bernoulli({p: .5}));
+  var expPragFlip = flip();
 
   globalStore.predictives = {};
-  console.log([alpha, beta, expPragFlip]);
 
   // Run model and condition on data
   var score = sum(map(function(item) {
@@ -38,7 +37,9 @@ var modelAnalysis = function() {
       }, itemData));
     }, model.qudSpace));
   }, items));
-  console.log(score)
+
+  console.log([alpha, beta, expPragFlip]);
+  console.log(score);
   factor(score);
   return {predictive: globalStore.predictives,
 	  params : {alpha: alpha, beta: beta,
