@@ -82,38 +82,45 @@ d_a = d %>%
 ### Load in model results
 
 ```{r}
-qparams<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysis_loose_Params.csv", sep = ",", row.names = NULL)
+qparams_raw <- read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysis_loose_Params.csv", sep = ",", row.names = NULL)
+```
 
-qparams %>%
-  filter(parameter != "expPragFlip") %>%
-  group_by(parameter, value) %>%
-  summarize(marg = sum(MCMCprob)) %>%
-  mutate(value = round(as.numeric(as.character(value)), digits = 2)) %>%
-  ggplot(aes(x = value, y = marg))+
-  geom_bar(stat = 'identity') +
-  facet_wrap(~ parameter, scales = 'free') +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+Wanna know the best parameters for "expPragFlip == false"
+```{r}
+View(qparams_raw %>% 
+  mutate(sampleNum = floor((row_number() - 1)/3)) %>%
+  group_by(sampleNum) %>%
+  spread(parameter, value) %>%
+  filter(expPragFlip == "false")
+  )
+```
 
-# qparams %>% 
-#     filter(parameter == "expPragFlip") %>%
-#     summarize(prob = sum(MCMCprob))
+Looks like there's a super narrow range where the pragmatic model makes much much better predictions... 
 
-# qparams.samples <- qparams[rep(row.names(qparams), qparams$MCMCprob*samples), 1:2] %>%
-#   filter(parameter != "expVsPrag") %>%
-#   mutate(value = factorToNumeric(value))
+```{r}
+filteredQparams = qparams %>% filter(MCMCprob > 0.001)
+qparams.samples <- filteredQparams[rep(row.names(filteredQparams), filteredQparams$MCMCprob*samples), 1:2] %>%
+  filter(parameter != "expPragFlip") %>% 
+  mutate(value = as.numeric(as.character( value)))
 
-# qparams.samples%>%
-#   ggplot(aes(x = value))+
-#     geom_histogram(aes(y=..density..), fill = 'white', color = 'black')+
-#     geom_density(aes(y=..density..), alpha = .2,  fill="#FF6666") +
-#     facet_wrap(~parameter, scales = 'free') +
-#     theme_bw()
-# 
-# qparams.samples %>% 
-#   group_by(parameter) %>%
-#   summarize(mode = estimate_mode(value),
-#             md_lo = round(HPDlo(value), 3),
-#             md_hi = round(HPDhi(value), 3))
+aparams.toplot %>% 
+  group_by(parameter) %>%
+  summarize(mode = estimate_mode(value),
+            md_lo = round(HPDlo(value), 3),
+            md_hi = round(HPDhi(value), 3))
+
+qparams.samples%>%
+  ggplot(aes(x = value))+
+    geom_histogram(aes(y=..density..), fill = 'white', color = 'black')+
+    geom_density(aes(y=..density..), alpha = .2,  fill="#FF6666") +
+    facet_wrap(~parameter, scales = 'free') +
+    theme_bw()
+
+qparams.samples %>%
+  group_by(parameter) %>%
+  summarize(mode = estimate_mode(value),
+            md_lo = round(HPDlo(value), 3),
+            md_hi = round(HPDhi(value), 3))
 ```
 
 ```{r}
