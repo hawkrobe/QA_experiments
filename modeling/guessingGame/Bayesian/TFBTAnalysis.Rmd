@@ -8,6 +8,7 @@ To analyze the output of a webppl program for bayesian data analysis
 ```{r}
 setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling")
 library(ggplot2)
+library(GGally)
 library(dplyr)
 library(coda)
 library(purrr)
@@ -246,6 +247,53 @@ question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
   + ggtitle("Questioner Posterior Predictive")
+  + geom_smooth(method = "lm")
+  + geom_text(aes(x=.75,y=.25,label=paste("r=",qcor)))
+  + theme_bw())
+question_plots
+#dev.off()
+```
+
+Let's look at some specific cases, 
+
+1) compare predictives at the MAP parameter values (alpha=6.25, beta= 0.35, flip=TRUE) with slightly higher (alpha=7.5, beta = 0.35, flip = TRUE) or lower (alpha = 5, beta = 0.35, flip = TRUE)
+
+2) compare predictives at the flip=TRUE MAP (alpha=6.25, beta= 0.35, flip=TRUE) with flip=FALSE MAP (alpha=  11.5, beta = 0.2, flip = FALSE)
+
+```{r}
+qpredictiveMAP <-read.csv("guessingGame/Bayesian/data/QuestionerflipTrueMAPPredictives.csv", sep = ",", row.names = NULL) %>% rename(pragMAP = prob) %>%
+  left_join(read.csv("guessingGame/Bayesian/data/QuestionerflipTrue_higherPredictives.csv", sep = ",", row.names = NULL),
+            by = c("parameter", "item1", "item2", "value")) %>% rename(pragHigher = prob) %>% select(-starts_with("MCMC")) %>%
+  left_join(read.csv("guessingGame/Bayesian/data/QuestionerflipTrue_lowerPredictives.csv", sep = ",", row.names = NULL),
+          by = c("parameter", "item1", "item2", "value")) %>% rename(pragLower = prob) %>%
+  left_join(read.csv("guessingGame/Bayesian/data/QuestionerflipFalseMAPPredictives.csv", sep = ",", row.names = NULL),
+          by = c("parameter", "item1", "item2", "value")) %>% rename(explMAP = prob) %>%
+  mutate(goal = as.character(parameter), 
+         question = as.character(value),
+         type = as.character(item1),
+         domain = as.character(item2)) %>%
+  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
+  select(type, domain, goal, response, pragMAP, explMAP, pragHigher, pragLower) %>%
+  right_join(d_q %>% select(goal, type, domain, response, empProb), by = c("goal","type","domain","response")) 
+
+ggpairs(qpredictiveMAP, 5:9, axisLabels = 'none')
+cor(qpredictiveMAP$pragMAP, qpredictive$empProb)
+cor(qpredictiveMAP$explMAP, qpredictive$empProb)
+
+question_plots = (ggplot(qpredictiveMAP, aes(x = explMAP, y = pragMAP))
+  + theme(text = element_text(size = 20),
+          axis.text.x = element_text(angle=90, vjust=1))
+  + xlab("explicit")
+  + ylim(0,1)
+  + ylab("pragmatic")
+  # + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
+  # + geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
+  + geom_point(aes(colour = domain, shape = type))
+  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+  + ggtitle("explicit vs. pragmatic")
   + geom_smooth(method = "lm")
   + geom_text(aes(x=.75,y=.25,label=paste("r=",qcor)))
   + theme_bw())
