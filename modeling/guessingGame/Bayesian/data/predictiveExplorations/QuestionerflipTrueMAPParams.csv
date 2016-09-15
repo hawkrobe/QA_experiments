@@ -1,0 +1,4 @@
+parameter,value,MCMCprob
+alpha,6.25,1
+beta,0.35,1
+expPragFlip,true,1
