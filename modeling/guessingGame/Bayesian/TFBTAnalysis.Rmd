@@ -10,6 +10,7 @@ setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling")
 library(ggplot2)
 library(GGally)
 library(dplyr)
+library(tidyr)
 library(coda)
 library(purrr)
 estimate_mode <- function(s) {
@@ -84,6 +85,7 @@ d_a = d %>%
 
 ```{r}
 qparams_raw <- read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysis_loose_Params.csv", sep = ",", row.names = NULL)
+qparams_raw %>% filter(parameter == "expPragFlip") %>% group_by(value) %>% summarize(prob = sum(MCMCprob))
 ```
 
 Wanna know the best parameters for "expPragFlip == false"
@@ -99,16 +101,12 @@ View(qparams_raw %>%
 Looks like there's a super narrow range where the pragmatic model makes much much better predictions... 
 
 ```{r}
-filteredQparams = qparams %>% filter(MCMCprob > 0.001)
+filteredQparams = qparams_raw %>% filter(MCMCprob > 0.0001)
+samples = 1/0.0001
 qparams.samples <- filteredQparams[rep(row.names(filteredQparams), filteredQparams$MCMCprob*samples), 1:2] %>%
   filter(parameter != "expPragFlip") %>% 
   mutate(value = as.numeric(as.character( value)))
 
-aparams.toplot %>% 
-  group_by(parameter) %>%
-  summarize(mode = estimate_mode(value),
-            md_lo = round(HPDlo(value), 3),
-            md_hi = round(HPDhi(value), 3))
 
 qparams.samples%>%
   ggplot(aes(x = value))+
@@ -125,22 +123,25 @@ qparams.samples %>%
 ```
 
 ```{r}
-aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_params.csv", sep = ",", row.names = NULL) 
+raw_aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_params.csv", sep = ",", row.names = NULL) 
 
-aparams %>% filter(parameter == "expPragFlip") %>% group_by(value) %>% summarize(prob = sum(MCMCprob))
+# BDA result:
+raw_aparams %>% filter(parameter == "expPragFlip") %>% group_by(value) %>% summarize(prob = sum(MCMCprob))
+```
 
+```{r}
+filteredAparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_params.csv", sep = ",", row.names = NULL) %>%
+    filter(MCMCprob > 0.0001) %>% 
+    filter(parameter != "expPragFlip") %>%
+    mutate(value = as.numeric(as.character( value)))
 
-aparams.samples <- aparams %>% 
-  filter(MCMCprob > 0.0001) %>% 
-  aparams[rep(row.names(aparams), aparams$MCMCprob*samples), 1:2] %>%
-  filter(parameter != "expPragFlip") %>% 
-  mutate(value = as.numeric(as.character( value)))
-
-aparams.toplot %>% 
+filteredAparams %>% 
   group_by(parameter) %>%
   summarize(mode = estimate_mode(value),
             md_lo = round(HPDlo(value), 3),
             md_hi = round(HPDhi(value), 3))
+
+aparams.samples <- filteredAparams[rep(row.names(filteredAparams), filteredAparams$MCMCprob*samples), 1:2]
 
 pdf(file="../writing/2016/journal-manuscript/figures/AnswererParamPosteriors.pdf",
         width = 6, height = 3)
@@ -148,13 +149,13 @@ answererParamPosteriors = ggplot(aparams.toplot, aes(x=value))+
     geom_histogram(aes(y=..density..), 
                    data =subset(aparams.toplot, parameter == "alpha" ), 
                    binwidth = .1, colour="black", fill="white") +
-    geom_histogram(aes(y=.5*..density..), 
+    geom_histogram(aes(y=..density..), 
                    data=subset(aparams.toplot, parameter == "beta"), 
-                   binwidth = .05, colour="black", fill="white") +
+                   binwidth = .04, colour="black", fill="white") +
     geom_density(aes(y=..density..),
                  data =subset(aparams.toplot, parameter == "alpha" ), 
                  adjust = 1, alpha=.2, fill="#FF6666")+
-    geom_density(aes(y=.5*..density..),
+    geom_density(aes(y=..density..),
                  data=subset(aparams.toplot, parameter == "beta"), 
                  adjust = 5, alpha=.2, fill="#FF6666")+
     ggtitle("Answerer Parameter Posteriors (1000 iterations)") +
