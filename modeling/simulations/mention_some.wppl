@@ -1,25 +1,24 @@
-var getFilteredCafeList = function(world) {
-  return reduce(function(value, memo) {
-    var hasNewspaper = world[value][1];
-    return hasNewspaper ? memo.concat(value) : memo;
-  }, [], _.keys(world));
+var filterWorld = function(world) {
+  return _.object(reduce(function(value, memo) {
+    var hasNewspaper = world[value]['hasNewspaper'];
+    return hasNewspaper ? memo.concat([[value, world[value]]]) : memo;
+  }, [], _.keys(world)));
 }
 
 var pickAllNewspaperCafes = function(world) {
-  var filt = getFilteredCafeList(world);
-  return _.isEmpty(filt) ? 'none' : filt;
+  var filt = filterWorld(world);
+  return _.isEmpty(filt) ? ['none'] : _.keys(filt);
 }
 
 var pickClosestNewspaperCafe = function(world) {
-  var filt = getFilteredCafeList(world);
+  var filt = filterWorld(world);
   if(_.isEmpty(filt)) {
-    return 'none'
+    return ['none'];
   } else {
-    return minWith(function(k) {
-      return world[k][0];
-    }, filt)[0]
+    var minDist = _.min(_.pluck(_.values(filt), 'distance'));
+    return filter(function(v) {return filt[v]['distance'] == minDist}, _.keys(filt));
   }
-}                               
+};
 
 var KL = function(erpTrue, erpApprox){
   var values = erpTrue.support([]);
@@ -33,11 +32,7 @@ var KL = function(erpTrue, erpApprox){
 };
 
 var flatten = function(xs){
-  if (xs.length == 0) {
-    return [];
-  } else {
-    return xs[0].concat(flatten(xs.slice(1)));
-  }
+  return xs.length == 0 ? [] : xs[0].concat(flatten(xs.slice(1)));
 };
 
 var butLast = function(xs){
@@ -64,23 +59,11 @@ var isCafeList = function(l){
 
 var worldPrior = function(){
   return {
-    'cafe1' : [uniformDraw(distances), flip(.5)],
-    'cafe2' : [uniformDraw(distances), flip(.5)],
-    'cafe3' : [uniformDraw(distances), flip(.5)],
-    'cafe4' : [uniformDraw(distances), flip(.5)]
+    'cafe1' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)},
+    'cafe2' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)},
+    'cafe3' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)},
+    'cafe4' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)}
   }
-}
-
-var hasNewspaper = function(world, cafe) {
-  if(_.contains(_.keys(world), cafe))
-    return world[cafe][1]
-  else
-    return false
-}
-
-// Returns the distance of a cafe
-var distance = function(world, cafe) {
-  return world[cafe][0]
 }
 
 //  -------------------
@@ -90,11 +73,7 @@ var distance = function(world, cafe) {
 var newspaperQuestion = "Where can one buy an Italian newspaper?";
 
 // projects from a world to the relevant properties for the desired answer
-var newspaperQuestionMeaning = function(world){
-  return _.object(map(function(cafe){
-    return [cafe, hasNewspaper(world, cafe)]
-  }, cafes))
-};
+var newspaperQuestionMeaning = function(world){return pickAllNewspaperCafes(world);};
 
 var questions = [newspaperQuestion]
 
@@ -108,19 +87,19 @@ var questionPrior = function(){
 
 // (truncated) geometric distribution
 var answerPrior = function(){
-  return flip(.6) ? [] : [uniformDraw(cafes)].concat(answerPrior());
+  return flip(.6) ? [] : sort([uniformDraw(cafes)].concat(answerPrior()));
 };
 
 var cafeAnswerMeaning = function(cafeList){
   return function(world){
-    var predicate = function(cafe) {return hasNewspaper(world, cafe);};
+    var predicate = function(cafe) {return world[cafe]['hasNewspaper'];};
     return all(predicate, cafeList);
   };
 };
 
 var noneMeaning = function() {
   return function(world){
-    var predicate = function(cafe) {return !hasNewspaper(world, cafe);};
+    var predicate = function(cafe) {return !world[cafe]['hasNewspaper'];};
     return all(predicate, cafes);
   };
 };
@@ -137,7 +116,7 @@ var meaning = function(utterance){
 };
 
 var interpreter = cache(function(answer){
-  return Enumerate(function(){
+  return Infer({method: 'enumerate'}, function(){
     var world = worldPrior();
     var answerMeaning = meaning(answer);
     condition(answerMeaning(world));
@@ -170,45 +149,46 @@ var nameToQUD = function(qudName){
 // | Models |
 //  -------
 
-var getConsistentWorlds = function(answer, qud) {
+var getConsistentWorlds = function(answer, qudName) {
+  var qud = nameToQUD(qudName);
   return Infer({method: 'enumerate'}, function(){
     var inferredWorld = sample(interpreter(answer));
-    return qud(inferredWorld);
+    // As a side-effect of the fact we don't have continuous distances,
+    // we have to deal with ties among the closest cafes; so we randomly pick
+    // and enumerate over possible options (technical detail)...
+    return (qudName == "qudClosest" ?
+	    uniformDraw(qud(inferredWorld)) :
+	    qud(inferredWorld));
   });
 };
 
-var getProjectedWorldPrior = function(qud) {
+var getProjectedWorldPrior = function(qudName) {
+  var qud = nameToQUD(qudName);
   return Infer({method: 'enumerate'}, function(){
-    return qud(worldPrior());
+    return (qudName == "qudClosest" ? uniformDraw(qud(worldPrior())) : qud(worldPrior()));
   });
 };
 
 var explicitAnswerer = cache(function(question, trueWorld, rationality) {
   var qud = nameToQUD(question);
-  return Infer({method: 'enumerate', maxExecutions: 100}, function(){
+  return Infer({method: 'enumerate', maxExecutions: 1000}, function(){
     var answer = answerPrior();
-    var consistentWorldDist = getConsistentWorlds(answer, qud);
+    var consistentWorldDist = getConsistentWorlds(answer, question);
     factor(consistentWorldDist.score(qud(trueWorld)) * rationality);
     return answer;
   });
 });  
 
 var explicitQuestioner = cache(function(qudName, rationality) {
-  var qud = nameToQUD(qudName);
-  console.log("calling explicit questioner with " + qudName);
   return Infer({method: 'enumerate'}, function(){
     var question = questionPrior();
-    var prior = getProjectedWorldPrior(qud);
+    var prior = getProjectedWorldPrior(qudName);
     var informationGainDist = Infer({method: 'enumerate'}, function(){
       var trueWorld = worldPrior();
       var possibleAnswer = sample(explicitAnswerer(question, trueWorld, rationality));
-      var posterior = getConsistentWorlds(possibleAnswer, qud);
-      console.log(prior);
-      console.log(posterior);
-      console.log(KL(posterior, prior));
+      var posterior = getConsistentWorlds(possibleAnswer, qudName);
       return KL(posterior, prior);
     });
-    console.log(expectation(informationGainDist));
     factor(expectation(informationGainDist) * rationality);
     return question;
   });
@@ -225,25 +205,28 @@ var inferQUD = cache(function(context, question, rationality){
 
 var pragmaticAnswerer = cache(function(context, question, trueWorld, rationality){
   var qudPosterior = inferQUD(context, question, rationality);
-  return Infer({method: 'enumerate', maxExecutions: 100}, function(){
-    var qud = nameToQUD(sample(qudPosterior));
+  return Infer({method: 'enumerate', maxExecutions: 1000}, function(){
+    var qudName = sample(qudPosterior);
     var answer = answerPrior();
-    var consistentWorldDist = getConsistentWorlds(answer, qud);
-    factor(consistentWorldDist.score(qud(trueWorld)) * rationality);
+    var consistentWorldDist = getConsistentWorlds(answer, qudName);
+    factor(consistentWorldDist.score(nameToQUD(qudName)(trueWorld)) * rationality);
     return answer;
   });
 });
 
-var world = {'cafe1' : [3, false],
-             'cafe2' : [1, true],
-             'cafe3' : [3, true],
-             'cafe4' : [3, true]}
+var world = {'cafe1' : {'distance' : 3, 'hasNewspaper' : false},
+             'cafe2' : {'distance' : 1, 'hasNewspaper' :true},
+             'cafe3' : {'distance' : 3, 'hasNewspaper' :true},
+             'cafe4' : {'distance' : 3, 'hasNewspaper' :true}}
+// var consistentWorldDist = getConsistentWorlds(["cafe2","cafe3"], "qudClosest");
+// console.log(consistentWorldDist);
+// console.log(consistentWorldDist.score(nameToQUD("qudClosest")(world)));
 
 console.log(businesspersonContext, newspaperQuestion);
-console.log(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world,1));
+console.log(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world,10));
 
 // console.log(touristContext, newspaperQuestion);
-// console.log(pragmaticAnswerer(touristContext, newspaperQuestion, world,1));
+// console.log(pragmaticAnswerer(touristContext, newspaperQuestion, world, 10));
 
 // // Run as:
 // // webppl simulations/clark.js --require-js ./qa.js
