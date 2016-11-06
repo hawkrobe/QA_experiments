@@ -125,8 +125,8 @@ var qudAll = function(world){return pickAllNewspaperCafes(world);};
 var qudClosest = function(world){return pickClosestNewspaperCafe(world);};
 
 var qudPrior = function(context){
-  var p = ((context === businesspersonContext) ? 0.99 :
-           (context === touristContext) ? 0.01 :
+  var p = ((context === businesspersonContext) ? 1 :
+           (context === touristContext) ? 0 :
            console.error('unknown context'));
   return (flip(p) ? "qudAll" : "qudClosest");
 };

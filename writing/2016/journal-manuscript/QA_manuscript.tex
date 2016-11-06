@@ -329,15 +329,15 @@ On the other hand, when the question is prefaced with ``I only have \$5 to spend
 
 Note that the literal and explicit answerers do not take into account the questioner's underlying goals and therefore cannot reason about the way contextual factors may be informative about these goals. Hence, they do not make different predictions in the two contexts. The literal model predicts that the answerer is equally likely to say the true Boolean answer and the true numerical answer, and the explicit model predicts that the answerer will always give the true Boolean answer, since it is the explicit question being asked. This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. 
 
-\subsection{Groenendijk and Stokhof (1984)}
- \begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = 1]{groenendijckPlot.pdf}
-\end{center}
-\vspace{-.25cm}
-\caption{Results for our computational experiments implementing the Groenendijck \& Stokhof (1984) \emph{mention-some} problem.}
-\label{fig:cafeExperimentResults}
-\end{figure*}
+%\subsection{Groenendijk and Stokhof (1984)}
+%\begin{figure*}[t!]
+%\begin{center}
+%\includegraphics[scale = 1]{groenendijckPlot.pdf}
+%\end{center}
+%\vspace{-.25cm}
+%\caption{Results for our computational experiments implementing the Groenendijck \& Stokhof (1984) \emph{mention-some} problem.}
+%\label{fig:cafeExperimentResults}
+%\end{figure*}
 
 For a slightly more complex example, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an exhaustive list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a mention of a single location would be sufficient. Many recent theoretical explanations in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}. While there are no experimental results on \emph{mention-some} and \emph{mention-all} readings with which we can compare our model's output, we include the phenomenon as a case study for its value in demonstrating how our model formalizes the standard explanation. 
 
@@ -348,13 +348,13 @@ Our world space $\mathcal{W}$ consists of all possible assignments of properties
 For the prior $P(a)$ over answer utterances, we use a geometric distribution, which is common over spaces where probabilities should naturally scale with some count. Let $\ell(a)$ be the number of locations named in the answer (e.g. $\ell(\textrm{`none'})~=~0, \ell(\textrm{`cafe 1'})~=~1$, etc). Then the probability of an answer $a$ is given by:
 
 $$P(a) \propto (1 - p)^{\ell(a)}p$$
-In our computational experiment, we fix $p = 0.6$. 
+In our computational experiment, we fix $p = 0.8$. 
 This simple distribution has two advantageous properties: 
 \begin{enumerate}[(1)]
 \item the probability mass assigned to a given utterance length -- operationalized as number of conjunctions -- by the geometric distribution is spread evenly across different answers of that length.
-\item we naturally assign longer answers lower probability, reflecting their higher cost of utterance. \end{enumerate}
+\item we naturally assign longer answers successively lower probability, reflecting their higher cost of utterance. \end{enumerate}
 
-We model the non-verbal context as affecting the questioner's goal prior $P(g)$: if they are a tourist on the street then there's a high chance that they are interested in the closest location with a newspaper ($P(g_n | c) = 0.9$); if they're a businessperson in a boardroom, then there's a high chance that they are interested in all of the newspaper locations ($P(g_a | c) = 0.9$).
+We model the non-verbal context as affecting the questioner's goal prior $P(g)$: if they are a tourist on the street then there's a high chance that they are interested in buying a single newspaper, incurring the lowest cost ($P(g_n | c) = 0.99$); if they're a businessperson in a boardroom, then there's a high chance that they are interested in the exhaustive list of all of the newspaper locations ($P(g_a | c) = 0.99$).
 
 %\footnote{Note that this formulation of the problem differs slightly from the one given by \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, although they easily map onto one another. In the original formulation, the \emph{answer} is fixed and the \emph{meaning} of the answer must be inferred to either be mention-some or mention-all. In our formulation, the meaning of each answer is unique and fixed, but the answerer must choose among a set of different possible answers. The same inferential machinery that our questioner uses to reason about which answer utterance the answerer will give could also be used to reason about which \emph{meaning} the answerer intends by their fixed utterance. The only difference is that the questioner would have uncertainty over a set of possible meanings instead of uncertainty over a set of possible answer utterances. We chose the latter because it more closely resembles the other scenarios we are modeling.}
 
@@ -379,13 +379,12 @@ world = {`cafe1' : [3, false],
          `cafe3' : [3, true],
          `cafe4' : [3, true]}
 \end{lstlisting}
-meaning that `cafe1' is three blocks away from the speaker and does \emph{not} sell Italian newspapers, `cafe2' is one block away and \emph{does} sell Italian newspapers, and so on. We enumerated over model executions for both contexts, . Results are displayed in Figure \ref{fig:cafeExperimentResults}. We find that the highest probability response given the ``tourist'' context is the single location ``cafe2,'' with response probability $p = 0.26$. This is in fact the nearest location selling newspapers, informatively fulfilling the contextually more likely goal $g_n$. Note that responses containing ``cafe1'' are ruled out entirely, as it does not carry Italian newspapers. Of the remaining responses, those including ``cafe2'' have relatively higher probability, while ``cafe3, cafe4'' is assigned lowest probability, as it does not informatively address \emph{either} goal and is also relatively unlikely under the prior. 
+meaning that `cafe1' is three blocks away from the speaker and does \emph{not} sell Italian newspapers, `cafe2' is one block away and \emph{does} sell Italian newspapers, and so on. We used \emph{likely-first enumeration} over the answerer model, stopping after 1000 executions of the infinite answer space (longer answers were assigned vanishingly small probability). We find that the highest probability response given the ``tourist'' context is the single location ``cafe2.'' When worlds consistent with this utterance (i.e. where cafe2 truly sells an Italian newspaper) have been projected to the closest location, the actual closest location has high probability, thus informatively fulfilling the contextually more likely goal $g_n$. Note that longer responses are unlikely for two converging reasons: they're less likely under the geometric answer prior and also may mislead the questioner into thinking another location is the closest. 
 
-Given the ``businessperson'' context, however, the highest probability response is the conjunction ``cafe2 and cafe3 and cafe4,'' with probability $p = 0.27$. This is the exhaustive answer, informatively fulfilling the contextually more likely goal $g_a$ of knowing the location of all cafes selling Italian newspapers. The remaining answers are equally unlikely, as they all fail to be informative about the exhaustive list of locations. The slight variability, with $a = `cafe2'$ more likely than the rest, and $a = `cafe3, cafe4'$ less likely, is due to the influence of the less likely ``nearest'' goal, and the answer prior.
+Given the ``businessperson'' context, however, the highest probability response is the conjunction ``cafe2 and cafe3 and cafe4.'' This is the exhaustive answer, informatively fulfilling the contextually more likely goal $g_a$ of knowing the location of all cafes selling Italian newspapers. Shorter answers are less likely; they are consistent with more possible worlds in the projected space, hence the projection of the true world has lower probability. 
 
 %The literal and explicit answerers, as in the Clark scenario, do not have the means of making inferences about the questioner's underlying goals. Thus, both models incorrectly predicted that the context would not affect the preferred response. The literal answerer predicted that all combinations of cafes 2, 3, and 4 would be given in proportion to their prior likelihood (with no special preference given to the closest one). The explicit answerer predicted that the exhaustive answer would be preferred in all contexts (as this is literal semantics we encoded for the question). 
-Crucially, the only difference between our model of this scenario and the Clark scenario is the space of QUDs, the structure of the world, and the meanings of the answers. The questioner and answerer functions stayed exactly the same.
-\todo[inline]{Reformulate this to be clearer about how similar/different they are; currently, it sound like there are a lot of differences -- table might help with this. Seems like core `addition' we needed to model this were richer representations of world states and a larger (potentially infinite) answer space}
+Crucially, the only difference between our model of this scenario and the Clark scenario is the richer representations of multi-dimensional world states, and the larger (unbounded) space of answers. The model itself was unchanged; we only enriched the content of its inputs. The mechanism by which goals were inferred in both cases, however, was the same: a direct function of verbal or non-verbal context. Next, we turn to a case where the world state itself provides a clue to the questioner's goal.
 %%%%
 
 
