@@ -15,10 +15,10 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var rawAlpha = uniformDraw(_.range(0, 10.01, 0.1)),
-      alpha = Number.parseFloat(rawAlpha.toFixed(2));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.05)),
-      beta = Number.parseFloat(rawBeta.toFixed(2));
+  var rawAlpha = uniformDraw(_.range(5, 10.01, 0.1)),
+      alpha = Number.parseFloat(rawAlpha.toFixed(3));
+  var rawBeta = uniformDraw(_.range(0, 1.01, 0.025)),
+      beta = Number.parseFloat(rawBeta.toFixed(3));
   var expPragFlip = sample(Bernoulli({p: .5}))
   globalStore.predictives = {};
   // Run model and condition on data
