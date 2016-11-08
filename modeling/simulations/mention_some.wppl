@@ -1,246 +1,214 @@
-// Run as:
-// webppl simulations/clark.js --require-js ./qa.js
-
-
-// Question: "Does Jim Beam cost more than $5?"
-
-// The merchants give the (over-informative) exact price of liquor
-// more often when he prefaced the question with "I'd like to buy some
-// whiskey" than when he prefaced the question with "I only have $5 to
-// spend."
-
-var identity = function(x){return x;};
-
-var negate = function(predicate){
-  return function(x){
-    return !predicate(x);
-  };
-};
-
-var condition = function(x){
-  var score = x ? 0 : -Infinity;
-  factor(score);
-};
-
-var mean = function(thunk){
-  return expectation(Enumerate(thunk), function(v){return v;});
-};
-
-var allTrue = function(boolList) {
-  return reduce(function(val, memo) {
-    return val && memo;
-  }, true, boolList)
+var filterWorld = function(world) {
+  return _.object(reduce(function(value, memo) {
+    var hasNewspaper = world[value]['hasNewspaper'];
+    return hasNewspaper ? memo.concat([[value, world[value]]]) : memo;
+  }, [], _.keys(world)));
 }
 
-var allFalse = function(boolList) {
-  return reduce(function(val, memo) {
-    return !val && memo;
-  }, true, boolList)
+var pickAllNewspaperCafes = function(world) {
+  var filt = filterWorld(world);
+  return _.isEmpty(filt) ? ['none'] : _.keys(filt);
 }
 
-// --------------------------------------------------------------------
+var pickClosestNewspaperCafe = function(world) {
+  var filt = filterWorld(world);
+  if(_.isEmpty(filt)) {
+    return ['none'];
+  } else {
+    var minDist = _.min(_.pluck(_.values(filt), 'distance'));
+    return sort(filter(function(v) {return filt[v]['distance'] == minDist},
+		       _.keys(filt)));
+  }
+};
 
-// var buyWhiskeyContext = "I'd like to buy some whiskey.";
-// var spendFiveDollarsContext = "I only have $5 to spend.";
+var KL = function(erpTrue, erpApprox){
+  var values = erpTrue.support([]);
+  return sum(map(
+    function(value){
+      var scoreP = erpTrue.score(value);
+      var scoreQ = erpApprox.score(value);
+      var probP = Math.exp(scoreP);
+      return probP == 0.0 ? 0.0 : probP * (scoreP - scoreQ);
+    }, values));
+};
 
-var distances = [1,3];//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+///
 
-var cafes = ['cafe1', 'cafe2', 'cafe3', 'cafe4'];
+//   ---------------
+// | World knowledge |
+//   ---------------
+
+var distances = [1,3]
+
+var cafes = ['cafe1', 'cafe2', 'cafe3', 'cafe4']
+
 var touristContext = "I'm new in town.";
 var businesspersonContext = "I'm trying to set up a newspaper distribution business.";
 
-var isCafeList = function(x){
-  return allTrue(map(function(v) {return _.contains(cafes, v)}, x));
+var isCafeList = function(l){
+  var predicate = function(s) {return _.contains(cafes, s);};
+  return all(predicate, l);
 };
 
 var worldPrior = function(){
   return {
-    'cafe1' : [uniformDraw(distances), flip(.5)],
-    'cafe2' : [uniformDraw(distances), flip(.5)],
-    'cafe3' : [uniformDraw(distances), flip(.5)],
-    'cafe4' : [uniformDraw(distances), flip(.5)]
-  };
-};
-
-// Returns whether or not the given cafe has a newspapers
-var hasNewspaper = function(world, cafe) {
-  if(_.contains(_.keys(world), cafe))
-    return world[cafe][1]
-  else 
-    return false
+    'cafe1' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)},
+    'cafe2' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)},
+    'cafe3' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)},
+    'cafe4' : {'distance' : uniformDraw(distances), 'hasNewspaper' : flip(.5)}
+  }
 }
 
-// Returns the distance of a cafe
-var distance = function(world, cafe) {
-  return world[cafe][0]
-}
+//  -------------------
+// | Question knowledge |
+//  -------------------
 
 var newspaperQuestion = "Where can one buy an Italian newspaper?";
 
 // projects from a world to the relevant properties for the desired answer
-var newspaperQuestionMeaning = function(world){
-  return _.object(map(function(cafe){
-    return [cafe, hasNewspaper(world, cafe)]
-  }, cafes))
-};
+var newspaperQuestionMeaning = function(world){return pickAllNewspaperCafes(world);};
 
-var questions = [newspaperQuestion] //doYouTakeCreditQuestion];
+var questions = [newspaperQuestion]
 
 var questionPrior = function(){
   return uniformDraw(questions);
 };
 
-// built-in cost for saying more than one answer
+//  -----------------
+// | Answer knowledge |
+//  -----------------
+
+// (truncated) geometric distribution
 var answerPrior = function(){
-  var drawCafe = function(cafeList) {
-    if(_.isEmpty(cafeList))
-      return []
-    else {
-      var newCafe = [uniformDraw(cafeList)]
-      return (flip(0.5) ? newCafe :
-        newCafe.concat(drawCafe(_.without(cafeList, newCafe[0]))))
-    }
-  }
-  return flip(0.1) ? ['none'] : sort(drawCafe(cafes), function(s1, s2) {return s1[4] < s2[4]})
+  return flip(.8) ? [] : sort([uniformDraw(cafes)].concat(answerPrior()));
 };
 
 var cafeAnswerMeaning = function(cafeList){
-  return function(questionMeaning){
-    return function(world){
-      var doTheyHaveNewspapers = map(function(cafe) {
-        hasNewspaper(world, cafe)
-      }, cafeList);
-      return allTrue(doTheyHaveNewspapers);
-    };
+  return function(world){
+    var predicate = function(cafe) {return world[cafe]['hasNewspaper'];};
+    return all(predicate, cafeList);
   };
 };
 
 var noneMeaning = function() {
-  return function(questionMeaning){
-    return function(world){
-      var doTheyHaveNewspapers = map(function(cafe) {
-        hasNewspaper(world, cafe)
-      }, cafes);
-      return allFalse(doTheyHaveNewspapers);
-    };
+  return function(world){
+    var predicate = function(cafe) {return !world[cafe]['hasNewspaper'];};
+    return all(predicate, cafes);
   };
+};
 
-}
+//   -----------
+// | Interpreter |
+//   -----------
 
 var meaning = function(utterance){
   return (isCafeList(utterance) ? cafeAnswerMeaning(utterance) :
-         (_.isEqual(utterance, [ "none" ])) ? noneMeaning() : 
+         (_.isEqual(utterance, [])) ? noneMeaning() : 
          (utterance === newspaperQuestion) ? newspaperQuestionMeaning :
          console.error('unknown utterance!', utterance));
 };
 
-var literalListener = cache(function(question, answer){
-  return Enumerate(function(){
+var interpreter = cache(function(answer){
+  return Infer({method: 'enumerate'}, function(){
     var world = worldPrior();
-    var questionMeaning = meaning(question);
     var answerMeaning = meaning(answer);
-    condition(answerMeaning(questionMeaning)(world));
+    condition(answerMeaning(world));
     return world;
   });
 });
 
-var literalAnswerer = cache(function(question, trueWorld){
-  return Enumerate(
-    function(){
-      var answer = answerPrior();
-      var ll = literalListener(question, answer)
-      factor(literalListener(question, answer).score([], trueWorld) * 3);
-      return answer;
-    }
-  );
-});
+//  ------
+// | QUDs |
+//  ------
 
-var qudAll = function(world){return qa.pickAllNewspaperCafes(world)}
-var qudClosest = function(world){return qa.pickClosestNewspaperCafe(world);};
+var qudAll = function(world){return pickAllNewspaperCafes(world);};
+var qudClosest = function(world){return pickClosestNewspaperCafe(world);};
 
 var qudPrior = function(context){
-  var p = ((context === businesspersonContext) ? 0.9 :
-           (context === touristContext) ? 0.1 :
+  var p = ((context === businesspersonContext) ? 1 :
+           (context === touristContext) ? 0 :
            console.error('unknown context'));
-  return (flip(p) ? "qudAll" :
-          "qudClosest");
+  return (flip(p) ? "qudAll" : "qudClosest");
 };
 
 var nameToQUD = function(qudName){
-  return (qudName == "qudClosest" ? qudClosest :
-          qudName == "qudAll" ? qudAll :
+  return (qudName === "qudClosest" ? qudClosest :
+          qudName === "qudAll" ? qudAll :
+          qudName === newspaperQuestion ? newspaperQuestionMeaning :
           console.error('unknown qud name', qudName));
 };
 
-var questioner = function(qudName) {
+//  -------
+// | Models |
+//  -------
+
+var getConsistentWorlds = function(answer, qudName) {
   var qud = nameToQUD(qudName);
-  return Enumerate(function(){
-    var question = questionPrior();
-    var prior = Enumerate(function(){
-      return qud(worldPrior());
-    });
-    var expectedKL = mean(
-      function(){
-        // What do I expect the world to be like?
-        var trueWorld = worldPrior();
-        // If I ask this question, what answer do I expect to get,
-        // given what the world is like?
-//        qa.printERP(literalAnswerer(question, trueWorld))
-        var answer = sample(literalAnswerer(question, trueWorld));
-        var posterior = Enumerate(function(){
-          // Given this answer, how would I update my distribution on worlds?
-          var world = sample(literalListener(question, answer));
-          // What is the value of the predicate I care about under
-          // this new distribution on worlds?
-          return qud(world);
-        });
-        return qa.KL(posterior, prior);
-      });
-    factor(expectedKL * 3);
-    
-    return question;
+  return Infer({method: 'enumerate'}, function(){
+    var inferredWorld = sample(interpreter(answer));
+    return qud(inferredWorld);
   });
 };
 
-var pragmaticAnswerer = function(context, question, trueWorld){
-  var qudPosterior = Enumerate(function(){
-    var qudName = qudPrior(context);
-    var qud = nameToQUD(qudName);
-    var q_erp = questioner(qudName);
-    factor(q_erp.score([], question));
-    return qudName;
+var getProjectedWorldPrior = function(qudName) {
+  var qud = nameToQUD(qudName);
+  return Infer({method: 'enumerate'}, function(){
+    return qud(worldPrior());
   });
-//  qa.printERP(qudPosterior)
-  return Enumerate(function(){
-    var qudName = sample(qudPosterior);
-    var qud = nameToQUD(qudName);
-    // Pick answer conditioned on communicating question predicate value
-    var truthfulAnswerPrior = Enumerate(function(){
-      var answer = answerPrior();
-      factor(literalListener(question, answer).score([], trueWorld));
-      return answer
-    })
-    var answer = sample(truthfulAnswerPrior);
-    var score = mean(
-      function(){
-        var inferredWorld = sample(literalListener(question, answer));
-        return (_.isEqual(qud(trueWorld), qud(inferredWorld))) ? 1.0 : 0.0;
-      });
-    factor(Math.log(score) * 10);
+};
+
+var explicitAnswerer = cache(function(question, trueWorld, rationality) {
+  var qud = nameToQUD(question);
+  return Infer({method: 'enumerate', maxExecutions: 1}, function(){
+    var answer = answerPrior();
+    var consistentWorldDist = getConsistentWorlds(answer, question);
+    factor(consistentWorldDist.score(qud(trueWorld)) * rationality);
     return answer;
   });
-};
+});  
 
-var world = {'cafe1' : [3, false],
-         'cafe2' : [1, true],
-         'cafe3' : [3, true],
-         'cafe4' : [3, true]}
+var explicitQuestioner = cache(function(qudName, rationality) {
+  return Infer({method: 'enumerate'}, function(){
+    var question = questionPrior();
+    var prior = getProjectedWorldPrior(qudName);
+    var informationGainDist = Infer({method: 'enumerate'}, function(){
+      var trueWorld = worldPrior();
+      var possibleAnswer = sample(explicitAnswerer(question, trueWorld, rationality));
+      var posterior = getConsistentWorlds(possibleAnswer, qudName);
+      return KL(posterior, prior);
+    });
+    factor(expectation(informationGainDist) * rationality);
+    return question;
+  });
+});
 
-console.log("world", world);
+var inferQUD = cache(function(context, question, rationality){
+  return Infer({method: 'enumerate'}, function() {
+    var qudName = qudPrior(context);
+    var q_erp = explicitQuestioner(qudName, rationality);
+    observe(q_erp, question);
+    return qudName;
+  });
+});
+
+var pragmaticAnswerer = cache(function(context, question, trueWorld, rationality){
+  var qudPosterior = inferQUD(context, question, rationality);
+  return Infer({method: 'enumerate', maxExecutions: 500}, function(){
+    var qudName = sample(qudPosterior);
+    var answer = answerPrior();
+    var consistentWorldDist = getConsistentWorlds(answer, qudName);
+    factor(consistentWorldDist.score(nameToQUD(qudName)(trueWorld)) * rationality);
+    return answer;
+  });
+});
+
+var world = {'cafe1' : {'distance' : 3, 'hasNewspaper' : false},
+             'cafe2' : {'distance' : 1, 'hasNewspaper' :true},
+             'cafe3' : {'distance' : 3, 'hasNewspaper' :true},
+             'cafe4' : {'distance' : 3, 'hasNewspaper' :true}}
 
 console.log(businesspersonContext, newspaperQuestion);
-qa.printERP(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world));
+console.log(pragmaticAnswerer(businesspersonContext, newspaperQuestion, world,10));
 
 console.log(touristContext, newspaperQuestion);
-qa.printERP(pragmaticAnswerer(touristContext, newspaperQuestion, world));
-
+console.log(pragmaticAnswerer(touristContext, newspaperQuestion, world, 10));

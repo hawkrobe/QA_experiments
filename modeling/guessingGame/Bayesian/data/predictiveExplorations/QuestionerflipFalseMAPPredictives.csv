@@ -1,0 +1,161 @@
+parameter,item1,item2,value,prob,MCMCprob
+couch,branching,artifact,thing,0.000043380631781710445,1
+couch,branching,artifact,seat,0.0009270054139247715,1
+couch,branching,artifact,furniture,0.0005939682220582247,1
+couch,branching,artifact,couch,0.9984356457322356,1
+chair,branching,artifact,thing,0.01610485067494607,1
+chair,branching,artifact,seat,0.9489104788950666,1
+chair,branching,artifact,furniture,0.03410364704603144,1
+chair,branching,artifact,couch,0.0008810233839563653,1
+table,branching,artifact,thing,0.31347129125677986,1
+table,branching,artifact,seat,0.015113333888249921,1
+table,branching,artifact,furniture,0.6563020409667192,1
+table,branching,artifact,couch,0.015113333888249921,1
+lawnmower,branching,artifact,thing,0.9529072095306867,1
+lawnmower,branching,artifact,seat,0.015697596823104253,1
+lawnmower,branching,artifact,furniture,0.015697596823104253,1
+lawnmower,branching,artifact,couch,0.015697596823104253,1
+dalmatian,branching,animals,pet,0.0002915707697369336,1
+dalmatian,branching,animals,dog,0.0039424035481961444,1
+dalmatian,branching,animals,dalmatian,0.9956612730333161,1
+dalmatian,branching,animals,animal,0.00010475264875115175,1
+poodle,branching,animals,pet,0.14208512099429177,1
+poodle,branching,animals,dog,0.8034797116477881,1
+poodle,branching,animals,dalmatian,0.003181444685955842,1
+poodle,branching,animals,animal,0.05125372267196374,1
+siamese cat,branching,animals,pet,0.7385399155026257,1
+siamese cat,branching,animals,dog,0.009658964394365938,1
+siamese cat,branching,animals,dalmatian,0.009658964394365938,1
+siamese cat,branching,animals,animal,0.24214215570864167,1
+whale,branching,animals,pet,0.03768672749259045,1
+whale,branching,animals,dog,0.03768672749259045,1
+whale,branching,animals,dalmatian,0.03768672749259045,1
+whale,branching,animals,animal,0.8869398175222285,1
+cottage,branching,places,place,0.017837621357366412,1
+cottage,branching,places,mansion,0.0009354954628294936,1
+cottage,branching,places,house,0.9480538500011255,1
+cottage,branching,places,building,0.033173033178679485,1
+mansion,branching,places,place,0.0001167532631980542,1
+mansion,branching,places,mansion,0.9987470895888874,1
+mansion,branching,places,house,0.0009855171948549746,1
+mansion,branching,places,building,0.00015063995305917817,1
+office,branching,places,place,0.09765045365528946,1
+office,branching,places,mansion,0.004775094942763309,1
+office,branching,places,house,0.004775094942763309,1
+office,branching,places,building,0.8927993564591838,1
+park,branching,places,place,0.8797021370768071,1
+park,branching,places,mansion,0.04009928764106441,1
+park,branching,places,house,0.04009928764106441,1
+park,branching,places,building,0.04009928764106441,1
+carrot,branching,plants,plant,0.00004858112463107998,1
+carrot,branching,plants,living plant,0.00010969447330107647,1
+carrot,branching,plants,food,0.0013836438431028236,1
+carrot,branching,plants,carrot,0.9984580805589656,1
+dead flower,branching,plants,plant,0.8501466980056613,1
+dead flower,branching,plants,living plant,0.05144100588269179,1
+dead flower,branching,plants,food,0.05065420787575614,1
+dead flower,branching,plants,carrot,0.047758088235891054,1
+tomatos,branching,plants,plant,0.04400169814166767,1
+tomatos,branching,plants,living plant,0.1715682187836026,1
+tomatos,branching,plants,food,0.7832788070789517,1
+tomatos,branching,plants,carrot,0.0011512759957779779,1
+sunflower,branching,plants,plant,0.33974767825271135,1
+sunflower,branching,plants,living plant,0.637758608836581,1
+sunflower,branching,plants,food,0.011246856455353895,1
+sunflower,branching,plants,carrot,0.011246856455353895,1
+iron skillet,overlapping,artifact,thing,0.00008675796034574544,1
+iron skillet,overlapping,artifact,skillet,0.9966858183842373,1
+iron skillet,overlapping,artifact,seat,0.0000032488927838270914,1
+iron skillet,overlapping,artifact,metal thing,0.0032241747626349376,1
+metal chair,overlapping,artifact,thing,0.026186341860720073,1
+metal chair,overlapping,artifact,skillet,0.0015259478122700606,1
+metal chair,overlapping,artifact,seat,0.500573037254797,1
+metal chair,overlapping,artifact,metal thing,0.4717146730722126,1
+wooden chair,overlapping,artifact,thing,0.013175933177455891,1
+wooden chair,overlapping,artifact,skillet,0.00105297195371669,1
+wooden chair,overlapping,artifact,seat,0.9847181229151116,1
+wooden chair,overlapping,artifact,metal thing,0.00105297195371669,1
+wooden ruler,overlapping,artifact,thing,0.946902125945185,1
+wooden ruler,overlapping,artifact,skillet,0.01769929135160502,1
+wooden ruler,overlapping,artifact,seat,0.01769929135160502,1
+wooden ruler,overlapping,artifact,metal thing,0.01769929135160502,1
+golden retriever,overlapping,animals,pet,0.9483889603250707,1
+golden retriever,overlapping,animals,lion,0.001986552640156403,1
+golden retriever,overlapping,animals,cat,0.002109683734854801,1
+golden retriever,overlapping,animals,animal,0.047514803299918855,1
+house cat,overlapping,animals,pet,0.26754209750203467,1
+house cat,overlapping,animals,lion,0.0004163471926227608,1
+house cat,overlapping,animals,cat,0.7232939395965974,1
+house cat,overlapping,animals,animal,0.008747615708745517,1
+lion,overlapping,animals,pet,0.0000032574646973884056,1
+lion,overlapping,animals,lion,0.9993154849357176,1
+lion,overlapping,animals,cat,0.000541659238071348,1
+lion,overlapping,animals,animal,0.00013959836151416474,1
+whale,overlapping,animals,pet,0.057988161244681605,1
+whale,overlapping,animals,lion,0.057988161244681605,1
+whale,overlapping,animals,cat,0.057988161244681605,1
+whale,overlapping,animals,animal,0.8260355162659551,1
+diner,overlapping,places,restaurant,0.003649360631618204,1
+diner,overlapping,places,place,0.00010184729430213997,1
+diner,overlapping,places,diner,0.9962449890547128,1
+diner,overlapping,places,bar,0.0000038030193654275684,1
+dive bar,overlapping,places,restaurant,0.0040612012689694495,1
+dive bar,overlapping,places,place,0.07084988702408052,1
+dive bar,overlapping,places,diner,0.003861065966369882,1
+dive bar,overlapping,places,bar,0.9212278457405805,1
+hotel lobby,overlapping,places,restaurant,0.1883052969993329,1
+hotel lobby,overlapping,places,place,0.014372948640298212,1
+hotel lobby,overlapping,places,diner,0.0007255384971932915,1
+hotel lobby,overlapping,places,bar,0.7965962158631753,1
+park,overlapping,places,restaurant,0.03343463139889069,1
+park,overlapping,places,place,0.8996961058033287,1
+park,overlapping,places,diner,0.03343463139889069,1
+park,overlapping,places,bar,0.03343463139889069,1
+carrots,overlapping,plants,plant,0.000046640428842086226,1
+carrots,overlapping,plants,leaves,0.000003238848136107703,1
+carrots,overlapping,plants,food,0.006345769964439474,1
+carrots,overlapping,plants,carrots,0.9936043507585818,1
+lettuce,overlapping,plants,plant,0.04591763271740344,1
+lettuce,overlapping,plants,leaves,0.5745956859919488,1
+lettuce,overlapping,plants,food,0.3770784259845754,1
+lettuce,overlapping,plants,carrots,0.0024082553060724553,1
+oak,overlapping,plants,plant,0.03322606131139218,1
+oak,overlapping,plants,leaves,0.9652724680265313,1
+oak,overlapping,plants,food,0.000750735331038036,1
+oak,overlapping,plants,carrots,0.000750735331038036,1
+flower,overlapping,plants,plant,0.8937879543074254,1
+flower,overlapping,plants,leaves,0.03540401523085816,1
+flower,overlapping,plants,food,0.03540401523085816,1
+flower,overlapping,plants,carrots,0.03540401523085816,1
+iron skillet,equivocal,artifact,seat,0.011008729253704979,1
+iron skillet,equivocal,artifact,metal thing,0.9889912707462949,1
+metal chair,equivocal,artifact,seat,0.4255132592235983,1
+metal chair,equivocal,artifact,metal thing,0.5744867407764022,1
+metal stool,equivocal,artifact,seat,0.4247104794014435,1
+metal stool,equivocal,artifact,metal thing,0.5752895205985565,1
+wooden chair,equivocal,artifact,seat,0.9939500900307285,1
+wooden chair,equivocal,artifact,metal thing,0.006049909969271524,1
+angler fish,equivocal,animals,pet,0.026350021708742996,1
+angler fish,equivocal,animals,fish,0.9736499782912569,1
+betta fish,equivocal,animals,pet,0.3696059584198637,1
+betta fish,equivocal,animals,fish,0.6303940415801363,1
+goldfish,equivocal,animals,pet,0.1920923096863924,1
+goldfish,equivocal,animals,fish,0.8079076903136077,1
+dalmatian,equivocal,animals,pet,0.996241471600987,1
+dalmatian,equivocal,animals,fish,0.003758528399012473,1
+ice hotel room,equivocal,places,outdoor place,0.02701217578110703,1
+ice hotel room,equivocal,places,cold place,0.9729878242188933,1
+snowy forest,equivocal,places,outdoor place,0.45687269437312417,1
+snowy forest,equivocal,places,cold place,0.5431273056268756,1
+snowy mountain,equivocal,places,outdoor place,0.284779050590579,1
+snowy mountain,equivocal,places,cold place,0.7152209494094214,1
+sunny beach,equivocal,places,outdoor place,0.9907871520394822,1
+sunny beach,equivocal,places,cold place,0.009212847960517925,1
+burger,equivocal,plants,plant,0.0048474268342953465,1
+burger,equivocal,plants,food,0.9951525731657049,1
+carrot,equivocal,plants,plant,0.4722265710746242,1
+carrot,equivocal,plants,food,0.5277734289253757,1
+sunflower,equivocal,plants,plant,0.983649235770619,1
+sunflower,equivocal,plants,food,0.016350764229381254,1
+tomatos,equivocal,plants,plant,0.792269740896144,1
+tomatos,equivocal,plants,food,0.20773025910385606,1
