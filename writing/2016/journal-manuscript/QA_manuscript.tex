@@ -598,11 +598,25 @@ artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 
 Before conducting quantitative model comparisons, we highlight several key qualitative patterns in the behavioral data that bear on our theory. First, we note that there was generally high correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities across domains for both questioners and answerers, with the exception of the `place' domain in answerers ($r = 0.78$; see Table \ref{table:experiment4correlations}). We thus collapse across domains in the following qualitative analyses, using labels from the ``animal'' domain for concreteness.
 
-Second, answerer responses deviated significantly from a uniform distribution across true statements (see Fig. \ref{fig:exp4res}). The strongest example of this deviation is in the branching hierarchy. Suppose the questioner asked ``Where is the animal?'' Since all four objects are animals, we might expect an answerer relying solely on the meaning of the utterance to have no preference over which of the animals to provide information about. Our explicit answerer model makes this qualitative prediction. Instead, answerers strongly prefer to respond with the location of the ``whale,'' the object that isn't described by any of the other questions \todo[inline]{TODO: chi-squared here}. This non-uniform pattern, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, is consistent with the Gricean reasoning of our \emph{pragmatic} model: if the questioner was assigned any of the other objects as their goal, they would have been more likely to ask a different question (e.g. if looking for the Dalmatian, they would be more likely to ask ``Where is the Dalmatian?''). Through such counterfactual reasoning, a pragmatic answerer can infer that the questioner's goal is likely to find the whale and respond accordingly. 
+Second, answerer responses deviated significantly from a uniform distribution across true statements (see Fig. \ref{fig:exp4res}). The strongest example of this deviation is in the branching hierarchy. Suppose the questioner asked ``Where is the animal?'' Since all four objects are animals, we might expect an answerer relying solely on the meaning of the utterance to have no preference over which of the animals to provide information about. Our explicit answerer model makes this qualitative prediction. Instead, 94\% of answerers responded with the location of the ``whale,'' the object that isn't described by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$. 
 
-Next, we turn to a subtler qualitative pattern in the ``overlapping'' condition (see Fig. \ref{fig:hierarchyStructures}), which was specifically designed to distinguish between our \emph{questioner} models. Suppose the questioner is assigned the ``house cat'' as their goal object. What question do they ask? The explicit questioner model predicts that the two parents -- ``Where is the pet?'' and ``Where is the cat?'' -- should be equally likely, since the explicit answerer they reason about would have a 50\% chance of responding with the house cat's location in either case. The pragmatic questioner model, on the other hand, predicts that ``cat'' will be preferred over ``pet'', because the other child of ``cat'' -- the lion -- is pragmatically blocked. When the pragmatic answerer hears ``cat,'' they reason that if the questioner's underlying goal were the ``lion'' they would have \emph{said} lion; because they didn't, they must mean the other cat. Thus, we have a pair of sharply distinguishable predictions: the explicit model predicts that ``pet'' and ``cat'' will be equally likely and the pragmatic model predicts an asymmetry where ``cat'' is the preferred label. 
+This non-uniform pattern, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, is consistent with the Gricean reasoning of our \emph{pragmatic} answerer model: if the questioner was assigned any of the other objects as their goal, they would have been more likely to ask a different question (e.g. if looking for the Dalmatian, they would be more likely to ask ``Where is the Dalmatian?''). Through such counterfactual reasoning, a pragmatic answerer can infer that the questioner's goal is likely to find the whale and respond accordingly. 
 
-In Figure \ref{fig:Exp4ZoomedIn}, we zoom in on this critical condition and display both models' predictions next to the empirical data, with bootstrapped 95\% confidence intervals. For these analyses, we excluded the `places' domain both because it was flagged as an outlier early in the analysis and because our stimulus choice led to a confound in the `overlapping' condition, which we discuss further below \todo[inline]{TODO: swap this out with the analysis where we don't exclude places}. We find that the pragmatic model makes the correct qualitative prediction -- the mean probability of responding ``Q2'' ($p_{Q2} = 0.77, n = 52, 95\%\textrm{ bootstrapped CI }= [0.65, 0.88])$ in this condition is significantly different from the mean probability of responding ``Q3'' ($p_{Q3} = 0.15, n = 52, 95\% \textrm{ bootstrapped CI }=[0.06, 0.25]$), as predicted by the pragmatic model. 
+Next, we turn to a subtler qualitative pattern in the ``overlapping'' condition (see Fig. \ref{fig:hierarchyStructures}), which was specifically designed to distinguish between our \emph{questioner} models. Suppose the questioner is assigned the ``house cat'' as their goal object. What question do they ask? The explicit questioner model predicts that the two parents -- ``Where is the pet?'' and ``Where is the cat?'' -- should be equally likely, since the explicit answerer they reason about would have a 50\% chance of responding with the house cat's location in either case. 
+
+The \emph{pragmatic} questioner model, on the other hand, predicts that ``cat'' will be preferred over ``pet'', because the other child of ``cat'' -- the lion -- is pragmatically blocked. When the pragmatic answerer hears ``cat,'' they reason that if the questioner's underlying goal were the ``lion'' they would have \emph{said} lion; because they didn't, they must mean the other cat. Thus, we have a pair of sharply distinguishable predictions: the explicit model predicts that ``pet'' and ``cat'' will be equally likely and the pragmatic model predicts an asymmetry where ``cat'' is the preferred label. 
+
+\begin{figure}[t!]
+\begin{center}
+\includegraphics[scale=.46]{OverlappingModelComparison.pdf}
+\end{center}
+\caption{Questioner responses on overlapping condition. Labels drawn from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% confidence intervals.}
+\label{fig:Exp4ZoomedIn}
+\end{figure}
+
+The proportion of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:Exp4ZoomedIn}. We find that the pragmatic model makes the correct qualitative prediction -- the empirical probability of responding ``cat'' ($\hat{p} = 0.64$) is significantly different from the  probability of responding ``pet'' ($\hat{p} = 0.25$; bootstrapped $95\%$ CI on difference: $[0.17, 0.58]$). This critical condition thus provides evidence that questioners may consider the answerer's inference about likely underlying goals when selecting their question. 
+
+
 %Thus, in examining the results below we will collapse across domains for simplicity of analysis. 
 %Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
 
@@ -611,7 +625,7 @@ In Figure \ref{fig:Exp4ZoomedIn}, we zoom in on this critical condition and disp
 \includegraphics[scale = .75]{Exp2QuestResults}
 \includegraphics[scale = .75]{Exp2AnsResults}
 \end{center}
-\caption{Results and model fits, for the best-performing questioner (left) and answerer (right) models, collapsing over the different domains. Error bars represent bootstrapped 95\% confidence intervals.\todo[inline]{Judith: axes difficult to read. Maybe just use animal labels here?}}
+\caption{Results and model fits, for the best-performing questioner (left) and answerer (right) models, collapsing over the different domains. Error bars represent bootstrapped 95\% confidence intervals.\todo[inline]{Judith: axes difficult to read. Maybe just use animal labels here? Or move to supplemental?}}
 \label{fig:exp4res}
 \end{figure*}
 
@@ -642,15 +656,7 @@ To avoid overfitting and to reduce the number of free parameters that would resu
 %
 
 %
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale=.25]{OverlappingModelComparison.png}
-\end{center}
-\vspace{-.5cm}
-\caption{Comparison of our explicit and pragmatic questioner models on the critical overlapping condition.  Error bars represent bootstrapped 95\% confidence intervals. \todo[inline]{maybe remove this plot and analysis and let the BDA model comparison do the work (since it's stronger and more interpretable anyway?}}
-\label{fig:Exp4ZoomedIn}
-\vspace{-.15cm}
-\end{figure*}
+
 %
 
 \todo[inline]{TODO: replace these correlations with a BDA \& predictives plot}
