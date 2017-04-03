@@ -146,7 +146,7 @@ mapWordsToNodes <- function(d) {
   answerNodes = c()
   questionNodes = c()
   goalNodes = c()
-  for(i in 1:length(d$workerid)) {
+  for(i in 1:length(d$gameID)) {
     answerNodes <- append(answerNodes, mapAnswer(d[i,]$type, d[i,]$answer))
     questionNodes <- append(questionNodes, 
                             mapQuestion(d[i,]$type, d[i,]$question))
@@ -188,7 +188,7 @@ getProbs <- function(data, QorA, R) {
 
 emptyAnswerGrid <- function(d, collapseDomain) {
   if(collapseDomain) {
-    g <- expand.grid(response = levels(factor(d$response)),
+    g <- expand.grid(response = levels(d$response),
                      type = levels(factor(d$type)),
                      utterance = levels(factor(d$utterance)));
   } else {
@@ -202,7 +202,7 @@ emptyAnswerGrid <- function(d, collapseDomain) {
 
 emptyQuestionGrid <- function(d, collapseDomain) {
   if(collapseDomain) {
-    g <- expand.grid(response = levels(factor(d$response)),
+    g <- expand.grid(response = levels(d$response),
                      type = levels(factor(d$type)),
                      goal = levels(factor(d$goal)));
   } else {
@@ -265,7 +265,6 @@ getProbsAndCIs <- function(data, QorA, R = 1000, collapseDomains) {
     do(mutate(., count = ifelse(is.na(count), 0, count),
               empProb = count / sum(count),
               groupSize = sum(count)))
-#   
   # Get confidence intervals
   if(QorA == "q") {
     bootObj <-  boot(data = data,statistic = Qprobs,R=R, collapseDomains=collapseDomains)
@@ -303,14 +302,14 @@ optimalFit <- function(data, equal = FALSE) {
     mutate(maximizingR = rationality) %>%
     group_by(modelLevel, correlation) %>%
     summarize(maximizingR = min(maximizingR)) %>%
-    select(modelLevel, maximizingR, correlation)
-  # add literal back in w/ correlation = NA
+    select(modelLevel, maximizingR, correlation) %>%
+    ungroup() 
   
+  # add literal back in w/ correlation = NA
   if(!any(prob_correlation$modelLevel == "literal")) {
     prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
   }
-  
-  print(prob_correlation)
+
   return(data %>% inner_join(prob_correlation) %>% 
            filter(rationality == maximizingR))
 }
