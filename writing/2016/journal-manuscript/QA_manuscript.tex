@@ -156,7 +156,7 @@ The account of questioner and answerer behavior we propose in this section is an
 \end{figure*}
 
 This model builds on the recent success of the Rational Speech Act (RSA) framework \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature, GoodmanFrank16_RSATiCS} in mathematically formalizing pragmatic language understanding as a form of recursive Bayesian inference, where listeners reason about speakers who choose utterances that maximize information gained by an imagined listener. The RSA framework has been applied to account for diverse pragmatic phenomena including scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, prosody \cite{BergenGoodman15_StrategicUseOfNoise},
-acquisition \cite{FrankGoodman14_InferringWordMeanings}. 
+acquisition \cite{FrankGoodman14_InferringWordMeanings}, 
 interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}, and
 non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords} or irony \cite{KaoGoodman15_IronyCogSci}.
 Our model situates question-answer behavior within this unifying view of language understanding as recursive social inference. 
@@ -164,7 +164,7 @@ Our model situates question-answer behavior within this unifying view of languag
 Here, we extend the RSA framework to address simple question-answer dialogs. This marks the first attempt to generalize RSA beyond single utterance interpretations and the first step toward modeling more complex discourse phenomena.
 Questions pose a challenge for rational models of language use, since questions -- as utterances -- don't provide direct information to the listener\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. This diverges from previous RSA models in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation. 
 
-If the questioner determines what question to ask by reasoning about likely answers, we must specify what kind of answerer they are reasoning about. We explore three increasingly sophisticated kinds of answerers, which both serve as possible internal models used by the questioner, yielding three increasingly sophisticated kinds of questioners, and also independently as models of answerers in the real world. 
+If the questioner determines what question to ask by reasoning about likely answers, we must specify what kind of answerer they are reasoning about. We explore three increasingly sophisticated kinds of answerers, which serve as possible internal models used by the questioner, yielding three increasingly sophisticated kinds of questioners; these three models serve also independently as models of actual answerers. 
 The simplest agent, the literal answerer, simply attempts to be maximally informative about the true state of the world, ignoring the question;   
 the explicit answerer assumes that the question has a context-independent meaning and attempts to be informative with respect to that meaning (without inferring the questioner's underlying interests);  
 the pragmatic answerer treats the question as a signal to the questioner's underlying goals, infers the most likely underlying interests of the questioner, and then informatively addresses those interests (see Figure \ref{fig:models})\footnote{In terms of \citeA{VanRooy03_QuestioningDecisionProblems}, the meaning function used in the explicit models corresponds to the first proposal of context-independent semantics, while our pragmatic models roughly correspond to the second.}. 
@@ -610,7 +610,7 @@ artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 
 \subsubsection{Results}
 
-First, we note that there was high correlation in response probabilities across domains for both questioners and answerers (see Table \ref{table:experiment4correlations}). Thus, in examining the results below we will collapse across domains for simplicity of analysis. Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
+First, we note that there was high correlation in response probabilities across domains for both questioners and answerers \ndg{fix} (see Table \ref{table:experiment4correlations}). Thus, in examining the results below we will collapse across domains for simplicity of analysis. Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
 
 \begin{figure*}[t!]
 \begin{center}
@@ -796,6 +796,7 @@ Humans are experts at inferring the intentions of other agents from their action
 . 
 \todo[inline]{Reformulate this last sentence so that it doesn't sound like we've already accomplished this; make clear that this is something for the future, but that the framework is really exciting because it?s so clear about where one would start fiddling with it}By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity.  % If questions themselves are informative, we must ask them carefully.
 
+\ndg{todo acknowledgements! include onr muri, etc.}
 
 \bibliography{qa}
 \bibliographystyle{apacite}
