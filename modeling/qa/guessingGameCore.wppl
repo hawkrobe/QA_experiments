@@ -44,7 +44,7 @@ var foreach = function(lst, fn) {
 //};
 
 
-var questionToNode = cache(function(utterance){
+var questionToNode = dp.cache(function(utterance){
   var temp = qa.butLast(utterance).split("Is");
   var node = temp[1].toLowerCase();
   return node;
@@ -52,7 +52,7 @@ var questionToNode = cache(function(utterance){
 
 var locationAssignments = qa.permute([1,2,3,4]);
 
-var taxonomyAnswerMeaning = cache(function(utterance){
+var taxonomyAnswerMeaning = dp.cache(function(utterance){
   var temp = utterance.split("@");
   var node = temp[0];
   var location = qa.butLast(temp[1]);
@@ -61,15 +61,9 @@ var taxonomyAnswerMeaning = cache(function(utterance){
   };
 });
 
-var isTaxonomyAnswer = cache(function(qudSpace, x){
+var isTaxonomyAnswer = dp.cache(function(qudSpace, x){
   return ((last(x) === '.') &
-	  (_.contains(qudSpace, qa.butLast(x).split("@")[0])));
-});
-
-var meaning = cache(function(qudSpace, utterance){
-  return (isTaxonomyAnswer(qudSpace, utterance) ? taxonomyAnswerMeaning(utterance) :
-          utterance === 'null' ? function(w){return true;} :
-          undefined);
+	  (_.includes(qudSpace, qa.butLast(x).split("@")[0])));
 });
 
 // our model has two parameters: rationality controls how strongly
@@ -83,8 +77,14 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var labelSpace = knowledge.labelSpace;
   
   // To cut down on computational complexity, we fix a location assignment
-  var exampleWorld = _.object(qudSpace, [1,2,3,4]);
-	
+  var exampleWorld = _.zipObject(qudSpace, [1,2,3,4]);
+
+  var meaning = dp.cache(function(qudSpace, utterance){
+    return (isTaxonomyAnswer(qudSpace, utterance) ? taxonomyAnswerMeaning(utterance) :
+            utterance === 'null' ? function(w){return true;} :
+            console.error('unknown utterance: ' + utterance));
+  });
+
   // Takes a taxonomy object with saliency probabilities
   // and picks one item from each label to be 'the salient one'
   var sampleSalienceAssignment = function() {
@@ -98,7 +98,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   
   var worldPrior = function() {
     var locAssignment = uniformDraw(locationAssignments);
-    return _.object(qudSpace, locAssignment);
+    return _.zipObject(qudSpace, locAssignment);
   };
 
   var questionPrior = function() {
@@ -126,10 +126,10 @@ var QAmodel = function(type, domain, rationality,  beta) {
   };
   
   var nameToQUD = function(qudName){
-    if(_.contains(questionSpace, qudName)) {
+    if(_.includes(questionSpace, qudName)) {
       var salienceGuess = sampleSalienceAssignment();
       return makeQUD(questionToNode(qudName), salienceGuess);
-    } else if (_.contains(qudSpace, qudName)) {
+    } else if (_.includes(qudSpace, qudName)) {
       return makeQUD(qudName);
     } else {
       return console.error('unknown qud name', qudName);
@@ -139,15 +139,8 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var qudPrior = function() {
     return uniformDraw(qudSpace);
   };
-
-  var constructProjectedWorldPrior = cache(function(qud_node) {
-    var qud = nameToQUD(qud_node);
-    return Infer({method: 'enumerate'}, function(){
-      return qud(worldPrior());
-    });
-  });
  
-  var interpreter = cache(function(answer){
+  var interpreter = dp.cache(function(answer){
     return Infer({method: 'enumerate'}, function(){
       var world = worldPrior();
       var answerMeaning = meaning(qudSpace, answer);
@@ -156,16 +149,22 @@ var QAmodel = function(type, domain, rationality,  beta) {
     });
   });
   
-  var makeTruthfulAnswerPrior = cache(function(trueWorld) {
-    var truthfulAnswerPrior = Infer({method: 'enumerate'}, function(){
+  var makeTruthfulAnswerPrior = dp.cache(function(trueWorld) {
+    return Infer({method: 'enumerate'}, function(){
       var answer = answerPrior(trueWorld);
       factor(interpreter(answer).score(trueWorld));
       return answer;
     });
-    return truthfulAnswerPrior;
   });
-
-  var literalAnswerer = cache(function(question, trueWorld) {
+  
+  var getProjectedWorldPrior = dp.cache(function(qudName) {
+    return Infer({method: 'enumerate'}, function(){
+      var qud = nameToQUD(qudName);
+      return qud(worldPrior());
+    });
+  });
+  
+  var literalAnswerer = dp.cache(function(question, trueWorld) {
     return Infer({method: 'enumerate'}, function(){
       var answer = answerPrior(trueWorld);
       factor(interpreter(answer).score(trueWorld) * rationality);
@@ -173,103 +172,69 @@ var QAmodel = function(type, domain, rationality,  beta) {
     });
   });
   
-  var literalQuestioner = cache(function(qud_node) {
-    var qud = nameToQUD(qud_node);
-    var projectedWorldPrior = constructProjectedWorldPrior(qud_node);
-    return Infer({method: 'enumerate'}, function(){
-      var question = questionPrior();
-      var expectedKL = mean(function(){
-        var trueWorld = worldPrior();
-        var answer = sample(literalAnswerer(question, trueWorld));
-        var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
-          var world = sample(interpreter(answer));
-          return qud(world);
-        });
-        return qa.KL(projectedWorldPosterior, projectedWorldPrior);
-      });
-      factor(expectedKL * rationality);
-      return question;
-    });
-  });
-
-  var explicitAnswerer = cache(function(question, trueWorld) {
+  var explicitAnswerer = dp.cache(function(question, trueWorld) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     return Infer({method: 'enumerate'}, function(){
-      // Remember this is stochastic for a question...
       var qud = nameToQUD(question);
       var answer = sample(truthfulAnswerPrior);
-      var score = mean(function(){
+      var consistentWorldDist = Infer({method: 'enumerate'}, function(){
 	var inferredWorld = sample(interpreter(answer));
-	return (qud(trueWorld) == qud(inferredWorld) ? 1 : 0);
+	return qud(inferredWorld);
       });
-      factor(Math.log(score) * rationality);
+      factor(consistentWorldDist.score(qud(trueWorld)) * rationality);
       return answer;
     });
   });
 
-  var explicitQuestioner = cache(function(qudName) {
-    var qud = nameToQUD(qudName);
-    var projectedWorldPrior = constructProjectedWorldPrior(qudName);
-    return Infer({method: 'enumerate'}, function(){
+  var questioner = dp.cache(function(type, qudName) {
+    var answerer = function() {(type === 'literal' ? literalAnswerer :
+				type === 'explicit' ? explicitAnswerer :
+				type === 'pragmatic' ? pragmaticAnswerer :
+				console.error('unknown type: ' + type))}();
+    return Infer({method: 'enumerate'}, function() {
       var question = questionPrior();
-      var expectedKL = mean(function(){
+      var informationGainDist = Infer({method: 'enumerate'}, function(){
 	var trueWorld = worldPrior();
-	var answer = sample(explicitAnswerer(question, trueWorld));
-	var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
-	  var world = sample(interpreter(answer));
-	  return qud(world);
+	var possibleAnswer = sample(answerer(question, trueWorld));
+	var prior = getProjectedWorldPrior(qudName);
+	var posterior = Infer({method: 'enumerate'}, function(){
+	  var inferredWorld = sample(interpreter(possibleAnswer));
+	  return nameToQUD(qudName)(inferredWorld);
 	});
-	return qa.KL(projectedWorldPosterior, projectedWorldPrior);
+	return qa.KL(posterior, prior);
       });
-      factor(expectedKL * rationality);
+      factor(expectation(informationGainDist) * rationality);
       return question;
     });
   });
 
-  var pragmaticAnswerer = cache(function(question, trueWorld){
-    var qudPosterior = Infer({method: 'enumerate'}, function(){
+  var inferQUD = dp.cache(function(question){
+    return Infer({method: 'enumerate'}, function() {
       var qudName = qudPrior();
-      var qud = nameToQUD(qudName);
-      var q_erp = explicitQuestioner(qudName);
-      factor(q_erp.score(question));
+      var q_erp = questioner('explicit', qudName);
+      observe(q_erp, question);
       return qudName;
     });
+  });
+
+  var pragmaticAnswerer = dp.cache(function(question, trueWorld){
+    var qudPosterior = inferQUD(question);
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     return Infer({method: 'enumerate'}, function(){
-      var qud = nameToQUD(sample(qudPosterior));
+      var qudName = sample(qudPosterior);
       var answer = sample(truthfulAnswerPrior);
-      var score = mean(function(){
+      var consistentWorldDist = Infer({method: 'enumerate'}, function(){
 	var inferredWorld = sample(interpreter(answer));
-	return (qud(trueWorld) == qud(inferredWorld)) ? 1.0 : 0.0;
+	return nameToQUD(qudName)(inferredWorld);
       });
-      factor(Math.log(score) * rationality);
+      factor(consistentWorldDist.score(nameToQUD(qudName)(trueWorld)) * rationality);
       return answer;
     });
   });
-
-  var pragmaticQuestioner = cache(function(qudName) {
-    var qud = nameToQUD(qudName);
-    var projectedWorldPrior = constructProjectedWorldPrior(qudName);
-    return Infer({method: 'enumerate'}, function(){
-      var question = questionPrior();
-      var expectedKL = mean(function(){
-        var trueWorld = worldPrior();
-        var answer = sample(pragmaticAnswerer(question, trueWorld));
-        var projectedWorldPosterior = Infer({method: 'enumerate'}, function(){
-          var world = sample(interpreter(answer));
-          return qud(world);
-        });
-        return qa.KL(projectedWorldPosterior, projectedWorldPrior);
-      });
-      factor(expectedKL * rationality);
-      return question;
-    });
-  });
-
+  
   var runTFBTQuestioner = cache(function(qudName, coinFlip) {
-    return (coinFlip ?
-	    pragmaticQuestioner(qudName) :
-	    explicitQuestioner(qudName));
+    return (coinFlip ? questioner('pragmatic', qudName) :
+	    questioner('explicit', qudName));
   });
 
   var runAnswererModel = cache(function(question, coinFlip) {
@@ -287,9 +252,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   
   return {qudSpace : qudSpace,
           questionSpace : questionSpace,
-          pragQ : pragmaticQuestioner,
-          litQ : literalQuestioner,
-          expQ: explicitQuestioner,
+          questioner : questioner,
           pragA : pragmaticAnswerer,
           litA : literalAnswerer,
           expA: explicitAnswerer,
