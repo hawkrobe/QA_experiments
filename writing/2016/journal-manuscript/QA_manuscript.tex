@@ -438,7 +438,7 @@ $$ As \citeA{GibbsBryant08_OptimalRelevance} point out, their participants all w
 
 For our answers, we use exact number semantics: the response ``3:35'' evaluates to true in worlds where the time is in fact 3:35, and false otherwise. While we suppressed \emph{a priori} false answers for convenience in other case studies (they would be naturally be assigned vanishingly small probability anyway), note that we cannot do so here: answerers must be allowed to make \emph{a priori} false utterances that get reinterpreted by the listener to be true under the QUD \cite<see>{KaoWuBergenGoodman14_NonliteralNumberWords}. 
 
-\todo[inline]{return to this in the discussion}
+%\todo[inline]{return to this in the discussion}
 
  \subsubsection{Results}
  
@@ -450,7 +450,7 @@ The goal prior is the key component of the model governing this difference. Note
 
 %Our literal and explicit answerer models fail to capture these contextual differences, as they do not reason about the space of underlying goals (which justify rounding) and always give the exact time. The literal answerer always gives the exact time because it is the only property of the world, which they are attempting to be informative about without regard to the question. The explicit answerer always gives the exact time because it uses the explicit question meaning, which simply asks for the time.
 
-\todo[inline]{rdh: Actually, in the experiment the question was ``Do you have the time?'' to which the literal and explicit answers would be ``yes'' or ``no'', right? We don't allow these responses in our model because they're not what we're interested in (i.e. \emph{no one} responded this way), but they are the kinds of answers our literal and explicit answerers would give}
+%\todo[inline]{rdh: Actually, in the experiment the question was ``Do you have the time?'' to which the literal and explicit answers would be ``yes'' or ``no'', right? We don't allow these responses in our model because they're not what we're interested in (i.e. \emph{no one} responded this way), but they are the kinds of answers our literal and explicit answerers would give}
 
 \begin{table*}[t!]
 \centering
@@ -508,7 +508,9 @@ $$g_{\mathcal{C}_q}(w) = \left\{\begin{array}{rcl} 1 && | \mathcal{C}_q \cap w |
 \includegraphics[scale = .6]{creditCardsPosterior.pdf}
 \end{center}
 \vspace{-.25cm}
-\caption{Comparison of questioner goal posteriors that the pragmatic answerer model infers after hearing two different question utterances in Clark (1979), Experiment 5. \todo[inline]{There has to be a better way of presenting this result\dots}}
+\caption{Comparison of questioner goal posteriors that the pragmatic answerer model infers after hearing two different question utterances in Clark (1979), Experiment 5. 
+%\todo[inline]{There has to be a better way of presenting this result\dots}
+}
 \label{fig:clarkExperiment5posteriors}
 \end{figure*}
 
@@ -531,8 +533,6 @@ Similarly, when asked "Do you accept credit cards?'' the pragmatic answerer reas
 \subsection{Discussion}
 
 In these four case studies, we illustrated several mechanisms our answerer model can use to display sensitivity to questioner goals: answerers may use context, general world knowledge, and most critically, questioner utterances themselves to infer and informatively address the questioner's underlying interests. Additionally, given natural assumptions about priors and sets of alternative questions, answers, and goals, we can use these mechanisms to explain a range of sophisticated psycholinguistic phenomena, both qualitatively and quantitatively.
-
-%\todo[inline]{rdh: thought I should lampshade in the next $\P$ the fact that our models have 0.5s here and 0.75s there, with no good explanation for where those numbers come from, and offer an argument for why this shouldn't be too worrying -- not sure if we need this, or whether this is the right place to put it, though}
 
 %One salient issue with our computational experiments is that our resulting answer distribution depends in each case on hard-coded settings such as the space of alternative questions, answers, and goals and the mathematical form of the various priors. We set these components to be simple and natural in the context of the scenario being modeled, but there is still some concern over the amount of flexibility afforded to the modeler in making these choices. For example, the answer prior for both Clark studies uses a parameter to determine the answerer's baseline preference for `yes' and `no' responses versus prices or lists of card types. In both cases we set this parameter to be $p = 0.5$, but other numbers could have been chosen to achieve a better or worse quantitative fit. 
 
@@ -598,7 +598,7 @@ artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 
 Before conducting quantitative model comparisons, we highlight several key qualitative patterns in the behavioral data that bear on our theory. First, we note that there was generally high correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities across domains for both questioners and answerers, with the exception of the `place' domain in answerers ($r = 0.78$; see Table \ref{table:experiment4correlations}). We thus collapse across domains in the following qualitative analyses, using labels from the ``animal'' domain for concreteness.
 
-Second, answerer responses deviated significantly from a uniform distribution across true statements (see Fig. \ref{fig:exp4res}). The strongest example of this deviation is in the branching hierarchy. Suppose the questioner asked ``Where is the animal?'' Since all four objects are animals, we might expect an answerer relying solely on the meaning of the utterance to have no preference over which of the animals to provide information about. Our explicit answerer model makes this qualitative prediction. Instead, 94\% of answerers responded with the location of the ``whale,'' the object that isn't described by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$. 
+Second, answerer responses deviated significantly from a uniform distribution across true statements. The strongest example of this deviation is in the branching hierarchy. Suppose the questioner asked ``Where is the animal?'' Since all four objects are animals, we might expect an answerer relying solely on the meaning of the utterance to have no preference over which of the animals to provide information about. Our explicit answerer model makes this qualitative prediction. Instead, 94\% of answerers responded with the location of the ``whale,'' the object that isn't described by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$. 
 
 This non-uniform pattern, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, is consistent with the Gricean reasoning of our \emph{pragmatic} answerer model: if the questioner was assigned any of the other objects as their goal, they would have been more likely to ask a different question (e.g. if looking for the Dalmatian, they would be more likely to ask ``Where is the Dalmatian?''). Through such counterfactual reasoning, a pragmatic answerer can infer that the questioner's goal is likely to find the whale and respond accordingly. 
 
@@ -618,15 +618,15 @@ The proportion of participants asking each possible question in this scenario, c
 
 %Thus, in examining the results below we will collapse across domains for simplicity of analysis. 
 %Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
-
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .75]{Exp2QuestResults}
-\includegraphics[scale = .75]{Exp2AnsResults}
-\end{center}
-\caption{Results and model fits, for the best-performing questioner (left) and answerer (right) models, collapsing over the different domains. Error bars represent bootstrapped 95\% confidence intervals.\todo[inline]{Judith: axes difficult to read. Maybe just use animal labels here? Or move to supplemental?}}
-\label{fig:exp4res}
-\end{figure*}
+%
+%\begin{figure*}[t!]
+%\begin{center}
+%\includegraphics[scale = .75]{Exp2QuestResults}
+%\includegraphics[scale = .75]{Exp2AnsResults}
+%\end{center}
+%\caption{Results and model fits, for the best-performing questioner (left) and answerer (right) models, collapsing over the different domains. Error bars represent bootstrapped 95\% confidence intervals.\todo[inline]{Judith: axes difficult to read. Maybe just use animal labels here? Or move to supplemental?}}
+%\label{fig:exp4res}
+%\end{figure*}
 
 %In the `overlapping' condition (Figure \ref{fig:hierarchyStructures}(b)), questioners preferentially asked about the `lion' when looking for the lion, $\chi^2(3) = 205, p < 0.001$; about the `cat' when looking for the Siamese cat, $\chi^2(3) = 63, p < 0.001$, even though the lion is also a cat; about the `pet' when looking for the dalmatian, $\chi^2(3) = 232, p < 0.001$, even though the Siamese cat is also a pet; and about the `animal' when looking for the whale, $\chi^2(3) = 213, p < 0.001$. Answerers preferentially revealed the lion when asked about the `lion,' $\chi^2(3) = 229, p < 0.001$, the Siamese cat when asked about the `cat,' $\chi^2(3) = 59, p < 0.001$, the dalmatian when asked about the `pet,' $\chi^2(3) = 120, p < 0.001$, and the whale when asked about the `animal,' $\chi^2(3) = 187, p < 0.001$. 
 
@@ -634,16 +634,16 @@ The proportion of participants asking each possible question in this scenario, c
 
 \subsubsection{Model comparison}
 
-While our pragmatic questioner and answerer models correctly predict key qualitative phenomena which our non-pragmatic models cannot account for, we proceed to show that they also provide better overall fits to the behavioral data. quantitative model comparison. 
+These results show that our non-pragmatic models cannot account for key qualitative phenomena while our pragmatic models make the correct predictions. Next, we show that our pragmatic models also provide better overall quantitative fits to the behavioral data. Before showing the results of our direct model comparison, we show how we capture the experimental task in our modeling framework. 
 
-Each model was run with uniform prior probability over worlds, goals, questions, and answers, and with equal cost for all utterances. The goal projection for goal object $o$ is given by $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. 
+The goal projection for goal object $o$ is given by $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. 
 
 The explicit meaning of the question ``Where's the $x$?'' maps a world $w$ to the location of the salient object of type $x$. This implements the standard formal semantics of \emph{the}: the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world. Pragmatically, the use of a definite article \emph{presupposes} the salience of some object in shared context \cite{Lewis79_Scorekeeping, Roberts03_UniquenessDefiniteNounPhrases}. Thus our explicit QUD is: 
 $$\textrm{\den{Where is the N?}} = q_{N}(w) = \textrm{loc}(s_N,w)$$ where $s_N$ is the salient object of category $N$. 
 
-Because the answerer does not know \emph{a priori} which object is the salient one, they draw an object from a saliency distribution, given the category in the noun phrase $s_N \sim \mathcal{S}(o | N)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. For current purposes, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:hierarchyStructures}).\footnote{Later, we will collect empirical saliency priors, and show how this affects the model's fit.} Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
+Because the answerer does not know \emph{a priori} which object is the salient one, they draw an object from a saliency distribution, given the category in the noun phrase $s_N \sim \mathcal{S}(o | N)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. For this section, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:hierarchyStructures}).%\footnote{Later, we will collect empirical saliency priors, and show how this affects the model's fit.} Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
 
-To avoid overfitting and to reduce the number of free parameters that would result from separately fitting rationality parameters for each item, we pool together data from all hierarchy structures and domains and fit the single rationality parameter for each model to jointly optimize model-data correlations across all items in this pooled dataset. 
+To avoid overfitting and to reduce the number of free parameters that would result from separately fitting rationality parameters for each item, we pool together data from all hierarchy structures and domains and fit the single rationality parameter for each model to jointly optimize model-data correlations across all items in this pooled dataset. Each model was run with uniform prior probability over worlds, goals, questions, and answers, and with equal cost for all utterances. 
 
 %
 \begin{figure*}[t!]
@@ -660,7 +660,7 @@ To avoid overfitting and to reduce the number of free parameters that would resu
 
 %
 
-\todo[inline]{TODO: replace these correlations with a BDA \& predictives plot}
+%\todo[inline]{TODO: replace these correlations with a BDA \& predictives plot}
 
 These model-data fits are displayed in Figure \ref{fig:Exp2ModelSpace}. We can immediately rule out the literal answerer and literal questioner, which predict a uniform distribution of responses within each condition. We also find that the pragmatic answerer model ($\alpha = 9.6$) fits the data significantly better than the explicit answerer model ($\alpha = 1.1$), with $r = 0.88$ compared with $r = 0.65$ (Zou's 95\% confidence interval $= [0.16, 0.32]$).  Turning to the questioner predictions, we again find that both explicit ($\alpha = 9.9$) and pragmatic ($\alpha = 6.2$) models provide excellent but essentially indistinguishable fits, with $r = 0.953$ compared with $0.956$ (Zou's 95\% confidence interval $= [-0.02, 0.01]$). 
 
@@ -706,30 +706,32 @@ We next carried out a model comparison using these empirically measured saliency
 
 For a more precise test of whether participants are using uniform priors or the distributions we measured empirically, we conducted a Bayesian data analysis of our questioner and answerer models \cite{HemmerTauberSteyvers15_BDAplus}. For the purposes of this analysis, we model the saliency prior as a mixture of the uniform distribution assumed in earlier experiments and the saliency distribution we empirically measured. 
 
+\begin{figure}[th!]
+\begin{center}
+\includegraphics[scale=.5]{AnswererParamPosteriors.pdf}
+\includegraphics[scale=.5]{QuestionerParamPosteriors.pdf}
+\end{center}
+\caption{Posteriors for the parameters inferred by our Bayesian data analyses. 
+%\todo[inline]{Label questioner row; include (dumb) bar plot of gamma on log scale?}
+}
+\label{fig:BayesianParamPosteriors}
+\end{figure}
+\subsection{Discussion}
+
 We introduce a parameter $\beta \in [0,1]$ controlling the mixture weight, with $\beta = 0$ corresponding to a pure uniform distribution and $\beta = 1$ corresponding to a pure empirical distribution. Additionally, for a more rigorous model comparison among explicit and pragmatic models, we included a binary parameter $\gamma \in \{\textrm{explicit}, \textrm{pragmatic}\}$ determining whether the questioner reasons about an explicit or pragmatic answerer. The posterior over these parameters can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}.
 
 We infer these parameters, along with the rationality parameter $\alpha$, separately for the questioner and answerer by conditioning on our observed data. We assume $$\beta \sim Unif(0,1)$$ $$\gamma \sim Bernoulli(.5)$$ $$\alpha \sim Unif(0,20)$$ and use enumeration over discrete bins to estimate the most likely parameter values (see Figure \ref{fig:BayesianParamPosteriors}). We also show the fit of the posterior predictives of this analysis in Figure \ref{fig:posteriorPredictives}.
 
 \begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale=1]{AnswererPredictive.pdf}
-\includegraphics[scale=1]{QuestionerPredictive.pdf}
+\includegraphics[scale=.5]{AnswererPredictive.pdf}
+\includegraphics[scale=.5]{QuestionerPredictive.pdf}
 \end{center}
 \caption{Model-data fit for posterior predictives. Vertical error bars are bootstrapped 95\% confidence intervals for estimated probabilities. Horizontal error bars are 95\% highest posterior density intervals around the MAP estimate.}
 \label{fig:posteriorPredictives}
 \end{figure*}
 
 We first note that the posterior distribution of alpha values inferred here roughly match the maximizing alpha values found by grid search in earlier experiments, with a modal value of $\alpha = 8.05$ (95\% highest posterior density (HPD) interval $=[7.3, 8.7])$ for the answerer model and $\alpha = 6.25$ (95\% HPD $=[6, 6.5]$) for the questioner model. Second, we found maximum a posteriori (MAP) beta values of $\beta = 0.5$ (95\% HPD $=[.4, .55]$) for our answerer model, and $\beta = 0.35$ (95\% HPD interval $= [0.3, 0.45]$) for our questioner model, implying that both questioners and answerers use a mixture between a purely uniform and purely empirical saliency prior. Finally, our model comparison parameter $\gamma$ showed overwhelming evidence for the pragmatic answerer model (BF $= \sim6 \times 10^{72}$) and strong evidence for the pragmatic questioner model (BF $= \sim2\times 10^{7}$).
-
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale=1]{AnswererParamPosteriors.pdf}
-\includegraphics[scale=1]{QuestionerParamPosteriors.pdf}
-\end{center}
-\caption{Posteriors for the parameters inferred by our Bayesian data analyses. \todo[inline]{Label questioner row; include (dumb) bar plot of gamma on log scale?}}
-\label{fig:BayesianParamPosteriors}
-\end{figure*}
-\subsection{Discussion}
 
 Our Bayesian data analysis resolves several concerns about our previous results. We found that the dominance of our pragmatic answerer model over the explicit answerer model could not be explained by saliency or typicality: after incorporating saliency priors into the model, the pragmatic answerer model still accounted for response data much better than the explicit answerer model. In fact, we found that participants used a slightly flattened version of the empirically measured saliency prior. This mixture may be partially due to the fact that our saliency prior elicitation task still inevitably introduces pragmatic demands. When a participant is instructed to ``Click the $X$,'' they may think about the alternatives and which one the experimenter would be referring to as the most salient. Thus, our empirical saliency prior might be stronger than the true prior. While this does not pose a problem for our purposes, we suspect that one may be able to tease out the true prior by modeling the saliency elicitation task and conducting a further Bayesian data analysis.
 
@@ -738,12 +740,12 @@ Additionally, despite difficulties distinguishing between the explicit and pragm
 \section{General discussion}
 \label{sec:gd}
 
-\todo[inline]{Might split this into subsections?}
+%\todo[inline]{Might split this into subsections?}
 % \subsection{Summary of what we did}
 
 Asking questions is one of our most efficient and reliable means of learning about the world. This method of social learning, however, depends crucially on the questioner's ability to choose a ``good'' question and the answerer's ability to give a ``good'' answer. In this paper, we presented a quantitative model specifying a theory of exactly what constitutes a ``good'' question or answer. Specifically, we argue that at a computational level, questioner and answer choices are determined through recursive social reasoning. Questioners consider likely answers and seek to maximize the reduction in their own uncertainty. Answerers, in turn, seek to informatively address the questioner goals most likely to have generated the question. We provided several lines of evidence for this theory. 
 
-\todo[inline]{Refactor next paragraph to separate out stuff that's included in the model from external stuff}
+%\todo[inline]{Refactor next paragraph to separate out stuff that's included in the model from external stuff}
 First, in four case studies, we showed how this modeling framework explains classic results about answerer sensitivity to context and questioner intentions. These computational experiments highlighted several mechanisms that answerers can use to adjust their responses. Elements of the context, like the questioner's previous utterances, and general world knowledge, like the increasing likelihood of being in a hurry closer to a meeting, can shift the answerer's prior about the questioner's likely goals. In many scenarios, the questioner utterance itself is informative about underlying goals. 
 
 
@@ -769,7 +771,7 @@ While these results provide strong evidence for our claim that question-asking a
 It is also unclear whether our notion of goals as projections is sufficient to capture the semantics of all kinds of questions, and whether our assumptions scale up to less constrained interactions. In social scenarios with strongly conventionalized or constrained schemas, like asking for the time or the price of an object at a store, we have strong expectations about the goals of the questioner, but where does the space of possible QUDs come from in everyday conversation? We suspect that the sets of simple QUDs used in our models above will need to be generalized to broader mixtures of discourse topics, such as those identified in topic models \cite{BleiNgJordan03_LDA, GriffithsSteyversTenenbaum07_Topics}. These more complex QUD spaces may contribute to the difficulties young children face in answering broad, sentence-focus questions like ``what's happening?'' \cite{SalomoLievenTomasello13_ChildrenAnsweringQuestions}. Additionally, to generalize beyond the hand-picked sets of alternative questions and answers used in our models above, we may need to consider conditional frequencies from past interactions or simple deletions and edits from the given question \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. To deal with dialogues lasting longer than a single exchange, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate. 
 
 Finally, although our Bayesian model comparison strongly favored the lower-level questioner model, indicating that the burden of pragmatic reasoning lies primarily on the answerer, it is still unclear under which circumstances questioners engage in an additional level of recursion. In a critical condition designed to test between the models, participants  displayed evidence of this additional level of reasoning, but the difficulty of constructing such a case suggests that such circumstances may be rare. 
-\todo[inline]{Not sure they're actually that rare... Might just be accessibility bias or difficulty of construction in our experimental paradigm?}
+%\todo[inline]{Not sure they're actually that rare... Might just be accessibility bias or difficulty of construction in our experimental paradigm?}
 It will ultimately be important to explore the mixture of explicit- and pragmatic-questioning across an even larger range of situations: these issues may be a product of our artificial game paradigm, or they may be reflective of real tendencies in language use, raising novel questions about audience design in question-answer behavior. 
 
 %\subsection{Extensions and comparisons to previous models}
@@ -788,9 +790,10 @@ As a final example of potential extensions of our model, we return to the case o
 
 Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition, BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_Animacy}. Experiments in psycholinguistics have shown that this expertise extends to speech acts.  Behind every question lies a goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). These wildly different intentions seem to warrant different kinds of answers.%, even if the explicit question is expressed using the same words
 . 
-\todo[inline]{Reformulate this last sentence so that it doesn't sound like we've already accomplished this; make clear that this is something for the future, but that the framework is really exciting because it?s so clear about where one would start fiddling with it}By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity.  % If questions themselves are informative, we must ask them carefully.
+%\todo[inline]{Reformulate this last sentence so that it doesn't sound like we've already accomplished this; make clear that this is something for the future, but that the framework is really exciting because it?s so clear about where one would start fiddling with it}
+By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity.  % If questions themselves are informative, we must ask them carefully.
 
-\ndg{todo acknowledgements! include onr muri, etc.}
+%\ndg{todo acknowledgements! include onr muri, etc.}
 
 \bibliography{qa}
 \bibliographystyle{apacite}
