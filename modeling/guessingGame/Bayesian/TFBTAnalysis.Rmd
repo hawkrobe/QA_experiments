@@ -6,7 +6,7 @@ output: html_document
 To analyze the output of a webppl program for bayesian data analysis
 
 ```{r}
-setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling")
+#knitr::opts_knit$set(root.dir="/Users/rxdh/Box Sync/stanford/research/goodman/q&a/modeling")
 library(ggplot2)
 library(GGally)
 library(dplyr)
@@ -33,13 +33,13 @@ options("scipen"=10)
 ### Load in empirical data
 
 ```{r message=FALSE}
-ps = read.csv("../MultiExperiment2/data/MultiExp2_compiled-subject_information.csv",
+ps = read.csv("../../../MultiExperiment2/data/MultiExp2_compiled-subject_information.csv",
               sep = ',', header = TRUE)
-mturk = read.csv("../MultiExperiment2/data/MultiExp2_compiled-mturk.csv",
+mturk = read.csv("../../../MultiExperiment2/data/MultiExp2_compiled-mturk.csv",
                  sep=',', header= TRUE) %>%
   mutate(gameID = Answer.id) %>%
   select(workerid, gameID)
-d = read.csv("../MultiExperiment2/data/MultiExp2_compiled-trials_clean.csv",  
+d = read.csv("../../../MultiExperiment2/data/MultiExp2_compiled-trials_clean.csv",  
              sep = ',', header = TRUE) %>%
   right_join(mturk, by = 'workerid')
 english_ps <- (ps %>% 
@@ -54,7 +54,7 @@ completedGames = (filteredD %>% group_by(gameID) %>%
 cat("We removed", length(unique(d$workerid)) - length(completedGames)*2, "games total")
 d <- filteredD %>% filter(gameID %in% completedGames) %>% 
      distinct(domain, goal, question, guess, answer, type, gameID)
-source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
+source("../../../MultiExperiment2/analysis/analysisHelpers.R")
 d <- mapWordsToNodes(d)
 d_q = d %>% 
       mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
@@ -81,21 +81,32 @@ d_a = d %>%
              utterance = ordered(utterance, levels=c("Q1","Q2","Q3","Q4")))
 ```
 
-### Load in model results
+### Model comparison
 
 ```{r}
-qparams_raw <- read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysis_loose_Params.csv", sep = ",", row.names = NULL)
-qparams_raw %>% filter(parameter == "expPragFlip") %>% group_by(value) %>% summarize(prob = sum(MCMCprob))
-```
+options( scipen = 0 )
+options( digits =1)
+computeBayesFactor <- function(name) {
+  inputFile <- paste0("../../guessingGame/Bayesian/data/", name, '.csv')
+  raw <- read.csv(inputFile, sep = ",", row.names = NULL) 
 
-Wanna know the best parameters for "expPragFlip == false"
-```{r}
-View(qparams_raw %>% 
-  mutate(sampleNum = floor((row_number() - 1)/3)) %>%
-  group_by(sampleNum) %>%
-  spread(parameter, value) %>%
-  filter(expPragFlip == "false")
-  )
+  # BDA result:
+  res <- raw %>% 
+    filter(parameter == "expPragFlip") %>% 
+    group_by(value) %>% 
+    summarize(prob = sum(MCMCprob)) %>%
+    spread(value, prob) 
+
+  return(signif(res$true/res$false, 3))
+}
+print(paste0('BF (beta = 0, questioner): ',
+             computeBayesFactor("betaZeroQuestioner_Params")))
+print(paste0('BF (beta = 0, answerer): ',
+             computeBayesFactor("betaZeroAnswerer_Params")))
+print(paste0('BF (free beta, questioner): ',
+             computeBayesFactor("fullQuestioner_Params")))
+print(paste0('BF (free beta, answerer): ',
+      computeBayesFactor("fullAnswerer_Params")))
 ```
 
 Looks like there's a super narrow range where the pragmatic model makes much much better predictions... 
@@ -107,152 +118,186 @@ qparams.samples <- filteredQparams[rep(row.names(filteredQparams), filteredQpara
   filter(parameter != "expPragFlip") %>% 
   mutate(value = as.numeric(as.character( value)))
 
-
-qparams.samples%>%
-  ggplot(aes(x = value))+
-    geom_histogram(aes(y=..density..), fill = 'white', color = 'black')+
-    geom_density(aes(y=..density..), alpha = .2,  fill="#FF6666") +
-    facet_wrap(~parameter, scales = 'free') +
-    theme_bw()
-
 qparams.samples %>%
   group_by(parameter) %>%
   summarize(mode = estimate_mode(value),
             md_lo = round(HPDlo(value), 3),
             md_hi = round(HPDhi(value), 3))
+
+questionParamPosterior <- qparams.samples %>%
+  ggplot(aes(x = value))+
+    geom_histogram(aes(y=..density..), 
+                 data =subset(qparams.samples, parameter == "alpha" ), 
+                 binwidth = .25, colour="black", fill="white") +
+    geom_histogram(aes(y=..density..), 
+                 data=subset(qparams.samples, parameter == "beta"), 
+                 binwidth = .05, colour="black", fill="white") +
+    geom_density(aes(y=..density..),
+                 data =subset(qparams.samples, parameter == "alpha" ), 
+                 adjust = 5, alpha=.2, fill="#FF6666")+
+    geom_density(aes(y=..density..),
+                 data=subset(qparams.samples, parameter == "beta"), 
+                 adjust = 5, alpha=.2, fill="#FF6666")+
+    facet_wrap(~parameter, scales = 'free') +
+    theme_bw()
+questionParamPosterior
+ggsave(file="../../../writing/2016/journal-manuscript/figures/QuestionerParamPosteriors.pdf", questionParamPosterior, width = 6, height = 3)
 ```
 
 ```{r}
-raw_aparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_params.csv", sep = ",", row.names = NULL) 
-
-# BDA result:
-raw_aparams %>% filter(parameter == "expPragFlip") %>% group_by(value) %>% summarize(prob = sum(MCMCprob))
-```
-
-```{r}
-filteredAparams<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_params.csv", sep = ",", row.names = NULL) %>%
+filteredAparams<-read.csv("../../guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_params.csv", sep = ",", row.names = NULL) %>%
     filter(MCMCprob > 0.0001) %>% 
     filter(parameter != "expPragFlip") %>%
     mutate(value = as.numeric(as.character( value)))
 
-filteredAparams %>% 
-  group_by(parameter) %>%
+aparams.toplot <- filteredAparams[rep(row.names(filteredAparams), filteredAparams$MCMCprob*samples), 1:2] 
+
+aparams.toplot %>%
+    group_by(parameter) %>%
   summarize(mode = estimate_mode(value),
             md_lo = round(HPDlo(value), 3),
             md_hi = round(HPDhi(value), 3))
 
-aparams.samples <- filteredAparams[rep(row.names(filteredAparams), filteredAparams$MCMCprob*samples), 1:2]
 
-pdf(file="../writing/2016/journal-manuscript/figures/AnswererParamPosteriors.pdf",
-        width = 6, height = 3)
 answererParamPosteriors = ggplot(aparams.toplot, aes(x=value))+
     geom_histogram(aes(y=..density..), 
                    data =subset(aparams.toplot, parameter == "alpha" ), 
                    binwidth = .1, colour="black", fill="white") +
     geom_histogram(aes(y=..density..), 
                    data=subset(aparams.toplot, parameter == "beta"), 
-                   binwidth = .04, colour="black", fill="white") +
+                   binwidth = .025, colour="black", fill="white") +
     geom_density(aes(y=..density..),
                  data =subset(aparams.toplot, parameter == "alpha" ), 
                  adjust = 1, alpha=.2, fill="#FF6666")+
     geom_density(aes(y=..density..),
                  data=subset(aparams.toplot, parameter == "beta"), 
-                 adjust = 5, alpha=.2, fill="#FF6666")+
-    ggtitle("Answerer Parameter Posteriors (1000 iterations)") +
+                 adjust = 2, alpha=.2, fill="#FF6666")+
+    ggtitle("Answerer Parameter Posteriors") +
     facet_grid(~parameter, scales = 'free') +
     theme_bw()
-answererParamPosteriors
-dev.off()
+ggsave("../../../writing/2016/journal-manuscript/figures/AnswererParamPosteriors.pdf", answererParamPosteriors, width = 6, height = 3)
 ```
 
 ### Predictives
 
+First, for answerer:
+
 ```{r}
-source("~/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/analysis/analysisHelpers.R")
-apredictive<-read.csv("guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_Predictives.csv", sep = ",", row.names = NULL) %>% filter(MCMCprob > 0.0001)
-
-apredictive.samples <- apredictive[rep(row.names(apredictive),
-                                       apredictive$MCMCprob*samples), 1:5] %>%
-  mutate(question = as.character(parameter),
-         answer = substr(as.character(value), 1, nchar(as.character(value)) - 1),
-         type = as.character(item1),
-         domain = as.character(item2)) %>%
-  do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
-  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-  mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
-  select(type, domain, utterance, response, prob)
-
-apredictive.pp <- apredictive.samples %>%
-  group_by(type, domain, utterance, response) %>%
-  summarize(MAP = estimate_mode(prob),
-            credHigh = HPDhi(prob),
-            credLow = HPDlo(prob)) %>%
-  right_join(d_a, by = c("response", "utterance", "domain", "type"))
+generateAnswererPredictiveFit <- function(name) {
+  inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
+  apredictive<-read.csv(inputname, sep = ",", row.names = NULL) %>%
+    filter(MCMCprob > 0.0001)
   
-acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
+  apredictive.samples <- apredictive[rep(row.names(apredictive),
+                                     apredictive$MCMCprob*1000), 1:5] %>%
+    mutate(question = as.character(parameter),
+           answer = substr(as.character(value), 1, 
+                           nchar(as.character(value)) - 1),
+           type = as.character(item1),
+           domain = as.character(item2)) %>%
+    do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
+    do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+    mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
+    select(type, domain, utterance, response, prob)
+  
+  apredictive.pp <- apredictive.samples %>%
+    group_by(type, domain, utterance, response) %>%
+    summarize(MAP = estimate_mode(prob),
+              credHigh = HPDhi(prob),
+              credLow = HPDlo(prob)) %>%
+    right_join(d_a, by = c("response", "utterance", "domain", "type"))
 
-pdf(file="../writing/2016/journal-manuscript/figures/AnswererPredictive.pdf",
-        width = 6, height = 3)
-answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
-  + theme(text = element_text(size = 20),
-          axis.text.x = element_text(angle=90, vjust=1))
-  + xlab("Model predicted probability")
-  + ylim(0,1)
-  + ylab("Empirical Probability")
-  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
-  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
-  + geom_point(aes(colour = domain, shape = type))
-  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-  + ggtitle("Answerer Posterior Predictive")
-  + geom_smooth(method = "lm")
-  + geom_text(aes(x=.75,y=.25,label=acor))
-  + theme_bw())
-answer_plots
-dev.off()
+  acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
+
+  answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
+    + theme(text = element_text(size = 20),
+            axis.text.x = element_text(angle=90, vjust=1))
+    + xlab("Model predicted probability")
+    + ylim(0,1)
+    + ylab("Empirical Probability")
+    #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
+    #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
+    + geom_point(aes(colour = domain, shape = type))
+    + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+    + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+    + ggtitle("Answerer Posterior Predictive")
+    + geom_smooth(method = "lm")
+    + annotate('text', label = paste0('r =',acor), x= 0.8, y = 0.1, size = 8)
+    + coord_fixed() 
+    + theme(rect = element_rect(fill = "transparent"), # bg of the panel
+            panel.background = element_rect(fill = "transparent",colour = NA),
+            plot.background = element_rect(fill = "transparent",colour = NA),
+            panel.grid.major = element_blank(), # get rid of major grid
+            panel.grid.minor = element_blank(), # get rid of minor grid
+            legend.background = element_rect(fill = "transparent",colour = NA),
+            legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
+  ))
+  outputfile <- paste0('../../../writing/2016/journal-manuscript/figures/',
+                       name, '.pdf')
+  ggsave(outputfile, answer_plots, 
+         width = 6, height = 6, bg = "transparent")
+}
+generateAnswererPredictiveFit('betaZeroAnswerer_Predictives')
+generateAnswererPredictiveFit('fullAnswerer_Predictives')
 ```
 
+next, generate predictives for questioner:
+
 ```{r}
-qpredictive<-read.csv("guessingGame/Bayesian/data/BayesianQuestionerAnalysis_loose_Predictives.csv", sep = ",", row.names = NULL) %>% filter(MCMCprob > 0.0001)
-qpredictive.samples <- qpredictive[rep(row.names(qpredictive), 
-                                       qpredictive$MCMCprob*samples), 1:5] %>%
-  mutate(goal = as.character(parameter), 
-         question = as.character(value),
-         type = as.character(item1),
-         domain = as.character(item2)) %>%
-  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
-  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-  mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
-  select(type, domain, goal, response, prob)
-
-qpredictive.pp <- qpredictive.samples %>%
-  group_by(type, domain, goal, response) %>%
-  summarize(MAP = estimate_mode(prob),
-            credHigh = HPDhi(prob),
-            credLow = HPDlo(prob)) %>%
-  right_join(d_q, by = c("goal","type","domain","response")) 
-
-qcor <- round(cor(qpredictive.pp$MAP, qpredictive.pp$empProb), 2)
-
-#pdf(file="../writing/2015/journal-manuscript/figures/QuestionerPredictive.pdf",
-        #width = 6, height = 3)
-question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
-  + theme(text = element_text(size = 20),
-          axis.text.x = element_text(angle=90, vjust=1))
-  + xlab("Model predicted probability")
-  + ylim(0,1)
-  + ylab("Empirical Probability")
-  + geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
-  + geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
-  + geom_point(aes(colour = domain, shape = type))
-  + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-  + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-  + ggtitle("Questioner Posterior Predictive")
-  + geom_smooth(method = "lm")
-  + geom_text(aes(x=.75,y=.25,label=paste("r=",qcor)))
-  + theme_bw())
-question_plots
-#dev.off()
+generateQuestionerPredictiveFit <- function(name) {
+  fullname = paste0('../../guessingGame/Bayesian/data/', name, '.csv')
+  qpredictive <- read.csv(fullname, sep = ",", row.names = NULL) %>%
+    filter(MCMCprob > 0.0001)
+  qpredictive.samples <- qpredictive[rep(row.names(qpredictive), 
+                                     qpredictive$MCMCprob*1000), 1:5] %>%
+    mutate(goal = as.character(parameter), 
+           question = as.character(value),
+           type = as.character(item1),
+           domain = as.character(item2)) %>%
+    do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+    do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+    mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
+    select(type, domain, goal, response, prob)
+  
+  qpredictive.pp <- qpredictive.samples %>%
+    group_by(type, domain, goal, response) %>%
+    summarize(MAP = estimate_mode(prob),
+              credHigh = HPDhi(prob),
+              credLow = HPDlo(prob)) %>%
+    right_join(d_q, by = c("goal","type","domain","response")) 
+  
+  qcor <- round(cor(qpredictive.pp$MAP, qpredictive.pp$empProb), 2)
+  
+  question_plots = (ggplot(qpredictive.pp, aes(x = MAP, y = empProb))
+    + theme(text = element_text(size = 20),
+            axis.text.x = element_text(angle=90, vjust=1))
+    + xlab("Model predicted probability")
+    + ylim(0,1)
+    + ylab("Empirical Probability")
+    #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
+    #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
+    + geom_point(aes(colour = domain, shape = type))
+    + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+    + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+    + ggtitle("Questioner Posterior Predictive")
+    + coord_fixed() 
+    + geom_smooth(method = "lm")
+    + annotate('text', label = paste0('r =',qcor), x= 0.8, y = 0.1, size = 8)
+    + theme(rect = element_rect(fill = "transparent"), # bg of the panel
+            panel.background = element_rect(fill = "transparent",colour = NA),
+            plot.background = element_rect(fill = "transparent",colour = NA),
+            panel.grid.major = element_blank(), # get rid of major grid
+            panel.grid.minor = element_blank(), # get rid of minor grid
+            legend.background = element_rect(fill = "transparent",colour = NA),
+            legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
+  )
+  outputName = paste0("../../../writing/2016/journal-manuscript/figures/",
+                      name, ".pdf")
+  ggsave(outputName, question_plots, 
+         width = 6, height = 6, bg = "transparent")
+}
+generateQuestionerPredictiveFit("betaZeroQuestioner_Predictives")
+generateQuestionerPredictiveFit("fullQuestioner_Predictives")
 ```
 
 Let's look at some specific cases, 
