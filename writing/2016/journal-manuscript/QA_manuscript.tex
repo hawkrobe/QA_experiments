@@ -329,7 +329,7 @@ On the other hand, when the question is prefaced with ``I only have \$5 to spend
 
 Note that the literal and explicit answerers do not take into account the questioner's underlying goals and therefore cannot reason about the way contextual factors may be informative about these goals. Hence, they do not make different predictions in the two contexts. The literal model predicts that the answerer is equally likely to say the true Boolean answer and the true numerical answer, and the explicit model predicts that the answerer will always give the true Boolean answer, since it is the explicit question being asked. This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. 
 
-%\subsection{Groenendijk and Stokhof (1984)}
+\subsection{Groenendijk and Stokhof (1984)}
 %\begin{figure*}[t!]
 %\begin{center}
 %\includegraphics[scale = 1]{groenendijckPlot.pdf}
@@ -634,26 +634,29 @@ The proportion of participants asking each possible question in this scenario, c
 
 \subsubsection{Model comparison}
 
-These results show that our non-pragmatic models cannot account for key qualitative phenomena while our pragmatic models make the correct predictions. Next, we show that our pragmatic models also provide better overall quantitative fits to the behavioral data. Before showing the results of our direct model comparison, we show how we capture the experimental task in our modeling framework. 
+These results show that our non-pragmatic models cannot account for key qualitative phenomena while our pragmatic models make the correct predictions. Next, we show that our pragmatic models also provide better overall quantitative fits to the behavioral data. Before showing the results of our direct model comparison, we formalize the experimental task in our modeling framework. 
 
-The goal projection for goal object $o$ is given by $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. 
+Corresponding to the structure of our experiment design, we take the set of possible worlds $\mathcal{W}$ on a given trial to be the set of possible permutations of the four objects to the four locations (yielding $4! = 24$ possibilities). Because we explicitly instructed questioners to be find the location of a particular object, we then take the space of goals $\mathcal{G}$ to be the set of goal projections $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. 
 
-The explicit meaning of the question ``Where's the $x$?'' maps a world $w$ to the location of the salient object of type $x$. This implements the standard formal semantics of \emph{the}: the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world. Pragmatically, the use of a definite article \emph{presupposes} the salience of some object in shared context \cite{Lewis79_Scorekeeping, Roberts03_UniquenessDefiniteNounPhrases}. Thus our explicit QUD is: 
-$$\textrm{\den{Where is the N?}} = q_{N}(w) = \textrm{loc}(s_N,w)$$ where $s_N$ is the salient object of category $N$. 
+To populate our question space $\mathcal{Q}$, we must specify the explicit meaning of the question ``Where is the $x$?'' for each of the four labels allowed in a given trial (see Fig. \ref{fig:hierarchyStructures}). As in our discussion of \citeA{GroenendijkStokhof84_SemanticsOfQuestions} above, we take \textrm{\den{Where is $o$?}} for a given object $o$ to be a projection from a world to the location of $o$ in that world. We then enrich this meaning to account for the use of the definite article \emph{the} for labels at higher levels of the taxonomy (e.g. asking ``Where is the dog?'' when there is more than one dog). Under the standard formal semantics of \emph{the}, the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, then, the use of a definite article \emph{presupposes} the uniqueness or salience of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. Thus our explicit meaning of each  is: 
+$$\textrm{\den{Where is the x?}} = q_{x}(w) = \textrm{loc}(s_x,w)$$ where $s_x$ is the \emph{salient} object of category $x$. 
 
-Because the answerer does not know \emph{a priori} which object is the salient one, they draw an object from a saliency distribution, given the category in the noun phrase $s_N \sim \mathcal{S}(o | N)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. For this section, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:hierarchyStructures}).%\footnote{Later, we will collect empirical saliency priors, and show how this affects the model's fit.} Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
+Because the answerer does not know \emph{a priori} which object is the salient one, they interpret the question by drawing an object from a saliency distribution, given the category in the noun phrase: $s_x \sim \mathcal{S}(o | x)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. For this section, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:hierarchyStructures}). Finally, the answer space $\mathcal{A}$ is the set of constructions ``The $o$ is behind gate $i$.'' which evaluate to true in worlds where $o$ is at location $i$ and false otherwise.  %\footnote{Later, we will collect empirical saliency priors, and show how this affects the model's fit.} Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
+
 
 To avoid overfitting and to reduce the number of free parameters that would result from separately fitting rationality parameters for each item, we pool together data from all hierarchy structures and domains and fit the single rationality parameter for each model to jointly optimize model-data correlations across all items in this pooled dataset. Each model was run with uniform prior probability over worlds, goals, questions, and answers, and with equal cost for all utterances. 
 
+\todo[inline]{BDA goes here}
+
 %
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale=1]{Exp2UnifPriorAnsFits}
-\includegraphics[scale=1]{Exp2UnifPriorQuestFits}
-\end{center}
-\caption{Full space of models, and their correlations with the data, broken down by item and type.}
-\label{fig:Exp2ModelSpace}
-\end{figure*}
+%\begin{figure*}[t!]
+%\begin{center}
+%\includegraphics[scale=1]{Exp2UnifPriorAnsFits}
+%\includegraphics[scale=1]{Exp2UnifPriorQuestFits}
+%\end{center}
+%\caption{Full space of models, and their correlations with the data, broken down by item and type.}
+%\label{fig:Exp2ModelSpace}
+%\end{figure*}
 %
 
 %
@@ -662,10 +665,10 @@ To avoid overfitting and to reduce the number of free parameters that would resu
 
 %\todo[inline]{TODO: replace these correlations with a BDA \& predictives plot}
 
-These model-data fits are displayed in Figure \ref{fig:Exp2ModelSpace}. We can immediately rule out the literal answerer and literal questioner, which predict a uniform distribution of responses within each condition. We also find that the pragmatic answerer model ($\alpha = 9.6$) fits the data significantly better than the explicit answerer model ($\alpha = 1.1$), with $r = 0.88$ compared with $r = 0.65$ (Zou's 95\% confidence interval $= [0.16, 0.32]$).  Turning to the questioner predictions, we again find that both explicit ($\alpha = 9.9$) and pragmatic ($\alpha = 6.2$) models provide excellent but essentially indistinguishable fits, with $r = 0.953$ compared with $0.956$ (Zou's 95\% confidence interval $= [-0.02, 0.01]$). 
+%These model-data fits are displayed in Figure \ref{fig:Exp2ModelSpace}. We can immediately rule out the literal answerer and literal questioner, which predict a uniform distribution of responses within each condition. We also find that the pragmatic answerer model ($\alpha = 9.6$) fits the data significantly better than the explicit answerer model ($\alpha = 1.1$), with $r = 0.88$ compared with $r = 0.65$ (Zou's 95\% confidence interval $= [0.16, 0.32]$).  Turning to the questioner predictions, we again find that both explicit ($\alpha = 9.9$) and pragmatic ($\alpha = 6.2$) models provide excellent but essentially indistinguishable fits, with $r = 0.953$ compared with $0.956$ (Zou's 95\% confidence interval $= [-0.02, 0.01]$). 
 
 %We also see that it makes a relatively good quantitative prediction, with the predicted probability lying within the 95\% confidence interval of the empirical estimate for both the ``Q2'' and ``Q3'' responses. 
-Recall that a single free parameter $\alpha$ for each model was fit to maximize correlations for the entire (pooled) dataset. 
+%Recall that a single free parameter $\alpha$ for each model was fit to maximize correlations for the entire (pooled) dataset. 
 
 \subsubsection{Discussion}
 
