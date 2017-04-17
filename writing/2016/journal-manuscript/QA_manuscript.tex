@@ -575,25 +575,6 @@ The procedure was designed to accommodate real-time player-to-player interaction
 
 The questioner and answerer interfaces are displayed in Figure \ref{fig:expviews}. Chat messages were printed on the left side of the screen, and players used the right side as a workspace to view goals, ask questions, and respond with answers. At the beginning of each trial, the wheel on the questioner's screen (Figure \ref{fig:expviews}, top) would spin and select one of the four goals at random. The questioner then clicked and dragged one and only one of the question labels into the pre-set frame ``Where is the\dots?'' to ask a question. The answerer saw these words being dragged in real time. Once the questioner clicked the `send' button, the resulting question appeared in the chat log and control was passed to the answerer, who dragged the objected they wanted to reveal into a ``reveal box.'' The questioner watched as the outline of the gate moved, in real time, and saw the image as soon as the answerer dropped it in the box. Finally, the questioner was asked to click on the gate they believed the goal object was behind. Each participant provided one response for each of the twelve items, presented in random order. 
 
-\begin{table*}[t!]
-\centering
-\begin{tabular}{ p{1.5cm} | r | r | r | r |||||| r | r | r | r |}
-& \multicolumn{4}{c||||||}{Questioners} & \multicolumn{4}{c}{Answerers} \\
-&             animal &     place &     plant &  artifact &            animal &     place &     plant &  artifact \\
-\hline
-animal &   1.00 &  0.91 & 0.94 & 0.94 & 1.00 & 0.78 & 0.92 &  0.97 \\
-\hline
-place &    0.91 &  1.00 & 0.96 & 0.95 & 0.78 & 1.00 &  0.78 & 0.78 \\
-\hline
-plant &    0.94 & 0.96 & 1.00 & 0.97 & 0.92  & 0.78 &  1.00 & 0.91\\
-\hline
-artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
-\end{tabular}
-\\[1.5pt]
-\caption{Inter-domain correlations on corresponding response rates} 
-\label{table:experiment4correlations}
-\end{table*}
-
 \subsubsection{Qualitative Behavioral Results}
 
 Before conducting quantitative model comparisons, we highlight several key qualitative patterns in the behavioral data that bear on our theory. First, we note that there was generally high correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities across domains for both questioners and answerers, with the exception of the `place' domain in answerers ($r = 0.78$; see Table \ref{table:experiment4correlations}). We thus collapse across domains in the following qualitative analyses, using labels from the ``animal'' domain for concreteness.
@@ -638,14 +619,16 @@ These results show that our non-pragmatic models cannot account for key qualitat
 
 Corresponding to the structure of our experiment design, we take the set of possible worlds $\mathcal{W}$ on a given trial to be the set of possible permutations of the four objects to the four locations (yielding $4! = 24$ possibilities). Because we explicitly instructed questioners to be find the location of a particular object, we then take the space of goals $\mathcal{G}$ to be the set of goal projections $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. 
 
-To populate our question space $\mathcal{Q}$, we must specify the explicit meaning of the question ``Where is the $x$?'' for each of the four labels allowed in a given trial (see Fig. \ref{fig:hierarchyStructures}). As in our discussion of \citeA{GroenendijkStokhof84_SemanticsOfQuestions} above, we take \textrm{\den{Where is $o$?}} for a given object $o$ to be a projection from a world to the location of $o$ in that world. We then enrich this meaning to account for the use of the definite article \emph{the} for labels at higher levels of the taxonomy (e.g. asking ``Where is the dog?'' when there is more than one dog). Under the standard formal semantics of \emph{the}, the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, then, the use of a definite article \emph{presupposes} the uniqueness or salience of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. Thus our explicit meaning of each  is: 
+To populate our question space $\mathcal{Q}$, we must specify the explicit meaning of the question ``Where is the $x$?'' for each of the four labels allowed in a given trial (see Fig. \ref{fig:hierarchyStructures}). As in our discussion of \citeA{GroenendijkStokhof84_SemanticsOfQuestions} above, we take \textrm{\den{Where is $o$?}} for a given object $o$ to be a projection from a world to the location of $o$ in that world. We then enrich this meaning to account for the use of the definite article \emph{the} for labels at higher levels of the taxonomy (e.g. asking ``Where is the dog?'' when there is more than one dog). Under the standard formal semantics of \emph{the}, the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, then, the use of a definite article \emph{presupposes} the uniqueness or salience of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. Thus our explicit meaning of each question $q$ is: 
 $$\textrm{\den{Where is the x?}} = q_{x}(w) = \textrm{loc}(s_x,w)$$ where $s_x$ is the \emph{salient} object of category $x$. 
 
 Because the answerer does not know \emph{a priori} which object is the salient one, they interpret the question by drawing an object from a saliency distribution, given the category in the noun phrase: $s_x \sim \mathcal{S}(o | x)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. For this section, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:hierarchyStructures}). Finally, the answer space $\mathcal{A}$ is the set of constructions ``The $o$ is behind gate $i$.'' which evaluate to true in worlds where $o$ is at location $i$ and false otherwise.  %\footnote{Later, we will collect empirical saliency priors, and show how this affects the model's fit.} Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
 
-For a rigorous model comparison among explicit and pragmatic models, we included a binary parameter $\gamma \in \{\textrm{explicit}, \textrm{pragmatic}\}$ determining which model to . The posterior over this parameter can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}.
+For a rigorous model comparison among explicit and pragmatic models, we conducted a Bayesian data analysis \cite{LeeWagenmakers14_BDA}. For our data analysis, we introduce a binary parameter $\gamma \in \{\textrm{explicit}, \textrm{pragmatic}\}$  determining which model's likelihood function to use, and jointly infer this parameter along with a rationality parameter $\alpha$ for each model by conditioning on our empirical data. After integrating over values of $\alpha$, the posterior $P(\gamma | \textrm{data})$ can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}, from which a Bayes Factor can be computed:
 
-We infer this parameter, along with the rationality parameter $\alpha$, separately for the questioner and answerer by conditioning on our observed data. We assume $$\gamma \sim Bernoulli(.5)$$ $$\alpha \sim Unif(0,20)$$ and use enumeration over discrete bins to estimate the most likely parameter values (see Figure \ref{fig:BayesianParamPosteriors}). We also show the fit of the posterior predictives of this analysis in Figure \ref{fig:posteriorPredictives}.
+$$BF = \frac{P(\textrm{data}\, |\, \gamma = \textrm{pragmatic})}{P(\textrm{data}\, |\, \gamma = \textrm{explicit})}$$
+
+We place uninformative priors over these parameters $$\gamma \sim Bernoulli(.5)$$ $$\alpha \sim Unif(0,20)$$ and perform inference using enumeration over discrete bins. This gives us a 
 
  Each model was run with uniform prior probability over worlds, goals, questions, and answers, and with equal cost for all utterances. 
 
@@ -800,5 +783,25 @@ By formalizing the computational process by which answerers infer these differen
 \bibliography{qa}
 \bibliographystyle{apacite}
 
+%\section{Supplemental}
+
+\begin{table*}[t!]
+\centering
+\begin{tabular}{ p{1.5cm} | r | r | r | r |||||| r | r | r | r |}
+& \multicolumn{4}{c||||||}{Questioners} & \multicolumn{4}{c}{Answerers} \\
+&             animal &     place &     plant &  artifact &            animal &     place &     plant &  artifact \\
+\hline
+animal &   1.00 &  0.91 & 0.94 & 0.94 & 1.00 & 0.78 & 0.92 &  0.97 \\
+\hline
+place &    0.91 &  1.00 & 0.96 & 0.95 & 0.78 & 1.00 &  0.78 & 0.78 \\
+\hline
+plant &    0.94 & 0.96 & 1.00 & 0.97 & 0.92  & 0.78 &  1.00 & 0.91\\
+\hline
+artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
+\end{tabular}
+\\[1.5pt]
+\caption{Supplemental: Inter-domain correlations on corresponding response rates} 
+\label{table:experiment4correlations}
+\end{table*}
 
 \end{document}  
