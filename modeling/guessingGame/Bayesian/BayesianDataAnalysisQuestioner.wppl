@@ -11,7 +11,7 @@ var modelAnalysis = function() {
   // Sample params
   var rawAlpha = uniformDraw(_.range(4, 15.01, .1)),
       alpha = Number.parseFloat(rawAlpha.toFixed(2));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.05)),
+  var rawBeta = 0,//uniformDraw(_.range(0, 1.01, 0.05)),
       beta = Number.parseFloat(rawBeta.toFixed(2));
   var expPragFlip = flip();
 
@@ -20,16 +20,16 @@ var modelAnalysis = function() {
   // Run model and condition on data
   var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
-    var runTFBTQuestioner = model.runTFBTQuestioner;
+    var runTFBTQuestioner = model.runTFBTQuestioner;    
     return sum(map(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
       var questionerERP = runTFBTQuestioner(qud, expPragFlip);
       // Save predictives
       foreach(questionerERP.support(),function(s){
-	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
-	var key = [qud, item[0], item[1], strippedQuestion].join(",");
-	var newPair = _.object([key], [Math.exp(questionerERP.score(s))]);
-	globalStore.predictives = _.extend(globalStore.predictives, newPair);
+      	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
+      	var key = [qud, item[0], item[1], strippedQuestion, alpha, beta, expPragFlip].join(",");
+      	var newPair = _.zipObject([key], [Math.exp(questionerERP.score(s))]);
+      	globalStore.predictives = extend(globalStore.predictives, newPair);
       });
       return sum(map(function(dataRow) {
        	return questionerERP.score("whereIs" + qa.capitalize(dataRow[3]) + "?");
@@ -48,6 +48,6 @@ var modelAnalysis = function() {
 var outputERP = Infer({method: 'enumerate'}, modelAnalysis);
 
 console.log('inference complete... printing');
-
-qa.bayesianErpWriter(outputERP, "data/BayesianQuestionerAnalysis_loose_");
+console.log(outputERP);
+qa.bayesianErpWriter(outputERP, "data/firstBDA.csv");
 

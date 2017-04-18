@@ -41,7 +41,8 @@ var writeERP = function(erp, labels, filename, fixed) {
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
   fs.writeSync(predictiveFile, ["parameter", "item1", 
-				"item2", "value", "prob", "MCMCprob"] + '\n');
+				"item2", "value", "alpha", "beta", "expPragFlip", 
+				"prob", "MCMCprob"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
   fs.writeSync(paramFile, ["parameter", "value", "MCMCprob"] + '\n');

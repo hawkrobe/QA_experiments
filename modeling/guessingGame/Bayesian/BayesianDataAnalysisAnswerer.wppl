@@ -15,12 +15,14 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var rawAlpha = uniformDraw(_.range(5, 10.01, 0.1)),
+  var rawAlpha = uniformDraw(_.range(0, 20.01, 0.1)),
       alpha = Number.parseFloat(rawAlpha.toFixed(3));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.025)),
+  var rawBeta = 0,// uniformDraw(_.range(0, 1.01, 0.025)),
       beta = Number.parseFloat(rawBeta.toFixed(3));
-  var expPragFlip = sample(Bernoulli({p: .5}))
+  var expPragFlip = sample(Bernoulli({p: .5}));
+
   globalStore.predictives = {};
+
   // Run model and condition on data
   var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
@@ -31,9 +33,10 @@ var modelAnalysis = function() {
       var answererERP = runAnswererModel(question, expPragFlip);
       // Store predictions
       foreach(answererERP.support(),function(s){
-	var key = [questionToLabel(question), item[0], item[1], s].join(",");
-	var newPair = _.object([key], [Math.exp(answererERP.score(s))]);
-        globalStore.predictives = _.extend(globalStore.predictives, newPair);
+	var key = [questionToLabel(question), item[0], item[1], s, 
+	    	   alpha, beta, expPragFlip].join(",");
+	var newPair = _.zipObject([key], [Math.exp(answererERP.score(s))]);
+        globalStore.predictives = extend(globalStore.predictives, newPair);
       });
 
       return sum(map(function(dataRow) {
@@ -55,4 +58,4 @@ var outputERP = Infer({method: 'enumerate'}, modelAnalysis);
 
 // console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP, "data/BayesianAnswererAnalysis_loose_");
+qa.bayesianErpWriter(outputERP, "data/betaZero_answerer");
