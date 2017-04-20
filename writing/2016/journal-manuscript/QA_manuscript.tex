@@ -151,7 +151,7 @@ The account of questioner and answerer behavior we propose in this section is an
 \begin{center}
 \includegraphics[scale = .5]{models.pdf}
 \end{center}
-\caption{Schematic of the questioner and answerer models we consider, showing their recursive relationships. Note that there are two possible ``base cases'' where the recursion can terminate: in a \emph{literal} answerer that ignores the question and simply attempts to be informative with respect to the world, and in an \emph{explicit} answerer that uses the semantics of the questions.}
+\caption{Schematic of the questioner and answerer models we consider, showing their recursive relationships. Note that there are two possible ``base cases'' where the recursion can terminate: in a \emph{literal} answerer that ignores the question and simply attempts to be informative with respect to the world, and in an \emph{explicit} answerer that uses the semantics of the questions. \ndg{put $P_I$ in this fig?}}
 \label{fig:models}
 \end{figure*}
 
@@ -172,6 +172,17 @@ The latter model uses an extension of RSA to reason about the topic of conversat
 
 \label{sec:model}
 
+\ndg{i suggest reorganizing as follows:
+-set up notation W,G,Q,A and describe what kind of thing they are.
+-describe the simple informative "answerer" which is RSA S1 for declarative statements with no QUD. Utility is to provide any information.
+-describe a relevantly informative answerer which takes the question to define QUD fn (equivalent to RSA S1 with QUD). Utility is to provide relevant information. (Define in terms of the relation $K(w,w')=\delta{g(w)=g(w')}$? this works for answerer, but not necessarily for IG...)
+-describe $Q_0$ and $Q_1$, introducing the idea that question utility is expected information gained from answerer.
+-describe "pragmatic" answerer who reasons about questioner's goal. note that this can be presented as interpretation of the question to yield a goal posterior, followed by $A_1$. ie it's still a relevantly informative answer, just with respect to uncertainty about true goal of questioner.
+-finally the pragmatic answerer.}
+
+\ndg{i wonder if we should preface this all with a brief discussion of how an interlocutor in a dialog has to both listen (interpret statements and questions) and speak (produce questions or statements). in our setting the "questioner" starts and therefore doesn't have to listen. the "answerer" first listen's to a question, and then produces a statement. hence the answerer will decompose into a listener part and a speaker part.}
+
+
 \subsection{Preliminaries}
 
 To model a particular question-answer dialogue, we must specify four sets. For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as an example throughout: 
@@ -190,12 +201,14 @@ $$g_{>}(w) = \left\{\begin{array}{rcl}
 0 & & \textrm{otherwise}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other words are mapped onto a different state.
-QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion.
+QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion. \ndg{this comment about relevance seems out of place.}
 
-We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution. Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. Instead, 
-$$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ is a distribution over the image of $g$.
+We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution. Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. 
+\ndg{this comment doesn't make sense... $P(g(w))$ isn't well defined.}
+Instead, 
+$$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ is a distribution over the image of $g$. \ndg{hmm.. if W is continuous, i'm not sure that this defines the right distribution. might need the derivative of g?}
 
-We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD: a projection from a world state to a feature (or features) of interest. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one set and all other worlds to a different set. An answer is a map from world states to booleans, which eliminates possible worlds. So the answer \$8 would be true in the world where $w = \$8$ and false otherwise\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}.
+We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD: a projection from a world state to a feature (or features) of interest. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one set and all other worlds to a different set \ndg{why set? just value?}. An answer is a map from world states to booleans. So the answer \$8 would be true in the world where $w = \$8$ and false otherwise\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}.
 
 These semantics enter our model primarily through an \textbf{interpreter} function, which all agents use to compute the literal interpretation of an answer. The interpreter constrains the prior on worlds to the subset of its support that is consistent with the given answer:%
 %%%
@@ -248,6 +261,7 @@ All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \i
 The \textbf{literal answerer} simply chooses answers by trading off prior answer probability (interpreted here as cost) and how well that answer conveys the true state of the world to an interpreter:
 %
 $$P_{A_0}(a | q,w^*) \propto e^{P_I(w^* | \,a) - C(a)} $$
+\ndg{isn't there a $\ln$?}
 %
 For a fixed question, this is equivalent to the speaker in previous RSA models. They seek to be maximally informative about the state of the world, but do not adjust their response for different question utterances or contexts. For example, a literal liquor store answerer would only distinguish between ``It costs more than \$5'' and ``It costs \$8'' if they were associated with different costs, since both are equally true. This model is of interest primarily as a null model that is nonetheless more realistic than a random speaker. 
 %
@@ -284,6 +298,7 @@ Reasoning backwards from questions to goals is a simple Bayesian inversion of th
 $$
 P(g|q) \propto P_{Q_1}(q|g)P(g)
 $$
+\ndg{i think only one Q has been introduced?}
 We use the explicit ($i=1$) questioner model here for simplicity, but we could make $i$th order answerers that depend on the $(i-1)$th order questioner model, with arbitrarily high $i$. For the purposes of this paper, we will only examine the simplest $(i=2)$ pragmatic answerer, and the questioner that reasons about it -- as in previous studies using RSA models \cite<e.g.>{LassiterGoodman15_AdjectivalVagueness}, there are no qualitative differences in the predictions of higher-order models.
 
 For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $. Furthermore, we have set the answer prior in all answerer models such that outright false responses are excluded. The answerer models naturally assign very low, but non-zero probability to these options (because they are minimally informative). However, we set them to zero probability for the sake of simplicity in reporting and visualizing predictions.
@@ -292,7 +307,11 @@ For all of the questioner and answerer models, we can vary how strongly optimizi
 This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}, and runnable code for all reported simulations is available online at \url{http://hawkrobe.github.io/Q\_and\_A/}. The model predictions shown throughout the rest of the paper are computed using this implementation. 
 
 % Trying to frame the case studies section ("also, need to give more framing about what we're doing in this section and why. it's all about exploring the sensitivity of the answerer to plausible goals of the questioner, right?")
-We now proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. Because of the limited literature using questioner behavior as a dependent variable, all four examples explore the sensitivity of the answerer to plausible goals of the questioner. Because we are applying our model to explain previously collected data, sometimes by simply making assumptions about prior distributions or goal spaces, these examples do not yet serve as a strong test of our model's predictions. Still, we see two primary benefits to re-formulating explanations from the original studies within our modeling framework: (1) the case studies are instructive as examples of how different components of the model interact to generate results and (2) by placing all four studies in a common framework, we more clearly see their commonalities and differences. 
+We now proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. There has been little use of questioner behavior as a dependent variable in previous literature, hence all four examples explore the sensitivity of the answerer to plausible goals of the questioner. 
+These examples do not serve as a strong test of our model's predictions, because we will have to make post-hoc assumptions about prior distributions or goal spaces in each study.
+Yet it is important to show that our framework can accommodate these results.
+We see two additional benefits to re-formulating explanations from the original studies within our modeling framework: (1) the case studies are instructive as examples of how different components of the model interact to generate results and (2) by placing all four studies in a common framework, we more clearly see their commonalities and differences. 
+
 
 \section{Four case studies}
 
