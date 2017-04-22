@@ -151,7 +151,7 @@ The account of questioner and answerer behavior we propose in this section is an
 \begin{center}
 \includegraphics[scale = .5]{models.pdf}
 \end{center}
-\caption{Schematic of the questioner and answerer models we consider, showing their recursive relationships. Note that there are two possible ``base cases'' where the recursion can terminate: in a \emph{literal} answerer that ignores the question and simply attempts to be informative with respect to the world, and in an \emph{explicit} answerer that uses the semantics of the questions.}
+\caption{Schematic of the questioner and answerer models we consider, showing their recursive relationships. Note that there are two possible ``base cases'' where the recursion can terminate: in a \emph{literal} answerer that ignores the question and simply attempts to be informative with respect to the world, and in an \emph{explicit} answerer that uses the semantics of the questions. \ndg{put $P_I$ in this fig?}}
 \label{fig:models}
 \end{figure*}
 
@@ -172,6 +172,17 @@ The latter model uses an extension of RSA to reason about the topic of conversat
 
 \label{sec:model}
 
+\ndg{i suggest reorganizing as follows:
+-set up notation W,G,Q,A and describe what kind of thing they are.
+-describe the simple informative "answerer" which is RSA S1 for declarative statements with no QUD. Utility is to provide any information.
+-describe a relevantly informative answerer which takes the question to define QUD fn (equivalent to RSA S1 with QUD). Utility is to provide relevant information. (Define in terms of the relation $K(w,w')=\delta{g(w)=g(w')}$? this works for answerer, but not necessarily for IG...)
+-describe $Q_0$ and $Q_1$, introducing the idea that question utility is expected information gained from answerer.
+-describe "pragmatic" answerer who reasons about questioner's goal. note that this can be presented as interpretation of the question to yield a goal posterior, followed by $A_1$. ie it's still a relevantly informative answer, just with respect to uncertainty about true goal of questioner.
+-finally the pragmatic answerer.}
+
+\ndg{i wonder if we should preface this all with a brief discussion of how an interlocutor in a dialog has to both listen (interpret statements and questions) and speak (produce questions or statements). in our setting the "questioner" starts and therefore doesn't have to listen. the "answerer" first listen's to a question, and then produces a statement. hence the answerer will decompose into a listener part and a speaker part.}
+
+
 \subsection{Preliminaries}
 
 To model a particular question-answer dialogue, we must specify four sets. For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as an example throughout: 
@@ -191,12 +202,14 @@ $$g_{>}(w) = \left\{\begin{array}{rcl}
 0 & & \textrm{otherwise}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other words are mapped onto a different state.
-QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion.
+QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion. \ndg{this comment about relevance seems out of place.}
 
-We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution. Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. Instead, 
-$$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ is a distribution over the image of $g$.
+We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution. Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. 
+\ndg{this comment doesn't make sense... $P(g(w))$ isn't well defined.}
+Instead, 
+$$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ is a distribution over the image of $g$. \ndg{hmm.. if W is continuous, i'm not sure that this defines the right distribution. might need the derivative of g?}
 
-We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD: a projection from a world state to a feature (or features) of interest. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one set and all other worlds to a different set. An answer is a map from world states to booleans, which eliminates possible worlds. So the answer \$8 would be true in the world where $w = \$8$ and false otherwise\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}.
+We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD: a projection from a world state to a feature (or features) of interest. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one set and all other worlds to a different set \ndg{why set? just value?}. An answer is a map from world states to booleans. So the answer \$8 would be true in the world where $w = \$8$ and false otherwise\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}.
 
 These semantics enter our model primarily through an \textbf{interpreter} function, which all agents use to compute the literal interpretation of an answer. The interpreter constrains the prior on worlds to the subset of its support that is consistent with the given answer:%
 %%%
@@ -239,6 +252,10 @@ It trades off the cost of asking a question, $C(q)$, and the expected informatio
 $$IG(q,g,w^*) = \KL{\widehat{P^g}(w|q, w^*)}{\widehat{P^g}(w)}$$
 where the posterior distribution is given by
 $$P(w|q, w^*) = \sum_{a \in \mathcal{A}} P_I(w | a) P_{A}(a| q, w^*)$$
+\ndg{should we actually marginalize world inside? eg $p(w|q) = \sum_{a \in \mathcal{A}} P_I(w | a) P_{A}(a | q) =  \sum_{a \in \mathcal{A}} P_I(w | a) \sum_{w^*} P_{A}(a | q, w^*)P(w^*)$
+in fact, maybe the formulation should be expectation over answers of the information gained from that answer?
+$\E{P(a|q)}{ \KL{P(w|a)}{P(w)} } = \E{\sum_{w^*} P_{A}(a | q, w^*)P(w^*)}{ \KL{P(w|a)}{P(w)} } $ 
+}
 %
 %This conditional distribution reflects the fact that the answerer (who knows the true world state $w$) may behave noisily, have a limited set of possible answers, or other limitations.
 %to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. 
@@ -254,6 +271,7 @@ All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \i
 The \textbf{literal answerer} simply chooses answers by trading off prior answer probability (interpreted here as cost) and how well that answer conveys the true state of the world to an interpreter:
 %
 $$P_{A_0}(a | q,w^*) \propto e^{P_I(w^* | \,a) - C(a)} $$
+\ndg{isn't there a $\ln$?}
 %
 
 \todo[inline]{this is wrong (should prefer \emph{it costs 8})}
@@ -292,6 +310,7 @@ Reasoning backwards from questions to goals is a simple Bayesian inversion of th
 $$
 P(g|q) \propto P_{Q_1}(q|g)P(g)
 $$
+\ndg{i think only one Q has been introduced?}
 We use the explicit ($i=1$) questioner model here for simplicity, but we could make $i$th order answerers that depend on the $(i-1)$th order questioner model, with arbitrarily high $i$. For the purposes of this paper, we will only examine the simplest $(i=2)$ pragmatic answerer, and the questioner that reasons about it -- as in previous studies using RSA models \cite<e.g.>{LassiterGoodman15_AdjectivalVagueness}, there are no qualitative differences in the predictions of higher-order models.
 
 For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $. Furthermore, we have set the answer prior in all answerer models such that outright false responses are excluded. The answerer models naturally assign very low, but non-zero probability to these options (because they are minimally informative). However, we set them to zero probability for the sake of simplicity in reporting and visualizing predictions.
@@ -300,9 +319,15 @@ For all of the questioner and answerer models, we can vary how strongly optimizi
 This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them. We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}, and runnable code for all reported simulations is available online at \url{http://hawkrobe.github.io/Q\_and\_A/}. The model predictions shown throughout the rest of the paper are computed using this implementation. 
 
 % Trying to frame the case studies section ("also, need to give more framing about what we're doing in this section and why. it's all about exploring the sensitivity of the answerer to plausible goals of the questioner, right?")
-We now proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. Because of the limited literature using questioner behavior as a dependent variable, all four examples explore the sensitivity of the answerer to plausible goals of the questioner. Because we are applying our model to explain previously collected data, sometimes by simply making assumptions about prior distributions or goal spaces, these examples do not yet serve as a strong test of our model's predictions. Still, we see two primary benefits to re-formulating explanations from the original studies within our modeling framework: (1) the case studies are instructive as examples of how different components of the model interact to generate results and (2) by placing all four studies in a common framework, we more clearly see their commonalities and differences. 
+We now proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. There has been little use of questioner behavior as a dependent variable in previous literature, hence all four examples explore the sensitivity of the answerer to plausible goals of the questioner. 
+These examples do not serve as a strong test of our model's predictions, because we will have to make post-hoc assumptions about prior distributions or goal spaces in each study.
+Yet it is important to show that our framework can accommodate these results.
+We see two additional benefits to re-formulating explanations from the original studies within our modeling framework: (1) the case studies are instructive as examples of how different components of the model interact to generate results and (2) by placing all four studies in a common framework, we more clearly see their commonalities and differences. 
+
 
 \section{Four case studies}
+
+\ndg{i feel like this section gets pretty quickly lost in the weeds.... maybe we can reorganize it around the effects or model components explored? and move some of the details and conceptually redundant pieces to appendices?}
 
 \begin{table*}[t]
 \centering
@@ -327,7 +352,9 @@ First, we show how our model can provide different---sometimes over- or under-in
 
 Again, our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \$2, \dots, \$10\}$. We consider two possible goals $g \in \mathcal{G}$: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than \$5, the amount the agent has in their pocket). The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \$2, \dots, \$10\}$ as well as ``yes'' and ``no.'' The answer prior assigns equal probability to picking the category of ``yes/no'' answers and of ``price'' answers, then uniformly draws from the possible responses within each category. Thus, $$P(\textrm{``yes''}) = P(\textrm{``no''}) = 0.25$$ and $$P(\textrm{``\$1''}) = \cdots = P(\textrm{``\$10''}) = 0.05$$
 
-Because the question was fixed in the experiment, the question space $\mathcal{Q}$ simply consists of the single question $q = $``Does a fifth of Jim Beam cost more than \$5?''\footnote{Note that because there are no alternatives for the ``pragmatic answerer'' to consider, they are not strictly engaging in Gricean reasoning; obvious alternatives like ``How much does Jim Beam cost?'' do not significantly change the model behavior in this case, but we omit them to isolate the effect of the QUD prior in this example.}  We model the context sentence as affecting the questioner's goal prior $P(g)$. When the context is ``I'd like to buy some whiskey,'' we assume that the the two goals are equally likely: $P(g_= | c) = P(g_> | c)$. When it is ``I only have \$5 to spend,'' we assume that it is more strongly in favor the agent learning whether or not they can afford it: $P(g_> | c)~=~.99$. We set the rationality parameter $\alpha = 1$.
+Because the question was fixed in the experiment, the question space $\mathcal{Q}$ simply consists of the single question $q = $``Does a fifth of Jim Beam cost more than \$5?''\footnote{Note that because there are no alternatives for the ``pragmatic answerer'' to consider, they are not strictly engaging in Gricean reasoning; obvious alternatives like ``How much does Jim Beam cost?'' do not significantly change the model behavior in this case, but we omit them to isolate the effect of the QUD prior in this example.}  We model the context sentence as affecting the questioner's \ndg{answerer's?} goal prior $P(g)$. When the context is ``I'd like to buy some whiskey,'' we assume that the the two goals are equally likely: $P(g_= | c) = P(g_> | c)$. When it is ``I only have \$5 to spend,'' we assume that it is more strongly in favor the agent learning whether or not they can afford it: $P(g_> | c)~=~.99$. We set the rationality parameter $\alpha = 1$.
+
+\ndg{note that in terms of the more general discourse modeling framing, the context sentence is a statement which the answerer must interpret first. we assume that it shifts beliefs about likely goals, presumably by shifting beliefs about how much money the other person has to spend...}
 
 \subsubsection{Results} 
 
@@ -349,11 +376,13 @@ Note that the literal and explicit answerers do not take into account the questi
 %\label{fig:cafeExperimentResults}
 %\end{figure*}
 
+\ndg{hmm. maybe we should move this example to an appendix, since it doesn't add any conceptual point beyond the clark example (and is complex)?}
+
 For a slightly more complex example, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an exhaustive list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a mention of a single location would be sufficient. Many recent theoretical explanations in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}. While there are no experimental results on \emph{mention-some} and \emph{mention-all} readings with which we can compare our model's output, we include the phenomenon as a case study for its value in demonstrating how our model formalizes the standard explanation. 
 
 We focus on a question like ``Where do they sell Italian newspapers in Amsterdam?'' that can intuitively be ambiguous between these meanings depending on who is asking: if it is a tourist, they probably just want to know the nearest place, but if it is a businessperson trying to build a newspaper distribution network, they likely want the whole list \cite<see>{GroenendijkStokhof84_SemanticsOfQuestions}. The puzzle is  one of disambiguation\footnote{Our modeling framework is compatible with another account where the `mention-some' reading is derived from the exhaustive reading via implicature \cite<e.g.>[Chapter 6]{George11_Dissertation}, but this debate lies outside the scope of this paper}: how can the same question take on different meaning in different contexts? According to our account, this happens via an inference about the questioner's underlying goal. This explanation relies on the same mechanism as the previous section, but shows how the model can operate over more complex world states and arbitrarily large spaces of possible answers.
 
-Our world space $\mathcal{W}$ consists of all possible assignments of properties to a set of four cafes in town. Each cafe has two properties: its distance from the speaker and whether or not it sells Italian newspapers. There are two possible goals (or QUDs) $g \in \mathcal{G}$: $g_{n}$, learning the identity of the \emph{lowest-cost} cafe selling a newspaper, and $g_{a}$, learning the identity of \emph{all} cafes selling a newspaper. Both of these are represented by projections on world states, mapping a list of cafes to the single cafe selling newspapers with the lowest distance -- assuming that additional distance incurs additional cost -- or to the sublist that sell newspapers, respectively. The space of answers $\mathcal{A}$ is the infinite set containing all conjunctions of locations. Again, our question space $\mathcal{Q}$ consists of a single question: ``Where can one buy an Italian newspaper?''
+Our world space $\mathcal{W}$ consists of all possible assignments of properties to a set of four cafes in town. Each cafe has two properties: its distance from the speaker and whether or not it sells Italian newspapers. There are two possible goals (or QUDs) $g \in \mathcal{G}$: $g_{n}$, learning the identity of the \emph{lowest-cost} cafe selling a newspaper, and $g_{a}$, learning the identity of \emph{all} cafes selling a newspaper. Both of these are represented by projections on world states, mapping a list of cafes to the single cafe selling newspapers with the lowest distance -- assuming that additional distance incurs additional cost -- or to the sublist that sell newspapers, respectively. \ndg{why talk about cost, rather than just saying closest?} The space of answers $\mathcal{A}$ is the infinite set containing all conjunctions of locations. \ndg{is that infinite? up to redundancy it's large but finite?} Again, our question space $\mathcal{Q}$ consists of a single question: ``Where can one buy an Italian newspaper?'' \ndg{what literal meaning do we assign to this question?}
 
 For the prior $P(a)$ over answer utterances, we use a geometric distribution, which is common over spaces where probabilities should naturally scale with some count. Let $\ell(a)$ be the number of locations named in the answer (e.g. $\ell(\textrm{`none'})~=~0, \ell(\textrm{`cafe 1'})~=~1$, etc). Then the probability of an answer $a$ is given by:
 
@@ -364,7 +393,10 @@ This simple distribution has two advantageous properties:
 \item the probability mass assigned to a given utterance length -- operationalized as number of conjunctions -- by the geometric distribution is spread evenly across different answers of that length.
 \item we naturally assign longer answers successively lower probability, reflecting their higher cost of utterance. \end{enumerate}
 
-We model the non-verbal context as affecting the questioner's goal prior $P(g)$: if they are a tourist on the street then there's a high chance that they are interested in buying a single newspaper, incurring the lowest cost ($P(g_n | c) = 0.99$); if they're a businessperson in a boardroom, then there's a high chance that they are interested in the exhaustive list of all of the newspaper locations ($P(g_a | c) = 0.99$).
+\ndg{i think we can a say a lot less about this prior: just that we assume the cost of an answer is proportional to it's length, hence the prior is proportional to $\exp(length)$...}
+
+
+We model the non-verbal context as affecting the questioner's goal prior $P(g)$: if they are a tourist on the street then there's a high chance that they are interested in buying a single newspaper, and hence knowing the identity of the closest shop that sells Italian newspapers ($P(g_n | c) = 0.99$); if they're a businessperson in a boardroom, then there's a high chance that they are interested in the exhaustive list of all of the Italian newspaper locations ($P(g_a | c) = 0.99$).
 
 %\footnote{Note that this formulation of the problem differs slightly from the one given by \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, although they easily map onto one another. In the original formulation, the \emph{answer} is fixed and the \emph{meaning} of the answer must be inferred to either be mention-some or mention-all. In our formulation, the meaning of each answer is unique and fixed, but the answerer must choose among a set of different possible answers. The same inferential machinery that our questioner uses to reason about which answer utterance the answerer will give could also be used to reason about which \emph{meaning} the answerer intends by their fixed utterance. The only difference is that the questioner would have uncertainty over a set of possible meanings instead of uncertainty over a set of possible answer utterances. We chose the latter because it more closely resembles the other scenarios we are modeling.}
 
@@ -392,6 +424,8 @@ world = {`cafe1' : [3, false],
 meaning that `cafe1' is three blocks away from the speaker and does \emph{not} sell Italian newspapers, `cafe2' is one block away and \emph{does} sell Italian newspapers, and so on. We used \emph{likely-first enumeration} over the answerer model, stopping after 1000 executions of the infinite answer space (longer answers were assigned vanishingly small probability). We find that the highest probability response given the ``tourist'' context is the single location ``cafe2.'' When worlds consistent with this utterance (i.e. where cafe2 truly sells an Italian newspaper) have been projected to the closest location, the actual closest location has high probability, thus informatively fulfilling the contextually more likely goal $g_n$. Note that longer responses are unlikely for two converging reasons: they're less likely under the geometric answer prior and also may mislead the questioner into thinking another location is the closest. 
 
 Given the ``businessperson'' context, however, the highest probability response is the conjunction ``cafe2 and cafe3 and cafe4.'' This is the exhaustive answer, informatively fulfilling the contextually more likely goal $g_a$ of knowing the location of all cafes selling Italian newspapers. Shorter answers are less likely; they are consistent with more possible worlds in the projected space, hence the projection of the true world has lower probability. 
+
+\ndg{it occurs to me that if you ignored the question and just took the goal to be the qud you'd get the same results. maybe we'd like to have a more likely a priori goal that get's dis-preferred after hearing the question? for instance the identity goal could be a priori more likely, but then becomes less plausible after hearing the question about italian papers?}
 
 %The literal and explicit answerers, as in the Clark scenario, do not have the means of making inferences about the questioner's underlying goals. Thus, both models incorrectly predicted that the context would not affect the preferred response. The literal answerer predicted that all combinations of cafes 2, 3, and 4 would be given in proportion to their prior likelihood (with no special preference given to the closest one). The explicit answerer predicted that the exhaustive answer would be preferred in all contexts (as this is literal semantics we encoded for the question). 
 Crucially, the only difference between our model of this scenario and the Clark scenario is the richer representations of multi-dimensional world states, and the larger (unbounded) space of answers. The model itself was unchanged; we only enriched the content of its inputs. The mechanism by which goals were inferred in both cases, however, was the same: a direct function of verbal or non-verbal context. Next, we turn to a case where the world state itself provides a clue to the questioner's goal.
