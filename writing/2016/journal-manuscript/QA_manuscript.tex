@@ -185,6 +185,7 @@ To model a particular question-answer dialogue, we must specify four sets. For c
 %%%
 \end{description}
 Critically, these sets are taken to be in common ground between the questioner and the answerer. We formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\hat{w} = g(w)$; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. For example, the customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
+\todo[inline]{Should be < 5 under sentence before}
 $$g_{>}(w) = \left\{\begin{array}{rcl}
 1 & & w > 5 \\
 0 & & \textrm{otherwise}
@@ -229,6 +230,11 @@ P_{Q}(q|g)  \propto \exp\{\E{P(w^*)}{IG(q,g,w^*)} - \,\,C(q)\}
 $$
 %
 It trades off the cost of asking a question, $C(q)$, and the expected information gain $IG$. The expectation is taken over all possible true worlds $w^* \in \mathcal{W}$; we assume the questioner has uncertainty over which true world is actually the case (represented by the world prior $P(w^*)$). The cost likely depends on question length and possibly social norms, among other factors. Information gain is measured as the distance between the questioner's beliefs about her interests prior to asking the question (e.g. a uniform distribution over prices), and her beliefs after hearing an answer. Formally, this is given by the Kullback-Leibler divergence between the ($g$-projected) prior distribution, $\widehat{P^g}(w)$, and the $g$-projection of the posterior distribution expected after asking a question $q$ whose answer reflected true world state $w^*$:
+
+\todo[inline]{can we move the expectation inside the KL?}
+\todo[inline]{diagram of partition?}
+\todo[inline]{play up novelty of question choice being sensitive to what answerer could say}
+
 %
 $$IG(q,g,w^*) = \KL{\widehat{P^g}(w|q, w^*)}{\widehat{P^g}(w)}$$
 where the posterior distribution is given by
@@ -249,6 +255,8 @@ The \textbf{literal answerer} simply chooses answers by trading off prior answer
 %
 $$P_{A_0}(a | q,w^*) \propto e^{P_I(w^* | \,a) - C(a)} $$
 %
+
+\todo[inline]{this is wrong (should prefer \emph{it costs 8})}
 For a fixed question, this is equivalent to the speaker in previous RSA models. They seek to be maximally informative about the state of the world, but do not adjust their response for different question utterances or contexts. For example, a literal liquor store answerer would only distinguish between ``It costs more than \$5'' and ``It costs \$8'' if they were associated with different costs, since both are equally true. This model is of interest primarily as a null model that is nonetheless more realistic than a random speaker. 
 %
 
@@ -314,6 +322,8 @@ We now proceed to demonstrate the way our model addresses four classic examples 
 
 \subsection{Clark (1979), Experiment 4}
 First, we show how our model can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context. For this illustration, we show results for the whiskey-pricing study presented in the Introduction \cite{Clark79_IndirectSpeechActs} and expanded upon while describing the model. Recall that liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in the uninformative context (``I want to buy some bourbon'') than in the five dollar context (``I've got \$5 to spend''; see Table \ref{table:clark79exp4}). To keep our first example simple, we show that our model can account for these results by shifting beliefs about the questioner's \emph{goal} in response to the context utterance. 
+
+\todo[inline]{Two symmetries: different responses to different questions \emph{and} in different contexts.}
 
 Again, our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \$2, \dots, \$10\}$. We consider two possible goals $g \in \mathcal{G}$: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than \$5, the amount the agent has in their pocket). The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \$2, \dots, \$10\}$ as well as ``yes'' and ``no.'' The answer prior assigns equal probability to picking the category of ``yes/no'' answers and of ``price'' answers, then uniformly draws from the possible responses within each category. Thus, $$P(\textrm{``yes''}) = P(\textrm{``no''}) = 0.25$$ and $$P(\textrm{``\$1''}) = \cdots = P(\textrm{``\$10''}) = 0.05$$
 
