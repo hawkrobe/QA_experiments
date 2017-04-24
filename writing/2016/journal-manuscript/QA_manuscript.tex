@@ -168,26 +168,39 @@ Broadly speaking, an agent must solve two problems to participate in a dialogue.
 \label{fig:models}
 \end{figure*}
 
-% HOW ARE THESE 
+% HOW ARE THESE ADDRESSED IN RSA?
 Both the listening problem and the speaking problem have been addressed within the Rational Speech Act (RSA) framework \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature, GoodmanFrank16_RSATiCS}, in which language understanding is formalized as recursive Bayesian inference. Pragmatic speaker agents choose utterances to maximize their partner's surprisal about the true state of the world -- a basic epistemic goal -- and pragmatic listener agents interpret utterances by inverting the speaker model. This basic framework has been used to account for a number of diverse pragmatic phenomena including 
 scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, %prosody \cite{BergenGoodman15_StrategicUseOfNoise},
 %the acquisition of word meanings \cite{FrankGoodman14_InferringWordMeanings}, and
 generic language \cite{TesslerGoodman16_Generics}, and
 interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}.
 
+% HOW IS GOAL-RELEVANCE FORMALIZED IN RSA?
 RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. Instead of attempting to be maximally informative about the \emph{full} state of the world, the speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. RSA models with relevance have been used to capture non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords}, metaphor \cite{KaoEtAl2014-Cogsci}, or irony \cite{KaoGoodman15_IronyCogSci}. In the case of hyperbole, for instance, a speaker who says ``It took a million years to get a table'' may be intending to be informative about the topic of their affective state rather than the exact time it took to get a table. 
 
-We build upon these modeling advances in several key ways. 
-First, we integrate the listening problem and speaking problem into a single dialogue agent for the first time. we provide a first step toward modeling more complex multi-utterance discourse phenomena.
-Second, questions pose a challenge for rational models of language use, since questions -- as utterances -- don't provide direct information to the listener\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. This diverges from previous RSA models in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation. 
+% HOW IS OUR MODEL DIFFERENT FROM PAST MODELS
+Our model builds upon these recent modeling advances in several novel ways. 
+First, by unifying the listening problem and speaking problem in a single rational agent, we provide a principled cognitive connection between linguistic input and output: different kinds of input shift an agent's beliefs in different ways, motivating different kinds of responses. 
 
-The account of questioner and answerer behavior we propose in this section is a an effort to synthesize linguistic theories of question semantics with rich, quantitative cognitive models of language understanding. The crucial motivation to ask questions in the first place is an \emph{asymmetry} between questioner and answerer knowledge; questioners hold a private goal, while answerers hold private knowledge about the true state of the world. We jointly model the questioner's choice of question and the and answerer's choice of answer through recursive social reasoning, allowing the answerer to \emph{infer} the questioner's private goal from observing the context and question utterance. 
+%This is a first step toward chaining together more complex multi-utterance discourse phenomena.
+Additionally, questions have previously posed a challenge for rational models of language use, since questions -- as utterances -- don't provide direct information about the world to the listener.
+The crucial motivation to ask questions in the first place, of course, is an \emph{asymmetry} between questioner and answerer knowledge; agents have private goals and private knowledge about the true state of the world. 
+%\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. 
+While a declarative statement in our framework provides evidence about the true state of the world, we conjecture that a question provides evidence about the \emph{speaker's goals}. 
+Rather than defining the meaning of a question in terms of its possible answers, as in traditional linguistic theories, we treat it as a \emph{signal} that the listener can use to update their beliefs about the speaker's goals. 
+When it is the listener's turn to speak, they can then generate statements that address the goal-relevant aspects of the world.
+ %This diverges from previous RSA models in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation. 
 
-If the questioner determines what question to ask by reasoning about likely answers, we must specify what kind of answerer they are reasoning about. We explore three increasingly sophisticated kinds of answerers, which serve as possible internal models used by the questioner, yielding three increasingly sophisticated kinds of questioners; these three models serve also independently as models of actual answerers. 
-The simplest agent, the literal answerer, simply attempts to be maximally informative about the true state of the world, ignoring the question;   
-the explicit answerer assumes that the question has a context-independent meaning and attempts to be informative with respect to that meaning (without inferring the questioner's underlying interests);  
-the pragmatic answerer treats the question as a signal to the questioner's underlying goals, infers the most likely underlying interests of the questioner, and then informatively addresses those interests (see Figure \ref{fig:models})\footnote{In terms of \citeA{VanRooy03_QuestioningDecisionProblems}, the meaning function used in the explicit models corresponds to the first proposal of context-independent semantics, while our pragmatic models roughly correspond to the second.}. 
-The latter model uses an extension of RSA to reason about the topic of conversation, as proposed by \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}; it goes beyond previous work by using the explicit question as a (potentially indirect) cue to this topic. 
+
+
+%The account of questioner and answerer behavior we propose in this section is a an effort to synthesize linguistic theories of question semantics with rich, quantitative cognitive models of language understanding. 
+%We jointly model the questioner's choice of question and the and answerer's choice of answer through recursive social reasoning, allowing the answerer to \emph{infer} the questioner's private goal from observing the context and question utterance. 
+
+%If the questioner determines what question to ask by reasoning about likely answers, we must specify what kind of answerer they are reasoning about. We explore three increasingly sophisticated kinds of answerers, which serve as possible internal models used by the questioner, yielding three increasingly sophisticated kinds of questioners; these three models serve also independently as models of actual answerers. 
+%The simplest agent, the literal answerer, simply attempts to be maximally informative about the true state of the world, ignoring the question;   
+%the explicit answerer assumes that the question has a context-independent meaning and attempts to be informative with respect to that meaning (without inferring the questioner's underlying interests);  
+%the pragmatic answerer treats the question as a signal to the questioner's underlying goals, infers the most likely underlying interests of the questioner, and then informatively addresses those interests (see Figure \ref{fig:models})\footnote{In terms of \citeA{VanRooy03_QuestioningDecisionProblems}, the meaning function used in the explicit models corresponds to the first proposal of context-independent semantics, while our pragmatic models roughly correspond to the second.}. 
+%The latter model uses an extension of RSA to reason about the topic of conversation, as proposed by \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}; it goes beyond previous work by using the explicit question as a (potentially indirect) cue to this topic. 
 
 \label{sec:model}
 
@@ -199,7 +212,7 @@ The latter model uses an extension of RSA to reason about the topic of conversat
 -describe "pragmatic" answerer who reasons about questioner's goal. note that this can be presented as interpretation of the question to yield a goal posterior, followed by $A_1$. ie it's still a relevantly informative answer, just with respect to uncertainty about true goal of questioner.
 -finally the pragmatic answerer.}
 
-\ndg{i wonder if we should preface this all with a brief discussion of how an interlocutor in a dialog has to both listen (interpret statements and questions) and speak (produce questions or statements). in our setting the "questioner" starts and therefore doesn't have to listen. the "answerer" first listen's to a question, and then produces a statement. hence the answerer will decompose into a listener part and a speaker part.}
+%\ndg{i wonder if we should preface this all with a brief discussion of how an interlocutor in a dialog has to both listen (interpret statements and questions) and speak (produce questions or statements). in our setting the "questioner" starts and therefore doesn't have to listen. the "answerer" first listen's to a question, and then produces a statement. hence the answerer will decompose into a listener part and a speaker part.}
 
 
 \subsection{Preliminaries}
