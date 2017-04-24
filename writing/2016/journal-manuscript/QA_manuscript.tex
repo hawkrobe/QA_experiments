@@ -148,13 +148,17 @@ While AI researchers were building automated systems to answer questions, lingui
 
 More recent theories have tried to fix these problems by introducing some consideration of the questioner's goals. \citeA{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals in terms of a decision problem faced by the questioner and assumed to be in common ground. He considers two proposals for how meanings depend on this decision problem, ultimately arguing for the second. 
 
-In the first proposal, questions have a context-independent meaning -- in the sense that an interrogative sentence always creates the same partition on worlds -- but the extent to which an answer is \emph{useful} or \emph{resolving} is determined by the decision problem. In particular, a useful answer under this account is one that maximizes the expected value of the questioner's decision problem, even if it is not a complete semantic answer. In the second proposal, the meaning of a question is \emph{underspecified} and its interpretation depends on the decision problem. In particular, because the questioner is assumed to be rational, the answerer chooses the interpretation that would maximize the expected value of the answer. We take these proposals as a starting point for the meaning of questions in our model.
+In the first proposal, questions have a context-independent meaning -- in the sense that an interrogative sentence always creates the same partition on worlds -- but the extent to which an answer is \emph{useful} or \emph{resolving} is determined by the decision problem. In particular, a useful answer under this account is one that maximizes the expected value of the questioner's decision problem, even if it is not a complete semantic answer. 
 
-\section{A Rational Speech Act model of question and answer behavior}
+In the second proposal, the meaning of a question is \emph{underspecified} and its interpretation depends on the decision problem. In particular, because the questioner is assumed to be rational, the answerer chooses the interpretation that would maximize the expected value of the answer. We take these proposals as a starting point for the meaning of questions in our model.
+
+\section{A Rational Speech Act model of \\questions and answers in dialogue}
 
 \subsection{Overview}
 
-The account of questioner and answerer behavior we propose in this section is an effort to synthesize linguistic theories of question semantics with rich, quantitative cognitive models of language understanding. The crucial motivation to ask questions in the first place is an \emph{asymmetry} between questioner and answerer knowledge; questioners hold a private goal, while answerers hold private knowledge about the true state of the world. We jointly model the questioner's choice of question and the and answerer's choice of answer through recursive social reasoning, allowing the answerer to \emph{infer} the questioner's private goal from observing the context and question utterance. 
+% WHAT PROBLEMS NEED TO BE SOLVED IN DIALOGUE?
+%We begin by presenting a general computational framework for agents in dialogue, then focus on the problem of question-asking and answering in particular. 
+Broadly speaking, an agent must solve two problems to participate in a dialogue. First, they must \emph{listen}, interpreting the meaning of their partner's utterance and updating their own beliefs accordingly. Then they must \emph{speak}, producing an utterance that informatively addresses the current goal or topic of conversation. At either stage, the utterance may be a statement, a question, or another more exotic kind of speech act. 
 
 \begin{figure*}[t]
 \begin{center}
@@ -164,14 +168,20 @@ The account of questioner and answerer behavior we propose in this section is an
 \label{fig:models}
 \end{figure*}
 
-This model builds on the recent success of the Rational Speech Act (RSA) framework \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature, GoodmanFrank16_RSATiCS} in mathematically formalizing pragmatic language understanding as a form of recursive Bayesian inference, where listeners reason about speakers who choose utterances that maximize information gained by an imagined listener. The RSA framework has been applied to account for diverse pragmatic phenomena including scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, prosody \cite{BergenGoodman15_StrategicUseOfNoise},
-acquisition \cite{FrankGoodman14_InferringWordMeanings}, 
-interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}, and
-non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords} or irony \cite{KaoGoodman15_IronyCogSci}.
-Our model situates question-answer behavior within this unifying view of language understanding as recursive social inference. 
+% HOW ARE THESE 
+Both the listening problem and the speaking problem have been addressed within the Rational Speech Act (RSA) framework \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature, GoodmanFrank16_RSATiCS}, in which language understanding is formalized as recursive Bayesian inference. Pragmatic speaker agents choose utterances to maximize their partner's surprisal about the true state of the world -- a basic epistemic goal -- and pragmatic listener agents interpret utterances by inverting the speaker model. This basic framework has been used to account for a number of diverse pragmatic phenomena including 
+scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, %prosody \cite{BergenGoodman15_StrategicUseOfNoise},
+%the acquisition of word meanings \cite{FrankGoodman14_InferringWordMeanings}, and
+generic language \cite{TesslerGoodman16_Generics}, and
+interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}.
 
-Here, we extend the RSA framework to address simple question-answer dialogs. This marks the first attempt to generalize RSA beyond single utterance interpretations and the first step toward modeling more complex discourse phenomena.
-Questions pose a challenge for rational models of language use, since questions -- as utterances -- don't provide direct information to the listener\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. This diverges from previous RSA models in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation. 
+RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. Instead of attempting to be maximally informative about the \emph{full} state of the world, the speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. RSA models with relevance have been used to capture non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords}, metaphor \cite{KaoEtAl2014-Cogsci}, or irony \cite{KaoGoodman15_IronyCogSci}. In the case of hyperbole, for instance, a speaker who says ``It took a million years to get a table'' may be intending to be informative about the topic of their affective state rather than the exact time it took to get a table. 
+
+We build upon these modeling advances in several key ways. 
+First, we integrate the listening problem and speaking problem into a single dialogue agent for the first time. we provide a first step toward modeling more complex multi-utterance discourse phenomena.
+Second, questions pose a challenge for rational models of language use, since questions -- as utterances -- don't provide direct information to the listener\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. This diverges from previous RSA models in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation. 
+
+The account of questioner and answerer behavior we propose in this section is a an effort to synthesize linguistic theories of question semantics with rich, quantitative cognitive models of language understanding. The crucial motivation to ask questions in the first place is an \emph{asymmetry} between questioner and answerer knowledge; questioners hold a private goal, while answerers hold private knowledge about the true state of the world. We jointly model the questioner's choice of question and the and answerer's choice of answer through recursive social reasoning, allowing the answerer to \emph{infer} the questioner's private goal from observing the context and question utterance. 
 
 If the questioner determines what question to ask by reasoning about likely answers, we must specify what kind of answerer they are reasoning about. We explore three increasingly sophisticated kinds of answerers, which serve as possible internal models used by the questioner, yielding three increasingly sophisticated kinds of questioners; these three models serve also independently as models of actual answerers. 
 The simplest agent, the literal answerer, simply attempts to be maximally informative about the true state of the world, ignoring the question;   
@@ -374,136 +384,6 @@ Critically, our pragmatic answerer model displays the same context-dependence as
 On the other hand, when the question is prefaced with ``I only have \$5 to spend,'' which makes the goal prior strongly favor the ``can I afford'' goal (with probability $.99$), then the model assigns equal probability to the literal and exact price responses. This arises because both responses are equally informative with respect to learning whether or not the agent can afford the whiskey, $g_>$, so the response likelihoods fall back to the answer prior. This also matches the empirical trend, where the exact price and literal answer were equally likely.
 
 Note that the literal and explicit answerers do not take into account the questioner's underlying goals and therefore cannot reason about the way contextual factors may be informative about these goals. Hence, they do not make different predictions in the two contexts. The literal model predicts that the answerer is equally likely to say the true Boolean answer and the true numerical answer, and the explicit model predicts that the answerer will always give the true Boolean answer, since it is the explicit question being asked. This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. 
-
-\subsection{Groenendijk and Stokhof (1984)}
-%\begin{figure*}[t!]
-%\begin{center}
-%\includegraphics[scale = 1]{groenendijckPlot.pdf}
-%\end{center}
-%\vspace{-.25cm}
-%\caption{Results for our computational experiments implementing the Groenendijck \& Stokhof (1984) \emph{mention-some} problem.}
-%\label{fig:cafeExperimentResults}
-%\end{figure*}
-
-\ndg{hmm. maybe we should move this example to an appendix, since it doesn't add any conceptual point beyond the clark example (and is complex)?}
-
-For a slightly more complex example, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an exhaustive list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a mention of a single location would be sufficient. Many recent theoretical explanations in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}. While there are no experimental results on \emph{mention-some} and \emph{mention-all} readings with which we can compare our model's output, we include the phenomenon as a case study for its value in demonstrating how our model formalizes the standard explanation. 
-
-We focus on a question like ``Where do they sell Italian newspapers in Amsterdam?'' that can intuitively be ambiguous between these meanings depending on who is asking: if it is a tourist, they probably just want to know the nearest place, but if it is a businessperson trying to build a newspaper distribution network, they likely want the whole list \cite<see>{GroenendijkStokhof84_SemanticsOfQuestions}. The puzzle is  one of disambiguation\footnote{Our modeling framework is compatible with another account where the `mention-some' reading is derived from the exhaustive reading via implicature \cite<e.g.>[Chapter 6]{George11_Dissertation}, but this debate lies outside the scope of this paper}: how can the same question take on different meaning in different contexts? According to our account, this happens via an inference about the questioner's underlying goal. This explanation relies on the same mechanism as the previous section, but shows how the model can operate over more complex world states and arbitrarily large spaces of possible answers.
-
-Our world space $\mathcal{W}$ consists of all possible assignments of properties to a set of four cafes in town. Each cafe has two properties: its distance from the speaker and whether or not it sells Italian newspapers. There are two possible goals (or QUDs) $g \in \mathcal{G}$: $g_{n}$, learning the identity of the \emph{lowest-cost} cafe selling a newspaper, and $g_{a}$, learning the identity of \emph{all} cafes selling a newspaper. Both of these are represented by projections on world states, mapping a list of cafes to the single cafe selling newspapers with the lowest distance -- assuming that additional distance incurs additional cost -- or to the sublist that sell newspapers, respectively. \ndg{why talk about cost, rather than just saying closest?} The space of answers $\mathcal{A}$ is the infinite set containing all conjunctions of locations. \ndg{is that infinite? up to redundancy it's large but finite?} Again, our question space $\mathcal{Q}$ consists of a single question: ``Where can one buy an Italian newspaper?'' \ndg{what literal meaning do we assign to this question?}
-
-For the prior $P(a)$ over answer utterances, we use a geometric distribution, which is common over spaces where probabilities should naturally scale with some count. Let $\ell(a)$ be the number of locations named in the answer (e.g. $\ell(\textrm{`none'})~=~0, \ell(\textrm{`cafe 1'})~=~1$, etc). Then the probability of an answer $a$ is given by:
-
-$$P(a) \propto (1 - p)^{\ell(a)}p$$
-In our computational experiment, we fix $p = 0.8$. 
-This simple distribution has two advantageous properties: 
-\begin{enumerate}[(1)]
-\item the probability mass assigned to a given utterance length -- operationalized as number of conjunctions -- by the geometric distribution is spread evenly across different answers of that length.
-\item we naturally assign longer answers successively lower probability, reflecting their higher cost of utterance. \end{enumerate}
-
-\ndg{i think we can a say a lot less about this prior: just that we assume the cost of an answer is proportional to it's length, hence the prior is proportional to $\exp(length)$...}
-
-
-We model the non-verbal context as affecting the questioner's goal prior $P(g)$: if they are a tourist on the street then there's a high chance that they are interested in buying a single newspaper, and hence knowing the identity of the closest shop that sells Italian newspapers ($P(g_n | c) = 0.99$); if they're a businessperson in a boardroom, then there's a high chance that they are interested in the exhaustive list of all of the Italian newspaper locations ($P(g_a | c) = 0.99$).
-
-%\footnote{Note that this formulation of the problem differs slightly from the one given by \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, although they easily map onto one another. In the original formulation, the \emph{answer} is fixed and the \emph{meaning} of the answer must be inferred to either be mention-some or mention-all. In our formulation, the meaning of each answer is unique and fixed, but the answerer must choose among a set of different possible answers. The same inferential machinery that our questioner uses to reason about which answer utterance the answerer will give could also be used to reason about which \emph{meaning} the answerer intends by their fixed utterance. The only difference is that the questioner would have uncertainty over a set of possible meanings instead of uncertainty over a set of possible answer utterances. We chose the latter because it more closely resembles the other scenarios we are modeling.}
-
-It is unclear where these goals and goal priors may come from in real-world situations: it is likely tied to background knowledge about tourists, newspapers, and the business world, as well as past experience in social situations. While these deeper explanations lie outside the scope of our model, we still have explanatory power in showing how goals interact with other terms, and how the prior differ across scenarios. 
-
- \begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = 1]{timeExpResults.pdf}
-\end{center}
-\vspace{-.25cm}
-\caption{Results for our computational experiments replicating Gibbs Jr. and Bryant (2008). Vertical lines represent the true world state.}
-\label{fig:timeExperimentResults}
-\end{figure*}
-
-\subsubsection{Results}
-
-For concreteness, we set the true world to be the following :
-
-\begin{lstlisting}
-world = {`cafe1' : [3, false],
-         `cafe2' : [1, true],
-         `cafe3' : [3, true],
-         `cafe4' : [3, true]}
-\end{lstlisting}
-meaning that `cafe1' is three blocks away from the speaker and does \emph{not} sell Italian newspapers, `cafe2' is one block away and \emph{does} sell Italian newspapers, and so on. We used \emph{likely-first enumeration} over the answerer model, stopping after 1000 executions of the infinite answer space (longer answers were assigned vanishingly small probability). We find that the highest probability response given the ``tourist'' context is the single location ``cafe2.'' When worlds consistent with this utterance (i.e. where cafe2 truly sells an Italian newspaper) have been projected to the closest location, the actual closest location has high probability, thus informatively fulfilling the contextually more likely goal $g_n$. Note that longer responses are unlikely for two converging reasons: they're less likely under the geometric answer prior and also may mislead the questioner into thinking another location is the closest. 
-
-Given the ``businessperson'' context, however, the highest probability response is the conjunction ``cafe2 and cafe3 and cafe4.'' This is the exhaustive answer, informatively fulfilling the contextually more likely goal $g_a$ of knowing the location of all cafes selling Italian newspapers. Shorter answers are less likely; they are consistent with more possible worlds in the projected space, hence the projection of the true world has lower probability. 
-
-\ndg{it occurs to me that if you ignored the question and just took the goal to be the qud you'd get the same results. maybe we'd like to have a more likely a priori goal that get's dis-preferred after hearing the question? for instance the identity goal could be a priori more likely, but then becomes less plausible after hearing the question about italian papers?}
-
-%The literal and explicit answerers, as in the Clark scenario, do not have the means of making inferences about the questioner's underlying goals. Thus, both models incorrectly predicted that the context would not affect the preferred response. The literal answerer predicted that all combinations of cafes 2, 3, and 4 would be given in proportion to their prior likelihood (with no special preference given to the closest one). The explicit answerer predicted that the exhaustive answer would be preferred in all contexts (as this is literal semantics we encoded for the question). 
-Crucially, the only difference between our model of this scenario and the Clark scenario is the richer representations of multi-dimensional world states, and the larger (unbounded) space of answers. The model itself was unchanged; we only enriched the content of its inputs. The mechanism by which goals were inferred in both cases, however, was the same: a direct function of verbal or non-verbal context. Next, we turn to a case where the world state itself provides a clue to the questioner's goal.
-%%%%
-
-
-\subsection{Gibbs Jr. \& Bryant (2008): Experiment 3}
-
-It has been shown in previous work that speakers typically round their answers to the nearest 5 minute interval when asked `Do you have the time?'', even when they're wearing a digital watch \cite{DerHenstCarlesSperber02_RelevanceTellingTime}.  \citeA{GibbsBryant08_OptimalRelevance} replicated this result, and then performed a follow-up study on analog-watch wearers where they preceded their question by the context ``I have a meeting at 4:00.'' 
-
-They found that the tendency to round times decreased as a function of the time remaining until the stated deadline: the group asked 30-16 minutes before the stated appointment rounded their responses 79\% of the time, while the group asked 14 minutes or closer to the appointment rounded significantly less (62\%). They explained this result by appealing to the questioner's goals: while an approximate time is sufficiently informative with respect to most goals, such as knowing how much time is left before heading to an appointment, a questioner who is running late may need to gauge how quickly they should move, whether they should call and warn about being late, or make other such decisions, in which case a precise time is highly relevant. 
-\begin{table*}[t]
-\centering
-\begin{tabular}{ p{2cm} | r |||||| r }
-&  \% round (Empirical) &  \% round (Model) \\
-\hline
-Early group &  0.79 & 0.77 \\
-\hline
-Late group     &0.62  & 0.60 \\
-\end{tabular}
-\\[1.5pt]
-\caption{Comparison of our model predictions with data from Gibbs Jr. and Bryan (2008). Shows the proportion of rounding in response to ``I have an appointment at 4:00. Do you have the time?'' for two groups: an ``early group'' where the appointment was in 30-15 minutes and a ``late group'' where the appointment was in less than 15 minutes.} 
-\label{table:gibbsJrExp3}
-\end{table*}
-
-To set up this scenario in our model, we take the world space to be the set of possible times, which we limit to a half hour interval (as in the experiment): $\mathcal{W}~=~\{\textrm{3:30}, \textrm{3:31}, \dots, \textrm{3:59}\}$. Unlike in the previous two case studies, where there were only two contrasting goals and two contexts that make each goal more or less likely, we now use a larger, parametrized goal space and a single context stating the time of the appointment that is held fixed across different conditions of the experiment. 
-
-This goal space $\mathcal{G}$ includes the trivial projection $g_0(w) = w$, corresponding to the context-independent goal of learning the true time, in addition to a set of goals parameterized by a threshold time $\tau$, representing the point at which the agent believes they are running late to their appointment (likely based on expectations about travel time, social norms concerning lateness, and other exogenous factors). If the agent has goal $g_\tau$ for a given $\tau$, then for times $t < \tau,$ the agent only cares about the approximate time, rounded to the nearest 5 minute increment, in order to know roughly how much time they have before leaving. For times $t > \tau$, the agent cares about the exact time in order to make the kind of decisions described above. Formally,
-
-\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
-
-$$g_\tau(w) = \left\{
-\begin{array}{rcl}
-w & & w \ge \tau\\
-5\floor{\frac{w}{5} + \frac{1}{2}} & & w < \tau;  \\
-\end{array}
-\right.
-$$
-where $\floor{w}$ returns the \emph{floor} of an integer and all operations are assumed to act on the minutes component of a time $w$. For example, the goal $g_{3:50}$ with the threshold set at $\tau = $3:50 corresponds to a projection function that rounds input worlds earlier than 3:50 and does not round worlds later than 3:50. This would be the case if the agent knew they would need to leave around 3:50 in order to make it to an appointment on time. 
-
-The goal prior $P(g_\tau)$ assigns probability $p=0.25$ to the context-independent goal $g_0$ of wanting to know the exact time. The remaining probability mass is divided across different threshold goals ($\tau \in \{$ 3:31, 3:32, \dots, 3:59 $\}$) according to the following rule: the likelihood of each goal $g_\tau$ is inversely proportional to the distance (in minutes) between the threshold $\tau$ and the given appointment time $c$, reflecting the intuition that the questioner will be more likely to be running late, and therefore in need of the exact time, as it approaches the appointment time:
-
-$$P(g_0) = 0.25$$
-$$P(g_\tau; c) = \frac{0.75}{\sum_{i=1}^{29}i}(30 - |\tau - c|)$$
-
-The set of answers is the set of times that could be given (e.g. 3:30, 3:31, \dots, 4:00), with multiples of 5 preferred:
-$$P(t) = \left\{
-\begin{array}{lcl}
-0.125 & & t \equiv 0 \mod 5 \\
-0.01 & & \textrm{otherwise} \\
-\end{array}
-\right.
-$$ As \citeA{GibbsBryant08_OptimalRelevance} point out, their participants all wore analog watches, hence precise answers have higher cost. In fact, an earlier study in the same paper showed that in the absence of any context, participants wearing analog watches responded with rounded answers 90\% of the time, so this prior is realistic. 
-
-For our answers, we use exact number semantics: the response ``3:35'' evaluates to true in worlds where the time is in fact 3:35, and false otherwise. While we suppressed \emph{a priori} false answers for convenience in other case studies (they would be naturally be assigned vanishingly small probability anyway), note that we cannot do so here: answerers must be allowed to make \emph{a priori} false utterances that get reinterpreted by the listener to be true under the QUD \cite<see>{KaoWuBergenGoodman14_NonliteralNumberWords}. 
-
-%\todo[inline]{return to this in the discussion}
-
- \subsubsection{Results}
- 
-To compare our model's performance against the `early group' and `late group' conditions in \citeA{GibbsBryant08_OptimalRelevance}, we ran two simulations. In both, the context is ``I have an appointment at 4:00.'' In the first, the true world state is between 3:30 and 3:45 (the `early' condition); in the second, the true world state is between 3:45 and 3:59 (the `late' condition). In each condition, we ran our pragmatic answerer model for all true worlds in the appropriate range of times, and report the average probability of responding with a rounded answer. Our results are compared against empirical data from Gibbs Jr. and Bryant \citeyear{GibbsBryant08_OptimalRelevance} in Table \ref{table:gibbsJrExp3}. 
-
-To more closely analyze what is driving our model's performance in these two conditions, we examine the answer behavior for two specific world states: one from the `early group' (3:34) and one from the `late group' (3:54). Answer probabilities for these two conditions are shown in Figure \ref{fig:timeExperimentResults}. We found that our pragmatic answerer model rounds the 3:34 to 3:35 in the `early' condition with probability $p = 0.74$, but rounds 3:54 to 3:55 with lower probability $p = 0.65$ in the `late' condition. 
-
-The goal prior is the key component of the model governing this difference. Note that that (1) \emph{all} states in the pre-image of the rounding projection from the true time $t_0$ are assigned lower probability than the rounded time $g_\tau(t_0)$, due to the influence of goals $g_\tau$ with thresholds $\tau > t_0$ and (2) the true time $t_0$ is assigned relatively higher probability than the other non-rounded times, due to the influence of the pure goal $g_0$ and goals $g_\tau$ with thresholds $\tau < t_0$. This dynamic, paired with the upward-skewed prior on goal priors discussed above, causes the `late' condition to assign a much higher relative probability to the true time, than the `early' condition. The pragmatic answerer thus accurately captures the empirical results both qualitatively and quantitatively. 
-
-%Our literal and explicit answerer models fail to capture these contextual differences, as they do not reason about the space of underlying goals (which justify rounding) and always give the exact time. The literal answerer always gives the exact time because it is the only property of the world, which they are attempting to be informative about without regard to the question. The explicit answerer always gives the exact time because it uses the explicit question meaning, which simply asks for the time.
-
-%\todo[inline]{rdh: Actually, in the experiment the question was ``Do you have the time?'' to which the literal and explicit answers would be ``yes'' or ``no'', right? We don't allow these responses in our model because they're not what we're interested in (i.e. \emph{no one} responded this way), but they are the kinds of answers our literal and explicit answerers would give}
 
 \begin{table*}[t!]
 \centering
@@ -856,5 +736,137 @@ artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 \caption{Supplemental: Inter-domain correlations on corresponding response rates} 
 \label{table:experiment4correlations}
 \end{table*}
+
+\section{Appendix}
+
+\subsection{Groenendijk and Stokhof (1984)}
+%\begin{figure*}[t!]
+%\begin{center}
+%\includegraphics[scale = 1]{groenendijckPlot.pdf}
+%\end{center}
+%\vspace{-.25cm}
+%\caption{Results for our computational experiments implementing the Groenendijck \& Stokhof (1984) \emph{mention-some} problem.}
+%\label{fig:cafeExperimentResults}
+%\end{figure*}
+
+\ndg{hmm. maybe we should move this example to an appendix, since it doesn't add any conceptual point beyond the clark example (and is complex)?}
+
+For a slightly more complex example, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an exhaustive list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a mention of a single location would be sufficient. Many recent theoretical explanations in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}. While there are no experimental results on \emph{mention-some} and \emph{mention-all} readings with which we can compare our model's output, we include the phenomenon as a case study for its value in demonstrating how our model formalizes the standard explanation. 
+
+We focus on a question like ``Where do they sell Italian newspapers in Amsterdam?'' that can intuitively be ambiguous between these meanings depending on who is asking: if it is a tourist, they probably just want to know the nearest place, but if it is a businessperson trying to build a newspaper distribution network, they likely want the whole list \cite<see>{GroenendijkStokhof84_SemanticsOfQuestions}. The puzzle is  one of disambiguation\footnote{Our modeling framework is compatible with another account where the `mention-some' reading is derived from the exhaustive reading via implicature \cite<e.g.>[Chapter 6]{George11_Dissertation}, but this debate lies outside the scope of this paper}: how can the same question take on different meaning in different contexts? According to our account, this happens via an inference about the questioner's underlying goal. This explanation relies on the same mechanism as the previous section, but shows how the model can operate over more complex world states and arbitrarily large spaces of possible answers.
+
+Our world space $\mathcal{W}$ consists of all possible assignments of properties to a set of four cafes in town. Each cafe has two properties: its distance from the speaker and whether or not it sells Italian newspapers. There are two possible goals (or QUDs) $g \in \mathcal{G}$: $g_{n}$, learning the identity of the \emph{lowest-cost} cafe selling a newspaper, and $g_{a}$, learning the identity of \emph{all} cafes selling a newspaper. Both of these are represented by projections on world states, mapping a list of cafes to the single cafe selling newspapers with the lowest distance -- assuming that additional distance incurs additional cost -- or to the sublist that sell newspapers, respectively. \ndg{why talk about cost, rather than just saying closest?} The space of answers $\mathcal{A}$ is the infinite set containing all conjunctions of locations. \ndg{is that infinite? up to redundancy it's large but finite?} Again, our question space $\mathcal{Q}$ consists of a single question: ``Where can one buy an Italian newspaper?'' \ndg{what literal meaning do we assign to this question?}
+
+For the prior $P(a)$ over answer utterances, we use a geometric distribution, which is common over spaces where probabilities should naturally scale with some count. Let $\ell(a)$ be the number of locations named in the answer (e.g. $\ell(\textrm{`none'})~=~0, \ell(\textrm{`cafe 1'})~=~1$, etc). Then the probability of an answer $a$ is given by:
+
+$$P(a) \propto (1 - p)^{\ell(a)}p$$
+In our computational experiment, we fix $p = 0.8$. 
+This simple distribution has two advantageous properties: 
+\begin{enumerate}[(1)]
+\item the probability mass assigned to a given utterance length -- operationalized as number of conjunctions -- by the geometric distribution is spread evenly across different answers of that length.
+\item we naturally assign longer answers successively lower probability, reflecting their higher cost of utterance. \end{enumerate}
+
+\ndg{i think we can a say a lot less about this prior: just that we assume the cost of an answer is proportional to it's length, hence the prior is proportional to $\exp(length)$...}
+
+
+We model the non-verbal context as affecting the questioner's goal prior $P(g)$: if they are a tourist on the street then there's a high chance that they are interested in buying a single newspaper, and hence knowing the identity of the closest shop that sells Italian newspapers ($P(g_n | c) = 0.99$); if they're a businessperson in a boardroom, then there's a high chance that they are interested in the exhaustive list of all of the Italian newspaper locations ($P(g_a | c) = 0.99$).
+
+%\footnote{Note that this formulation of the problem differs slightly from the one given by \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, although they easily map onto one another. In the original formulation, the \emph{answer} is fixed and the \emph{meaning} of the answer must be inferred to either be mention-some or mention-all. In our formulation, the meaning of each answer is unique and fixed, but the answerer must choose among a set of different possible answers. The same inferential machinery that our questioner uses to reason about which answer utterance the answerer will give could also be used to reason about which \emph{meaning} the answerer intends by their fixed utterance. The only difference is that the questioner would have uncertainty over a set of possible meanings instead of uncertainty over a set of possible answer utterances. We chose the latter because it more closely resembles the other scenarios we are modeling.}
+
+It is unclear where these goals and goal priors may come from in real-world situations: it is likely tied to background knowledge about tourists, newspapers, and the business world, as well as past experience in social situations. While these deeper explanations lie outside the scope of our model, we still have explanatory power in showing how goals interact with other terms, and how the prior differ across scenarios. 
+
+ \begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = 1]{timeExpResults.pdf}
+\end{center}
+\vspace{-.25cm}
+\caption{Results for our computational experiments replicating Gibbs Jr. and Bryant (2008). Vertical lines represent the true world state.}
+\label{fig:timeExperimentResults}
+\end{figure*}
+
+\subsubsection{Results}
+
+For concreteness, we set the true world to be the following :
+
+\begin{lstlisting}
+world = {`cafe1' : [3, false],
+         `cafe2' : [1, true],
+         `cafe3' : [3, true],
+         `cafe4' : [3, true]}
+\end{lstlisting}
+meaning that `cafe1' is three blocks away from the speaker and does \emph{not} sell Italian newspapers, `cafe2' is one block away and \emph{does} sell Italian newspapers, and so on. We used \emph{likely-first enumeration} over the answerer model, stopping after 1000 executions of the infinite answer space (longer answers were assigned vanishingly small probability). We find that the highest probability response given the ``tourist'' context is the single location ``cafe2.'' When worlds consistent with this utterance (i.e. where cafe2 truly sells an Italian newspaper) have been projected to the closest location, the actual closest location has high probability, thus informatively fulfilling the contextually more likely goal $g_n$. Note that longer responses are unlikely for two converging reasons: they're less likely under the geometric answer prior and also may mislead the questioner into thinking another location is the closest. 
+
+Given the ``businessperson'' context, however, the highest probability response is the conjunction ``cafe2 and cafe3 and cafe4.'' This is the exhaustive answer, informatively fulfilling the contextually more likely goal $g_a$ of knowing the location of all cafes selling Italian newspapers. Shorter answers are less likely; they are consistent with more possible worlds in the projected space, hence the projection of the true world has lower probability. 
+
+\ndg{it occurs to me that if you ignored the question and just took the goal to be the qud you'd get the same results. maybe we'd like to have a more likely a priori goal that get's dis-preferred after hearing the question? for instance the identity goal could be a priori more likely, but then becomes less plausible after hearing the question about italian papers?}
+
+%The literal and explicit answerers, as in the Clark scenario, do not have the means of making inferences about the questioner's underlying goals. Thus, both models incorrectly predicted that the context would not affect the preferred response. The literal answerer predicted that all combinations of cafes 2, 3, and 4 would be given in proportion to their prior likelihood (with no special preference given to the closest one). The explicit answerer predicted that the exhaustive answer would be preferred in all contexts (as this is literal semantics we encoded for the question). 
+Crucially, the only difference between our model of this scenario and the Clark scenario is the richer representations of multi-dimensional world states, and the larger (unbounded) space of answers. The model itself was unchanged; we only enriched the content of its inputs. The mechanism by which goals were inferred in both cases, however, was the same: a direct function of verbal or non-verbal context. Next, we turn to a case where the world state itself provides a clue to the questioner's goal.
+%%%%
+
+
+\subsection{Gibbs Jr. \& Bryant (2008): Experiment 3}
+
+It has been shown in previous work that speakers typically round their answers to the nearest 5 minute interval when asked `Do you have the time?'', even when they're wearing a digital watch \cite{DerHenstCarlesSperber02_RelevanceTellingTime}.  \citeA{GibbsBryant08_OptimalRelevance} replicated this result, and then performed a follow-up study on analog-watch wearers where they preceded their question by the context ``I have a meeting at 4:00.'' 
+
+They found that the tendency to round times decreased as a function of the time remaining until the stated deadline: the group asked 30-16 minutes before the stated appointment rounded their responses 79\% of the time, while the group asked 14 minutes or closer to the appointment rounded significantly less (62\%). They explained this result by appealing to the questioner's goals: while an approximate time is sufficiently informative with respect to most goals, such as knowing how much time is left before heading to an appointment, a questioner who is running late may need to gauge how quickly they should move, whether they should call and warn about being late, or make other such decisions, in which case a precise time is highly relevant. 
+\begin{table*}[t]
+\centering
+\begin{tabular}{ p{2cm} | r |||||| r }
+&  \% round (Empirical) &  \% round (Model) \\
+\hline
+Early group &  0.79 & 0.77 \\
+\hline
+Late group     &0.62  & 0.60 \\
+\end{tabular}
+\\[1.5pt]
+\caption{Comparison of our model predictions with data from Gibbs Jr. and Bryan (2008). Shows the proportion of rounding in response to ``I have an appointment at 4:00. Do you have the time?'' for two groups: an ``early group'' where the appointment was in 30-15 minutes and a ``late group'' where the appointment was in less than 15 minutes.} 
+\label{table:gibbsJrExp3}
+\end{table*}
+
+To set up this scenario in our model, we take the world space to be the set of possible times, which we limit to a half hour interval (as in the experiment): $\mathcal{W}~=~\{\textrm{3:30}, \textrm{3:31}, \dots, \textrm{3:59}\}$. Unlike in the previous two case studies, where there were only two contrasting goals and two contexts that make each goal more or less likely, we now use a larger, parametrized goal space and a single context stating the time of the appointment that is held fixed across different conditions of the experiment. 
+
+This goal space $\mathcal{G}$ includes the trivial projection $g_0(w) = w$, corresponding to the context-independent goal of learning the true time, in addition to a set of goals parameterized by a threshold time $\tau$, representing the point at which the agent believes they are running late to their appointment (likely based on expectations about travel time, social norms concerning lateness, and other exogenous factors). If the agent has goal $g_\tau$ for a given $\tau$, then for times $t < \tau,$ the agent only cares about the approximate time, rounded to the nearest 5 minute increment, in order to know roughly how much time they have before leaving. For times $t > \tau$, the agent cares about the exact time in order to make the kind of decisions described above. Formally,
+
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+$$g_\tau(w) = \left\{
+\begin{array}{rcl}
+w & & w \ge \tau\\
+5\floor{\frac{w}{5} + \frac{1}{2}} & & w < \tau;  \\
+\end{array}
+\right.
+$$
+where $\floor{w}$ returns the \emph{floor} of an integer and all operations are assumed to act on the minutes component of a time $w$. For example, the goal $g_{3:50}$ with the threshold set at $\tau = $3:50 corresponds to a projection function that rounds input worlds earlier than 3:50 and does not round worlds later than 3:50. This would be the case if the agent knew they would need to leave around 3:50 in order to make it to an appointment on time. 
+
+The goal prior $P(g_\tau)$ assigns probability $p=0.25$ to the context-independent goal $g_0$ of wanting to know the exact time. The remaining probability mass is divided across different threshold goals ($\tau \in \{$ 3:31, 3:32, \dots, 3:59 $\}$) according to the following rule: the likelihood of each goal $g_\tau$ is inversely proportional to the distance (in minutes) between the threshold $\tau$ and the given appointment time $c$, reflecting the intuition that the questioner will be more likely to be running late, and therefore in need of the exact time, as it approaches the appointment time:
+
+$$P(g_0) = 0.25$$
+$$P(g_\tau; c) = \frac{0.75}{\sum_{i=1}^{29}i}(30 - |\tau - c|)$$
+
+The set of answers is the set of times that could be given (e.g. 3:30, 3:31, \dots, 4:00), with multiples of 5 preferred:
+$$P(t) = \left\{
+\begin{array}{lcl}
+0.125 & & t \equiv 0 \mod 5 \\
+0.01 & & \textrm{otherwise} \\
+\end{array}
+\right.
+$$ As \citeA{GibbsBryant08_OptimalRelevance} point out, their participants all wore analog watches, hence precise answers have higher cost. In fact, an earlier study in the same paper showed that in the absence of any context, participants wearing analog watches responded with rounded answers 90\% of the time, so this prior is realistic. 
+
+For our answers, we use exact number semantics: the response ``3:35'' evaluates to true in worlds where the time is in fact 3:35, and false otherwise. While we suppressed \emph{a priori} false answers for convenience in other case studies (they would be naturally be assigned vanishingly small probability anyway), note that we cannot do so here: answerers must be allowed to make \emph{a priori} false utterances that get reinterpreted by the listener to be true under the QUD \cite<see>{KaoWuBergenGoodman14_NonliteralNumberWords}. 
+
+%\todo[inline]{return to this in the discussion}
+
+ \subsubsection{Results}
+ 
+To compare our model's performance against the `early group' and `late group' conditions in \citeA{GibbsBryant08_OptimalRelevance}, we ran two simulations. In both, the context is ``I have an appointment at 4:00.'' In the first, the true world state is between 3:30 and 3:45 (the `early' condition); in the second, the true world state is between 3:45 and 3:59 (the `late' condition). In each condition, we ran our pragmatic answerer model for all true worlds in the appropriate range of times, and report the average probability of responding with a rounded answer. Our results are compared against empirical data from Gibbs Jr. and Bryant \citeyear{GibbsBryant08_OptimalRelevance} in Table \ref{table:gibbsJrExp3}. 
+
+To more closely analyze what is driving our model's performance in these two conditions, we examine the answer behavior for two specific world states: one from the `early group' (3:34) and one from the `late group' (3:54). Answer probabilities for these two conditions are shown in Figure \ref{fig:timeExperimentResults}. We found that our pragmatic answerer model rounds the 3:34 to 3:35 in the `early' condition with probability $p = 0.74$, but rounds 3:54 to 3:55 with lower probability $p = 0.65$ in the `late' condition. 
+
+The goal prior is the key component of the model governing this difference. Note that that (1) \emph{all} states in the pre-image of the rounding projection from the true time $t_0$ are assigned lower probability than the rounded time $g_\tau(t_0)$, due to the influence of goals $g_\tau$ with thresholds $\tau > t_0$ and (2) the true time $t_0$ is assigned relatively higher probability than the other non-rounded times, due to the influence of the pure goal $g_0$ and goals $g_\tau$ with thresholds $\tau < t_0$. This dynamic, paired with the upward-skewed prior on goal priors discussed above, causes the `late' condition to assign a much higher relative probability to the true time, than the `early' condition. The pragmatic answerer thus accurately captures the empirical results both qualitatively and quantitatively. 
+
+%Our literal and explicit answerer models fail to capture these contextual differences, as they do not reason about the space of underlying goals (which justify rounding) and always give the exact time. The literal answerer always gives the exact time because it is the only property of the world, which they are attempting to be informative about without regard to the question. The explicit answerer always gives the exact time because it uses the explicit question meaning, which simply asks for the time.
+
+%\todo[inline]{rdh: Actually, in the experiment the question was ``Do you have the time?'' to which the literal and explicit answers would be ``yes'' or ``no'', right? We don't allow these responses in our model because they're not what we're interested in (i.e. \emph{no one} responded this way), but they are the kinds of answers our literal and explicit answerers would give}
 
 \end{document}  
