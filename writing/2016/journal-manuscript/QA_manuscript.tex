@@ -178,17 +178,19 @@ interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{
 % HOW IS GOAL-RELEVANCE FORMALIZED IN RSA?
 RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. Instead of attempting to be maximally informative about the \emph{full} state of the world, the speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. RSA models with relevance have been used to capture non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords}, metaphor \cite{KaoEtAl2014-Cogsci}, or irony \cite{KaoGoodman15_IronyCogSci}. In the case of hyperbole, for instance, a speaker who says ``It took a million years to get a table'' may be intending to be informative about the topic of their affective state rather than the exact time it took to get a table. 
 
-% HOW IS OUR MODEL DIFFERENT FROM PAST MODELS
+% HOW IS OUR MODEL DIFFERENT FROM PAST MODELS (DIALOGUE!)
 Our model builds upon these recent modeling advances in several novel ways. 
 First, by unifying the listening problem and speaking problem in a single rational agent, we provide a principled cognitive connection between linguistic input and output: different kinds of input shift an agent's beliefs in different ways, motivating different kinds of responses. 
-
 %This is a first step toward chaining together more complex multi-utterance discourse phenomena.
+
+% HOW IS OUR MODEL DIFFERENT FROM PAST MODELS (QUESTIONS!)
 Additionally, questions have previously posed a challenge for rational models of language use, since questions -- as utterances -- don't provide direct information about the world to the listener.
-The crucial motivation to ask questions in the first place, of course, is an \emph{asymmetry} between questioner and answerer knowledge; agents have private goals and private knowledge about the true state of the world. 
+The crucial motivation to ask questions in the first place, of course, is an asymmetry between speaker and listener knowledge; agents have \emph{private goals} in addition to private knowledge about the true state of the world. 
 %\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. 
 While a declarative statement in our framework provides evidence about the true state of the world, we conjecture that a question provides evidence about the \emph{speaker's goals}. 
+
 Rather than defining the meaning of a question in terms of its possible answers, as in traditional linguistic theories, we treat it as a \emph{signal} that the listener can use to update their beliefs about the speaker's goals. 
-When it is the listener's turn to speak, they can then generate statements that address the goal-relevant aspects of the world.
+When it is the listener's turn to speak, they can then generate statements that address the goal-relevant aspects of the world. In the next section, we review the basic RSA framework and explore several different proposals for how agents interpret and respond to questions within this framework.
  %This diverges from previous RSA models in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation. 
 
 
@@ -217,29 +219,27 @@ When it is the listener's turn to speak, they can then generate statements that 
 
 \subsection{Preliminaries}
 
-To model a particular question-answer dialogue, we must specify four sets. For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as an example throughout: 
+Our mathematical formalization of dialogue begins with on four primitive sets that agents take to be in common ground. For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as an example throughout: 
 \begin{description}
-\item[$\mathcal{W}$:] a set of true states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}.
-\item[$\mathcal{G}$:] a set of possible questioner goals, such as learning the actual price of the whiskey or learning whether or not one can afford to buy the whiskey at all.
+\item[$\mathcal{W}$:] a set of true states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}. This can be pre-restricted to the relevant dimensions for the scenario being modelled, but in principle may also include other features such as the current weather, the location of nearby caf\'es, or the kinds of payment that the store accepts.
 \item[$\mathcal{Q}$:] a set of possible question utterances , such as ``Does a fifth of Jim Beam cost more than \$5?'' or alternatives like ``Do you accept credit cards?''
-\item[$\mathcal{A}$:] a set of possible answer utterances , such as ``It costs \$7.'' or ``Yes, it costs more than \$5.''
-%%%
-\footnote{It is common in linguistics to distinguish between utterances and the sentences, or logical forms, they are instantiating. In a complete language understanding model, we would have a separate space of question utterances $\mathcal{U}_q$ and a semantic evaluation function that maps a question utterance $u_q \in \mathcal{U}_q$ to its value in the semantic space $\mathcal{Q}$. Similarly, this evaluation function would map an answer utterance $u_a$ to its value in $\mathcal{A}$. For clarity, we assume these are trivial mappings and suppress them.}
-%%%
-\end{description}
-Critically, these sets are taken to be in common ground between the questioner and the answerer. We formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\hat{w} = g(w)$; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. For example, the customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
-\todo[inline]{Should be < 5 under sentence before}
-$$g_{>}(w) = \left\{\begin{array}{rcl}
-1 & & w > 5 \\
+\item[$\mathcal{A}$:] a set of possible declarative statements that may be used to respond to questions, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.''
+\item[$\mathcal{G}$:] a set of possible questioner goals, such as learning the actual price of the whiskey or learning whether or not one can afford to buy the whiskey at all. 
+We formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\hat{w} = g(w)$; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. For example, the customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
+$$g_{<}(w) = \left\{\begin{array}{rcl}
+1 & & w < 5 \\
 0 & & \textrm{otherwise}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other words are mapped onto a different state.
-QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion. \ndg{this comment about relevance seems out of place.}
+\end{description}
+%QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion. \ndg{this comment about relevance seems out of place.}
 
-We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution. Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. 
-\ndg{this comment doesn't make sense... $P(g(w))$ isn't well defined.}
-Instead, 
-$$\widehat{P^g}(v) = \int_{\mathcal{W}} \delta_{v=g(w)}P(w)dw$$ is a distribution over the image of $g$. \ndg{hmm.. if W is continuous, i'm not sure that this defines the right distribution. might need the derivative of g?}
+\todo[inline]{Move this to section defining $KL^g$}
+We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution: 
+%Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. 
+%\ndg{this comment doesn't make sense... $P(g(w))$ isn't well defined.}
+$$\widehat{P^g}(v) \propto \sum_{\mathcal{W}} \delta_{v=g(w)}P(w)$$ 
+%is a distribution over the image of $g$. \ndg{hmm.. if W is continuous, i'm not sure that this defines the right distribution. might need the derivative of g?}
 
 We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD: a projection from a world state to a feature (or features) of interest. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one set and all other worlds to a different set \ndg{why set? just value?}. An answer is a map from world states to booleans. So the answer \$8 would be true in the world where $w = \$8$ and false otherwise\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}.
 
