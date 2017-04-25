@@ -79,7 +79,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   // To cut down on computational complexity, we fix a location assignment
   var exampleWorld = _.zipObject(qudSpace, [1,2,3,4]);
 
-  var meaning = dp.cache(function(qudSpace, utterance){
+  var meaning = dp.cache(function(utterance){
     return (isTaxonomyAnswer(qudSpace, utterance) ? taxonomyAnswerMeaning(utterance) :
             utterance === 'null' ? function(w){return true;} :
             console.error('unknown utterance: ' + utterance));
@@ -110,9 +110,9 @@ var QAmodel = function(type, domain, rationality,  beta) {
     return questionPrior();
   }).support();
 
-  var answerPrior = function(world){
+  var answerPrior = function(){
     var loc = uniformDraw([1,2,3,4]);
-    var leaf = uniformDraw(_.keys(world));
+    var leaf = uniformDraw(qudSpace);
     return leaf + '@' + loc + ".";
   };
   
@@ -143,20 +143,20 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var interpreter = dp.cache(function(answer){
     return Infer({method: 'enumerate'}, function(){
       var world = worldPrior();
-      var answerMeaning = meaning(qudSpace, answer);
+      var answerMeaning = meaning(answer);
       condition(answerMeaning(world));
       return world;
     });
   });
-  
+
   var makeTruthfulAnswerPrior = dp.cache(function(trueWorld) {
     return Infer({method: 'enumerate'}, function(){
-      var answer = answerPrior(trueWorld);
+      var answer = answerPrior();
       factor(interpreter(answer).score(trueWorld));
       return answer;
     });
   });
-  
+	
   var getProjectedWorldPrior = dp.cache(function(qudName) {
     return Infer({method: 'enumerate'}, function(){
       var qud = nameToQUD(qudName);
@@ -166,7 +166,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   
   var literalAnswerer = dp.cache(function(question, trueWorld) {
     return Infer({method: 'enumerate'}, function(){
-      var answer = answerPrior(trueWorld);
+      var answer = answerPrior();
       factor(interpreter(answer).score(trueWorld) * rationality);
       return answer;
     });
@@ -196,10 +196,14 @@ var QAmodel = function(type, domain, rationality,  beta) {
       var informationGainDist = Infer({method: 'enumerate'}, function(){
 	var trueWorld = worldPrior();
 	var possibleAnswer = sample(answerer(question, trueWorld));
+
+	// compute information gain for this answer, accounting for planning 
+	// problem (what would I believe in future if I heard this answer)
 	var prior = getProjectedWorldPrior(qudName);
 	var posterior = Infer({method: 'enumerate'}, function(){
-	  var inferredWorld = sample(interpreter(possibleAnswer));
-	  return nameToQUD(qudName)(inferredWorld);
+          var world = worldPrior();
+	  observe(answerer(question, world), possibleAnswer)
+	  return nameToQUD(qudName)(world);
 	});
 	return qa.KL(posterior, prior);
       });
