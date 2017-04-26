@@ -9,21 +9,21 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var rawAlpha = uniformDraw(_.range(4, 15.01, .25)),
-      alpha = Number.parseFloat(rawAlpha.toFixed(2));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.05)),
-      beta = Number.parseFloat(rawBeta.toFixed(2));
-  var expPragFlip = flip();
+  var rawAlpha = uniformDraw(_.range(0, 20.01, .5)),
+      alpha = Number.parseFloat(rawAlpha.toFixed(3));
+  var rawBeta = uniformDraw(_.range(0, 1.01, 0.1)),
+      beta = Number.parseFloat(rawBeta.toFixed(3));
+  var expPragFlip = uniformDraw(['explicit', 'pragmatic']);
 
   globalStore.predictives = {};
 
   // Run model and condition on data
   var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
-    var runTFBTQuestioner = model.runTFBTQuestioner;    
+    var questioner = model.questioner;    
     return sum(map(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
-      var questionerERP = runTFBTQuestioner(qud, expPragFlip);
+      var questionerERP = questioner(questionerType, qud);
       // Save predictives
       foreach(questionerERP.support(),function(s){
       	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
@@ -49,5 +49,5 @@ var outputERP = Infer({method: 'enumerate'}, modelAnalysis);
 
 console.log('inference complete... printing');
 console.log(outputERP);
-qa.bayesianErpWriter(outputERP, "data/full_questioner");
+qa.bayesianErpWriter(outputERP, "data/questionerFixed");
 
