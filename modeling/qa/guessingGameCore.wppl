@@ -1,25 +1,3 @@
-var uniformDraw = function (xs) {
-  return xs[randomInteger(xs.length)];
-};
-
-var mean = function(thunk){
-  return expectation(Infer({method: 'enumerate'}, thunk), function(v){return v;});
-};
-
-var negate = function(predicate){
-  return function(x){
-    return !predicate(x);
-  };
-};
-
-var identity = function(x){
- return x;
-};
-
-var condition = function(x){
- factor(x ? 0 : -Infinity);
-};
-
 var foreach = function(lst, fn) {
   var foreach_ = function(i) {
     if (i < lst.length) {
@@ -29,20 +7,6 @@ var foreach = function(lst, fn) {
   };
   foreach_(0);
 };
-
-// For some reason, this breaks when you put it in the header...
-// var savePredictive = function (questionerERP, qud, item){
-//   foreach(questionerERP.support([]),function(s){
-//     var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
-//     query.add([qud, item[0], item[1], strippedQuestion],
-// 	      Math.exp(questionerERP.score(s)));
-//   });
-// };
-
-// var getPredictive = function() {
-//  return query.table;
-//};
-
 
 var questionToNode = dp.cache(function(utterance){
   var temp = qa.butLast(utterance).split("Is");
@@ -126,10 +90,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   };
   
   var nameToQUD = function(qudName){
-    if(_.includes(questionSpace, qudName)) {
-      var salienceGuess = sampleSalienceAssignment();
-      return makeQUD(questionToNode(qudName), salienceGuess);
-    } else if (_.includes(qudSpace, qudName)) {
+    if (_.includes(qudSpace, qudName)) {
       return makeQUD(qudName);
     } else {
       return console.error('unknown qud name', qudName);
@@ -175,7 +136,8 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var explicitAnswerer = dp.cache(function(question, trueWorld) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     return Infer({method: 'enumerate'}, function(){
-      var qud = nameToQUD(question);
+      var salienceGuess = sampleSalienceAssignment();
+      var qud = makeQUD(questionToNode(question), salienceGuess);
       var answer = sample(truthfulAnswerPrior);
       var consistentWorldDist = Infer({method: 'enumerate'}, function(){
 	var inferredWorld = sample(interpreter(answer));
@@ -202,7 +164,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
 	var prior = getProjectedWorldPrior(qudName);
 	var posterior = Infer({method: 'enumerate'}, function(){
           var world = worldPrior();
-	  observe(answerer(question, world), possibleAnswer)
+	  observe(answerer(question, world), possibleAnswer);
 	  return nameToQUD(qudName)(world);
 	});
 	return qa.KL(posterior, prior);
@@ -236,11 +198,6 @@ var QAmodel = function(type, domain, rationality,  beta) {
     });
   });
   
-  var runTFBTQuestioner = cache(function(qudName, coinFlip) {
-    return (coinFlip ? questioner('pragmatic', qudName) :
-	    questioner('explicit', qudName));
-  });
-
   var runAnswererModel = cache(function(question, coinFlip) {
     // Want to know behavior marginalized across all possible world
     // because of symmetry, we can just use an example world
@@ -261,6 +218,5 @@ var QAmodel = function(type, domain, rationality,  beta) {
           litA : literalAnswerer,
           expA: explicitAnswerer,
 	  runAnswererModel: runAnswererModel,
-	  runTFBTQuestioner: runTFBTQuestioner
 	 };
 };
