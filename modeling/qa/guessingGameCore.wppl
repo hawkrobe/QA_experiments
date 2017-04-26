@@ -80,23 +80,21 @@ var QAmodel = function(type, domain, rationality,  beta) {
     return leaf + '@' + loc + ".";
   };
   
-  // returns a function that maps world to the gate we should pick to find
-  // a leaf under the given node
-  var makeQUD = function(node, tax) {
+  var makeGoalFromName = function(node) {
     return function(world){
-      var salientObj = tax ? tax[node] : node;
+      return world[node];
+    };
+  };
+
+  var sampleGoalFromExplicitQuestion = function(question) {
+    var node = questionToNode(question);
+    var salienceGuess = sampleSalienceAssignment();
+    return function(world) {
+      var salientObj = salienceGuess[node];
       return world[salientObj];
     };
   };
   
-  var nameToQUD = function(qudName){
-    if (_.includes(qudSpace, qudName)) {
-      return makeQUD(qudName);
-    } else {
-      return console.error('unknown qud name', qudName);
-    }
-  };
-
   var qudPrior = function() {
     return uniformDraw(qudSpace);
   };
@@ -120,7 +118,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
 	
   var getProjectedWorldPrior = dp.cache(function(qudName) {
     return Infer({method: 'enumerate'}, function(){
-      var qud = nameToQUD(qudName);
+      var qud = makeGoalFromName(qudName);
       return qud(worldPrior());
     });
   });
@@ -136,8 +134,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var explicitAnswerer = dp.cache(function(question, trueWorld) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     return Infer({method: 'enumerate'}, function(){
-      var salienceGuess = sampleSalienceAssignment();
-      var qud = makeQUD(questionToNode(question), salienceGuess);
+      var qud = sampleGoalFromExplicitQuestion(question);
       var answer = sample(truthfulAnswerPrior);
       var consistentWorldDist = Infer({method: 'enumerate'}, function(){
 	var inferredWorld = sample(interpreter(answer));
@@ -165,7 +162,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
 	var posterior = Infer({method: 'enumerate'}, function(){
           var world = worldPrior();
 	  observe(answerer(question, world), possibleAnswer);
-	  return nameToQUD(qudName)(world);
+	  return makeGoalFromName(qudName)(world);
 	});
 	return qa.KL(posterior, prior);
       });
@@ -191,9 +188,9 @@ var QAmodel = function(type, domain, rationality,  beta) {
       var answer = sample(truthfulAnswerPrior);
       var consistentWorldDist = Infer({method: 'enumerate'}, function(){
 	var inferredWorld = sample(interpreter(answer));
-	return nameToQUD(qudName)(inferredWorld);
+	return makeGoalFromName(qudName)(inferredWorld);
       });
-      factor(consistentWorldDist.score(nameToQUD(qudName)(trueWorld)) * rationality);
+      factor(consistentWorldDist.score(makeGoalFromName(qudName)(trueWorld)) * rationality);
       return answer;
     });
   });
