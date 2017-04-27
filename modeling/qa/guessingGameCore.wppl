@@ -27,7 +27,7 @@ var taxonomyAnswerMeaning = dp.cache(function(utterance){
 
 var isTaxonomyAnswer = dp.cache(function(qudSpace, x){
   return ((last(x) === '.') &
-	  (_.includes(qudSpace, qa.butLast(x).split("@")[0])));
+          (_.includes(qudSpace, qa.butLast(x).split("@")[0])));
 });
 
 // our model has two parameters: rationality controls how strongly
@@ -42,13 +42,13 @@ var QAmodel = function(type, domain, rationality,  beta) {
   
   // To cut down on computational complexity, we fix a location assignment
   var exampleWorld = _.zipObject(qudSpace, [1,2,3,4]);
-
+  
   var meaning = dp.cache(function(utterance){
     return (isTaxonomyAnswer(qudSpace, utterance) ? taxonomyAnswerMeaning(utterance) :
             utterance === 'null' ? function(w){return true;} :
             console.error('unknown utterance: ' + utterance));
   });
-
+  
   // Takes a taxonomy object with saliency probabilities
   // and picks one item from each label to be 'the salient one'
   var sampleSalienceAssignment = function() {
@@ -64,16 +64,16 @@ var QAmodel = function(type, domain, rationality,  beta) {
     var locAssignment = uniformDraw(locationAssignments);
     return _.zipObject(qudSpace, locAssignment);
   };
-
+  
   var questionPrior = function() {
     var v = uniformDraw(labelSpace);
     return 'whereIs' + v.charAt(0).toUpperCase() + v.slice(1) + '?';
   };
-
+  
   var questionSpace = Infer({method: 'enumerate'}, function(){
     return questionPrior();
   }).support();
-
+  
   var answerPrior = function(){
     var loc = uniformDraw([1,2,3,4]);
     var leaf = uniformDraw(qudSpace);
@@ -96,11 +96,11 @@ var QAmodel = function(type, domain, rationality,  beta) {
       return console.error('unknown qud name', qudName);
     }
   };
-
+  
   var qudPrior = function() {
     return uniformDraw(qudSpace);
   };
- 
+  
   var interpreter = dp.cache(function(answer){
     return Infer({method: 'enumerate'}, function(){
       var world = worldPrior();
@@ -109,7 +109,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
       return world;
     });
   });
-
+  
   var makeTruthfulAnswerPrior = dp.cache(function(trueWorld) {
     return Infer({method: 'enumerate'}, function(){
       var answer = answerPrior();
@@ -117,7 +117,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
       return answer;
     });
   });
-	
+  
   var getProjectedWorldPrior = dp.cache(function(qudName) {
     return Infer({method: 'enumerate'}, function(){
       var qud = nameToQUD(qudName);
@@ -140,36 +140,35 @@ var QAmodel = function(type, domain, rationality,  beta) {
       var qud = makeQUD(questionToNode(question), salienceGuess);
       var answer = sample(truthfulAnswerPrior);
       var consistentWorldDist = Infer({method: 'enumerate'}, function(){
-	var inferredWorld = sample(interpreter(answer));
-	return qud(inferredWorld);
+        var inferredWorld = sample(interpreter(answer));
+        return qud(inferredWorld);
       });
       factor(consistentWorldDist.score(qud(trueWorld)) * rationality);
       return answer;
     });
   });
-
+  
   var questioner = dp.cache(function(type, qudName) {
     var answerer = function() {(type === 'literal' ? literalAnswerer :
-				type === 'explicit' ? explicitAnswerer :
-				type === 'pragmatic' ? pragmaticAnswerer :
-				console.error('unknown type: ' + type))}();
+                                type === 'explicit' ? explicitAnswerer :
+                                type === 'pragmatic' ? pragmaticAnswerer :
+                                console.error('unknown type: ' + type))}();
     return Infer({method: 'enumerate'}, function() {
       var question = questionPrior();
-      var informationGainDist = Infer({method: 'enumerate'}, function(){
-	var trueWorld = worldPrior();
-	var possibleAnswer = sample(answerer(question, trueWorld));
-
-	// compute information gain for this answer, accounting for planning 
-	// problem (what would I believe in future if I heard this answer)
-	var prior = getProjectedWorldPrior(qudName);
-	var posterior = Infer({method: 'enumerate'}, function(){
-          var world = worldPrior();
-	  observe(answerer(question, world), possibleAnswer);
-	  return nameToQUD(qudName)(world);
-	});
-	return qa.KL(posterior, prior);
+      var possibleAnswer = Infer({method: 'enumerate'}, function(){
+        var trueWorld = worldPrior();
+        return sample(answerer(question, trueWorld));
       });
-      factor(expectation(informationGainDist) * rationality);
+      var infGain = function(answer){
+        var prior = getProjectedWorldPrior(qudName);
+        var posterior = Infer({method: 'enumerate'}, function(){
+          var world = worldPrior();
+          observe(answerer(question, world), answer);
+          return nameToQUD(qudName)(world);
+        });
+        return qa.KL(posterior, prior);
+      };
+      factor(expectation(possibleAnswer, infGain) * rationality);
       return question;
     });
   });
@@ -182,7 +181,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
       return qudName;
     });
   });
-
+  
   var pragmaticAnswerer = dp.cache(function(question, trueWorld){
     var qudPosterior = inferQUD(question);
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
@@ -190,8 +189,8 @@ var QAmodel = function(type, domain, rationality,  beta) {
       var qudName = sample(qudPosterior);
       var answer = sample(truthfulAnswerPrior);
       var consistentWorldDist = Infer({method: 'enumerate'}, function(){
-	var inferredWorld = sample(interpreter(answer));
-	return nameToQUD(qudName)(inferredWorld);
+        var inferredWorld = sample(interpreter(answer));
+        return nameToQUD(qudName)(inferredWorld);
       });
       factor(consistentWorldDist.score(nameToQUD(qudName)(trueWorld)) * rationality);
       return answer;
@@ -202,8 +201,8 @@ var QAmodel = function(type, domain, rationality,  beta) {
     // Want to know behavior marginalized across all possible world
     // because of symmetry, we can just use an example world
     var ansERP = (coinFlip ?
-		  pragmaticAnswerer(question, exampleWorld) :
-		  explicitAnswerer(question, exampleWorld));
+                  pragmaticAnswerer(question, exampleWorld) :
+                  explicitAnswerer(question, exampleWorld));
     // We marganilize over location information, again because of symmetry
     return Infer({method: 'enumerate'}, function() {
       var ans = sample(ansERP);
@@ -211,12 +210,13 @@ var QAmodel = function(type, domain, rationality,  beta) {
     });
   });
   
-  return {qudSpace : qudSpace,
-          questionSpace : questionSpace,
-          questioner : questioner,
-          pragA : pragmaticAnswerer,
-          litA : literalAnswerer,
-          expA: explicitAnswerer,
-	  runAnswererModel: runAnswererModel,
-	 };
+  return {
+    qudSpace : qudSpace,
+    questionSpace : questionSpace,
+    questioner : questioner,
+    pragA : pragmaticAnswerer,
+    litA : literalAnswerer,
+    expA: explicitAnswerer,
+    runAnswererModel: runAnswererModel
+  };
 };
