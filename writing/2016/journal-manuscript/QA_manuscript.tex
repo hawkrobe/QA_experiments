@@ -206,51 +206,50 @@ When it is the listener's turn to speak, they can then generate statements that 
 
 \label{sec:model}
 
-\ndg{i suggest reorganizing as follows:
--set up notation W,G,Q,A and describe what kind of thing they are.
--describe the simple informative "answerer" which is RSA S1 for declarative statements with no QUD. Utility is to provide any information.
--describe a relevantly informative answerer which takes the question to define QUD fn (equivalent to RSA S1 with QUD). Utility is to provide relevant information. (Define in terms of the relation $K(w,w')=\delta{g(w)=g(w')}$? this works for answerer, but not necessarily for IG...)
--describe $Q_0$ and $Q_1$, introducing the idea that question utility is expected information gained from answerer.
--describe "pragmatic" answerer who reasons about questioner's goal. note that this can be presented as interpretation of the question to yield a goal posterior, followed by $A_1$. ie it's still a relevantly informative answer, just with respect to uncertainty about true goal of questioner.
--finally the pragmatic answerer.}
-
-%\ndg{i wonder if we should preface this all with a brief discussion of how an interlocutor in a dialog has to both listen (interpret statements and questions) and speak (produce questions or statements). in our setting the "questioner" starts and therefore doesn't have to listen. the "answerer" first listen's to a question, and then produces a statement. hence the answerer will decompose into a listener part and a speaker part.}
-
-
 \subsection{Preliminaries}
 
-Our mathematical formalization of dialogue begins with on four primitive sets that agents take to be in common ground. For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as an example throughout: 
+Our mathematical formalization of dialogue begins with four primitive sets that agents take to be in common ground. For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as an example throughout: 
 \begin{description}
-\item[$\mathcal{W}$:] a set of true states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}. This can be pre-restricted to the relevant dimensions for the scenario being modelled, but in principle may also include other features such as the current weather, the location of nearby caf\'es, or the kinds of payment that the store accepts.
-\item[$\mathcal{Q}$:] a set of possible question utterances , such as ``Does a fifth of Jim Beam cost more than \$5?'' or alternatives like ``Do you accept credit cards?''
-\item[$\mathcal{A}$:] a set of possible declarative statements that may be used to respond to questions, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.''
-\item[$\mathcal{G}$:] a set of possible questioner goals, such as learning the actual price of the whiskey or learning whether or not one can afford to buy the whiskey at all. 
+\item[$\mathcal{W}$:] a set of true states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}. In principle, this may also include other features of the world, such as the current weather, the location of nearby caf\'es, or the kinds of payment that the store accepts.
+\item[$\mathcal{G}$:] a set of possible underlying questioner goals, such as learning the actual price of the whiskey or learning whether or not one can afford to buy the whiskey at all. 
 We formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\hat{w} = g(w)$; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. For example, the customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
 $$g_{<}(w) = \left\{\begin{array}{rcl}
 1 & & w < 5 \\
 0 & & \textrm{otherwise}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other words are mapped onto a different state.
+\item[$\mathcal{Q}$:] a set of possible question utterances , such as ``Does a fifth of Jim Beam cost more than \$5?'' or alternatives like ``Do you accept credit cards?'' We take the literal meaning \den{$q$} of a question to be of the same type as informational goals, such that a particular question utterance corresponds to a particular goal projection\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one value and all other worlds to a different value. Note that the correspondence between questions and goals is not necessarily symmetric: while every question corresponds to a goal, we do not expect that every possible goal corresponds to a question utterance.
+\item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be true-conditional: a map from world states to booleans. So the answer ``A fifth costs \$8.'' would be true in the world where $w = \$8$ and false otherwise. 
 \end{description}
 %QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion. \ndg{this comment about relevance seems out of place.}
 
-\todo[inline]{Move this to section defining $KL^g$}
+\subsection{Informative Answerer}
+
+We begin by considering the problem of how a dialogue agent ought to interpret and respond to a question utterance. The simplest baseline answerer, $A_0$, attempts to be informative about the state of the world without considering his partner's goals. In other words, $A_0$ is a rational speaker without any corresponding listener component to interpret and relevantly address its input. 
+
+Formally, $A_0$ hears a question utterance $q \in \mathcal{Q}$ with private knowledge about a world state $w \in \mathcal{W}$. He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$ proportional to the epistemic utility of that utterance to his communication partner: 
+$$P_{A_0}(a | q, w) \propto \exp(\alpha U(a;w))$$ 
+where $\alpha$ is a soft-max optimality parameter. 
+
+We define the epistemic utility of the utterance using the information-theoretic measure of surprisal: the increase in certainty an imagined interpreter $I$ has about the true state of the world after hearing $a$: $$U(a;w) = \ln P_I(w|a)$$ 
+
+Critically, $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs, conditioning on the literal meaning of the utterance $a$ being true:
+$$P_I(w|a) = \delta_{\textrm{\den{a}}(w)} P(w)$$
+In other words, the interpreter constrains the prior on worlds to the subset of its support that is consistent with the given utterance.
+
+%%%
+%\footnote{For the purposes of this paper, we assume answers are always full sentences, corresponding to truth-functional propositions that can be evaluated in a given world. The interpreter described is the simplest required to model such answers. For fragments such as `yes' or `Bob,' which can be used to answer questions like `Is dinner at 7pm?' or `Who got the promotion?' we would require a more sophisticated interpreter that can compositionally expand the fragment into a valid proposition, using the question. This is a standard operation in formal semantic models, and an interesting target for future research, but is not necessary for the experiments we report.}
+
+\subsection{Informative and Relevant Answerer}
+
+\subsection{Questioner}
+
 We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution: 
 %Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. 
 %\ndg{this comment doesn't make sense... $P(g(w))$ isn't well defined.}
 $$\widehat{P^g}(v) \propto \sum_{\mathcal{W}} \delta_{v=g(w)}P(w)$$ 
 %is a distribution over the image of $g$. \ndg{hmm.. if W is continuous, i'm not sure that this defines the right distribution. might need the derivative of g?}
 
-We must also specify the semantics we're using for questions and answers. We assume that the meaning of a question $q \in \mathcal{Q}$ is the same as that of a QUD: a projection from a world state to a feature (or features) of interest. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one set and all other worlds to a different set \ndg{why set? just value?}. An answer is a map from world states to booleans. So the answer \$8 would be true in the world where $w = \$8$ and false otherwise\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}.
-
-These semantics enter our model primarily through an \textbf{interpreter} function, which all agents use to compute the literal interpretation of an answer. The interpreter constrains the prior on worlds to the subset of its support that is consistent with the given answer:%
-%%%
-\footnote{For the purposes of this paper, we assume answers are always full sentences, corresponding to truth-functional propositions that can be evaluated in a given world. The interpreter described is the simplest required to model such answers. For fragments such as `yes' or `Bob,' which can be used to answer questions like `Is dinner at 7pm?' or `Who got the promotion?' we would require a more sophisticated interpreter that can compositionally expand the fragment into a valid proposition, using the question. This is a standard operation in formal semantic models, and an interesting target for future research, but is not necessary for the experiments we report.}
-%
-$$P_I(w | a) \propto P(w) \delta_{a(w)}$$
-%
-
-\subsection{The Questioner}
 
 How should a questioner choose between questions?
 %
@@ -724,7 +723,7 @@ Humans are experts at inferring the intentions of other agents from their action
 %\todo[inline]{Reformulate this last sentence so that it doesn't sound like we've already accomplished this; make clear that this is something for the future, but that the framework is really exciting because it?s so clear about where one would start fiddling with it}
 By formalizing the computational process by which answerers infer these different intentions, our model framework provides a unifying way to accommodate this diversity.  % If questions themselves are informative, we must ask them carefully.
 
-%\ndg{todo acknowledgements! include onr muri, etc.}
+\ndg{todo acknowledgements! include onr muri, etc.}
 
 \bibliography{qa}
 \bibliographystyle{apacite}
@@ -761,8 +760,6 @@ artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 %\caption{Results for our computational experiments implementing the Groenendijck \& Stokhof (1984) \emph{mention-some} problem.}
 %\label{fig:cafeExperimentResults}
 %\end{figure*}
-
-\ndg{hmm. maybe we should move this example to an appendix, since it doesn't add any conceptual point beyond the clark example (and is complex)?}
 
 For a slightly more complex example, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an exhaustive list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a mention of a single location would be sufficient. Many recent theoretical explanations in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}. While there are no experimental results on \emph{mention-some} and \emph{mention-all} readings with which we can compare our model's output, we include the phenomenon as a case study for its value in demonstrating how our model formalizes the standard explanation. 
 
