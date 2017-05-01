@@ -161,7 +161,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
         var posterior = Infer({method: 'enumerate'}, function(){
           var world = worldPrior();
           observe(answerer(question, world), answer);
-          return nameToQUD(qudName)(world);
+          return makeGoalFromName(qudName)(world);
         });
         return qa.KL(posterior, prior);
       };
@@ -194,10 +194,10 @@ var QAmodel = function(type, domain, rationality,  beta) {
     });
   });
   
-  var runAnswererModel = cache(function(question, coinFlip) {
+  var runAnswererModel = cache(function(question, answererType) {
     // Want to know behavior marginalized across all possible world
     // because of symmetry, we can just use an example world
-    var ansERP = (coinFlip ?
+    var ansERP = (answererType === 'pragmatic' ?
                   pragmaticAnswerer(question, exampleWorld) :
                   explicitAnswerer(question, exampleWorld));
     // We marganilize over location information, again because of symmetry
