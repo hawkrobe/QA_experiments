@@ -260,7 +260,7 @@ Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speak
 Thus, we modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
 $$U_{A_1}(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a)$$
 where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
-$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{\delta_{g(w) = g(w')}}$$}.
+$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{\delta_{g(w) = g(w')}}$$\todo[inline]{rdh: not 100\% satisfied with this notation}}.
 
 %$$
 %\begin{array}{rcl}
@@ -312,10 +312,10 @@ $\E{P(a|q)}{ \KL{P(w|a)}{P(w)} } = \E{\sum_{w^*} P_{A}(a | q, w^*)P(w^*)}{ \KL{P
 This distribution has two components: 
 First, it depends on the interpreter, $P_I(w | a)$, which specifies the likelihood of different worlds after hearing an answer statement. Note this function does not depend on goals: we will only project along $g$ in the KL operator above after we have computed the posterior. Second, it depends on $P_{A}(a | q, w^*)$, a model of likely answerer behavior which we explore next.
 
-\subsection{The Answerer}
+\subsection{$A_2$: Goal-Sensitive Answerer}
 
-How should an answerer choose between answers to a question? What should a questioner assume about the answerer when choosing a question? We next describe three different answerer models; the questioner could assume any one of them, leading to three corresponding versions of the questioner model. From here on, we index the questioner and answerer models by $i$ to formulate different questioner models $Q_i$ which reason about different answerers $A_i$ (see Figure \ref{fig:models}).
-All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
+%How should an answerer choose between answers to a question? What should a questioner assume about the answerer when choosing a question? We next describe three different answerer models; the questioner could assume any one of them, leading to three corresponding versions of the questioner model. From here on, we index the questioner and answerer models by $i$ to formulate different questioner models $Q_i$ which reason about different answerers $A_i$ (see Figure \ref{fig:models}).
+%All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
 %
 
 %The \textbf{literal answerer} simply chooses answers by trading off prior answer probability (interpreted here as cost) and how well that answer conveys the true state of the world to an interpreter:
@@ -327,8 +327,6 @@ All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \i
 % \todo[inline]{this is wrong (should prefer \emph{it costs 8})}
 %For a fixed question, this is equivalent to the speaker in previous RSA models. They seek to be maximally informative about the state of the world, but do not adjust their response for different question utterances or contexts. This model is of interest primarily as a null model that is nonetheless more realistic than a random speaker. 
 %
-
-The \textbf{explicit answerer} additionally evaluates answers with respect to how well they address the explicit question $q$. 
 
 \begin{table*}[h!]
 \centering
