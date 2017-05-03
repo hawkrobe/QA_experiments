@@ -212,44 +212,60 @@ Our mathematical formalization of dialogue begins with four primitive sets that 
 \begin{description}
 \item[$\mathcal{W}$:] a set of true states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}. In principle, this may also include other features of the world, such as the current weather, the location of nearby caf\'es, or the kinds of payment that the store accepts.
 \item[$\mathcal{G}$:] a set of possible underlying questioner goals, such as learning the actual price of the whiskey or learning whether or not one can afford to buy the whiskey at all. 
-We formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\hat{w} = g(w)$; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. For example, the customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
+We formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function $g: \mathcal{W} \rightarrow \widehat{\mathcal{W}}$ that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\widehat{w} = g(w)$; this is similar to the notion of a question-under-discussion \cite<QUD;>{Roberts96_InformationStructureDiscourse}. For example, the customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
 $$g_{<}(w) = \left\{\begin{array}{rcl}
 1 & & w < 5 \\
 0 & & \textrm{otherwise}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other words are mapped onto a different state.
 \item[$\mathcal{Q}$:] a set of possible question utterances , such as ``Does a fifth of Jim Beam cost more than \$5?'' or alternatives like ``Do you accept credit cards?'' We take the literal meaning \den{$q$} of a question to be of the same type as informational goals, such that a particular question utterance corresponds to a particular goal projection\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one value and all other worlds to a different value. Note that the correspondence between questions and goals is not necessarily symmetric: while every question corresponds to a goal, we do not expect that every possible goal corresponds to a question utterance.
-\item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be true-conditional: a map from world states to booleans. So the answer ``A fifth costs \$8.'' would be true in the world where $w = \$8$ and false otherwise. 
+\item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be true-conditional: a map from world states to booleans. For instance, the utterance ``A fifth costs \$8.'' would be true in the world where $w = \$8$ and false otherwise. 
 \end{description}
 %QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion. \ndg{this comment about relevance seems out of place.}
 
-\subsection{Informative Answerer}
+\subsection{$A_0$: Informative Answerer}
 
 We begin by considering the problem of how a dialogue agent ought to interpret and respond to a question utterance. The simplest baseline answerer, $A_0$, attempts to be informative about the state of the world without considering his partner's goals. In other words, $A_0$ is a rational speaker without any corresponding listener component to interpret and relevantly address its input. 
 
-Formally, $A_0$ hears a question utterance $q \in \mathcal{Q}$ with private knowledge about a world state $w \in \mathcal{W}$. He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$ proportional to the epistemic utility of that utterance to his communication partner: 
+Formally, $A_0$ hears a question utterance $q \in \mathcal{Q}$ with private knowledge about the true world state $w \in \mathcal{W}$. He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$ proportional to the epistemic utility of that utterance to his communication partner: 
 $$P_{A_0}(a | q, w) \propto \exp(\alpha U(a;w))$$ 
 where $\alpha$ is a soft-max optimality parameter. 
 
-We define the epistemic utility of the utterance using the information-theoretic measure of surprisal: the increase in certainty an imagined interpreter $I$ has about the true state of the world after hearing $a$: $$U(a;w) = \ln P_I(w|a)$$ 
+We define the epistemic utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$: $$U(a;w) = \ln P_I(w|a)$$ 
 
-Critically, $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs, conditioning on the literal meaning of the utterance $a$ being true:
+Critically, $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs about worlds, conditioning on the literal meaning of the utterance $a$ being true:
 $$P_I(w|a) = \delta_{\textrm{\den{a}}(w)} P(w)$$
-In other words, the interpreter constrains the prior on worlds to the subset of its support that is consistent with the given utterance.
+where $\delta_{e}$ is the delta function returning 1 when $e$ evaluates to true and 0 otherwise, and $P(w)$ is a prior over true states of the world. 
+%In other words, the interpreter constrains the prior on worlds to the subset of its support that is consistent with the given utterance, and $A_0$ attempts to (soft)-maximize the probability of the true world in this posterior. 
+
+This formulation of $A_0$ is equivalent to the pragmatic speaker $S_1$ for declarative statements in previous RSA models \cite{GoodmanFrank16_RSATiCS}. It thus serves as a useful baseline model for several reasons: for one, it chooses utterances using the same basic utility as the more sophisticated models we consider, thus serving as a ``lesioned'' speaker to evaluate the necessity of the listener component. At the same time, it is a more charitable baseline than a purely random speaker: if asked about a fifth of Jim Beam knowing that it costs \$8, $A_0$ would prefer ``It costs \$8'' to ``It costs more than \$5'' or (falsely) ``It costs \$4'' simply because the former leads to an interpreter placing more probability on the true state of the world ($w = $ \$8).
 
 %%%
 %\footnote{For the purposes of this paper, we assume answers are always full sentences, corresponding to truth-functional propositions that can be evaluated in a given world. The interpreter described is the simplest required to model such answers. For fragments such as `yes' or `Bob,' which can be used to answer questions like `Is dinner at 7pm?' or `Who got the promotion?' we would require a more sophisticated interpreter that can compositionally expand the fragment into a valid proposition, using the question. This is a standard operation in formal semantic models, and an interesting target for future research, but is not necessary for the experiments we report.}
 
-\subsection{Informative and Relevant Answerer}
+\subsection{$A_1$: Relevantly Informative Answerer}
+
+While $A_0$ is informative, he is not particularly \emph{relevant}. When asked about the weather, he is just as likely to inform his partner about what he ate for breakfast as he is to say ``it's sunny.'' How do we incorporate relevance into the answerer's utility? 
+
+Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, relevance means that the speaker only cares about the listener's beliefs over the image $\widehat{\mathcal{W}}$ of the goal-projection $g$, such that irrelevant features are collapsed together. 
+ %We use the notation $\widehat{P^g}(w')$ to indicate the distribution over $\mathcal{W}'$ induced by the projection:
+%$$\widehat{P^g}(w') = \sum_{w\in\mathcal{W}} \delta_{w' = g(w)} P(w)$$ 
+Thus, we modify the utility  \emph{relevantly} informative answerer $A_1$ with the goal-relevant utility 
+$$U(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a)$$
+where $K_g(w,w')$ is a similarity function (or kernel) between worlds. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which aggregates the posterior probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$.
+
+%$$
+%\begin{array}{rcl}
+%U(a; g, w) & = & \ln \widehat{P^g_I}(g(w)|a) \\
+%                 & = & \ln \sum_{w'\in\mathcal{W}} \delta_{g(w) = g(w')} P_I(w' | a) \\
+%                 & = & \ln \sum_{w'\in\mathcal{W}} K_g(w,w')P_I(w' | a)
+%\end{array}
+%$$
+This modified speaker component suggests a simple proposal for a corresponding listener component: we use the semantics of the question $q$ itself as the projection:
+$$P_{A_1}(a|q,w) \propto \exp(\alpha U(a; q,w))$$
+ This implements the simplest realistic theory of answerers: they attempt to reduce the questioner's uncertainty about the aspect of the world that they were queried about. For example, an explicit liquor store answerer would always respond to the question ``Does a fifth of Jim Beam cost more than \$5?'' with the literal response, ``Yes'' because it best selects between the two sets introduced by the explicit goal projection. 
 
 \subsection{Questioner}
-
-We will denote a distribution over the set of world states by $P(w)$, and will correspondingly use the notation $\widehat{P^g}(w)$ to indicate the probability of the $g$-projection of a world state $w$ under the projected distribution: 
-%Note that this is potentially very different from $P(g(w))$, the probability of the projected world state under the original distribution. 
-%\ndg{this comment doesn't make sense... $P(g(w))$ isn't well defined.}
-$$\widehat{P^g}(v) \propto \sum_{\mathcal{W}} \delta_{v=g(w)}P(w)$$ 
-%is a distribution over the image of $g$. \ndg{hmm.. if W is continuous, i'm not sure that this defines the right distribution. might need the derivative of g?}
-
 
 How should a questioner choose between questions?
 %
@@ -299,20 +315,17 @@ How should an answerer choose between answers to a question? What should a quest
 All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
 %
 
-The \textbf{literal answerer} simply chooses answers by trading off prior answer probability (interpreted here as cost) and how well that answer conveys the true state of the world to an interpreter:
-%
-$$P_{A_0}(a | q,w^*) \propto e^{P_I(w^* | \,a) - C(a)} $$
-\ndg{isn't there a $\ln$?}
+%The \textbf{literal answerer} simply chooses answers by trading off prior answer probability (interpreted here as cost) and how well that answer conveys the true state of the world to an interpreter:
+%%
+%$$P_{A_0}(a | q,w^*) \propto e^{P_I(w^* | \,a) - C(a)} $$
+%\ndg{isn't there a $\ln$?}
+%%
+
+% \todo[inline]{this is wrong (should prefer \emph{it costs 8})}
+%For a fixed question, this is equivalent to the speaker in previous RSA models. They seek to be maximally informative about the state of the world, but do not adjust their response for different question utterances or contexts. This model is of interest primarily as a null model that is nonetheless more realistic than a random speaker. 
 %
 
-\todo[inline]{this is wrong (should prefer \emph{it costs 8})}
-For a fixed question, this is equivalent to the speaker in previous RSA models. They seek to be maximally informative about the state of the world, but do not adjust their response for different question utterances or contexts. For example, a literal liquor store answerer would only distinguish between ``It costs more than \$5'' and ``It costs \$8'' if they were associated with different costs, since both are equally true. This model is of interest primarily as a null model that is nonetheless more realistic than a random speaker. 
-%
-
-The \textbf{explicit answerer} additionally evaluates answers with respect to how well they address the explicit question $q$. In other words, we use the question $q$ itself as the QUD projection, and choose answers proportionally to how well a listener with goal $q$ would guess the true state of the world $w^*$:
-%
-$$P_{A_1}(a | q, w^*) \propto e^{\widehat{P^q}_I(w^* | \, a) - C(a)}$$
-This implements the simplest realistic theory of answerers: they attempt to reduce the questioner's uncertainty about the aspect of the world that they were queried about. For example, an explicit liquor store answerer would always respond to the question ``Does a fifth of Jim Beam cost more than \$5?'' with the literal response, ``Yes'' because it best selects between the two sets introduced by the explicit goal projection. 
+The \textbf{explicit answerer} additionally evaluates answers with respect to how well they address the explicit question $q$. 
 
 \begin{table*}[h!]
 \centering
