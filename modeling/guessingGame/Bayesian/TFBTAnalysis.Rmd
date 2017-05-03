@@ -89,93 +89,107 @@ options( digits =1)
 computeBayesFactor <- function(name) {
   inputFile <- paste0("../../guessingGame/Bayesian/data/", name, '.csv')
   raw <- read.csv(inputFile, sep = ",", row.names = NULL) 
-
   # BDA result:
   res <- raw %>% 
-    filter(parameter == "expPragFlip") %>% 
+    filter(parameter %in% c("modelType", 'expPragFlip')) %>% 
     group_by(value) %>% 
     summarize(prob = sum(MCMCprob)) %>%
     spread(value, prob) 
-
+  print(res)
   return(signif(res$true/res$false, 3))
 }
-print(paste0('BF (beta = 0, questioner): ',
-             computeBayesFactor("betaZeroQuestioner_Params")))
-print(paste0('BF (beta = 0, answerer): ',
-             computeBayesFactor("betaZeroAnswerer_Params")))
+# print(paste0('BF (beta = 0, questioner): ',
+#              computeBayesFactor("betaZeroQuestioner_Params")))
+# print(paste0('BF (beta = 0, answerer): ',
+#              computeBayesFactor("betaZeroAnswerer_Params")))
 print(paste0('BF (free beta, questioner): ',
-             computeBayesFactor("fullQuestioner_Params")))
+             computeBayesFactor("questionerFixedParams")))
 print(paste0('BF (free beta, answerer): ',
-      computeBayesFactor("fullAnswerer_Params")))
+      computeBayesFactor("answererFixedParams")))
 ```
 
 Looks like there's a super narrow range where the pragmatic model makes much much better predictions... 
 
 ```{r}
-filteredQparams = qparams_raw %>% filter(MCMCprob > 0.0001)
-samples = 1/0.0001
-qparams.samples <- filteredQparams[rep(row.names(filteredQparams), filteredQparams$MCMCprob*samples), 1:2] %>%
-  filter(parameter != "expPragFlip") %>% 
-  mutate(value = as.numeric(as.character( value)))
+examineQuestionerParams <- function(name) {
+  inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
+  filteredQparams = read.csv(inputname, sep = ",", row.names = NULL) %>% 
+    filter(MCMCprob > 0.0001)
+  qparams.samples <- filteredQparams[rep(row.names(filteredQparams), filteredQparams$MCMCprob*1000), 1:2] %>%
+    filter(parameter != "modelType") %>% 
+    mutate(value = as.numeric(as.character( value)))
+  View(qparams.samples)
+  qparams.samples %>%
+    group_by(parameter) %>%
+    summarize(mode = estimate_mode(value),
+              md_lo = round(HPDlo(value), 3),
+              md_hi = round(HPDhi(value), 3))
 
-qparams.samples %>%
-  group_by(parameter) %>%
-  summarize(mode = estimate_mode(value),
-            md_lo = round(HPDlo(value), 3),
-            md_hi = round(HPDhi(value), 3))
-
-questionParamPosterior <- qparams.samples %>%
-  ggplot(aes(x = value))+
-    geom_histogram(aes(y=..density..), 
-                 data =subset(qparams.samples, parameter == "alpha" ), 
-                 binwidth = .25, colour="black", fill="white") +
-    geom_histogram(aes(y=..density..), 
-                 data=subset(qparams.samples, parameter == "beta"), 
-                 binwidth = .05, colour="black", fill="white") +
-    geom_density(aes(y=..density..),
-                 data =subset(qparams.samples, parameter == "alpha" ), 
-                 adjust = 5, alpha=.2, fill="#FF6666")+
-    geom_density(aes(y=..density..),
-                 data=subset(qparams.samples, parameter == "beta"), 
-                 adjust = 5, alpha=.2, fill="#FF6666")+
-    facet_wrap(~parameter, scales = 'free') +
-    theme_bw()
-questionParamPosterior
-ggsave(file="../../../writing/2016/journal-manuscript/figures/QuestionerParamPosteriors.pdf", questionParamPosterior, width = 6, height = 3)
+  questionParamPosterior <- qparams.samples %>%
+    ggplot(aes(x = value))+
+      geom_histogram(aes(y=..density..), 
+                   data =subset(qparams.samples, parameter == "alpha" ), 
+                   binwidth = .25, colour="black", fill="white") +
+      geom_histogram(aes(y=..density..), 
+                   data=subset(qparams.samples, parameter == "beta"), 
+                   binwidth = .05, colour="black", fill="white") +
+      geom_density(aes(y=..density..),
+                   data =subset(qparams.samples, parameter == "alpha" ), 
+                   adjust = 5, alpha=.2, fill="#FF6666")+
+      geom_density(aes(y=..density..),
+                   data=subset(qparams.samples, parameter == "beta"), 
+                   adjust = 5, alpha=.2, fill="#FF6666")+
+      facet_wrap(~parameter, scales = 'free') +
+      theme_bw()
+  print(questionParamPosterior)
+  outputName = paste0("../../../writing/2016/journal-manuscript/figures/",
+                     name, ".pdf")
+  ggsave(outputName, questionParamPosterior, 
+         width = 6, height = 3, bg = "transparent")
+}
+examineQuestionerParams('questioner_pragOnlyParams')
 ```
 
 ```{r}
-filteredAparams<-read.csv("../../guessingGame/Bayesian/data/BayesianAnswererAnalysis_loose_params.csv", sep = ",", row.names = NULL) %>%
-    filter(MCMCprob > 0.0001) %>% 
-    filter(parameter != "expPragFlip") %>%
-    mutate(value = as.numeric(as.character( value)))
-
-aparams.toplot <- filteredAparams[rep(row.names(filteredAparams), filteredAparams$MCMCprob*samples), 1:2] 
-
-aparams.toplot %>%
-    group_by(parameter) %>%
-  summarize(mode = estimate_mode(value),
-            md_lo = round(HPDlo(value), 3),
-            md_hi = round(HPDhi(value), 3))
-
-
-answererParamPosteriors = ggplot(aparams.toplot, aes(x=value))+
-    geom_histogram(aes(y=..density..), 
+examineAnswererParams <- function(name) {
+  inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
+  filteredAparams<-read.csv(inputname, sep = ",", row.names = NULL) %>%
+      filter(MCMCprob > 0.0001) %>% 
+      filter(parameter != "modelType") %>%
+      mutate(value = as.numeric(as.character( value)))
+  View(filteredAparams)
+  aparams.toplot <- filteredAparams[rep(row.names(filteredAparams), filteredAparams$MCMCprob*1000), 1:2] 
+  
+  aparams.toplot %>%
+      group_by(parameter) %>%
+    summarize(mode = estimate_mode(value),
+              md_lo = round(HPDlo(value), 3),
+              md_hi = round(HPDhi(value), 3))
+  
+  
+  answererParamPosteriors = ggplot(aparams.toplot, aes(x=value))+
+      geom_histogram(aes(y=..density..), 
+                     data =subset(aparams.toplot, parameter == "alpha" ), 
+                     binwidth = .1, colour="black", fill="white") +
+      geom_histogram(aes(y=..density..), 
+                     data=subset(aparams.toplot, parameter == "beta"), 
+                     binwidth = .025, colour="black", fill="white") +
+      geom_density(aes(y=..density..),
                    data =subset(aparams.toplot, parameter == "alpha" ), 
-                   binwidth = .1, colour="black", fill="white") +
-    geom_histogram(aes(y=..density..), 
+                   adjust = 1, alpha=.2, fill="#FF6666")+
+      geom_density(aes(y=..density..),
                    data=subset(aparams.toplot, parameter == "beta"), 
-                   binwidth = .025, colour="black", fill="white") +
-    geom_density(aes(y=..density..),
-                 data =subset(aparams.toplot, parameter == "alpha" ), 
-                 adjust = 1, alpha=.2, fill="#FF6666")+
-    geom_density(aes(y=..density..),
-                 data=subset(aparams.toplot, parameter == "beta"), 
-                 adjust = 2, alpha=.2, fill="#FF6666")+
-    ggtitle("Answerer Parameter Posteriors") +
-    facet_grid(~parameter, scales = 'free') +
-    theme_bw()
-ggsave("../../../writing/2016/journal-manuscript/figures/AnswererParamPosteriors.pdf", answererParamPosteriors, width = 6, height = 3)
+                   adjust = 2, alpha=.2, fill="#FF6666")+
+      ggtitle("Answerer Parameter Posteriors") +
+      facet_grid(~parameter, scales = 'free') +
+      theme_bw()
+  print(answererParamPosteriors)
+  outputFile <- paste0("../../../writing/2016/journal-manuscript/figures/",
+                       name, ".pdf")
+  ggsave(outputFile, answererParamPosteriors, 
+         width = 6, height = 3)
+}
+examineAnswererParams('answerer_pragOnlyParams')
 ```
 
 ### Predictives
@@ -183,13 +197,22 @@ ggsave("../../../writing/2016/journal-manuscript/figures/AnswererParamPosteriors
 First, for answerer:
 
 ```{r}
-generateAnswererPredictiveFit <- function(name) {
+generateAnswererPredictiveFit <- function(name, typicality) {
   inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
-  apredictive<-read.csv(inputname, sep = ",", row.names = NULL) %>%
-    filter(MCMCprob > 0.0001)
-  
-  apredictive.samples <- apredictive[rep(row.names(apredictive),
-                                     apredictive$MCMCprob*1000), 1:5] %>%
+  apredictive<-read.csv(inputname, sep = ",", row.names = NULL) 
+
+  if(typicality == 'withoutTypicality') {
+    apredictive.samples <- apredictive %>% 
+      filter(beta == 0) %>%
+      filter(MCMCprob == max(MCMCprob))
+  } else {
+    apredictive.samples <- filter(MCMCprob > 0.0001) %>% 
+      apredictive[rep(row.names(apredictive),
+                  apredictive$MCMCprob*1000), 
+                  -length(colnames(apredictive))]
+  }
+
+  apredictive.samples <- apredictive.samples %>%
     mutate(question = as.character(parameter),
            answer = substr(as.character(value), 1, 
                            nchar(as.character(value)) - 1),
@@ -199,14 +222,14 @@ generateAnswererPredictiveFit <- function(name) {
     do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
     mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
     select(type, domain, utterance, response, prob)
-  
+  View(apredictive.samples)
   apredictive.pp <- apredictive.samples %>%
     group_by(type, domain, utterance, response) %>%
-    summarize(MAP = estimate_mode(prob),
-              credHigh = HPDhi(prob),
-              credLow = HPDlo(prob)) %>%
+    summarize(MAP = prob) %>%
+              # credHigh = HPDhi(prob),
+              #credLow = HPDlo(prob)) %>%
     right_join(d_a, by = c("response", "utterance", "domain", "type"))
-
+  #View(apredictive.pp)
   acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
 
   answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
@@ -232,13 +255,14 @@ generateAnswererPredictiveFit <- function(name) {
             legend.background = element_rect(fill = "transparent",colour = NA),
             legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
   ))
+  print(answer_plots)
   outputfile <- paste0('../../../writing/2016/journal-manuscript/figures/',
                        name, '.pdf')
   ggsave(outputfile, answer_plots, 
          width = 6, height = 6, bg = "transparent")
 }
-generateAnswererPredictiveFit('betaZeroAnswerer_Predictives')
-generateAnswererPredictiveFit('fullAnswerer_Predictives')
+#generateAnswererPredictiveFit('answerer_PragOnlyPredictives', 'withTypicality')
+generateAnswererPredictiveFit('answerer_PragOnlyPredictives', 'withoutTypicality')
 ```
 
 next, generate predictives for questioner:
@@ -291,13 +315,15 @@ generateQuestionerPredictiveFit <- function(name) {
             legend.background = element_rect(fill = "transparent",colour = NA),
             legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
   )
+  print(question_plots)
   outputName = paste0("../../../writing/2016/journal-manuscript/figures/",
                       name, ".pdf")
   ggsave(outputName, question_plots, 
          width = 6, height = 6, bg = "transparent")
 }
-generateQuestionerPredictiveFit("betaZeroQuestioner_Predictives")
-generateQuestionerPredictiveFit("fullQuestioner_Predictives")
+#generateQuestionerPredictiveFit("betaZeroQuestioner_Predictives")
+#generateQuestionerPredictiveFit("fullQuestioner_Predictives")
+generateQuestionerPredictiveFit('questionerFixed')
 ```
 
 Let's look at some specific cases, 
