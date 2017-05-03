@@ -18,6 +18,10 @@
 \)
 }
 
+
+\newcommand{\KL}[2]{\ensuremath{D_{KL}({#1}\, \| \, {#2})}}
+\newcommand{\E}[2]{\ensuremath{\mathbb{E}_{#1}\left [#2 \right]}}
+
 \newenvironment{figurehere}
 	{\def\@captype{figure}}
 	{}
@@ -228,10 +232,14 @@ such that all worlds where the agent can afford the whiskey are mapped onto one 
 We begin by considering the problem of how a dialogue agent ought to interpret and respond to a question utterance. The simplest baseline answerer, $A_0$, attempts to be informative about the state of the world without considering his partner's goals. In other words, $A_0$ is a rational speaker without any corresponding listener component to interpret and relevantly address its input. 
 
 Formally, $A_0$ hears a question utterance $q \in \mathcal{Q}$ with private knowledge about the true world state $w \in \mathcal{W}$. He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$ proportional to the epistemic utility of that utterance to his communication partner: 
-$$P_{A_0}(a | q, w) \propto \exp(\alpha U(a;w))$$ 
+$$P_{A_0}(a | q, w) \propto \exp(\alpha U_{A_0}(a;w))$$ 
 where $\alpha$ is a soft-max optimality parameter. 
 
-We define the epistemic utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$: $$U(a;w) = \ln P_I(w|a)$$ 
+We define the epistemic utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$: 
+\begin{equation}
+\label{eq:A0utility}
+U_{A_0}(a;w) = \ln P_I(w|a)
+\end{equation}
 
 Critically, $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs about worlds, conditioning on the literal meaning of the utterance $a$ being true:
 $$P_I(w|a) = \delta_{\textrm{\den{a}}(w)} P(w)$$
@@ -247,12 +255,12 @@ This formulation of $A_0$ is equivalent to the pragmatic speaker $S_1$ for decla
 
 While $A_0$ is informative, he is not particularly \emph{relevant}. When asked about the weather, he is just as likely to inform his partner about what he ate for breakfast as he is to say ``it's sunny.'' How do we incorporate relevance into the answerer's utility? 
 
-Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, relevance means that the speaker only cares about the listener's beliefs over the image $\widehat{\mathcal{W}}$ of the goal-projection $g$, such that irrelevant features are collapsed together. 
- %We use the notation $\widehat{P^g}(w')$ to indicate the distribution over $\mathcal{W}'$ induced by the projection:
+Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speaker relevance by means of a projection function. Instead of trying to increase the listener's certainty about the most fine-grained true world state, a relevant speaker only cares about the listener's certainty in a coarser space in which irrelevant features have been collapsed together. That coarser space is the image $\widehat{\mathcal{W}}$ of the goal-projection $g$.
 %$$\widehat{P^g}(w') = \sum_{w\in\mathcal{W}} \delta_{w' = g(w)} P(w)$$ 
-Thus, we modify the utility  \emph{relevantly} informative answerer $A_1$ with the goal-relevant utility 
-$$U(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a)$$
-where $K_g(w,w')$ is a similarity function (or kernel) between worlds. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which aggregates the posterior probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$.
+Thus, we modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
+$$U_{A_1}(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a)$$
+where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
+$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{\delta_{g(w) = g(w')}}$$}.
 
 %$$
 %\begin{array}{rcl}
@@ -261,43 +269,38 @@ where $K_g(w,w')$ is a similarity function (or kernel) between worlds. For the d
 %                 & = & \ln \sum_{w'\in\mathcal{W}} K_g(w,w')P_I(w' | a)
 %\end{array}
 %$$
-This modified speaker component suggests a simple proposal for a corresponding listener component: we use the semantics of the question $q$ itself as the projection:
-$$P_{A_1}(a|q,w) \propto \exp(\alpha U(a; q,w))$$
- This implements the simplest realistic theory of answerers: they attempt to reduce the questioner's uncertainty about the aspect of the world that they were queried about. For example, an explicit liquor store answerer would always respond to the question ``Does a fifth of Jim Beam cost more than \$5?'' with the literal response, ``Yes'' because it best selects between the two sets introduced by the explicit goal projection. 
+This modified speaker component suggests a simple proposal for a corresponding listener component: we use the semantics of the question $q$ itself as the goal projection:
+$$P_{A_1}(a|q,w) \propto \exp(\alpha U_{A_1}(a; q,w))$$
+This implements one of the simplest plausible theories of answerers in dialogue: $A_1$ directly interprets a question as an epistemic goal, then informatively produces an utterance that reduces the questioner's uncertainty under that goal projection. 
 
-\subsection{Questioner}
+$A_1$ may be sufficient for many simple, fact-based questions, like ``Who was the 16th president of the U.S.?'' given a rich enough semantic parser to supply the semantics of $q$ \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. Still, the dazzling display of context-sensitivity and indirectness displayed in everyday communication suggests that deeper social reasoning may be at play. To explore more sophisticated answerers that reason about context and their partner's underlying goals, we must first address the problem of how a speaker chooses between questions.
 
-How should a questioner choose between questions?
+\subsection{$Q_i$: Questioner}
+
+If the utility of uttering a declarative statement is imparting information about the true state of the world, what is the utility of uttering a question? We begin by assuming that a questioner aims to \emph{learn information relevant to a private goal}.
 %
-We start by assuming that the questioner aims to \emph{learn information relevant to a private goal}.
-%
-In order to choose a question that results in useful information, the questioner reasons about how the answerer would respond, given different possible states of the world; she selects a question that results in an answer that tends to provide goal-relevant information.
+In order to choose a question that results in useful information, the questioner reasons about how her dialogue partner would respond in different possible states of the world. She then selects a question that results in an answer that tends to reduce her own uncertainty about goal-relevant information.
 %
 
 % This is a divergence from previous RSA models, where agents choose utterances with the goal of imparting information about the state of the world.
 
-%\todo[inline]{i also think we should add subscripts of the different model components ($Q_0$, etc). should make a figure illustrating these components....
-
-%we need to unpack and explain the math in this section more (since we have room in the long paper version).}
-
-\newcommand{\KL}[2]{\ensuremath{D_{KL}({#1}\, \| \, {#2})}}
-\newcommand{\E}[2]{\ensuremath{\mathbb{E}_{#1}\left [#2 \right]}}
-
-More formally, the \textbf{questioner} takes a goal $g \in \mathcal{G}$ as input and returns a distribution over question utterances $q \in \mathcal{Q}$:
+More formally, a questioner agent takes a goal $g \in \mathcal{G}$ as input and returns a distribution over question utterances $q \in \mathcal{Q}$ by solving a simple planning problem involving two components: (1) which answers are likely to come back after asking this question, and (2) how much would be learned from each of those answers:
 %
-$$ 
-P_{Q}(q|g)  \propto \exp\{\E{P(w^*)}{IG(q,g,w^*)} - \,\,C(q)\}
+$$
+\begin{array}{lcl}
+P_{Q}(q|g)  & \propto & \exp\{\alpha U(q;g)\} \\
+U(q;g) & = & \E{P(a|q)}{IG^g(a,q)}
+\end{array}
 $$
 %
-It trades off the cost of asking a question, $C(q)$, and the expected information gain $IG$. The expectation is taken over all possible true worlds $w^* \in \mathcal{W}$; we assume the questioner has uncertainty over which true world is actually the case (represented by the world prior $P(w^*)$). The cost likely depends on question length and possibly social norms, among other factors. Information gain is measured as the distance between the questioner's beliefs about her interests prior to asking the question (e.g. a uniform distribution over prices), and her beliefs after hearing an answer. Formally, this is given by the Kullback-Leibler divergence between the ($g$-projected) prior distribution, $\widehat{P^g}(w)$, and the $g$-projection of the posterior distribution expected after asking a question $q$ whose answer reflected true world state $w^*$:
 
-\todo[inline]{can we move the expectation inside the KL?}
-\todo[inline]{diagram of partition?}
-\todo[inline]{play up novelty of question choice being sensitive to what answerer could say}
-
+The information gain $IG^g(a,q)$ measures the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize this notion using the Kullback-Leibler divergence between the prior distribution and posterior after hearing $a$.
 %
-$$IG(q,g,w^*) = \KL{\widehat{P^g}(w|q, w^*)}{\widehat{P^g}(w)}$$
-where the posterior distribution is given by
+$$
+IG^g(a,q) = \KL{\widehat{P^g}(w|q, a)}{\widehat{P^g}(w)}\\
+$$
+%
+the posterior distribution is given by
 $$P(w|q, w^*) = \sum_{a \in \mathcal{A}} P_I(w | a) P_{A}(a| q, w^*)$$
 \ndg{should we actually marginalize world inside? eg $p(w|q) = \sum_{a \in \mathcal{A}} P_I(w | a) P_{A}(a | q) =  \sum_{a \in \mathcal{A}} P_I(w | a) \sum_{w^*} P_{A}(a | q, w^*)P(w^*)$
 in fact, maybe the formulation should be expectation over answers of the information gained from that answer?
