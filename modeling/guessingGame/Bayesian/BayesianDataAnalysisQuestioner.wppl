@@ -9,11 +9,11 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var rawAlpha = uniformDraw(_.range(3, 9, .25)),
+  var rawAlpha = uniformDraw(_.range(0, 20, 0.1)),
       alpha = Number.parseFloat(rawAlpha.toFixed(3));
   var rawBeta = uniformDraw(_.range(0, 1.01, 0.1)),
       beta = Number.parseFloat(rawBeta.toFixed(3));
-  var questionerType = uniformDraw(['pragmatic']);
+  var questionerType = uniformDraw(['literal', 'explicit', 'pragmatic']);
 
   globalStore.predictives = {};
 
@@ -48,6 +48,5 @@ var modelAnalysis = function() {
 var outputERP = Infer({method: 'enumerate'}, modelAnalysis);
 
 console.log('inference complete... printing');
-console.log(outputERP);
-qa.bayesianErpWriter(outputERP, "data/questioner_pragOnly");
+qa.bayesianErpWriter(outputERP, "data/questioner_modelComparison");
 
