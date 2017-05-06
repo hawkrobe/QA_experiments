@@ -47,6 +47,7 @@ var modelAnalysis = function() {
   }, items));
   
   console.log([alpha,beta,answererType]);
+  console.log(score);
   factor(score);
 
   return {predictive: globalStore.predictives, 
