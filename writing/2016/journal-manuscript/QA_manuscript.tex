@@ -223,7 +223,7 @@ $$g_{<}(w) = \left\{\begin{array}{rcl}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other words are mapped onto a different state.
 \item[$\mathcal{Q}$:] a set of possible question utterances , such as ``Does a fifth of Jim Beam cost more than \$5?'' or alternatives like ``Do you accept credit cards?'' We take the literal meaning \den{$q$} of a question to be of the same type as informational goals, such that a particular question utterance corresponds to a particular goal projection\footnote{This is equivalent to the more common partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a question projection: $q^{-1}(\hat{w})$.}. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one value and all other worlds to a different value. Note that the correspondence between questions and goals is not necessarily symmetric: while every question corresponds to a goal, we do not expect that every possible goal corresponds to a question utterance.
-\item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be true-conditional: a map from world states to booleans. For instance, the utterance ``A fifth costs \$8.'' would be true in the world where $w = \$8$ and false otherwise. 
+\item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be truth-conditional: a map from world states to booleans. For instance, the utterance ``A fifth costs \$8.'' would be true in the world where $w = \$8$ and false otherwise. 
 \end{description}
 %QUDs are often used in formal linguistic models to capture \emph{relevance}: there are many informative sentences one can use to convey a full world state, but only a few of those are informative with respect to the current topic of discussion. \ndg{this comment about relevance seems out of place.}
 
@@ -284,33 +284,26 @@ In order to choose a question that results in useful information, the questioner
 
 % This is a divergence from previous RSA models, where agents choose utterances with the goal of imparting information about the state of the world.
 
-More formally, a questioner agent takes a goal $g \in \mathcal{G}$ as input and returns a distribution over question utterances $q \in \mathcal{Q}$ by solving a simple planning problem involving two components: (1) which answers are likely to come back after asking this question, and (2) how much would be learned from each of those answers:
+More formally, a questioner agent takes a goal $g \in \mathcal{G}$ as input and returns a distribution over question utterances $q \in \mathcal{Q}$ by solving a simple planning problem involving two components: (1) which answers are likely to come back after asking this question, and (2) how much would be learned from each of those answers. Critically, in order to solve either of these parts, the questioner must have in mind an imagined answerer who hears her question and responds appropriately: thus, we have a family of questioners $Q_i$, each using the corresponding answerer $A_i$:
 %
 $$
 \begin{array}{lcl}
-P_{Q}(q|g)  & \propto & \exp\{\alpha U(q;g)\} \\
-U(q;g) & = & \E{P(a|q)}{IG^g(a,q)}
+P_{Q_i}(q|g)  & \propto & \exp\{\alpha U(q;g)\} \\
+U(q;g) & = & \E{P(a|q)}{IG^g(a,q)} \\
+	 & = & \sum_{w\in\mathcal{W}} P_{A_i}(a|q,w)P(w) IG^g(a,q)
 \end{array}
 $$
 %
 
-The information gain $IG^g(a,q)$ measures the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize this notion using the Kullback-Leibler divergence between the prior distribution and posterior after hearing $a$.
+The expectation over likely answers $P(a|q)$ is computed by running an imagined answerer model forward, marginalizing over the possible worlds $w \in\mathcal{W}$ they might have knowledge of. The likelihood of an answer weights its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected prior distribution and posterior after hearing $a$.
 %
 $$
 IG^g(a,q) = \KL{\widehat{P^g}(w|q, a)}{\widehat{P^g}(w)}\\
 $$
 %
-the posterior distribution is given by
-$$P(w|q, w^*) = \sum_{a \in \mathcal{A}} P_I(w | a) P_{A}(a| q, w^*)$$
-\ndg{should we actually marginalize world inside? eg $p(w|q) = \sum_{a \in \mathcal{A}} P_I(w | a) P_{A}(a | q) =  \sum_{a \in \mathcal{A}} P_I(w | a) \sum_{w^*} P_{A}(a | q, w^*)P(w^*)$
-in fact, maybe the formulation should be expectation over answers of the information gained from that answer?
-$\E{P(a|q)}{ \KL{P(w|a)}{P(w)} } = \E{\sum_{w^*} P_{A}(a | q, w^*)P(w^*)}{ \KL{P(w|a)}{P(w)} } $ 
-}
-%
-%This conditional distribution reflects the fact that the answerer (who knows the true world state $w$) may behave noisily, have a limited set of possible answers, or other limitations.
-%to questioner (who is inferring a world state $w^*$) is affected by stochastic answerer behavior and a limited set of possible answers. 
-This distribution has two components: 
-First, it depends on the interpreter, $P_I(w | a)$, which specifies the likelihood of different worlds after hearing an answer statement. Note this function does not depend on goals: we will only project along $g$ in the KL operator above after we have computed the posterior. Second, it depends on $P_{A}(a | q, w^*)$, a model of likely answerer behavior which we explore next.
+
+In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future, inverting that model to infer the true world the answerer was trying to communicate:
+$$P(w|q,a) = P_{A_i}(a| q, w)P(w)$$
 
 \subsection{$A_2$: Goal-Sensitive Answerer}
 
@@ -328,23 +321,22 @@ First, it depends on the interpreter, $P_I(w | a)$, which specifies the likeliho
 %For a fixed question, this is equivalent to the speaker in previous RSA models. They seek to be maximally informative about the state of the world, but do not adjust their response for different question utterances or contexts. This model is of interest primarily as a null model that is nonetheless more realistic than a random speaker. 
 %
 
-\begin{table*}[h!]
-\centering
-\begin{tabular}{ p{5.15cm} | p{4cm} | p{7cm}}
-Case study &	Cue to goals	& Model variations \\
-\hline
-Clark (1979); Exp 4 &	prior verbal context	& likely goals depend on context \\
-\hline
-Groenendijk \& Stokhof (1984) & non-verbal features & multi-dimensional world representation, expanded space of answers \\
-\hline
-Gibbs Jr. \& Bryant (2008)  &	current world state &	expanded space of possible goals\\
-\hline
-Clark (1979); Exp 5 & choice of question & expanded space of question alternatives 
-\end{tabular}
-\\[1.5pt]
-\caption{Overview of the key features of the case studies we consider, and the modeling choices we make in each case. Note that while representations of sets $\mathcal{W}, \mathcal{Q}, \mathcal{A},$ and $\mathcal{G}$ adjust to capture the details of each scenario, the overall model framework is held constant.} 
-\end{table*}
-
+%\begin{table*}[h!]
+%\centering
+%\begin{tabular}{ p{5.15cm} | p{4cm} | p{7cm}}
+%Case study &	Cue to goals	& Model variations \\
+%\hline
+%Clark (1979); Exp 4 &	prior verbal context	& likely goals depend on context \\
+%\hline
+%Groenendijk \& Stokhof (1984) & non-verbal features & multi-dimensional world representation, expanded space of answers \\
+%\hline
+%Gibbs Jr. \& Bryant (2008)  &	current world state &	expanded space of possible goals\\
+%\hline
+%Clark (1979); Exp 5 & choice of question & expanded space of question alternatives 
+%\end{tabular}
+%\\[1.5pt]
+%\caption{Overview of the key features of the case studies we consider, and the modeling choices we make in each case. Note that while representations of sets $\mathcal{W}, \mathcal{Q}, \mathcal{A},$ and $\mathcal{G}$ adjust to capture the details of each scenario, the overall model framework is held constant.} 
+%\end{table*}
 
 The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the questioner's goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which underlying goals $g$ are likely given that a question $q$ was asked, and chooses answers that have high expected informativity:
 %
