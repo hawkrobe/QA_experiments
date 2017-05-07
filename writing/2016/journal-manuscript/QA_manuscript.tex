@@ -275,7 +275,7 @@ This implements one of the simplest plausible theories of answerers in dialogue:
 
 $A_1$ may be sufficient for many simple, fact-based questions, like ``Who was the 16th president of the U.S.?'' given a rich enough semantic parser to supply the semantics of $q$ \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. Still, the dazzling display of context-sensitivity and indirectness displayed in everyday communication suggests that deeper social reasoning may be at play. To explore more sophisticated answerers that reason about context and their partner's underlying goals, we must first address the problem of how a speaker chooses between questions.
 
-\subsection{$Q_i$: Questioner}
+\subsection{$Q_0$ and $Q_1$: Direct Questioners}
 
 If the utility of uttering a declarative statement is imparting information about the true state of the world, what is the utility of uttering a question? We begin by assuming that a questioner aims to \emph{learn information relevant to a private goal}.
 %
@@ -302,8 +302,10 @@ IG^g(a,q) = \KL{\widehat{P^g}(w|q, a)}{\widehat{P^g}(w)}\\
 $$
 %
 
-In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future, inverting that model to infer the true world the answerer was trying to communicate:
+In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future and inverting that model to infer the true world the answerer was trying to communicate:
 $$P(w|q,a) = P_{A_i}(a| q, w)P(w)$$
+
+Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret their question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. Critically, in contrast to \cite{GroenendijkStokhof84_SemanticsOfQuestions} and \cite{,VanRooy03_QuestioningDecisionProblems}, the questioner's behavior is not governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it.
 
 \subsection{$A_2$: Goal-Sensitive Answerer}
 
