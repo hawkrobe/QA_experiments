@@ -11,6 +11,7 @@
 \usepackage{multirow}
 \usepackage{todonotes}
 \usepackage{svg}
+\usepackage{booktabs}
 
 \newcommand{\den}[2][]{
 \(
@@ -260,7 +261,7 @@ Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speak
 Thus, we modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
 $$U_{A_1}(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a)$$
 where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
-$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{\delta_{g(w) = g(w')}}$$\todo[inline]{rdh: not 100\% satisfied with this notation}}.
+$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$\todo[inline]{rdh: not 100\% satisfied with this notation}}.
 
 %$$
 %\begin{array}{rcl}
@@ -355,22 +356,24 @@ By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an a
 %For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $. Furthermore, we have set the answer prior in all answerer models such that outright false responses are excluded. The answerer models naturally assign very low, but non-zero probability to these options (because they are minimally informative). However, we set them to zero probability for the sake of simplicity in reporting and visualizing predictions.
 %
 
-This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models}). We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}\footnote{Code for all reported simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}. 
-In the next section, we illustrate the behavior of the different \emph{answerer} models through several classic psycholinguistic effects reported by \citeA{Clark79_IndirectSpeechActs}.
+This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models}\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Code for all reported simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}). 
+In the next section, we illustrate key properties of our \emph{answerers} by modeling several classic goal-sensitivity effects reported by \citeA{Clark79_IndirectSpeechActs}. 
 
-\section{Two case studies in answerer sensitivity from Clark (1979)}
+These case studies center around three empirical observations about the factors that jointly determine answerer behavior in dialogue. First, there is a main effect of the question utterance: given a fixed context, different question utterances elicit different responses. Second, there is a main effect of the context: the \emph{same} question utterance elicits different responses across contexts where different goals are more or less likely. Finally, there is an often subtle interaction between question utterance and context: different question utterances \emph{themselves} indicate different goals \todo[inline]{Not sure we want to go into this, since it's either not about contexts (in which case it's not really an interaction) or we don't have a study to back it up}
 
-We proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. There has been little use of questioner behavior as a dependent variable in previous literature, hence our examples explore the sensitivity of the answerer to plausible goals of the questioner. 
+\section{Case studies in answerer sensitivity \\ from Clark (1979)}
+
+% We proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. There has been little use of questioner behavior as a dependent variable in previous literature, hence our examples explore the sensitivity of the answerer to plausible goals of the questioner. 
 %These examples do not serve as a strong test of our model's predictions, because we will have to make post-hoc assumptions about prior distributions or goal spaces in each study.
 
 
 
-Yet it is important to show that our framework can accommodate these results.
-We see two additional benefits to re-formulating explanations from the original studies within our modeling framework: (1) the case studies are instructive as examples of how different components of the model interact to generate results and (2) by placing all four studies in a common framework, we more clearly see their commonalities and differences. 
+%Yet it is important to show that our framework can accommodate these results.
+%We see two additional benefits to re-formulating explanations from the original studies within our modeling framework: (1) the case studies are instructive as examples of how different components of the model interact to generate results and (2) by placing all four studies in a common framework, we more clearly see their commonalities and differences. 
 
 
 
-\ndg{i feel like this section gets pretty quickly lost in the weeds.... maybe we can reorganize it around the effects or model components explored? and move some of the details and conceptually redundant pieces to appendices?}
+%\ndg{i feel like this section gets pretty quickly lost in the weeds.... maybe we can reorganize it around the effects or model components explored? and move some of the details and conceptually redundant pieces to appendices?}
 
 \begin{table*}[t]
 \centering
@@ -382,6 +385,12 @@ We see two additional benefits to re-formulating explanations from the original 
 ``Some bourbon'' &   0.37 & 0.63 &  0.38 & 0.62 \\
 \hline
 ``Five dollars''     & 0.50 & 0.50 & 0.50 & 0.50 \\
+\specialrule{2.5pt}{1pt}{1pt}
+``Master Charge cards?'' &   1.00 & 0.00 &  0.92 & 0.08 \\
+\hline
+``American Express cards?''     & 1.00 & 0.00 & 0.96 & 0.04 \\
+\hline
+``Credit cards?''     & 0.73 & 0.27 & 0.76 & 0.24 \\
 \end{tabular}
 \\[1.5pt]
 \caption{Comparison of model predictions and data from Clark (1979). Shows the proportion of responses to the question ``Does a fifth of Jim Beam cost more than \$5?'' when paired with two contexts: ``I want to buy some bourbon'' (``Some bourbon'') and ``I've got \$5 to spend'' (``Five dollars''). } 
@@ -416,11 +425,6 @@ Note that the literal and explicit answerers do not take into account the questi
 \hline
 &           \% literal &   \%  info &           \% literal &   \%  info    \\
 \hline
-``Master Charge cards?'' &   1.00 & 0.00 &  0.92 & 0.08 \\
-\hline
-``American Express cards?''     & 1.00 & 0.00 & 0.96 & 0.04 \\
-\hline
-``Credit cards?''     & 0.73 & 0.27 & 0.76 & 0.24 \\
 \end{tabular}
 \\[1.5pt]
 \caption{Comparison of model predictions and data from Clark (1979), Experiment 5. Shows the proportion of literal and over-informative responses restauranteurs gave to each of three different questions from a customer inquiring about credit cards.} 
