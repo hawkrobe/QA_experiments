@@ -359,19 +359,15 @@ By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an a
 This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models}\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Code for all reported simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}). 
 In the next section, we illustrate key properties of our \emph{answerers} by modeling several classic goal-sensitivity effects reported by \citeA{Clark79_IndirectSpeechActs}. 
 
-These case studies center around three empirical observations about the factors that jointly determine answerer behavior in dialogue. First, there is a main effect of the question utterance: given a fixed context, different question utterances elicit different responses. Second, there is a main effect of the context: the \emph{same} question utterance elicits different responses across contexts where different goals are more or less likely. Finally, there is an often subtle interaction between question utterance and context: different question utterances \emph{themselves} indicate different goals \todo[inline]{Not sure we want to go into this, since it's either not about contexts (in which case it's not really an interaction) or we don't have a study to back it up}
+These case studies center around three empirical observations about the factors determining answerer behavior in dialogue. First, and most obviously, answers should be sensitive to the surface form of the question utterance: ``Do you accept credit cards?'' generally deserves a different response than ``Where can I find a restroom?''. Second, answers should be sensitive to context: the \emph{same} question utterance elicits different responses across contexts where different goals are more or less likely. Finally, and most subtly, answers should be sensitive to the cues the question utterance itself provides to deeper underlying questioner goals.
 
 \section{Case studies in answerer sensitivity \\ from Clark (1979)}
 
 % We proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. There has been little use of questioner behavior as a dependent variable in previous literature, hence our examples explore the sensitivity of the answerer to plausible goals of the questioner. 
 %These examples do not serve as a strong test of our model's predictions, because we will have to make post-hoc assumptions about prior distributions or goal spaces in each study.
 
-
-
 %Yet it is important to show that our framework can accommodate these results.
 %We see two additional benefits to re-formulating explanations from the original studies within our modeling framework: (1) the case studies are instructive as examples of how different components of the model interact to generate results and (2) by placing all four studies in a common framework, we more clearly see their commonalities and differences. 
-
-
 
 %\ndg{i feel like this section gets pretty quickly lost in the weeds.... maybe we can reorganize it around the effects or model components explored? and move some of the details and conceptually redundant pieces to appendices?}
 
