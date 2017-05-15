@@ -167,9 +167,9 @@ Broadly speaking, an agent must solve two problems to participate in a dialogue.
 
 \begin{figure*}[t]
 \begin{center}
-\includegraphics[scale = .5]{models.pdf}
+\includegraphics[scale = .5]{models.png}
 \end{center}
-\caption{Schematic of the questioner and answerer models we consider, showing their recursive relationships. Note that there are two possible ``base cases'' where the recursion can terminate: in a \emph{literal} answerer that ignores the question and simply attempts to be informative with respect to the world, and in an \emph{explicit} answerer that uses the semantics of the questions. \ndg{put $P_I$ in this fig?}}
+\caption{Schematic of the questioner and answerer models we consider, showing their recursive relationships. Note that there are two possible ``base cases'' where the recursion can terminate: in a \emph{literal} answerer that ignores the question and simply attempts to be informative with respect to the world, and in an \emph{explicit} answerer that uses the semantics of the questions.}
 \label{fig:models}
 \end{figure*}
 
@@ -351,15 +351,14 @@ $$
 P(g|q) \propto P_{Q_1}(q|g)P(g)
 $$
 
-By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an arbitrarily deep chain of nested reasoning where $A_{i}$ infers a posterior over underlying goals by inverting $Q_{i-1}$, and so on. This recursion terminates in the base case $A_1$, which uses the literal question semantics. For our purposes, however, we only consider models up to a depth of $i=2$, after which there are no qualitative changes in the model's behavior\footnote{Recent systematic model exploration by \citeA{frank2017rational} suggests that recursive depth trades off with the soft-max optimality parameter $\alpha$. Because these two parameters are not generally identifiable, we fix the maximal level of recursion and achieve the behavior of higher levels of recursion by allowing $\alpha$ to vary.}. In particular, we are interested in $Q_2$, which can be interpreted as an agent who rationally selects a question not simply for its literal meaning but for the signal it provides about her underlying beliefs. 
+By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an arbitrarily deep chain of nested reasoning where $A_{i}$ infers a posterior over underlying goals by inverting $Q_{i-1}$, and so on. This recursion terminates in the base case $A_1$, which uses the literal question semantics. For our purposes, however, we only consider models up to a depth of $i=2$, after which there are no qualitative changes in the model's behavior\footnote{Recent systematic model exploration by \citeA{frank2017rational} suggests that recursive depth trades off with the soft-max optimality parameter $\alpha$. Because these two parameters are not generally identifiable, we fix the maximal level of recursion and achieve the behavior of higher levels of recursion by allowing $\alpha$ to vary.}. In particular, we are interested in $Q_2$, which can be interpreted as an agent who rationally selects a question not simply for its literal meaning but for the signal it provides about her underlying beliefs. This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models})\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Code for all reported simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}.
+ 
 
 %For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $. Furthermore, we have set the answer prior in all answerer models such that outright false responses are excluded. The answerer models naturally assign very low, but non-zero probability to these options (because they are minimally informative). However, we set them to zero probability for the sake of simplicity in reporting and visualizing predictions.
 %
 
-This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models}\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Code for all reported simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}). 
-In the next section, we illustrate key properties of our \emph{answerers} by modeling several classic goal-sensitivity effects reported by \citeA{Clark79_IndirectSpeechActs}. 
 
-These case studies center around three empirical observations about the factors determining answerer behavior in dialogue. First, and most obviously, answers should be sensitive to the surface form of the question utterance: ``Do you accept credit cards?'' generally deserves a different response than ``Where can I find a restroom?''. Second, answers should be sensitive to context: the \emph{same} question utterance elicits different responses across contexts where different goals are more or less likely. Finally, and most subtly, answers should be sensitive to the cues the question utterance itself provides to deeper underlying questioner goals.
+In the next section, we illustrate key properties of our \emph{answerers} by modeling several classic goal-sensitivity effects reported by \citeA{Clark79_IndirectSpeechActs}. These case studies center around three empirical observations about the factors determining answerer behavior in dialogue. First, and most obviously, answers should be sensitive to the surface form of the question utterance: ``Do you accept credit cards?'' should elicit a different distribution of responses than ``Where can I find a restroom?''. Second, answers should be sensitive to context: the \emph{same} question utterance elicits different responses across contexts where different goals are more or less likely. Third, and most subtly, answers should be sensitive to the cue provided by the question utterance itself toward the questioner's underlying goals.
 
 \section{Case studies in answerer sensitivity \\ from Clark (1979)}
 
@@ -402,11 +401,20 @@ These case studies center around three empirical observations about the factors 
 %\label{table:clark79exp4}
 %\end{table*}
 
-\subsection{Sensitivity to question}
+\subsection{Sensitivity to question utterance}
 
+The first empirical desiderata for any answerer model is that they behave differently in response to different questions. This can also be considered a special case of the minimal requirement for a dialogue agent: that their behavior at time $t$ is in some way dependent on their partner's at $t-1$. We briefly illustrate this phenomenon in our model using two example sentences lightly adapted from \citeA{Clark79_IndirectSpeechActs}.
 
+Consider the problem faced by a liquor store cashier answering one of the phone calls reported by \citeA{Clark79_IndirectSpeechActs}: they may be asked one of two questions $q \in \mathcal{Q}$: ``What time do you close tonight?'' and ``What is the price of a fifth of Jim Beam?'' How do our answerer models respond to each of these questions, and do they reply differently, as cashiers do?
 
-\subsection{Clark (1979), Experiment 4}
+To model this situation, we take a world $w \in \mathcal{W}$ to be a tuple containing the closing time and the price of Jim Beam at the store in question. Thus, $\mathcal{W}$ is the set of all possible combinations of times and prices, which for clarity we take to be drawn from the sets \{9:00, 10:00\} and $\{\$4, \$5, \$6\}$, respectively. Similarly, we consider a limited set of answers $\mathcal{A}$: an answerer may either state the time (``We close at 9:00.'') or the price of Jim Beam (``A fifth costs \$5.''). 
+
+As noted in our model presentation, our informative answerer $A_0$ does \emph{not} reply differently to the two questions. In either case, he slightly prefers to inform the questioner about the price since a literal interpreter, after hearing such an utterance, would be left with uncertainty over only two possible worlds (where the closing time is either 9:00 or 10:00) rather than the three possible worlds consistent with an utterance stating the true time.
+
+Both $A_1$ and $A_2$, on the other hand, are sensitive 
+
+\subsection{Sensitivity to context}
+
 First, we show how our model can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context. For this illustration, we show results for the whiskey-pricing study presented in the Introduction \cite{Clark79_IndirectSpeechActs} and expanded upon while describing the model. Recall that liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in the uninformative context (``I want to buy some bourbon'') than in the five dollar context (``I've got \$5 to spend''; see Table \ref{table:clark79exp4}). To keep our first example simple, we show that our model can account for these results by shifting beliefs about the questioner's \emph{goal} in response to the context utterance. 
 
 \todo[inline]{Two symmetries: different responses to different questions \emph{and} in different contexts.}
