@@ -1,0 +1,42 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(ggthemes)
+library(cowplot)
+```
+
+For Clark section, want a little bar plot showing our model results next to original empirical results
+
+```{r}
+plot.a <- data.frame(context = rep(c("some bourbon", "five dollars"), 2),
+                    pctInfo = c(.63, 0.5, .62, 0.5),
+                    source = c('empirical', 'empirical', 'model', 'model')) %>%
+  ggplot(aes(x = context, y =pctInfo, fill = source)) + 
+    geom_bar(stat = 'identity', position = 'dodge') +
+    theme_few() +
+    facet_wrap(~ source) +
+    guides(fill = F) +
+    ylim(0,.75) +
+    theme(axis.text.x=element_text(angle=90, hjust=1, vjust = 0.5))+
+    ylab('% indirect info')
+
+plot.b <- data.frame(question = factor(rep(c("Master Charge?", "American Express?", "credit cards?"), 2), levels = c("Master Charge?", "American Express?", "credit cards?")),
+                  pctInfo = c(0.01, 0.01, 0.27, 0.08, 0.04, 0.24),
+                  source = c('empirical', 'empirical', 'empirical', 'model', 'model', 'model')) %>%
+  ggplot(aes(x=question, y =pctInfo, fill = source)) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    theme_few() +
+    guides(fill = F) +
+    ylim(0,.75) +
+    facet_wrap(~ source) +
+    theme(axis.text.x=element_text(angle=90, hjust=1, vjust = 0.5)) +
+    ylab('')
+
+combo_plot <- plot_grid(plot.a, plot.b, labels = c('Exp. 4', 'Exp. 5'), align = 'vh')
+save_plot(combo_plot, filename = "clarkCaseStudies.pdf", base_aspect_ratio = 2)
+```

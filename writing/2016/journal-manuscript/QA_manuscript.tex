@@ -371,27 +371,40 @@ These case studies center around three empirical observations about the factors 
 
 %\ndg{i feel like this section gets pretty quickly lost in the weeds.... maybe we can reorganize it around the effects or model components explored? and move some of the details and conceptually redundant pieces to appendices?}
 
-\begin{table*}[t]
-\centering
-\begin{tabular}{ p{3cm} | r | r ||||||  r | r }
-& \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
-\hline
-&           \% literal &   \%  info &           \% literal &   \%  info    \\
-\hline
-``Some bourbon'' &   0.37 & 0.63 &  0.38 & 0.62 \\
-\hline
-``Five dollars''     & 0.50 & 0.50 & 0.50 & 0.50 \\
-\specialrule{2.5pt}{1pt}{1pt}
-``Master Charge cards?'' &   1.00 & 0.00 &  0.92 & 0.08 \\
-\hline
-``American Express cards?''     & 1.00 & 0.00 & 0.96 & 0.04 \\
-\hline
-``Credit cards?''     & 0.73 & 0.27 & 0.76 & 0.24 \\
-\end{tabular}
-\\[1.5pt]
-\caption{Comparison of model predictions and data from Clark (1979). Shows the proportion of responses to the question ``Does a fifth of Jim Beam cost more than \$5?'' when paired with two contexts: ``I want to buy some bourbon'' (``Some bourbon'') and ``I've got \$5 to spend'' (``Five dollars''). } 
-\label{table:clark79exp4}
-\end{table*}
+ \begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .6]{clarkCaseStudies.pdf}
+\end{center}
+\vspace{-.25cm}
+\caption{Comparison of questioner goal posteriors that the pragmatic answerer model infers after hearing two different question utterances in Clark (1979), Experiment 5.}
+\label{fig:clarkExperiment5posteriors}
+\end{figure*}
+
+%\begin{table*}[t]
+%\centering
+%\begin{tabular}{ p{3cm} | r | r ||||||  r | r }
+%& \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
+%\hline
+%&           \% literal &   \%  info &           \% literal &   \%  info    \\
+%\hline
+%``Some bourbon'' &   0.37 & 0.63 &  0.38 & 0.62 \\
+%\hline
+%``Five dollars''     & 0.50 & 0.50 & 0.50 & 0.50 \\
+%\specialrule{2.5pt}{1pt}{1pt}
+%``Master Charge cards?'' &   1.00 & 0.00 &  0.92 & 0.08 \\
+%\hline
+%``American Express cards?''     & 1.00 & 0.00 & 0.96 & 0.04 \\
+%\hline
+%``Credit cards?''     & 0.73 & 0.27 & 0.76 & 0.24 \\
+%\end{tabular}
+%\\[1.5pt]
+%\caption{Comparison of model predictions and data from Clark (1979). Shows the proportion of responses to the question ``Does a fifth of Jim Beam cost more than \$5?'' when paired with two contexts: ``I want to buy some bourbon'' (``Some bourbon'') and ``I've got \$5 to spend'' (``Five dollars''). } 
+%\label{table:clark79exp4}
+%\end{table*}
+
+\subsection{Sensitivity to question}
+
+
 
 \subsection{Clark (1979), Experiment 4}
 First, we show how our model can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context. For this illustration, we show results for the whiskey-pricing study presented in the Introduction \cite{Clark79_IndirectSpeechActs} and expanded upon while describing the model. Recall that liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in the uninformative context (``I want to buy some bourbon'') than in the five dollar context (``I've got \$5 to spend''; see Table \ref{table:clark79exp4}). To keep our first example simple, we show that our model can account for these results by shifting beliefs about the questioner's \emph{goal} in response to the context utterance. 
@@ -414,18 +427,18 @@ On the other hand, when the question is prefaced with ``I only have \$5 to spend
 
 Note that the literal and explicit answerers do not take into account the questioner's underlying goals and therefore cannot reason about the way contextual factors may be informative about these goals. Hence, they do not make different predictions in the two contexts. The literal model predicts that the answerer is equally likely to say the true Boolean answer and the true numerical answer, and the explicit model predicts that the answerer will always give the true Boolean answer, since it is the explicit question being asked. This suggests that our pragmatic \emph{answerer} is consistent with human behavior in psychologically interesting situations, passing a first, qualitative, test. 
 
-\begin{table*}[t!]
-\centering
-\begin{tabular}{ p{5cm} | r | r ||||||  r | r }
-& \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
-\hline
-&           \% literal &   \%  info &           \% literal &   \%  info    \\
-\hline
-\end{tabular}
-\\[1.5pt]
-\caption{Comparison of model predictions and data from Clark (1979), Experiment 5. Shows the proportion of literal and over-informative responses restauranteurs gave to each of three different questions from a customer inquiring about credit cards.} 
-\label{table:clark79exp5}
-\end{table*}
+%\begin{table*}[t!]
+%\centering
+%\begin{tabular}{ p{5cm} | r | r ||||||  r | r }
+%& \multicolumn{2}{c||||||}{Empirical} & \multicolumn{2}{c}{Model} \\
+%\hline
+%&           \% literal &   \%  info &           \% literal &   \%  info    \\
+%\hline
+%\end{tabular}
+%\\[1.5pt]
+%\caption{Comparison of model predictions and data from Clark (1979), Experiment 5. Shows the proportion of literal and over-informative responses restauranteurs gave to each of three different questions from a customer inquiring about credit cards.} 
+%\label{table:clark79exp5}
+%\end{table*}
 
 \subsection{Clark (1979): Experiment 5}
 Our final scenario demonstrates the role of the questioner component in our pragmatic answerer model. Because the question space in the previous computational experiments only contained one element for simplicity, the pragmatic answerers' inferences were entirely based on the context and the QUD prior. One of the most interesting and novel predictions of the RSA model, however, is that the questioner's choice of utterance itself should guide a pragmatic answerer's inferences about likely underlying goals. The choice to ask one question instead of another provides information about the questioner's goal. While there are few previous experimental results using questioner behavior as the \emph{dependent variable}, there is some work manipulating the question asked as an \emph{independent variable} and testing how it affects answers.
