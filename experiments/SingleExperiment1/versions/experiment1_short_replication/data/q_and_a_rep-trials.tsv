@@ -1,0 +1,801 @@
+workerid	trial_type	world_state	utterance	qud	response
+0	question	NA	NA	poodle	dalmatian
+0	question	NA	NA	dalmatian	dalmatian
+0	question	NA	NA	siamese cat	dalmatian
+0	question	NA	NA	goldfish	dalmatian
+0	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	2
+0	ans:	poodle,dalmatian,siamese cat,goldfish	animal	NA	3
+0	ans:	siamese cat,dalmatian,goldfish,poodle	dalmatian	NA	2
+0	ans:	goldfish,dalmatian,poodle,siamese cat	mammal	NA	1
+1	ans:	goldfish,siamese cat,poodle,dalmatian	dalmatian	NA	4
+1	ans:	siamese cat,goldfish,poodle,dalmatian	animal	NA	1
+1	ans:	goldfish,siamese cat,poodle,dalmatian	mammal	NA	2
+1	ans:	dalmatian,siamese cat,poodle,goldfish	dog	NA	1
+1	question	NA	NA	siamese cat	mammal
+1	question	NA	NA	goldfish	mammal
+1	question	NA	NA	dalmatian	dog
+1	question	NA	NA	poodle	dog
+2	ans:	siamese cat,goldfish,poodle,dalmatian	dog	NA	3
+2	ans:	poodle,siamese cat,goldfish,dalmatian	animal	NA	2
+2	ans:	poodle,goldfish,siamese cat,dalmatian	mammal	NA	1
+2	ans:	poodle,dalmatian,siamese cat,goldfish	dalmatian	NA	2
+2	question	NA	NA	poodle	dog
+2	question	NA	NA	goldfish	animal
+2	question	NA	NA	siamese cat	animal
+2	question	NA	NA	dalmatian	dalmatian
+3	ans:	dalmatian,goldfish,poodle,siamese cat	dalmatian	NA	1
+3	ans:	siamese cat,poodle,dalmatian,goldfish	animal	NA	1
+3	ans:	siamese cat,goldfish,dalmatian,poodle	mammal	NA	1
+3	ans:	poodle,goldfish,siamese cat,dalmatian	dog	NA	4
+3	question	NA	NA	siamese cat	mammal
+3	question	NA	NA	goldfish	mammal
+3	question	NA	NA	poodle	dog
+3	question	NA	NA	dalmatian	dalmatian
+4	question	NA	NA	goldfish	mammal
+4	question	NA	NA	dalmatian	dalmatian
+4	question	NA	NA	poodle	dog
+4	question	NA	NA	siamese cat	dog
+4	ans:	poodle,goldfish,siamese cat,dalmatian	dog	NA	4
+4	ans:	dalmatian,goldfish,siamese cat,poodle	dalmatian	NA	1
+4	ans:	dalmatian,goldfish,poodle,siamese cat	mammal	NA	1
+4	ans:	siamese cat,dalmatian,poodle,goldfish	animal	NA	1
+5	question	NA	NA	dalmatian	dalmatian
+5	question	NA	NA	siamese cat	animal
+5	question	NA	NA	goldfish	mammal
+5	question	NA	NA	poodle	dog
+5	ans:	goldfish,dalmatian,poodle,siamese cat	dalmatian	NA	2
+5	ans:	siamese cat,poodle,dalmatian,goldfish	animal	NA	1
+5	ans:	goldfish,poodle,dalmatian,siamese cat	dog	NA	2
+5	ans:	poodle,dalmatian,goldfish,siamese cat	mammal	NA	3
+6	question	NA	NA	poodle	dog
+6	question	NA	NA	dalmatian	dalmatian
+6	question	NA	NA	goldfish	mammal
+6	question	NA	NA	siamese cat	dog
+6	ans:	goldfish,siamese cat,dalmatian,poodle	mammal	NA	2
+6	ans:	goldfish,poodle,siamese cat,dalmatian	animal	NA	1
+6	ans:	poodle,dalmatian,goldfish,siamese cat	dalmatian	NA	2
+6	ans:	goldfish,siamese cat,dalmatian,poodle	dog	NA	4
+7	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	4
+7	ans:	poodle,dalmatian,goldfish,siamese cat	dalmatian	NA	2
+7	ans:	poodle,dalmatian,goldfish,siamese cat	dog	NA	2
+7	ans:	siamese cat,poodle,dalmatian,goldfish	mammal	NA	1
+7	question	NA	NA	siamese cat	dog
+7	question	NA	NA	goldfish	mammal
+7	question	NA	NA	dalmatian	dog
+7	question	NA	NA	poodle	mammal
+8	ans:	goldfish,siamese cat,dalmatian,poodle	dog	NA	3
+8	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	3
+8	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	3
+8	ans:	siamese cat,dalmatian,goldfish,poodle	dalmatian	NA	2
+8	question	NA	NA	siamese cat	mammal
+8	question	NA	NA	goldfish	animal
+8	question	NA	NA	poodle	dog
+8	question	NA	NA	dalmatian	dalmatian
+9	ans:	siamese cat,dalmatian,goldfish,poodle	dalmatian	NA	2
+9	ans:	dalmatian,goldfish,poodle,siamese cat	animal	NA	4
+9	ans:	poodle,goldfish,dalmatian,siamese cat	dog	NA	3
+9	ans:	siamese cat,poodle,dalmatian,goldfish	mammal	NA	4
+9	question	NA	NA	siamese cat	mammal
+9	question	NA	NA	goldfish	animal
+9	question	NA	NA	poodle	dog
+9	question	NA	NA	dalmatian	dalmatian
+10	ans:	dalmatian,poodle,siamese cat,goldfish	mammal	NA	3
+10	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	2
+10	ans:	siamese cat,dalmatian,poodle,goldfish	dog	NA	3
+10	ans:	poodle,dalmatian,siamese cat,goldfish	dalmatian	NA	2
+10	question	NA	NA	poodle	dog
+10	question	NA	NA	goldfish	animal
+10	question	NA	NA	dalmatian	dalmatian
+10	question	NA	NA	siamese cat	mammal
+11	question	NA	NA	siamese cat	mammal
+11	question	NA	NA	poodle	dog
+11	question	NA	NA	goldfish	animal
+11	question	NA	NA	dalmatian	dalmatian
+11	ans:	siamese cat,dalmatian,goldfish,poodle	dog	NA	2
+11	ans:	siamese cat,goldfish,poodle,dalmatian	mammal	NA	1
+11	ans:	goldfish,siamese cat,poodle,dalmatian	dalmatian	NA	4
+11	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	3
+12	ans:	goldfish,poodle,siamese cat,dalmatian	dalmatian	NA	4
+12	ans:	siamese cat,poodle,dalmatian,goldfish	dog	NA	3
+12	ans:	siamese cat,poodle,goldfish,dalmatian	animal	NA	4
+12	ans:	siamese cat,goldfish,poodle,dalmatian	mammal	NA	4
+12	question	NA	NA	siamese cat	dog
+12	question	NA	NA	dalmatian	dalmatian
+12	question	NA	NA	poodle	dog
+12	question	NA	NA	goldfish	dog
+13	question	NA	NA	siamese cat	dog
+13	question	NA	NA	goldfish	mammal
+13	question	NA	NA	dalmatian	dalmatian
+13	question	NA	NA	poodle	dog
+13	ans:	goldfish,siamese cat,poodle,dalmatian	animal	NA	2
+13	ans:	siamese cat,poodle,dalmatian,goldfish	mammal	NA	2
+13	ans:	goldfish,poodle,siamese cat,dalmatian	dog	NA	2
+13	ans:	siamese cat,dalmatian,goldfish,poodle	dalmatian	NA	2
+14	question	NA	NA	siamese cat	dog
+14	question	NA	NA	dalmatian	dalmatian
+14	question	NA	NA	poodle	dalmatian
+14	question	NA	NA	goldfish	mammal
+14	ans:	siamese cat,poodle,goldfish,dalmatian	animal	NA	1
+14	ans:	dalmatian,goldfish,siamese cat,poodle	mammal	NA	2
+14	ans:	dalmatian,goldfish,siamese cat,poodle	dog	NA	3
+14	ans:	siamese cat,dalmatian,poodle,goldfish	dalmatian	NA	2
+15	question	NA	NA	dalmatian	dalmatian
+15	question	NA	NA	siamese cat	mammal
+15	question	NA	NA	poodle	dog
+15	question	NA	NA	goldfish	animal
+15	ans:	poodle,dalmatian,siamese cat,goldfish	dalmatian	NA	2
+15	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	2
+15	ans:	poodle,goldfish,siamese cat,dalmatian	mammal	NA	3
+15	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	4
+16	ans:	dalmatian,siamese cat,goldfish,poodle	animal	NA	1
+16	ans:	siamese cat,dalmatian,goldfish,poodle	mammal	NA	2
+16	ans:	poodle,siamese cat,dalmatian,goldfish	dog	NA	3
+16	ans:	poodle,siamese cat,goldfish,dalmatian	dalmatian	NA	4
+16	question	NA	NA	goldfish	animal
+16	question	NA	NA	dalmatian	dalmatian
+16	question	NA	NA	siamese cat	animal
+16	question	NA	NA	poodle	dog
+17	question	NA	NA	siamese cat	mammal
+17	question	NA	NA	goldfish	animal
+17	question	NA	NA	dalmatian	dalmatian
+17	question	NA	NA	poodle	dog
+17	ans:	poodle,dalmatian,goldfish,siamese cat	animal	NA	4
+17	ans:	goldfish,poodle,siamese cat,dalmatian	mammal	NA	3
+17	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	2
+17	ans:	goldfish,dalmatian,siamese cat,poodle	dalmatian	NA	2
+18	question	NA	NA	poodle	dog
+18	question	NA	NA	siamese cat	animal
+18	question	NA	NA	goldfish	animal
+18	question	NA	NA	dalmatian	dalmatian
+18	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	4
+18	ans:	siamese cat,dalmatian,goldfish,poodle	mammal	NA	2
+18	ans:	dalmatian,goldfish,poodle,siamese cat	dalmatian	NA	1
+18	ans:	dalmatian,goldfish,siamese cat,poodle	dog	NA	1
+19	ans:	dalmatian,poodle,siamese cat,goldfish	dog	NA	1
+19	ans:	poodle,dalmatian,siamese cat,goldfish	animal	NA	3
+19	ans:	siamese cat,goldfish,poodle,dalmatian	dalmatian	NA	3
+19	ans:	poodle,siamese cat,dalmatian,goldfish	mammal	NA	4
+19	question	NA	NA	siamese cat	dog
+19	question	NA	NA	poodle	dog
+19	question	NA	NA	goldfish	mammal
+19	question	NA	NA	dalmatian	dog
+20	ans:	goldfish,poodle,dalmatian,siamese cat	dog	NA	3
+20	ans:	dalmatian,goldfish,siamese cat,poodle	animal	NA	1
+20	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	2
+20	ans:	goldfish,poodle,dalmatian,siamese cat	dalmatian	NA	3
+20	question	NA	NA	siamese cat	animal
+20	question	NA	NA	goldfish	mammal
+20	question	NA	NA	poodle	dog
+20	question	NA	NA	dalmatian	dalmatian
+21	ans:	siamese cat,goldfish,dalmatian,poodle	mammal	NA	2
+21	ans:	goldfish,poodle,siamese cat,dalmatian	dalmatian	NA	4
+21	ans:	dalmatian,siamese cat,poodle,goldfish	dog	NA	3
+21	ans:	siamese cat,goldfish,dalmatian,poodle	animal	NA	4
+21	question	NA	NA	poodle	dog
+21	question	NA	NA	siamese cat	mammal
+21	question	NA	NA	goldfish	mammal
+21	question	NA	NA	dalmatian	dalmatian
+22	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	1
+22	ans:	poodle,siamese cat,dalmatian,goldfish	dalmatian	NA	1
+22	ans:	goldfish,poodle,siamese cat,dalmatian	dog	NA	3
+22	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	3
+22	question	NA	NA	dalmatian	dalmatian
+22	question	NA	NA	poodle	dog
+22	question	NA	NA	siamese cat	mammal
+22	question	NA	NA	goldfish	animal
+23	ans:	goldfish,poodle,dalmatian,siamese cat	mammal	NA	2
+23	ans:	dalmatian,siamese cat,poodle,goldfish	dalmatian	NA	1
+23	ans:	siamese cat,poodle,goldfish,dalmatian	animal	NA	1
+23	ans:	siamese cat,poodle,dalmatian,goldfish	dog	NA	2
+23	question	NA	NA	siamese cat	mammal
+23	question	NA	NA	dalmatian	dalmatian
+23	question	NA	NA	poodle	dog
+23	question	NA	NA	goldfish	animal
+24	question	NA	NA	siamese cat	dog
+24	question	NA	NA	dalmatian	dalmatian
+24	question	NA	NA	goldfish	mammal
+24	question	NA	NA	poodle	dalmatian
+24	ans:	dalmatian,poodle,goldfish,siamese cat	mammal	NA	4
+24	ans:	dalmatian,siamese cat,goldfish,poodle	animal	NA	1
+24	ans:	siamese cat,goldfish,dalmatian,poodle	dalmatian	NA	3
+24	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	2
+25	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	4
+25	ans:	poodle,goldfish,dalmatian,siamese cat	dalmatian	NA	3
+25	ans:	siamese cat,dalmatian,goldfish,poodle	dog	NA	4
+25	ans:	goldfish,siamese cat,poodle,dalmatian	mammal	NA	2
+25	question	NA	NA	dalmatian	dalmatian
+25	question	NA	NA	siamese cat	mammal
+25	question	NA	NA	goldfish	animal
+25	question	NA	NA	poodle	dog
+26	question	NA	NA	siamese cat	dalmatian
+26	question	NA	NA	dalmatian	dalmatian
+26	question	NA	NA	poodle	dog
+26	question	NA	NA	goldfish	dalmatian
+26	ans:	siamese cat,goldfish,dalmatian,poodle	mammal	NA	1
+26	ans:	siamese cat,dalmatian,poodle,goldfish	dog	NA	2
+26	ans:	siamese cat,dalmatian,goldfish,poodle	dalmatian	NA	2
+26	ans:	poodle,goldfish,dalmatian,siamese cat	animal	NA	2
+27	question	NA	NA	siamese cat	dalmatian
+27	question	NA	NA	goldfish	dog
+27	question	NA	NA	poodle	animal
+27	question	NA	NA	dalmatian	dalmatian
+27	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	2
+27	ans:	goldfish,siamese cat,poodle,dalmatian	animal	NA	4
+27	ans:	siamese cat,poodle,goldfish,dalmatian	dog	NA	4
+27	ans:	siamese cat,poodle,dalmatian,goldfish	dalmatian	NA	4
+28	ans:	siamese cat,goldfish,poodle,dalmatian	dog	NA	4
+28	ans:	dalmatian,goldfish,poodle,siamese cat	animal	NA	3
+28	ans:	goldfish,dalmatian,siamese cat,poodle	dalmatian	NA	2
+28	ans:	poodle,siamese cat,dalmatian,goldfish	mammal	NA	4
+28	question	NA	NA	poodle	dog
+28	question	NA	NA	dalmatian	dalmatian
+28	question	NA	NA	siamese cat	animal
+28	question	NA	NA	goldfish	mammal
+29	ans:	poodle,dalmatian,goldfish,siamese cat	dalmatian	NA	2
+29	ans:	goldfish,siamese cat,poodle,dalmatian	animal	NA	3
+29	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	1
+29	ans:	dalmatian,goldfish,poodle,siamese cat	dog	NA	3
+29	question	NA	NA	siamese cat	mammal
+29	question	NA	NA	goldfish	animal
+29	question	NA	NA	poodle	dog
+29	question	NA	NA	dalmatian	dalmatian
+30	question	NA	NA	poodle	dog
+30	question	NA	NA	siamese cat	animal
+30	question	NA	NA	goldfish	animal
+30	question	NA	NA	dalmatian	dalmatian
+30	ans:	goldfish,poodle,dalmatian,siamese cat	dalmatian	NA	3
+30	ans:	dalmatian,siamese cat,goldfish,poodle	dog	NA	4
+30	ans:	dalmatian,poodle,siamese cat,goldfish	mammal	NA	4
+30	ans:	siamese cat,dalmatian,goldfish,poodle	animal	NA	1
+31	question	NA	NA	goldfish	mammal
+31	question	NA	NA	siamese cat	dog
+31	question	NA	NA	dalmatian	dalmatian
+31	question	NA	NA	poodle	dog
+31	ans:	siamese cat,dalmatian,poodle,goldfish	dalmatian	NA	2
+31	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	3
+31	ans:	goldfish,dalmatian,siamese cat,poodle	animal	NA	1
+31	ans:	dalmatian,siamese cat,goldfish,poodle	mammal	NA	2
+32	question	NA	NA	poodle	dog
+32	question	NA	NA	siamese cat	dog
+32	question	NA	NA	goldfish	mammal
+32	question	NA	NA	dalmatian	dalmatian
+32	ans:	goldfish,poodle,dalmatian,siamese cat	animal	NA	4
+32	ans:	siamese cat,goldfish,dalmatian,poodle	dalmatian	NA	3
+32	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	4
+32	ans:	poodle,goldfish,siamese cat,dalmatian	dog	NA	1
+33	question	NA	NA	siamese cat	dog
+33	question	NA	NA	dalmatian	mammal
+33	question	NA	NA	poodle	dog
+33	question	NA	NA	goldfish	mammal
+33	ans:	poodle,siamese cat,goldfish,dalmatian	dog	NA	1
+33	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	4
+33	ans:	dalmatian,poodle,siamese cat,goldfish	mammal	NA	3
+33	ans:	goldfish,dalmatian,siamese cat,poodle	dalmatian	NA	2
+34	ans:	dalmatian,siamese cat,poodle,goldfish	dog	NA	3
+34	ans:	poodle,dalmatian,goldfish,siamese cat	mammal	NA	4
+34	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	3
+34	ans:	dalmatian,goldfish,siamese cat,poodle	dalmatian	NA	1
+34	question	NA	NA	poodle	dog
+34	question	NA	NA	goldfish	mammal
+34	question	NA	NA	dalmatian	dalmatian
+34	question	NA	NA	siamese cat	animal
+35	ans:	dalmatian,siamese cat,goldfish,poodle	mammal	NA	3
+35	ans:	dalmatian,goldfish,siamese cat,poodle	dalmatian	NA	1
+35	ans:	dalmatian,siamese cat,poodle,goldfish	dog	NA	3
+35	ans:	dalmatian,goldfish,poodle,siamese cat	animal	NA	4
+35	question	NA	NA	siamese cat	mammal
+35	question	NA	NA	goldfish	dog
+35	question	NA	NA	dalmatian	dalmatian
+35	question	NA	NA	poodle	dog
+36	question	NA	NA	goldfish	animal
+36	question	NA	NA	siamese cat	animal
+36	question	NA	NA	dalmatian	dalmatian
+36	question	NA	NA	poodle	dog
+36	ans:	goldfish,poodle,siamese cat,dalmatian	dalmatian	NA	4
+36	ans:	siamese cat,goldfish,poodle,dalmatian	mammal	NA	1
+36	ans:	dalmatian,siamese cat,poodle,goldfish	dog	NA	3
+36	ans:	siamese cat,goldfish,poodle,dalmatian	animal	NA	2
+37	ans:	poodle,dalmatian,siamese cat,goldfish	animal	NA	4
+37	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	1
+37	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	2
+37	ans:	dalmatian,siamese cat,goldfish,poodle	dalmatian	NA	1
+37	question	NA	NA	siamese cat	mammal
+37	question	NA	NA	dalmatian	dalmatian
+37	question	NA	NA	goldfish	animal
+37	question	NA	NA	poodle	dog
+38	question	NA	NA	siamese cat	dog
+38	question	NA	NA	dalmatian	dog
+38	question	NA	NA	poodle	dog
+38	question	NA	NA	goldfish	mammal
+38	ans:	siamese cat,goldfish,poodle,dalmatian	dog	NA	3
+38	ans:	poodle,goldfish,dalmatian,siamese cat	mammal	NA	2
+38	ans:	goldfish,siamese cat,dalmatian,poodle	animal	NA	1
+38	ans:	dalmatian,goldfish,poodle,siamese cat	dalmatian	NA	1
+39	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+39	ans:	siamese cat,dalmatian,poodle,goldfish	animal	NA	1
+39	ans:	goldfish,poodle,dalmatian,siamese cat	mammal	NA	2
+39	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	1
+39	question	NA	NA	poodle	dog
+39	question	NA	NA	dalmatian	mammal
+39	question	NA	NA	siamese cat	dog
+39	question	NA	NA	goldfish	mammal
+40	ans:	siamese cat,dalmatian,poodle,goldfish	dalmatian	NA	2
+40	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	1
+40	ans:	siamese cat,goldfish,dalmatian,poodle	dog	NA	4
+40	ans:	goldfish,dalmatian,poodle,siamese cat	animal	NA	1
+40	question	NA	NA	siamese cat	mammal
+40	question	NA	NA	dalmatian	dalmatian
+40	question	NA	NA	goldfish	animal
+40	question	NA	NA	poodle	dog
+41	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	4
+41	ans:	poodle,dalmatian,goldfish,siamese cat	dog	NA	2
+41	ans:	dalmatian,goldfish,poodle,siamese cat	animal	NA	3
+41	ans:	siamese cat,poodle,dalmatian,goldfish	dalmatian	NA	3
+41	question	NA	NA	dalmatian	dog
+41	question	NA	NA	goldfish	animal
+41	question	NA	NA	siamese cat	animal
+41	question	NA	NA	poodle	dog
+42	question	NA	NA	goldfish	dalmatian
+42	question	NA	NA	dalmatian	dog
+42	question	NA	NA	siamese cat	dalmatian
+42	question	NA	NA	poodle	dog
+42	ans:	goldfish,poodle,siamese cat,dalmatian	animal	NA	1
+42	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	2
+42	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+42	ans:	dalmatian,poodle,siamese cat,goldfish	mammal	NA	1
+43	question	NA	NA	poodle	dog
+43	question	NA	NA	dalmatian	dog
+43	question	NA	NA	siamese cat	mammal
+43	question	NA	NA	goldfish	mammal
+43	ans:	dalmatian,goldfish,siamese cat,poodle	mammal	NA	3
+43	ans:	poodle,siamese cat,dalmatian,goldfish	dalmatian	NA	3
+43	ans:	poodle,goldfish,dalmatian,siamese cat	dog	NA	3
+43	ans:	goldfish,dalmatian,poodle,siamese cat	animal	NA	4
+44	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+44	ans:	dalmatian,siamese cat,poodle,goldfish	animal	NA	4
+44	ans:	poodle,goldfish,siamese cat,dalmatian	dog	NA	1
+44	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	3
+44	question	NA	NA	dalmatian	dalmatian
+44	question	NA	NA	poodle	dog
+44	question	NA	NA	goldfish	animal
+44	question	NA	NA	siamese cat	mammal
+45	question	NA	NA	poodle	dog
+45	question	NA	NA	dalmatian	dalmatian
+45	question	NA	NA	siamese cat	mammal
+45	question	NA	NA	goldfish	animal
+45	ans:	poodle,siamese cat,goldfish,dalmatian	animal	NA	3
+45	ans:	goldfish,siamese cat,poodle,dalmatian	dog	NA	3
+45	ans:	goldfish,poodle,dalmatian,siamese cat	dalmatian	NA	3
+45	ans:	poodle,dalmatian,goldfish,siamese cat	mammal	NA	4
+46	question	NA	NA	dalmatian	dalmatian
+46	question	NA	NA	poodle	dog
+46	question	NA	NA	siamese cat	dog
+46	question	NA	NA	goldfish	dog
+46	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	2
+46	ans:	goldfish,siamese cat,dalmatian,poodle	dog	NA	4
+46	ans:	poodle,siamese cat,goldfish,dalmatian	dalmatian	NA	4
+46	ans:	dalmatian,goldfish,siamese cat,poodle	animal	NA	3
+47	ans:	siamese cat,goldfish,poodle,dalmatian	dog	NA	3
+47	ans:	dalmatian,poodle,goldfish,siamese cat	dalmatian	NA	1
+47	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	3
+47	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	1
+47	question	NA	NA	siamese cat	mammal
+47	question	NA	NA	goldfish	animal
+47	question	NA	NA	poodle	dog
+47	question	NA	NA	dalmatian	dalmatian
+48	question	NA	NA	poodle	dog
+48	question	NA	NA	dalmatian	dalmatian
+48	question	NA	NA	siamese cat	mammal
+48	question	NA	NA	goldfish	animal
+48	ans:	siamese cat,goldfish,dalmatian,poodle	animal	NA	2
+48	ans:	siamese cat,poodle,dalmatian,goldfish	dalmatian	NA	3
+48	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	2
+48	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	1
+49	ans:	goldfish,poodle,siamese cat,dalmatian	dog	NA	1
+49	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	2
+49	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	2
+49	ans:	goldfish,dalmatian,siamese cat,poodle	dalmatian	NA	2
+49	question	NA	NA	dalmatian	mammal
+49	question	NA	NA	poodle	dalmatian
+49	question	NA	NA	siamese cat	animal
+49	question	NA	NA	goldfish	dalmatian
+50	ans:	poodle,siamese cat,goldfish,dalmatian	dog	NA	1
+50	ans:	goldfish,poodle,siamese cat,dalmatian	animal	NA	1
+50	ans:	goldfish,poodle,dalmatian,siamese cat	mammal	NA	4
+50	ans:	poodle,goldfish,dalmatian,siamese cat	dalmatian	NA	3
+50	question	NA	NA	dalmatian	dalmatian
+50	question	NA	NA	poodle	dog
+50	question	NA	NA	siamese cat	mammal
+50	question	NA	NA	goldfish	animal
+51	ans:	goldfish,dalmatian,poodle,siamese cat	dalmatian	NA	1
+51	ans:	dalmatian,goldfish,siamese cat,poodle	dog	NA	3
+51	ans:	siamese cat,dalmatian,goldfish,poodle	mammal	NA	3
+51	ans:	poodle,goldfish,dalmatian,siamese cat	animal	NA	1
+51	question	NA	NA	goldfish	mammal
+51	question	NA	NA	dalmatian	mammal
+51	question	NA	NA	siamese cat	dog
+51	question	NA	NA	poodle	mammal
+52	question	NA	NA	dalmatian	dog
+52	question	NA	NA	goldfish	animal
+52	question	NA	NA	siamese cat	mammal
+52	question	NA	NA	poodle	dog
+52	ans:	dalmatian,siamese cat,poodle,goldfish	animal	NA	4
+52	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	1
+52	ans:	goldfish,poodle,dalmatian,siamese cat	dalmatian	NA	3
+52	ans:	dalmatian,goldfish,siamese cat,poodle	mammal	NA	3
+53	question	NA	NA	goldfish	mammal
+53	question	NA	NA	siamese cat	dog
+53	question	NA	NA	poodle	dog
+53	question	NA	NA	dalmatian	dog
+53	ans:	siamese cat,poodle,dalmatian,goldfish	dalmatian	NA	3
+53	ans:	goldfish,dalmatian,poodle,siamese cat	mammal	NA	2
+53	ans:	goldfish,dalmatian,siamese cat,poodle	animal	NA	1
+53	ans:	goldfish,siamese cat,dalmatian,poodle	dog	NA	3
+54	question	NA	NA	siamese cat	dog
+54	question	NA	NA	dalmatian	mammal
+54	question	NA	NA	poodle	mammal
+54	question	NA	NA	goldfish	dog
+54	ans:	dalmatian,goldfish,poodle,siamese cat	dalmatian	NA	1
+54	ans:	goldfish,poodle,siamese cat,dalmatian	dog	NA	2
+54	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	3
+54	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	2
+55	question	NA	NA	goldfish	mammal
+55	question	NA	NA	dalmatian	dalmatian
+55	question	NA	NA	siamese cat	animal
+55	question	NA	NA	poodle	dog
+55	ans:	siamese cat,goldfish,dalmatian,poodle	dog	NA	3
+55	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	3
+55	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	4
+55	ans:	goldfish,poodle,dalmatian,siamese cat	dalmatian	NA	3
+56	question	NA	NA	siamese cat	dog
+56	question	NA	NA	poodle	dalmatian
+56	question	NA	NA	dalmatian	mammal
+56	question	NA	NA	goldfish	mammal
+56	ans:	poodle,siamese cat,goldfish,dalmatian	dog	NA	4
+56	ans:	goldfish,dalmatian,siamese cat,poodle	animal	NA	3
+56	ans:	dalmatian,siamese cat,poodle,goldfish	mammal	NA	3
+56	ans:	poodle,goldfish,dalmatian,siamese cat	dalmatian	NA	3
+57	question	NA	NA	siamese cat	dog
+57	question	NA	NA	dalmatian	dog
+57	question	NA	NA	poodle	dog
+57	question	NA	NA	goldfish	animal
+57	ans:	goldfish,siamese cat,dalmatian,poodle	animal	NA	2
+57	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	3
+57	ans:	siamese cat,goldfish,poodle,dalmatian	mammal	NA	4
+57	ans:	dalmatian,siamese cat,goldfish,poodle	dalmatian	NA	1
+58	ans:	poodle,dalmatian,siamese cat,goldfish	animal	NA	2
+58	ans:	goldfish,poodle,dalmatian,siamese cat	dog	NA	2
+58	ans:	poodle,dalmatian,goldfish,siamese cat	mammal	NA	4
+58	ans:	goldfish,siamese cat,poodle,dalmatian	dalmatian	NA	4
+58	question	NA	NA	dalmatian	dalmatian
+58	question	NA	NA	poodle	dog
+58	question	NA	NA	goldfish	animal
+58	question	NA	NA	siamese cat	mammal
+59	question	NA	NA	dalmatian	dalmatian
+59	question	NA	NA	goldfish	animal
+59	question	NA	NA	siamese cat	animal
+59	question	NA	NA	poodle	dog
+59	ans:	siamese cat,goldfish,dalmatian,poodle	mammal	NA	1
+59	ans:	goldfish,poodle,siamese cat,dalmatian	dog	NA	4
+59	ans:	goldfish,siamese cat,dalmatian,poodle	dalmatian	NA	3
+59	ans:	dalmatian,siamese cat,poodle,goldfish	animal	NA	2
+60	question	NA	NA	siamese cat	mammal
+60	question	NA	NA	poodle	dog
+60	question	NA	NA	dalmatian	dalmatian
+60	question	NA	NA	goldfish	animal
+60	ans:	goldfish,poodle,siamese cat,dalmatian	mammal	NA	3
+60	ans:	poodle,goldfish,siamese cat,dalmatian	dog	NA	1
+60	ans:	goldfish,siamese cat,dalmatian,poodle	animal	NA	1
+60	ans:	siamese cat,poodle,dalmatian,goldfish	dalmatian	NA	3
+61	question	NA	NA	dalmatian	dalmatian
+61	question	NA	NA	poodle	dog
+61	question	NA	NA	siamese cat	animal
+61	question	NA	NA	goldfish	animal
+61	ans:	poodle,dalmatian,goldfish,siamese cat	dalmatian	NA	2
+61	ans:	goldfish,siamese cat,poodle,dalmatian	dog	NA	3
+61	ans:	goldfish,poodle,dalmatian,siamese cat	animal	NA	4
+61	ans:	goldfish,siamese cat,poodle,dalmatian	mammal	NA	2
+62	question	NA	NA	poodle	dog
+62	question	NA	NA	goldfish	mammal
+62	question	NA	NA	dalmatian	dalmatian
+62	question	NA	NA	siamese cat	animal
+62	ans:	dalmatian,siamese cat,poodle,goldfish	mammal	NA	4
+62	ans:	siamese cat,poodle,dalmatian,goldfish	dalmatian	NA	3
+62	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	3
+62	ans:	siamese cat,poodle,goldfish,dalmatian	dog	NA	2
+63	question	NA	NA	siamese cat	mammal
+63	question	NA	NA	poodle	dog
+63	question	NA	NA	dalmatian	dog
+63	question	NA	NA	goldfish	animal
+63	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	3
+63	ans:	dalmatian,goldfish,siamese cat,poodle	dalmatian	NA	4
+63	ans:	siamese cat,poodle,goldfish,dalmatian	mammal	NA	1
+63	ans:	poodle,dalmatian,siamese cat,goldfish	dog	NA	1
+64	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	1
+64	ans:	siamese cat,dalmatian,goldfish,poodle	dog	NA	4
+64	ans:	dalmatian,poodle,goldfish,siamese cat	dalmatian	NA	1
+64	ans:	goldfish,siamese cat,poodle,dalmatian	animal	NA	1
+64	question	NA	NA	poodle	dog
+64	question	NA	NA	goldfish	animal
+64	question	NA	NA	dalmatian	dalmatian
+64	question	NA	NA	siamese cat	mammal
+65	ans:	goldfish,dalmatian,siamese cat,poodle	dog	NA	2
+65	ans:	siamese cat,goldfish,dalmatian,poodle	dalmatian	NA	3
+65	ans:	poodle,goldfish,siamese cat,dalmatian	mammal	NA	1
+65	ans:	dalmatian,goldfish,siamese cat,poodle	animal	NA	3
+65	question	NA	NA	siamese cat	mammal
+65	question	NA	NA	dalmatian	dalmatian
+65	question	NA	NA	poodle	dog
+65	question	NA	NA	goldfish	animal
+66	ans:	goldfish,siamese cat,dalmatian,poodle	dalmatian	NA	3
+66	ans:	goldfish,siamese cat,poodle,dalmatian	animal	NA	2
+66	ans:	dalmatian,goldfish,poodle,siamese cat	dog	NA	3
+66	ans:	goldfish,dalmatian,siamese cat,poodle	mammal	NA	3
+66	question	NA	NA	siamese cat	mammal
+66	question	NA	NA	dalmatian	dalmatian
+66	question	NA	NA	poodle	dog
+66	question	NA	NA	goldfish	animal
+67	question	NA	NA	dalmatian	dalmatian
+67	question	NA	NA	siamese cat	mammal
+67	question	NA	NA	poodle	dog
+67	question	NA	NA	goldfish	animal
+67	ans:	dalmatian,siamese cat,poodle,goldfish	mammal	NA	2
+67	ans:	goldfish,siamese cat,poodle,dalmatian	dog	NA	3
+67	ans:	siamese cat,poodle,goldfish,dalmatian	dalmatian	NA	4
+67	ans:	siamese cat,poodle,dalmatian,goldfish	animal	NA	4
+68	ans:	siamese cat,dalmatian,goldfish,poodle	animal	NA	3
+68	ans:	dalmatian,goldfish,poodle,siamese cat	dog	NA	1
+68	ans:	siamese cat,goldfish,dalmatian,poodle	dalmatian	NA	3
+68	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	4
+68	question	NA	NA	dalmatian	dalmatian
+68	question	NA	NA	poodle	dog
+68	question	NA	NA	siamese cat	dog
+68	question	NA	NA	goldfish	mammal
+69	question	NA	NA	poodle	dog
+69	question	NA	NA	goldfish	dog
+69	question	NA	NA	siamese cat	dog
+69	question	NA	NA	dalmatian	dalmatian
+69	ans:	goldfish,poodle,siamese cat,dalmatian	animal	NA	1
+69	ans:	siamese cat,poodle,dalmatian,goldfish	dalmatian	NA	3
+69	ans:	dalmatian,goldfish,poodle,siamese cat	mammal	NA	4
+69	ans:	poodle,siamese cat,goldfish,dalmatian	dog	NA	1
+70	question	NA	NA	dalmatian	dalmatian
+70	question	NA	NA	poodle	mammal
+70	question	NA	NA	goldfish	animal
+70	question	NA	NA	siamese cat	mammal
+70	ans:	dalmatian,siamese cat,poodle,goldfish	animal	NA	3
+70	ans:	poodle,dalmatian,goldfish,siamese cat	mammal	NA	1
+70	ans:	poodle,siamese cat,goldfish,dalmatian	dog	NA	4
+70	ans:	poodle,dalmatian,goldfish,siamese cat	dalmatian	NA	2
+71	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	4
+71	ans:	dalmatian,siamese cat,poodle,goldfish	dog	NA	3
+71	ans:	poodle,dalmatian,goldfish,siamese cat	mammal	NA	4
+71	ans:	siamese cat,goldfish,poodle,dalmatian	dalmatian	NA	4
+71	question	NA	NA	siamese cat	mammal
+71	question	NA	NA	poodle	dog
+71	question	NA	NA	goldfish	animal
+71	question	NA	NA	dalmatian	dalmatian
+72	question	NA	NA	siamese cat	mammal
+72	question	NA	NA	dalmatian	dalmatian
+72	question	NA	NA	goldfish	animal
+72	question	NA	NA	poodle	dog
+72	ans:	poodle,dalmatian,goldfish,siamese cat	animal	NA	3
+72	ans:	siamese cat,dalmatian,goldfish,poodle	dog	NA	4
+72	ans:	poodle,siamese cat,dalmatian,goldfish	mammal	NA	2
+72	ans:	poodle,dalmatian,goldfish,siamese cat	dalmatian	NA	2
+73	ans:	siamese cat,dalmatian,poodle,goldfish	animal	NA	2
+73	ans:	goldfish,siamese cat,dalmatian,poodle	mammal	NA	2
+73	ans:	goldfish,siamese cat,dalmatian,poodle	dalmatian	NA	3
+73	ans:	poodle,dalmatian,goldfish,siamese cat	dog	NA	1
+73	question	NA	NA	goldfish	animal
+73	question	NA	NA	siamese cat	mammal
+73	question	NA	NA	dalmatian	dalmatian
+73	question	NA	NA	poodle	dog
+74	ans:	poodle,siamese cat,dalmatian,goldfish	mammal	NA	3
+74	ans:	goldfish,siamese cat,poodle,dalmatian	dog	NA	3
+74	ans:	poodle,dalmatian,goldfish,siamese cat	animal	NA	1
+74	ans:	goldfish,siamese cat,dalmatian,poodle	dalmatian	NA	3
+74	question	NA	NA	siamese cat	dog
+74	question	NA	NA	poodle	dog
+74	question	NA	NA	dalmatian	dalmatian
+74	question	NA	NA	goldfish	mammal
+75	question	NA	NA	poodle	dog
+75	question	NA	NA	siamese cat	dog
+75	question	NA	NA	dalmatian	dog
+75	question	NA	NA	goldfish	mammal
+75	ans:	siamese cat,goldfish,poodle,dalmatian	animal	NA	2
+75	ans:	dalmatian,goldfish,siamese cat,poodle	mammal	NA	1
+75	ans:	siamese cat,poodle,goldfish,dalmatian	dalmatian	NA	4
+75	ans:	siamese cat,goldfish,poodle,dalmatian	dog	NA	4
+76	question	NA	NA	goldfish	mammal
+76	question	NA	NA	dalmatian	dalmatian
+76	question	NA	NA	poodle	dalmatian
+76	question	NA	NA	siamese cat	dog
+76	ans:	siamese cat,dalmatian,goldfish,poodle	dog	NA	4
+76	ans:	dalmatian,siamese cat,poodle,goldfish	animal	NA	2
+76	ans:	goldfish,siamese cat,poodle,dalmatian	mammal	NA	1
+76	ans:	dalmatian,poodle,siamese cat,goldfish	dalmatian	NA	1
+77	ans:	poodle,goldfish,dalmatian,siamese cat	mammal	NA	4
+77	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+77	ans:	dalmatian,goldfish,siamese cat,poodle	animal	NA	2
+77	ans:	dalmatian,goldfish,siamese cat,poodle	dog	NA	1
+77	question	NA	NA	poodle	dog
+77	question	NA	NA	dalmatian	dalmatian
+77	question	NA	NA	goldfish	mammal
+77	question	NA	NA	siamese cat	animal
+78	question	NA	NA	goldfish	mammal
+78	question	NA	NA	dalmatian	dog
+78	question	NA	NA	siamese cat	animal
+78	question	NA	NA	poodle	dog
+78	ans:	goldfish,dalmatian,poodle,siamese cat	dalmatian	NA	2
+78	ans:	dalmatian,goldfish,poodle,siamese cat	mammal	NA	4
+78	ans:	goldfish,poodle,dalmatian,siamese cat	dog	NA	3
+78	ans:	siamese cat,dalmatian,poodle,goldfish	animal	NA	1
+79	ans:	poodle,siamese cat,goldfish,dalmatian	dalmatian	NA	4
+79	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	1
+79	ans:	siamese cat,poodle,dalmatian,goldfish	mammal	NA	1
+79	ans:	poodle,dalmatian,siamese cat,goldfish	dog	NA	2
+79	question	NA	NA	goldfish	animal
+79	question	NA	NA	dalmatian	dalmatian
+79	question	NA	NA	siamese cat	mammal
+79	question	NA	NA	poodle	dog
+80	question	NA	NA	poodle	dog
+80	question	NA	NA	dalmatian	dalmatian
+80	question	NA	NA	goldfish	mammal
+80	question	NA	NA	siamese cat	dog
+80	ans:	goldfish,poodle,siamese cat,dalmatian	dog	NA	2
+80	ans:	goldfish,dalmatian,poodle,siamese cat	dalmatian	NA	2
+80	ans:	poodle,goldfish,dalmatian,siamese cat	animal	NA	2
+80	ans:	goldfish,dalmatian,poodle,siamese cat	mammal	NA	4
+81	ans:	goldfish,siamese cat,dalmatian,poodle	animal	NA	3
+81	ans:	poodle,dalmatian,goldfish,siamese cat	mammal	NA	2
+81	ans:	goldfish,poodle,dalmatian,siamese cat	dog	NA	3
+81	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+81	question	NA	NA	poodle	dog
+81	question	NA	NA	dalmatian	dalmatian
+81	question	NA	NA	goldfish	animal
+81	question	NA	NA	siamese cat	mammal
+82	question	NA	NA	poodle	dalmatian
+82	question	NA	NA	dalmatian	dog
+82	question	NA	NA	siamese cat	dalmatian
+82	question	NA	NA	goldfish	mammal
+82	ans:	poodle,goldfish,dalmatian,siamese cat	animal	NA	4
+82	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	3
+82	ans:	goldfish,poodle,siamese cat,dalmatian	dalmatian	NA	4
+82	ans:	poodle,siamese cat,dalmatian,goldfish	dog	NA	1
+83	question	NA	NA	siamese cat	animal
+83	question	NA	NA	dalmatian	animal
+83	question	NA	NA	poodle	dog
+83	question	NA	NA	goldfish	mammal
+83	ans:	dalmatian,poodle,siamese cat,goldfish	dalmatian	NA	1
+83	ans:	dalmatian,poodle,siamese cat,goldfish	animal	NA	3
+83	ans:	dalmatian,siamese cat,poodle,goldfish	dog	NA	3
+83	ans:	goldfish,poodle,siamese cat,dalmatian	mammal	NA	1
+84	ans:	dalmatian,goldfish,poodle,siamese cat	animal	NA	1
+84	ans:	siamese cat,goldfish,poodle,dalmatian	dog	NA	4
+84	ans:	siamese cat,goldfish,poodle,dalmatian	dalmatian	NA	4
+84	ans:	poodle,goldfish,dalmatian,siamese cat	mammal	NA	1
+84	question	NA	NA	siamese cat	animal
+84	question	NA	NA	goldfish	animal
+84	question	NA	NA	dalmatian	dalmatian
+84	question	NA	NA	poodle	dog
+85	question	NA	NA	dalmatian	dalmatian
+85	question	NA	NA	goldfish	animal
+85	question	NA	NA	poodle	dog
+85	question	NA	NA	siamese cat	animal
+85	ans:	dalmatian,poodle,goldfish,siamese cat	dalmatian	NA	1
+85	ans:	siamese cat,poodle,dalmatian,goldfish	dog	NA	2
+85	ans:	dalmatian,poodle,goldfish,siamese cat	mammal	NA	4
+85	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	3
+86	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	2
+86	ans:	siamese cat,dalmatian,goldfish,poodle	mammal	NA	3
+86	ans:	siamese cat,dalmatian,goldfish,poodle	dalmatian	NA	3
+86	ans:	siamese cat,dalmatian,poodle,goldfish	animal	NA	4
+86	question	NA	NA	siamese cat	animal
+86	question	NA	NA	dalmatian	dog
+86	question	NA	NA	goldfish	mammal
+86	question	NA	NA	poodle	animal
+87	ans:	siamese cat,goldfish,poodle,dalmatian	mammal	NA	1
+87	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	2
+87	ans:	siamese cat,goldfish,poodle,dalmatian	animal	NA	2
+87	ans:	siamese cat,poodle,goldfish,dalmatian	dalmatian	NA	4
+87	question	NA	NA	dalmatian	dalmatian
+87	question	NA	NA	siamese cat	mammal
+87	question	NA	NA	poodle	dog
+87	question	NA	NA	goldfish	animal
+88	ans:	poodle,goldfish,siamese cat,dalmatian	dog	NA	4
+88	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	4
+88	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	3
+88	ans:	dalmatian,siamese cat,poodle,goldfish	dalmatian	NA	1
+88	question	NA	NA	dalmatian	animal
+88	question	NA	NA	siamese cat	mammal
+88	question	NA	NA	poodle	dog
+88	question	NA	NA	goldfish	animal
+89	ans:	siamese cat,dalmatian,poodle,goldfish	dalmatian	NA	2
+89	ans:	goldfish,dalmatian,siamese cat,poodle	mammal	NA	3
+89	ans:	siamese cat,dalmatian,poodle,goldfish	dog	NA	2
+89	ans:	poodle,dalmatian,goldfish,siamese cat	animal	NA	3
+89	question	NA	NA	siamese cat	animal
+89	question	NA	NA	dalmatian	dog
+89	question	NA	NA	poodle	dog
+89	question	NA	NA	goldfish	mammal
+90	question	NA	NA	dalmatian	dalmatian
+90	question	NA	NA	siamese cat	mammal
+90	question	NA	NA	goldfish	animal
+90	question	NA	NA	poodle	dog
+90	ans:	dalmatian,siamese cat,poodle,goldfish	mammal	NA	2
+90	ans:	siamese cat,dalmatian,poodle,goldfish	dog	NA	2
+90	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+90	ans:	poodle,siamese cat,goldfish,dalmatian	animal	NA	3
+91	question	NA	NA	siamese cat	mammal
+91	question	NA	NA	dalmatian	dalmatian
+91	question	NA	NA	goldfish	animal
+91	question	NA	NA	poodle	dog
+91	ans:	goldfish,poodle,siamese cat,dalmatian	mammal	NA	1
+91	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	3
+91	ans:	siamese cat,goldfish,dalmatian,poodle	dog	NA	3
+91	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	3
+92	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	4
+92	ans:	siamese cat,poodle,goldfish,dalmatian	animal	NA	1
+92	ans:	poodle,dalmatian,siamese cat,goldfish	dalmatian	NA	2
+92	ans:	dalmatian,goldfish,siamese cat,poodle	dog	NA	1
+92	question	NA	NA	siamese cat	animal
+92	question	NA	NA	poodle	dog
+92	question	NA	NA	dalmatian	dalmatian
+92	question	NA	NA	goldfish	mammal
+93	ans:	dalmatian,poodle,goldfish,siamese cat	dog	NA	4
+93	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+93	ans:	dalmatian,poodle,goldfish,siamese cat	animal	NA	3
+93	ans:	dalmatian,siamese cat,poodle,goldfish	mammal	NA	2
+93	question	NA	NA	dalmatian	dalmatian
+93	question	NA	NA	siamese cat	mammal
+93	question	NA	NA	poodle	dog
+93	question	NA	NA	goldfish	animal
+94	question	NA	NA	dalmatian	dalmatian
+94	question	NA	NA	goldfish	animal
+94	question	NA	NA	poodle	dog
+94	question	NA	NA	siamese cat	mammal
+94	ans:	poodle,goldfish,siamese cat,dalmatian	dalmatian	NA	4
+94	ans:	dalmatian,goldfish,poodle,siamese cat	mammal	NA	4
+94	ans:	goldfish,dalmatian,siamese cat,poodle	animal	NA	1
+94	ans:	siamese cat,goldfish,poodle,dalmatian	dog	NA	3
+95	question	NA	NA	goldfish	dog
+95	question	NA	NA	siamese cat	dog
+95	question	NA	NA	poodle	animal
+95	question	NA	NA	dalmatian	animal
+95	ans:	goldfish,siamese cat,poodle,dalmatian	dalmatian	NA	3
+95	ans:	siamese cat,goldfish,dalmatian,poodle	mammal	NA	1
+95	ans:	dalmatian,goldfish,poodle,siamese cat	animal	NA	4
+95	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	2
+96	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	1
+96	ans:	goldfish,dalmatian,poodle,siamese cat	dalmatian	NA	2
+96	ans:	siamese cat,poodle,goldfish,dalmatian	dog	NA	2
+96	ans:	poodle,dalmatian,siamese cat,goldfish	mammal	NA	3
+96	question	NA	NA	poodle	dog
+96	question	NA	NA	siamese cat	mammal
+96	question	NA	NA	dalmatian	dalmatian
+96	question	NA	NA	goldfish	animal
+97	question	NA	NA	poodle	dalmatian
+97	question	NA	NA	dalmatian	dalmatian
+97	question	NA	NA	goldfish	animal
+97	question	NA	NA	siamese cat	animal
+97	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	1
+97	ans:	dalmatian,goldfish,poodle,siamese cat	dalmatian	NA	1
+97	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	3
+97	ans:	poodle,goldfish,siamese cat,dalmatian	mammal	NA	3
+98	question	NA	NA	siamese cat	dog
+98	question	NA	NA	dalmatian	dog
+98	question	NA	NA	poodle	dalmatian
+98	question	NA	NA	goldfish	mammal
+98	ans:	goldfish,dalmatian,poodle,siamese cat	dog	NA	2
+98	ans:	poodle,goldfish,siamese cat,dalmatian	animal	NA	4
+98	ans:	goldfish,siamese cat,dalmatian,poodle	mammal	NA	1
+98	ans:	poodle,dalmatian,siamese cat,goldfish	dalmatian	NA	2
+99	question	NA	NA	goldfish	mammal
+99	question	NA	NA	dalmatian	dog
+99	question	NA	NA	poodle	dog
+99	question	NA	NA	siamese cat	dog
+99	ans:	siamese cat,dalmatian,goldfish,poodle	dalmatian	NA	2
+99	ans:	siamese cat,dalmatian,poodle,goldfish	mammal	NA	4
+99	ans:	poodle,dalmatian,siamese cat,goldfish	animal	NA	3
+99	ans:	goldfish,poodle,siamese cat,dalmatian	dog	NA	3

@@ -1,0 +1,105 @@
+workerid,domain,goal,question,guess,answer,type
+0,plants,burger,where is the food,true,The burger is behind,equivocal
+0,artifact,table,where is the furniture,true,The table is behind,branching
+0,plants,carrots,where are the carrots,true,The carrots is behind,overlapping
+0,animals,poodle,where is the dog,true,The poodle is behind,branching
+0,places,cottage,where is the house,true,The cottage is behind,branching
+0,places,hotel lobby,where is the bar,false,The dive bar is,overlapping
+0,artifact,wooden chair,where is the seat,true,The wooden chair is,equivocal
+0,animals,goldfish,where is the fish,true,The goldfish is behind,equivocal
+0,places,sunny beach,where is the outdoor place,true,The sunny beach is,equivocal
+0,animals,whale,where is the animal,true,The whale is behind,overlapping
+0,plants,carrot,where is the carrot,true,The carrot is behind,branching
+0,artifact,iron skillet,where is the skillet,true,The iron skillet is,overlapping
+1,animals,betta fish,where is the fish,true,The betta fish is,equivocal
+1,animals,betta fish,where is the fish,true,The betta fish is,equivocal
+1,animals,dalmatian,where is the dalmatian,true,The dalmatian is behind,branching
+1,animals,whale,where is the animal,true,The whale is behind,overlapping
+1,artifact,lawnmower,where is the thing,true,The lawnmower is behind,branching
+1,plants,carrot,where is the food,false,The burger is behind,equivocal
+1,places,mansion,where is the mansion,true,The mansion is behind,branching
+1,places,snowy mountain,where is the cold place,false,The ice hotel room,equivocal
+1,artifact,wooden chair,where is the seat,true,The wooden chair is,equivocal
+1,places,hotel lobby,where is the place,false,The park is behind,overlapping
+1,plants,oak,where is the leaves,true,The oak is behind,overlapping
+1,plants,tomatos,where is the food,true,The tomatos is behind,branching
+2,plants,oak,where is the plant,false,The flower is behind,overlapping
+2,animals,whale,where is the animal,true,The whale is behind,branching
+2,places,cottage,where is the house,true,The cottage is behind,branching
+2,animals,angler fish,where is the fish,false,The goldfish is behind,equivocal
+2,places,ice hotel room,where is the cold place,true,The ice hotel room,equivocal
+2,places,dive bar,where is the bar,false,The hotel lobby is,overlapping
+2,artifact,metal stool,where is the metal thing seat,true,The metal chair is,equivocal
+2,plants,tomatos,where is the food,true,The tomatos is behind,branching
+2,animals,house cat,where the cat,true,The house cat is,overlapping
+2,plants,sunflower,plant,true,The sunflower is behind,equivocal
+2,artifact,couch,couch,true,The couch is behind,branching
+2,artifact,wooden ruler,thing,true,The wooden ruler is,overlapping
+3,plants,oak,where is the plant,false,The flower is behind,overlapping
+3,animals,whale,where is the animal,true,The whale is behind,branching
+3,places,cottage,where is the house,true,The cottage is behind,branching
+3,animals,angler fish,where is the fish,false,The goldfish is behind,equivocal
+3,places,ice hotel room,where is the cold place,true,The ice hotel room,equivocal
+3,places,dive bar,where is the bar,false,The hotel lobby is,overlapping
+3,artifact,metal stool,where is the metal thing seat,true,The metal chair is,equivocal
+3,plants,tomatos,where is the food,true,The tomatos is behind,branching
+3,animals,house cat,where the cat,true,The house cat is,overlapping
+3,plants,sunflower,plant,true,The sunflower is behind,equivocal
+3,artifact,couch,couch,true,The couch is behind,branching
+3,artifact,wooden ruler,thing,true,The wooden ruler is,overlapping
+4,plants,dead flower,,false,The carrot is behind,branching
+4,plants,oak,,false,The lettuce is behind,overlapping
+4,artifact,metal chair,,true,The metal chair is,overlapping
+4,places,dive bar,bar,false,The hotel lobby is,overlapping
+4,plants,burger,food,true,The burger is behind,equivocal
+4,places,ice hotel room,cold place,true,The snowy mountain is,equivocal
+4,animals,siamese cat,pet animal,true,The dalmatian is behind,branching
+4,artifact,couch,couch,true,The couch is behind,branching
+4,places,mansion,mansion,true,The mansion is behind,branching
+4,animals,house cat,cat pet animal,true,The house cat is,overlapping
+4,artifact,metal stool,metal thing seat,true,The metal stool is,equivocal
+4,animals,angler fish,fish,true,The angler fish is,equivocal
+5,plants,dead flower,,false,The carrot is behind,branching
+5,plants,oak,,false,The lettuce is behind,overlapping
+5,artifact,metal chair,,true,The metal chair is,overlapping
+5,places,dive bar,bar,false,The hotel lobby is,overlapping
+5,plants,burger,food,true,The burger is behind,equivocal
+5,places,ice hotel room,cold place,true,The snowy mountain is,equivocal
+5,animals,siamese cat,pet animal,true,The dalmatian is behind,branching
+5,artifact,couch,couch,true,The couch is behind,branching
+5,places,mansion,mansion,true,The mansion is behind,branching
+5,animals,house cat,cat pet animal,true,The house cat is,overlapping
+5,artifact,metal stool,metal thing seat,true,The metal stool is,equivocal
+5,animals,angler fish,fish,true,The angler fish is,equivocal
+6,artifact,metal chair,,false,The wooden chair is,overlapping
+6,animals,dalmatian,where is the pet animal,true,The dalmatian is behind,equivocal
+6,animals,golden retriever,pet animal,true,The golden retriever is,overlapping
+6,plants,carrot,carrot,true,The carrot is behind,branching
+6,artifact,lawnmower,thing,true,The lawnmower is behind,branching
+6,animals,poodle,pet dog,true,The poodle is behind,branching
+6,places,dive bar,bar,true,The dive bar is,overlapping
+6,plants,carrots,carrots,true,The carrots is behind,overlapping
+6,places,snowy forest,outdoor place cold place,true,The snowy forest is,equivocal
+6,artifact,metal stool,metal thing that seat,true,The metal chair is,equivocal
+6,places,cottage,building house place,false,The office is behind,branching
+6,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+6,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+6,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+6,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+6,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+7,artifact,metal chair,,false,The wooden chair is,overlapping
+7,animals,dalmatian,where is the pet animal,true,The dalmatian is behind,equivocal
+7,animals,golden retriever,pet animal,true,The golden retriever is,overlapping
+7,plants,carrot,carrot,true,The carrot is behind,branching
+7,artifact,lawnmower,thing,true,The lawnmower is behind,branching
+7,animals,poodle,pet dog,true,The poodle is behind,branching
+7,places,dive bar,bar,true,The dive bar is,overlapping
+7,plants,carrots,carrots,true,The carrots is behind,overlapping
+7,places,snowy forest,outdoor place cold place,true,The snowy forest is,equivocal
+7,artifact,metal stool,metal thing that seat,true,The metal chair is,equivocal
+7,places,cottage,building house place,false,The office is behind,branching
+7,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+7,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+7,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+7,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal
+7,plants,carrot,food plant that where the is,false,The tomatos is behind,equivocal

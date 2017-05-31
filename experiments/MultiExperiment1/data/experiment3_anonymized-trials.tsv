@@ -1,0 +1,205 @@
+workerid	answer	guess	question	goal
+0	poodle	False	 where  is  the  pet	siamese cat
+0	dalmatian	True	 where  is  the  dalmatian	dalmatian
+0	poodle	True	 where  is  the  dog	poodle
+0	siamese	False	 where  is  the  animal	whale
+1	poodle	False	 where  is  the  pet	siamese cat
+1	dalmatian	True	 where  is  the  dalmatian	dalmatian
+1	poodle	True	 where  is  the  dog	poodle
+1	siamese	False	 where  is  the  animal	whale
+2	dalmatian	False	 where  is  the  dog	whale
+2	dalmatian	True	 where  is  the  dalmatian	dalmatian
+2	poodle	True	 where  is  that  dog	poodle
+2	whale	True	 where  is  that  animal	siamese cat
+3	dalmatian	False	 where  is  the  dog	whale
+3	dalmatian	True	 where  is  the  dalmatian	dalmatian
+3	poodle	True	 where  is  that  dog	poodle
+3	whale	True	 where  is  that  animal	siamese cat
+4	dalmatian	True	 dog	dalmatian
+4	dalmatian	True	 dalmatian	dalmatian
+4	dalmatian	True	 dalmatian	dalmatian
+4	siamese	True	 where  is  the  pet	siamese cat
+5	dalmatian	True	 dog	dalmatian
+5	dalmatian	True	 dalmatian	dalmatian
+5	dalmatian	True	 dalmatian	dalmatian
+5	siamese	True	 where  is  the  pet	siamese cat
+6	poodle	True	 where  is  the  dog	poodle
+6	siamese	True	 where  is  the  pet	siamese cat
+6	siamese	True	 where  is  the  pet	siamese cat
+6	whale	False	 where  is  the  animal	poodle
+7	poodle	True	 where  is  the  dog	poodle
+7	siamese	True	 where  is  the  pet	siamese cat
+7	siamese	True	 where  is  the  pet	siamese cat
+7	whale	False	 where  is  the  animal	poodle
+8	dalmatian	False	 where  is  the  dalmatian	siamese cat
+8	whale	True	 where  is  that  animal	whale
+8	dalmatian	True	 where  is  dalmatian	dalmatian
+8	siamese	True	 where  is  that  pet	siamese cat
+9	dalmatian	False	 where  is  the  dalmatian	siamese cat
+9	whale	True	 where  is  that  animal	whale
+9	dalmatian	True	 where  is  dalmatian	dalmatian
+9	siamese	True	 where  is  that  pet	siamese cat
+10	whale	True	 where  is  that  animal	whale
+10	dalmatian	True	 where  is  the  dalmatian	dalmatian
+10	dalmatian	True	 where  is  the  dalmatian	dalmatian
+10	whale	True	 where  is  the  animal	whale
+11	whale	True	 where  is  that  animal	whale
+11	dalmatian	True	 where  is  the  dalmatian	dalmatian
+11	dalmatian	True	 where  is  the  dalmatian	dalmatian
+11	whale	True	 where  is  the  animal	whale
+12	poodle	True	 where  is  the  dog	poodle
+12	poodle	True	 where  is  the  dog	poodle
+12	siamese	True	 where  is  the  pet	siamese cat
+12	poodle	True	 where  is  the  dog	poodle
+13	poodle	True	 where  is  the  dog	poodle
+13	poodle	True	 where  is  the  dog	poodle
+13	siamese	True	 where  is  the  pet	siamese cat
+13	poodle	True	 where  is  the  dog	poodle
+14	siamese	True	 where  is  the  pet  animal	siamese cat
+14	siamese	True	 where  is  the  pet  animal	siamese cat
+14	poodle	True	 where  is  the  dog	poodle
+14	dalmatian	True	 where  is  the  dalmatian	dalmatian
+15	siamese	True	 where  is  the  pet  animal	siamese cat
+15	siamese	True	 where  is  the  pet  animal	siamese cat
+15	poodle	True	 where  is  the  dog	poodle
+15	dalmatian	True	 where  is  the  dalmatian	dalmatian
+16	dalmatian	True	 where  is  dalmatian	dalmatian
+16	whale	True	 where  is  the  animal	whale
+16	siamese	True	 where  is  pet	siamese cat
+16	dalmatian	True	 where  dalmatian	dalmatian
+17	dalmatian	True	 where  is  dalmatian	dalmatian
+17	whale	True	 where  is  the  animal	whale
+17	siamese	True	 where  is  pet	siamese cat
+17	dalmatian	True	 where  dalmatian	dalmatian
+18	whale	False	 where  is  the  animal	whale
+18	dalmatian	False	 where  is  the  dalmatian	dalmatian
+18	whale	True	 where  is  the  animal	whale
+18	poodle	True	 where  is  the  dog	poodle
+19	whale	False	 where  is  the  animal	whale
+19	dalmatian	False	 where  is  the  dalmatian	dalmatian
+19	whale	True	 where  is  the  animal	whale
+19	poodle	True	 where  is  the  dog	poodle
+20	siamese	False	 where  is  the  animal	whale
+20	poodle	True	 where  is  the  pet  dog	poodle
+20	siamese	True	 where  is  the  pet	siamese cat
+20	siamese	True	 where  is  the  pet	siamese cat
+21	siamese	False	 where  is  the  animal	whale
+21	poodle	True	 where  is  the  pet  dog	poodle
+21	siamese	True	 where  is  the  pet	siamese cat
+21	siamese	True	 where  is  the  pet	siamese cat
+22	poodle	True	 the  animal  is  where	whale
+22	siamese	False	 where  is  animal	whale
+22	dalmatian	True	 where  is  the  pet	siamese cat
+22	dalmatian	True	 where  is  dalmatian	dalmatian
+23	poodle	True	 the  animal  is  where	whale
+23	siamese	False	 where  is  animal	whale
+23	dalmatian	True	 where  is  the  pet	siamese cat
+23	dalmatian	True	 where  is  dalmatian	dalmatian
+24	dalmatian	True	 dalmatian	dalmatian
+24	siamese	True	 pet	siamese cat
+24	dalmatian	True	 dalmatian	dalmatian
+24	dalmatian	True	 dalmatian	dalmatian
+25	dalmatian	True	 dalmatian	dalmatian
+25	siamese	True	 pet	siamese cat
+25	dalmatian	True	 dalmatian	dalmatian
+25	dalmatian	True	 dalmatian	dalmatian
+26	dalmatian	True	 where  is  the  dalmatian	dalmatian
+26	dalmatian	True	 where  is  the  dalmatian	dalmatian
+26	poodle	True	 where  is  the  dog	poodle
+26	poodle	True	 where  is  the  dog	poodle
+27	dalmatian	True	 where  is  the  dalmatian	dalmatian
+27	dalmatian	True	 where  is  the  dalmatian	dalmatian
+27	poodle	True	 where  is  the  dog	poodle
+27	poodle	True	 where  is  the  dog	poodle
+28	poodle	True	 where  is  the  pet  dog	poodle
+28	siamese	True	 where  is  the  pet  animal	siamese cat
+28	dalmatian	True	 where  is  the  dalmatian	dalmatian
+28	siamese	True	 where  is  the  pet  animal	siamese cat
+29	poodle	True	 where  is  the  pet  dog	poodle
+29	siamese	True	 where  is  the  pet  animal	siamese cat
+29	dalmatian	True	 where  is  the  dalmatian	dalmatian
+29	siamese	True	 where  is  the  pet  animal	siamese cat
+30	poodle	True	 where  is  the  dog	poodle
+30	poodle	True	 where  is  the  dog	poodle
+30	poodle	True	 where  is  the  dog	poodle
+30	poodle	True	 where  is  the  dog	poodle
+31	whale	True	 where  is  that  animal	whale
+31	dalmatian	True	 where  is  dalmatian	dalmatian
+31	dalmatian	True	 dalmatian	dalmatian
+31	siamese	True	 the  pet	siamese cat
+32	whale	True	 where  is  that  animal	whale
+32	dalmatian	True	 where  is  dalmatian	dalmatian
+32	dalmatian	True	 dalmatian	dalmatian
+32	siamese	True	 the  pet	siamese cat
+33	whale	False	 where  is  that  animal	poodle
+33	siamese	False	 where  is  that  animal	whale
+33	siamese	True	 where  is  pet  animal	siamese cat
+33	dalmatian	True	 where  is  the  dalmatian	dalmatian
+34	whale	False	 where  is  that  animal	poodle
+34	siamese	False	 where  is  that  animal	whale
+34	siamese	True	 where  is  pet  animal	siamese cat
+34	dalmatian	True	 where  is  the  dalmatian	dalmatian
+35	siamese	True	 where  is  the  pet	siamese cat
+35	dalmatian	True	 where  is  the  dalmatian	dalmatian
+35	poodle	True	 where  is  the  dog	poodle
+35	whale	True	 where  is  the  animal	whale
+36	siamese	True	 where  is  the  pet	siamese cat
+36	dalmatian	True	 where  is  the  dalmatian	dalmatian
+36	poodle	True	 where  is  the  dog	poodle
+36	whale	True	 where  is  the  animal	whale
+37	dalmatian	True	 where  is  the  dalmatian	dalmatian
+37	poodle	True	 where  is  that  dog	poodle
+37	whale	True	 where  is  that  animal	whale
+37	poodle	True	 where  is  that  dog	poodle
+38	dalmatian	True	 where  is  the  dalmatian	dalmatian
+38	poodle	True	 where  is  that  dog	poodle
+38	whale	True	 where  is  that  animal	whale
+38	poodle	True	 where  is  that  dog	poodle
+39	dalmatian	True	 where  is  the  dalmatian	dalmatian
+39	poodle	True	 where  is  the  pet  dog	poodle
+39	siamese	True	 where  is  the  pet  animal	siamese cat
+39	dalmatian	True	 where  is  the  dalmatian	dalmatian
+40	dalmatian	True	 where  is  the  dalmatian	dalmatian
+40	poodle	True	 where  is  the  pet  dog	poodle
+40	siamese	True	 where  is  the  pet  animal	siamese cat
+40	dalmatian	True	 where  is  the  dalmatian	dalmatian
+41	dalmatian	False	 where  is  the  dalmatian	poodle
+41	whale	True	 where  is  the  animal	whale
+41	whale	True	 where  is  the  animal	whale
+41	siamese	True	 where  is  the  pet	siamese cat
+42	dalmatian	False	 where  is  the  dalmatian	poodle
+42	whale	True	 where  is  the  animal	whale
+42	whale	True	 where  is  the  animal	whale
+42	siamese	True	 where  is  the  pet	siamese cat
+43	dalmatian	True	 where  is  the  dalmatian	dalmatian
+43	dalmatian	True	 where  is  the  dalmatian	dalmatian
+43	dalmatian	True	 where  is  the  dalmatian	dalmatian
+43	poodle	False	 where  is  the  dog	dalmatian
+44	dalmatian	True	 where  is  the  dalmatian	dalmatian
+44	dalmatian	True	 where  is  the  dalmatian	dalmatian
+44	dalmatian	True	 where  is  the  dalmatian	dalmatian
+44	poodle	False	 where  is  the  dog	dalmatian
+45	poodle	True	 is  that  the  dog	poodle
+45	dalmatian	True	 where  is  the  dalmatian	dalmatian
+45	whale	False	 where  is  that  animal	siamese cat
+45	poodle	True	 is  that  the  dog	poodle
+46	poodle	True	 is  that  the  dog	poodle
+46	dalmatian	True	 where  is  the  dalmatian	dalmatian
+46	whale	False	 where  is  that  animal	siamese cat
+46	poodle	True	 is  that  the  dog	poodle
+47	dalmatian	False	 where  is  the  dog	poodle
+47	whale	True	 where  is  the  animal	whale
+47	poodle	True	 where  is  that  dog	poodle
+47	poodle	False	 where  is  the  dog	dalmatian
+48	dalmatian	False	 where  is  the  dog	poodle
+48	whale	True	 where  is  the  animal	whale
+48	poodle	True	 where  is  that  dog	poodle
+48	poodle	False	 where  is  the  dog	dalmatian
+49	dalmatian	False	 where  is  the  dalmatian	whale
+49	dalmatian	False	 where  is  the  dalmatian  dog	whale
+49	whale	True	 where  is  the  dog  pet	poodle
+49	dalmatian	True	 where  is  the  dalmatian	dalmatian
+50	dalmatian	False	 where  is  the  dalmatian	whale
+50	dalmatian	False	 where  is  the  dalmatian  dog	whale
+50	whale	True	 where  is  the  dog  pet	poodle
+50	dalmatian	True	 where  is  the  dalmatian	dalmatian

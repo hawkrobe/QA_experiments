@@ -1,0 +1,201 @@
+workerid	trial_type	world_state	gate_response	qud	item_response	utterance	response
+0	question	NA	NA	daisy	NA	NA	animal
+0	question	NA	NA	siamese cat	NA	NA	animal
+0	question	NA	NA	dalmatian	NA	NA	dalmatian
+0	question	NA	NA	poodle	NA	NA	dog
+0	ans:	daisy,siamese cat,poodle,dalmatian	1	NA	Daisy	thing	NA
+0	ans:	daisy,poodle,dalmatian,siamese cat	2	NA	Poodle	dog	NA
+0	ans:	dalmatian,poodle,daisy,siamese cat	4	NA	Siamese Cat	animal	NA
+0	ans:	siamese cat,poodle,daisy,dalmatian	4	NA	Dalmatian	dalmatian	NA
+1	question	NA	NA	daisy	NA	NA	thing
+1	question	NA	NA	poodle	NA	NA	dog
+1	question	NA	NA	siamese cat	NA	NA	animal
+1	question	NA	NA	dalmatian	NA	NA	dalmatian
+1	ans:	daisy,dalmatian,poodle,siamese cat	1	NA	Daisy	thing	NA
+1	ans:	dalmatian,poodle,daisy,siamese cat	1	NA	Dalmatian	dalmatian	NA
+1	ans:	poodle,daisy,dalmatian,siamese cat	4	NA	Siamese Cat	animal	NA
+1	ans:	daisy,siamese cat,poodle,dalmatian	3	NA	Poodle	dog	NA
+2	question	NA	NA	poodle	NA	NA	dog
+2	question	NA	NA	siamese cat	NA	NA	animal
+2	question	NA	NA	daisy	NA	NA	thing
+2	question	NA	NA	dalmatian	NA	NA	dalmatian
+2	ans:	daisy,siamese cat,poodle,dalmatian	4	NA	Dalmatian	dog	NA
+2	ans:	siamese cat,poodle,daisy,dalmatian	1	NA	Siamese Cat	animal	NA
+2	ans:	poodle,daisy,siamese cat,dalmatian	2	NA	Daisy	thing	NA
+2	ans:	dalmatian,siamese cat,daisy,poodle	1	NA	Dalmatian	dalmatian	NA
+3	question	NA	NA	siamese cat	NA	NA	dalmatian
+3	question	NA	NA	poodle	NA	NA	dalmatian
+3	question	NA	NA	dalmatian	NA	NA	dalmatian
+3	question	NA	NA	daisy	NA	NA	thing
+3	ans:	poodle,dalmatian,siamese cat,daisy	2	NA	Dalmatian	dalmatian	NA
+3	ans:	dalmatian,daisy,siamese cat,poodle	4	NA	Poodle	dog	NA
+3	ans:	siamese cat,dalmatian,daisy,poodle	1	NA	Siamese Cat	animal	NA
+3	ans:	siamese cat,poodle,daisy,dalmatian	3	NA	Daisy	thing	NA
+4	question	NA	NA	poodle	NA	NA	dog
+4	question	NA	NA	siamese cat	NA	NA	dog
+4	question	NA	NA	dalmatian	NA	NA	dalmatian
+4	question	NA	NA	daisy	NA	NA	animal
+4	ans:	dalmatian,poodle,siamese cat,daisy	4	NA	Daisy	thing	NA
+4	ans:	poodle,dalmatian,daisy,siamese cat	4	NA	Siamese Cat	animal	NA
+4	ans:	dalmatian,daisy,siamese cat,poodle	1	NA	Dalmatian	dog	NA
+4	ans:	dalmatian,poodle,daisy,siamese cat	1	NA	Dalmatian	dalmatian	NA
+5	question	NA	NA	daisy	NA	NA	dalmatian
+5	question	NA	NA	poodle	NA	NA	dog
+5	question	NA	NA	dalmatian	NA	NA	animal
+5	question	NA	NA	siamese cat	NA	NA	thing
+5	ans:	siamese cat,daisy,dalmatian,poodle	3	NA	Dalmatian	dog	NA
+5	ans:	siamese cat,daisy,poodle,dalmatian	3	NA	Poodle	dalmatian	NA
+5	ans:	poodle,daisy,dalmatian,siamese cat	4	NA	Siamese Cat	thing	NA
+5	ans:	poodle,daisy,dalmatian,siamese cat	2	NA	Daisy	animal	NA
+6	question	NA	NA	poodle	NA	NA	dog
+6	question	NA	NA	daisy	NA	NA	animal
+6	question	NA	NA	dalmatian	NA	NA	dalmatian
+6	question	NA	NA	siamese cat	NA	NA	dog
+6	ans:	dalmatian,daisy,poodle,siamese cat	4	NA	Siamese Cat	animal	NA
+6	ans:	siamese cat,daisy,dalmatian,poodle	4	NA	Poodle	dog	NA
+6	ans:	poodle,dalmatian,siamese cat,daisy	2	NA	Dalmatian	dalmatian	NA
+6	ans:	daisy,siamese cat,poodle,dalmatian	1	NA	Daisy	thing	NA
+7	question	NA	NA	poodle	NA	NA	dog
+7	question	NA	NA	dalmatian	NA	NA	dalmatian
+7	question	NA	NA	daisy	NA	NA	thing
+7	question	NA	NA	siamese cat	NA	NA	dog
+7	ans:	daisy,dalmatian,siamese cat,poodle	1	NA	Daisy	thing	NA
+7	ans:	daisy,siamese cat,dalmatian,poodle	3	NA	Dalmatian	animal	NA
+7	ans:	daisy,siamese cat,poodle,dalmatian	2	NA	Siamese Cat	dalmatian	NA
+7	ans:	daisy,dalmatian,siamese cat,poodle	3	NA	Siamese Cat	dog	NA
+8	question	NA	NA	dalmatian	NA	NA	dalmatian
+8	question	NA	NA	daisy	NA	NA	thing
+8	question	NA	NA	siamese cat	NA	NA	dog
+8	question	NA	NA	poodle	NA	NA	dog
+8	ans:	daisy,siamese cat,poodle,dalmatian	4	NA	Dalmatian	dalmatian	NA
+8	ans:	siamese cat,dalmatian,poodle,daisy	3	NA	Poodle	dog	NA
+8	ans:	dalmatian,daisy,siamese cat,poodle	3	NA	Siamese Cat	animal	NA
+8	ans:	siamese cat,daisy,poodle,dalmatian	2	NA	Daisy	thing	NA
+9	question	NA	NA	daisy	NA	NA	dog
+9	question	NA	NA	dalmatian	NA	NA	thing
+9	question	NA	NA	poodle	NA	NA	dog
+9	question	NA	NA	siamese cat	NA	NA	animal
+9	ans:	daisy,siamese cat,poodle,dalmatian	4	NA	Dalmatian	dalmatian	NA
+9	ans:	poodle,dalmatian,siamese cat,daisy	4	NA	Daisy	thing	NA
+9	ans:	siamese cat,poodle,dalmatian,daisy	1	NA	Siamese Cat	animal	NA
+9	ans:	poodle,siamese cat,daisy,dalmatian	1	NA	Poodle	dog	NA
+10	question	NA	NA	dalmatian	NA	NA	dalmatian
+10	question	NA	NA	siamese cat	NA	NA	dog
+10	question	NA	NA	poodle	NA	NA	dog
+10	question	NA	NA	daisy	NA	NA	thing
+10	ans:	poodle,dalmatian,daisy,siamese cat	2	NA	Dalmatian	dalmatian	NA
+10	ans:	poodle,siamese cat,daisy,dalmatian	1	NA	Poodle	dog	NA
+10	ans:	daisy,dalmatian,poodle,siamese cat	4	NA	Siamese Cat	animal	NA
+10	ans:	siamese cat,dalmatian,daisy,poodle	3	NA	Daisy	thing	NA
+11	question	NA	NA	daisy	NA	NA	dalmatian
+11	question	NA	NA	siamese cat	NA	NA	dog
+11	question	NA	NA	poodle	NA	NA	dog
+11	question	NA	NA	dalmatian	NA	NA	dalmatian
+11	ans:	daisy,siamese cat,dalmatian,poodle	3	NA	Dalmatian	dalmatian	NA
+11	ans:	siamese cat,daisy,poodle,dalmatian	4	NA	Dalmatian	dog	NA
+11	ans:	siamese cat,poodle,daisy,dalmatian	2	NA	Poodle	animal	NA
+11	ans:	siamese cat,poodle,daisy,dalmatian	3	NA	Daisy	thing	NA
+12	question	NA	NA	dalmatian	NA	NA	dalmatian
+12	question	NA	NA	daisy	NA	NA	animal
+12	question	NA	NA	poodle	NA	NA	dog
+12	question	NA	NA	siamese cat	NA	NA	dog
+12	ans:	siamese cat,daisy,poodle,dalmatian	4	NA	Dalmatian	dalmatian	NA
+12	ans:	daisy,siamese cat,poodle,dalmatian	3	NA	Poodle	dog	NA
+12	ans:	daisy,siamese cat,poodle,dalmatian	1	NA	Daisy	thing	NA
+12	ans:	daisy,siamese cat,dalmatian,poodle	2	NA	Siamese Cat	animal	NA
+13	question	NA	NA	daisy	NA	NA	dog
+13	question	NA	NA	dalmatian	NA	NA	dalmatian
+13	question	NA	NA	poodle	NA	NA	dog
+13	question	NA	NA	siamese cat	NA	NA	dog
+13	ans:	poodle,dalmatian,daisy,siamese cat	3	NA	Daisy	animal	NA
+13	ans:	daisy,poodle,siamese cat,dalmatian	3	NA	Siamese Cat	dog	NA
+13	ans:	siamese cat,dalmatian,poodle,daisy	2	NA	Dalmatian	dalmatian	NA
+13	ans:	daisy,dalmatian,poodle,siamese cat	1	NA	Daisy	thing	NA
+14	question	NA	NA	poodle	NA	NA	animal
+14	question	NA	NA	siamese cat	NA	NA	thing
+14	question	NA	NA	dalmatian	NA	NA	animal
+14	question	NA	NA	daisy	NA	NA	thing
+14	ans:	daisy,dalmatian,poodle,siamese cat	2	NA	Dalmatian	dalmatian	NA
+14	ans:	dalmatian,poodle,daisy,siamese cat	2	NA	Poodle	dog	NA
+14	ans:	siamese cat,daisy,poodle,dalmatian	2	NA	Daisy	thing	NA
+14	ans:	siamese cat,daisy,poodle,dalmatian	1	NA	Siamese Cat	animal	NA
+15	question	NA	NA	daisy	NA	NA	thing
+15	question	NA	NA	siamese cat	NA	NA	animal
+15	question	NA	NA	poodle	NA	NA	dog
+15	question	NA	NA	dalmatian	NA	NA	dalmatian
+15	ans:	siamese cat,daisy,poodle,dalmatian	2	NA	Daisy	thing	NA
+15	ans:	poodle,dalmatian,siamese cat,daisy	2	NA	Dalmatian	dalmatian	NA
+15	ans:	dalmatian,poodle,siamese cat,daisy	3	NA	Siamese Cat	animal	NA
+15	ans:	daisy,dalmatian,siamese cat,poodle	4	NA	Poodle	dog	NA
+16	question	NA	NA	daisy	NA	NA	thing
+16	question	NA	NA	poodle	NA	NA	dog
+16	question	NA	NA	dalmatian	NA	NA	dalmatian
+16	question	NA	NA	siamese cat	NA	NA	dalmatian
+16	ans:	poodle,dalmatian,siamese cat,daisy	2	NA	Dalmatian	animal	NA
+16	ans:	dalmatian,poodle,siamese cat,daisy	4	NA	Daisy	thing	NA
+16	ans:	poodle,siamese cat,daisy,dalmatian	4	NA	Dalmatian	dalmatian	NA
+16	ans:	dalmatian,siamese cat,poodle,daisy	1	NA	Dalmatian	dog	NA
+17	question	NA	NA	daisy	NA	NA	thing
+17	question	NA	NA	poodle	NA	NA	dog
+17	question	NA	NA	dalmatian	NA	NA	dalmatian
+17	question	NA	NA	siamese cat	NA	NA	animal
+17	ans:	poodle,dalmatian,daisy,siamese cat	3	NA	Dalmatian	thing	NA
+17	ans:	poodle,daisy,siamese cat,dalmatian	3	NA	Siamese Cat	animal	NA
+17	ans:	dalmatian,siamese cat,poodle,daisy	3	NA	Poodle	dog	NA
+17	ans:	dalmatian,daisy,poodle,siamese cat	1	NA	Dalmatian	dalmatian	NA
+18	question	NA	NA	poodle	NA	NA	dog
+18	question	NA	NA	siamese cat	NA	NA	dalmatian
+18	question	NA	NA	daisy	NA	NA	thing
+18	question	NA	NA	dalmatian	NA	NA	dalmatian
+18	ans:	daisy,poodle,dalmatian,siamese cat	3	NA	Dalmatian	animal	NA
+18	ans:	daisy,poodle,siamese cat,dalmatian	1	NA	Daisy	thing	NA
+18	ans:	poodle,siamese cat,dalmatian,daisy	3	NA	Dalmatian	dog	NA
+18	ans:	dalmatian,siamese cat,daisy,poodle	1	NA	Dalmatian	dalmatian	NA
+19	question	NA	NA	siamese cat	NA	NA	dog
+19	question	NA	NA	daisy	NA	NA	animal
+19	question	NA	NA	dalmatian	NA	NA	dalmatian
+19	question	NA	NA	poodle	NA	NA	dog
+19	ans:	siamese cat,poodle,dalmatian,daisy	4	NA	Daisy	animal	NA
+19	ans:	daisy,dalmatian,siamese cat,poodle	2	NA	Dalmatian	dalmatian	NA
+19	ans:	dalmatian,daisy,poodle,siamese cat	3	NA	Poodle	dog	NA
+19	ans:	daisy,dalmatian,poodle,siamese cat	1	NA	Daisy	thing	NA
+20	question	NA	NA	poodle	NA	NA	dog
+20	question	NA	NA	siamese cat	NA	NA	animal
+20	question	NA	NA	daisy	NA	NA	thing
+20	question	NA	NA	dalmatian	NA	NA	dalmatian
+20	ans:	poodle,siamese cat,dalmatian,daisy	4	NA	Daisy	animal	NA
+20	ans:	poodle,dalmatian,daisy,siamese cat	2	NA	Dalmatian	dalmatian	NA
+20	ans:	siamese cat,poodle,daisy,dalmatian	2	NA	Poodle	dog	NA
+20	ans:	poodle,siamese cat,dalmatian,daisy	4	NA	Daisy	thing	NA
+21	question	NA	NA	siamese cat	NA	NA	thing
+21	question	NA	NA	daisy	NA	NA	dog
+21	question	NA	NA	poodle	NA	NA	dog
+21	question	NA	NA	dalmatian	NA	NA	dog
+21	ans:	siamese cat,dalmatian,daisy,poodle	2	NA	Dalmatian	dog	NA
+21	ans:	daisy,siamese cat,dalmatian,poodle	1	NA	Daisy	thing	NA
+21	ans:	daisy,poodle,dalmatian,siamese cat	3	NA	Dalmatian	dalmatian	NA
+21	ans:	poodle,siamese cat,daisy,dalmatian	2	NA	Siamese Cat	animal	NA
+22	question	NA	NA	siamese cat	NA	NA	dog
+22	question	NA	NA	dalmatian	NA	NA	dog
+22	question	NA	NA	daisy	NA	NA	animal
+22	question	NA	NA	poodle	NA	NA	dog
+22	ans:	dalmatian,poodle,daisy,siamese cat	1	NA	Dalmatian	dog	NA
+22	ans:	daisy,siamese cat,dalmatian,poodle	3	NA	Dalmatian	dalmatian	NA
+22	ans:	poodle,dalmatian,daisy,siamese cat	3	NA	Daisy	thing	NA
+22	ans:	siamese cat,daisy,dalmatian,poodle	1	NA	Siamese Cat	animal	NA
+23	question	NA	NA	dalmatian	NA	NA	dalmatian
+23	question	NA	NA	poodle	NA	NA	dog
+23	question	NA	NA	siamese cat	NA	NA	animal
+23	question	NA	NA	daisy	NA	NA	thing
+23	ans:	poodle,daisy,siamese cat,dalmatian	2	NA	Daisy	thing	NA
+23	ans:	poodle,dalmatian,siamese cat,daisy	1	NA	Poodle	dog	NA
+23	ans:	dalmatian,daisy,siamese cat,poodle	3	NA	Siamese Cat	animal	NA
+23	ans:	daisy,poodle,dalmatian,siamese cat	3	NA	Dalmatian	dalmatian	NA
+24	question	NA	NA	daisy	NA	NA	thing
+24	question	NA	NA	poodle	NA	NA	dog
+24	question	NA	NA	siamese cat	NA	NA	animal
+24	question	NA	NA	dalmatian	NA	NA	dalmatian
+24	ans:	daisy,poodle,siamese cat,dalmatian	3	NA	Siamese Cat	animal	NA
+24	ans:	daisy,siamese cat,poodle,dalmatian	1	NA	Daisy	thing	NA
+24	ans:	poodle,daisy,siamese cat,dalmatian	1	NA	Poodle	dog	NA
+24	ans:	dalmatian,poodle,siamese cat,daisy	1	NA	Dalmatian	dalmatian	NA
