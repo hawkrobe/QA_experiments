@@ -5,7 +5,7 @@ var fs = require('fs');
 var babyparse = require('babyparse');
 
 function readCSV(filename){
-  return babyparse.parse(fs.readFileSync(filename, 'utf8')).data;
+  return babyparse.parse(fs.readFileSync(filename, 'utf8'), {header: true}).data;
 };
 
 function writeCSV(jsonCSV, filename){
@@ -19,7 +19,7 @@ function appendCSV(jsonCSV, filename){
 var writeERP = function(erp, labels, filename, fixed) {
   var data = _.filter(erp.support().map(
    function(v) {
-     var prob = Math.exp(erp.score(v));
+     var prob = erp.score(v);
      if (prob > 0.0){
       if(v.slice(-1) === ".")
         out = butLast(v);
@@ -41,7 +41,7 @@ var writeERP = function(erp, labels, filename, fixed) {
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
   fs.writeSync(predictiveFile, ["parameter", "item1", 
-				"item2", "value", "alpha", "beta", "expPragFlip", 
+				"item2", "value", "alpha", "beta", "source", 
 				"prob", "MCMCprob"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
@@ -49,8 +49,8 @@ var bayesianErpWriter = function(erp, filePrefix) {
 
   var supp = erp.support();
   supp.forEach(function(s) {
-    supportWriter(s.predictive, Math.exp(erp.score(s)), predictiveFile);
-    supportWriter(s.params, Math.exp(erp.score(s)), paramFile);
+    supportWriter(s.predictive, erp.score(s), predictiveFile);
+    supportWriter(s.params, erp.score(s), paramFile);
   });
   fs.closeSync(predictiveFile);
   fs.closeSync(paramFile);
@@ -173,15 +173,15 @@ var getSubset = function(data, options) {
   var cond;
   if (question) {
     cond = function(row) {
-      return (row[1] === domain &&
-	      row[3] === question &&
-	      row[6] === type);
+      return (row.domain === domain &&
+	      row.question === question &&
+	      row.type === type);
     };
   } else if (goal) {
     cond = function(row) {
-      return (row[1] === domain &&
-	      row[2] === goal &&
-	      row[6] === type);
+      return (row.domain === domain &&
+	      row.goal === goal &&
+	      row.type === type);
     };
   }
   return _.filter(data, cond);
