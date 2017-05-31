@@ -189,13 +189,13 @@ plottableQ = collapsed_q %>%
  + geom_bar(position = 'dodge', stat= 'identity')
  + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
                  position = 'dodge', width =.25)
- + ggtitle("Question asked in overlapping condition when goal is to find 'house cat'")
- + theme_few(12)
+ + ggtitle("Question asked in overlapping condition\nwhen goal is to find 'house cat'")
+ + theme_few(9)
  + ylim(0,1)
  + ylab('% participants'))
 
 ggsave("../writing/2016/journal-manuscript/figures/OverlappingModelComparison.pdf", 
-       width = 7, height=4)
+       width = 3.5, height=2)
 ```
 
 get statistical result
@@ -237,25 +237,41 @@ cat(paste0(c('\nQ3-Q2 = ', estimate,
 
 ```{r}
 options( scipen = 0 )
-options( digits =1)
-computeBayesFactor <- function(name) {
-  inputFile <- paste0("../../guessingGame/Bayesian/data/", name, '.csv')
-  raw <- read_csv(inputFile, sep = ",", row.names = NULL) 
-  # BDA result:
-  res <- raw %>% 
-    filter(parameter %in% c("modelType", 'expPragFlip')) %>% 
-    group_by(value) %>% 
-    summarize(prob = sum(MCMCprob)) %>%
-    spread(value, prob) 
-  print(res)
-  return(signif(res$true/res$false, 3))
+options( digits =22)
+
+sumlogprob <- function(a, b) {
+  if(a>b) {
+    return(a+log1p(exp(b-a)))
+  } else{
+    return(b+log1p(exp(a-b)))
+  }
 }
-# print(paste0('BF (beta = 0, questioner): ',
-#              computeBayesFactor("betaZeroQuestioner_Params")))
-# print(paste0('BF (beta = 0, answerer): ',
-#              computeBayesFactor("betaZeroAnswerer_Params")))
-print(paste0('BF (free beta, questioner): ',
-             computeBayesFactor("questionerFixedParams")))
-print(paste0('BF (free beta, answerer): ',
-      computeBayesFactor("answererFixedParams")))
+
+computeBayesFactor <- function(name, typicality) {
+  inputFile <- paste0("../modeling/guessingGame/Bayesian/data/",
+                      name, '.csv')
+  raw <- read_csv(inputFile) %>% 
+    mutate(t = floor((row_number()-1)/3)) %>% 
+    spread(parameter, value)
+  
+  # filter & renormalize
+  if(typicality == 'none') {
+    raw <- raw %>% 
+      filter(beta == 0) %>% 
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed)))
+  }
+  
+  # BDA result
+  res <- raw %>% 
+    group_by(modelType) %>% 
+    summarize(prob = reduce(MCMCprob, sumlogprob))
+  
+  return(res)
+}
+
+print(paste0('BF (beta=0, questioner): ',
+             computeBayesFactor("answerer_modelComparisonParams", 'none')))
+print(paste0('BF (beta=0, answerer): ',
+      computeBayesFactor("full_answererParams")))
 ```
