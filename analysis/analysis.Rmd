@@ -97,6 +97,8 @@ d_q = d %>%
       select(goal, type, response, domain, count, lower_ci, upper_ci,
              groupSize, empProb) %>%
       ungroup() %>%
+      # Note that there are no Q3 & Q4 in the equivocal condition
+      filter(!(type == "equivocal" & (response == "Q3" | response == "Q4"))) %>%
       mutate(domain = factor(domain),
              type = factor(type),
              goal = ordered(goal, levels=c("G1","G2","G3","G4")))
@@ -227,4 +229,33 @@ upperDiffScore <- round(boot.ci(bootRes, type = "perc")$percent[5],2)
 cat(paste0(c('\nQ3-Q2 = ', estimate,
              '[', lowerDiffScore, 
              ', ', upperDiffScore, ']')))
+```
+
+# Bayesian Data Analysis
+
+## Model Comparison; uniform typicality
+
+```{r}
+options( scipen = 0 )
+options( digits =1)
+computeBayesFactor <- function(name) {
+  inputFile <- paste0("../../guessingGame/Bayesian/data/", name, '.csv')
+  raw <- read_csv(inputFile, sep = ",", row.names = NULL) 
+  # BDA result:
+  res <- raw %>% 
+    filter(parameter %in% c("modelType", 'expPragFlip')) %>% 
+    group_by(value) %>% 
+    summarize(prob = sum(MCMCprob)) %>%
+    spread(value, prob) 
+  print(res)
+  return(signif(res$true/res$false, 3))
+}
+# print(paste0('BF (beta = 0, questioner): ',
+#              computeBayesFactor("betaZeroQuestioner_Params")))
+# print(paste0('BF (beta = 0, answerer): ',
+#              computeBayesFactor("betaZeroAnswerer_Params")))
+print(paste0('BF (free beta, questioner): ',
+             computeBayesFactor("questionerFixedParams")))
+print(paste0('BF (free beta, answerer): ',
+      computeBayesFactor("answererFixedParams")))
 ```
