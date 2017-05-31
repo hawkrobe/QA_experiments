@@ -5,19 +5,18 @@ var questionToLabel = function(question) {
   return qa.butLast(question).split("Is")[1].toLowerCase();
 };
 
-var data = qa.readCSV("../../../MultiExperiment2/data/"
-	              + "MultiExp2_BayesianAnalysisInput.csv");
-
+var data = qa.readCSV("../../../data/BayesianAnalysisInput.csv");
 console.log("loaded data");
+
 var types = ["branching", "overlapping", "equivocal"];
 var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var rawAlpha = uniformDraw(_.range(0, 20, 0.1)),
+  var rawAlpha = uniformDraw(_.range(0, 20, .05)),
       alpha = Number.parseFloat(rawAlpha.toFixed(3));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.1)),
+  var rawBeta = uniformDraw(_.range(0, 1.01, .05)),
       beta = Number.parseFloat(rawBeta.toFixed(3));
   var answererType = uniformDraw(['literal', 'explicit', 'pragmatic']);
 
@@ -31,6 +30,7 @@ var modelAnalysis = function() {
       var itemData = qa.getSubset(data, {type:item[0], domain: item[1],
   					 question: questionToLabel(question)});
       var answererERP = runAnswererModel(question, answererType);
+//      console.log(answererERP);
       // Store predictions
       foreach(answererERP.support(),function(s){
 	var key = [questionToLabel(question), item[0], item[1], s, 
@@ -40,7 +40,7 @@ var modelAnalysis = function() {
       });
 
       return sum(map(function(dataRow) {
-  	var localScore = answererERP.score(dataRow[5] + ".");
+  	var localScore = answererERP.score(dataRow.answer + ".");
   	return localScore;
       }, itemData));
     }, model.questionSpace));

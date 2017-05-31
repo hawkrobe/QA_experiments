@@ -1,17 +1,16 @@
 // Run as:
 // webppl genQuestionerPredictions.wppl --require ../qa
 
-var data = qa.readCSV("../../../MultiExperiment2/data/"
-		      + "MultiExp2_BayesianAnalysisInput.csv");
+var data = qa.readCSV("../../../data/BayesianAnalysisInput.csv");
 var types = ["branching", "overlapping", "equivocal"];
 var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var rawAlpha = uniformDraw(_.range(0, 20, 0.1)),
+  var rawAlpha = uniformDraw(_.range(0, 20, 0.05)),
       alpha = Number.parseFloat(rawAlpha.toFixed(3));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.1)),
+  var rawBeta = uniformDraw(_.range(0, 1.01, 0.05)),
       beta = Number.parseFloat(rawBeta.toFixed(3));
   var questionerType = uniformDraw(['literal', 'explicit', 'pragmatic']);
 
@@ -32,7 +31,7 @@ var modelAnalysis = function() {
       	globalStore.predictives = extend(globalStore.predictives, newPair);
       });
       return sum(map(function(dataRow) {
-       	return questionerERP.score("whereIs" + qa.capitalize(dataRow[3]) + "?");
+       	return questionerERP.score("whereIs" + qa.capitalize(dataRow.question) + "?");
       }, itemData));
     }, model.qudSpace));
   }, items));
