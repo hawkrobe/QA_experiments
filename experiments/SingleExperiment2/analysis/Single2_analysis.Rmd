@@ -1,0 +1,137 @@
+---
+title: "experiment2_onlyPets"
+output: html_document
+---
+
+```{r}
+library(knitr)
+opts_knit$set(root.dir = '/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment2/')
+setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/experiment2/")
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(binom)
+```
+
+Import data
+
+```{r}
+d = read.csv("experiment2/data/q_and_a_onlyPets_v2-trials.tsv",  sep = '\t')
+ps = read.csv("experiment2/data/q_and_a_onlyPets_v2-subject_information.tsv", sep = '\t')
+nonconfused_ps <- (ps %>% 
+                  mutate(asses2 = ifelse(is.na(asses), "None", asses)) %>% 
+                  filter(language != "Mandarin") %>%
+                  filter(language != "") %>%
+                   filter(asses2 != 1))$workerid
+cat("We removed", length(ps$workerid) - length(nonconfused_ps), "due to confusion")
+d = filter(d, workerid %in% nonconfused_ps)
+d$trial = rep(c("first","second"), length(d$workerid)/2)
+```
+
+chi-squared: do people really say "cat" more than "dalmatian" for poodle?
+
+```{r}
+onlyPetsPipeline <- function(d, filename, plot_title) {
+  dalmatian_counts <- subset(d, qud == "dalmatian") %>%
+    group_by(response) %>%
+    tally %>%
+    mutate(qud = "dalmatian")
+  
+  dalmatian_counts = cbind(dalmatian_counts,
+                           binom.confint(dalmatian_counts$n, sum(dalmatian_counts$n), 
+                                   methods = "wilson"))
+  
+  print(chisq.test(dalmatian_counts$x))
+  poodle_counts <- subset(d, qud == "poodle") %>%
+    group_by(response) %>%
+    tally %>%
+    mutate(qud = "poodle")
+  
+  poodle_counts = cbind(poodle_counts, 
+                        binom.confint(poodle_counts$n, sum(poodle_counts$n), 
+                                   methods = "wilson"))
+  print(chisq.test(poodle_counts$x))
+  
+  count_data = rbind(dalmatian_counts, poodle_counts)
+  new_labels = as.factor(sapply(X = count_data$qud, 
+                                FUN = function(v) {return(paste("goal:", v))}))
+
+  count_data$facet_label = ordered(new_labels,
+                             levels = c("goal: dalmatian", "goal: poodle"))
+                                          
+  g <- (ggplot(count_data, aes(x = response, y = mean, fill= "b"))
+        + theme_bw(base_size = 30)
+        + guides(fill=FALSE)
+        + scale_fill_brewer(palette = 6)
+        + ylab("Proportion")
+        + geom_bar(stat = "identity", color = "black")
+        + geom_errorbar(aes(ymax = upper, ymin = lower), 
+                        width = .25)
+        + ggtitle(plot_title)
+        + facet_wrap(~ facet_label))
+  plot(g)
+  ggsave(plot = g, file = filename, width = 6, height = 6)
+}
+```
+
+Not as strong if we just look at first-timers, though...
+
+```{r}
+onlyPetsPipeline(d, "../writing/2015/cogsci/onlyPets_all.pdf", "Exp 2 Results (Pooled)")
+d_firsts <- subset(d, first == 0)
+onlyPetsPipeline(d_firsts, "../writing/2015/cogsci/onlyPets_first.pdf", "Exp 2 Results (First Trial Only)")
+
+```
+
+Split 'em apart
+
+```{r}
+dalmatian_counts <- subset(d, qud == "dalmatian") %>%
+  group_by(response, trial) %>%
+  tally %>%
+  mutate(qud = "dalmatian")
+
+dal_first = subset(dalmatian_counts, trial == "first")
+dal_second = subset(dalmatian_counts, trial == "second")
+dal_first = cbind(dal_first, binom.confint(dal_first$n, sum(dal_first$n), 
+                                 methods = "wilson"))
+dal_second = cbind(dal_second, binom.confint(dal_second$n, sum(dal_second$n), 
+                                 methods = "wilson"))
+dalmatian_counts = rbind(dal_first, dal_second)
+
+poodle_counts <- subset(d, qud == "poodle") %>%
+  group_by(response,trial) %>%
+  tally %>%
+  mutate(qud = "poodle")
+
+poodle_first = subset(poodle_counts, trial == "first")
+poodle_second = subset(poodle_counts, trial == "second")
+poodle_first = cbind(poodle_first, binom.confint(poodle_first$n, sum(poodle_first$n), 
+                                 methods = "wilson"))
+poodle_second = cbind(poodle_second, binom.confint(poodle_second$n, sum(poodle_second$n), 
+                                 methods = "wilson"))
+poodle_counts = rbind(poodle_first, poodle_second)
+
+count_data = rbind(dalmatian_counts, poodle_counts)
+new_labels = as.factor(sapply(X = count_data$qud, 
+                              FUN = function(v) {return(paste("goal:", v))}))
+
+count_data$facet_label = ordered(new_labels,
+                           levels = c("goal: dalmatian", "goal: poodle"))
+dodge <- position_dodge(width=0.9)
+g <- (ggplot(count_data, aes(x = response, y = mean, fill = trial))
+      + theme_bw(base_size = 30)
+      + ylab("Proportion")
+      + scale_fill_brewer(palette = 6)
+      + geom_bar(stat = "identity", position = position_dodge(),
+                 color = "black")
+      + geom_errorbar(aes(ymax = upper, ymin = lower), 
+                      width = .25, position = dodge)
+      + ggtitle("Exp 2 Results (split)")
+      + facet_wrap(~ facet_label))
+plot(g)
+ggsave(plot = g, file = "../writing/2015/cogsci/onlyPets_split.pdf",
+       width = 8, height = 6)
+```

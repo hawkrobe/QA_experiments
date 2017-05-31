@@ -1,0 +1,43 @@
+<html>
+<style>
+.mmturkey-debug {
+  float: none !important;
+}
+</style>
+
+<body>
+
+<div id="indicator">{{}}</div>
+
+<script src="mmturkey.js"></script>
+
+<script>
+var indicator = document.getElementById("indicator");
+
+var o = {a: 1, b: 2}, // object
+		ao = [{a: 1, b: 2}, {a: 3, b: 4}], // array of objects
+		oao = { // object with array of objects as the most complex value
+			condition: "control",
+			completed: ["red","green","blue"],
+			trials: [
+				{rt: 500, accuracy: 1, color: "red", pos: {x: 4, y: 5}},
+				{rt: 614, accuracy: 0, color: "green", pos: {x: 1, y: 3}},
+				{rt: 932, accuracy: 0, color: "blue", pos: {x: 1, y: 2}}
+			]
+		};
+
+if (!turk.previewMode) {
+	indicator.innerHTML = "Not in preview mode";
+	turk.submit(o);
+	turk.submit(ao);
+	turk.submit(oao);
+	turk.submit(oao,true);
+	turk.submit();
+	turk.submit({});
+} else {
+	indicator.innerHTML = "In preview mode";
+}
+
+</script>
+</body>
+</html>

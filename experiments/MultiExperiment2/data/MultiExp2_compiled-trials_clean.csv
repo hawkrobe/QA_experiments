@@ -1,0 +1,1971 @@
+workerid,domain,goal,question,guess,answer,type
+0,artifact,iron skillet,skillet,false,iron skillet,overlapping
+0,animals,dalmatian,pet,true,dalmatian,equivocal
+0,plants,tomatos,plant,true,tomatos,branching
+1,plants,dead flower,plant,true,tomatos,branching
+1,places,office,building,true,office,branching
+2,plants,tomatos,food,true,tomatos,branching
+3,artifact,lawnmower,thing,true,lawnmower,branching
+3,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+4,places,ice hotel room,cold place,false,snowy forest,equivocal
+4,artifact,metal chair,seat,true,wooden chair,equivocal
+5,artifact,iron skillet,skillet,false,iron skillet,overlapping
+5,animals,dalmatian,pet,true,dalmatian,equivocal
+5,plants,tomatos,plant,true,tomatos,branching
+6,places,park,place,true,park,overlapping
+6,places,sunny beach,outdoor place,true,sunny beach,equivocal
+6,plants,sunflower,plant,true,sunflower,equivocal
+6,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+7,places,snowy forest,cold place,false,ice hotel room,equivocal
+8,places,park,place,true,park,overlapping
+8,places,sunny beach,outdoor place,true,sunny beach,equivocal
+8,plants,sunflower,plant,true,sunflower,equivocal
+8,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+9,places,cottage,house,true,cottage,branching
+10,animals,poodle,dog,true,poodle,branching
+11,places,snowy forest,cold place,false,ice hotel room,equivocal
+12,places,office,building,true,office,branching
+12,animals,house cat,cat,true,house cat,overlapping
+13,artifact,lawnmower,thing,true,lawnmower,branching
+13,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+14,plants,tomatos,food,true,tomatos,branching
+15,artifact,wooden chair,seat,true,metal chair,equivocal
+15,plants,carrots,carrots,true,carrots,overlapping
+16,places,mansion,mansion,true,mansion,branching
+16,animals,dalmatian,pet,true,dalmatian,equivocal
+17,plants,dead flower,plant,true,tomatos,branching
+17,places,office,building,true,office,branching
+18,places,office,building,true,office,branching
+19,artifact,chair,seat,true,chair,branching
+20,animals,whale,animal,true,whale,branching
+20,places,office,building,true,office,branching
+21,artifact,table,furniture,true,lawnmower,branching
+22,places,office,building,true,office,branching
+23,plants,carrot,plant,false,sunflower,equivocal
+24,artifact,chair,seat,true,chair,branching
+25,artifact,table,furniture,true,lawnmower,branching
+26,artifact,metal chair,metal thing,false,iron skillet,equivocal
+26,plants,carrots,carrots,true,carrots,overlapping
+27,artifact,metal chair,metal thing,true,iron skillet,overlapping
+27,places,sunny beach,outdoor place,true,sunny beach,equivocal
+28,places,snowy forest,cold place,true,ice hotel room,equivocal
+29,plants,carrot,plant,false,sunflower,equivocal
+30,places,snowy forest,cold place,true,ice hotel room,equivocal
+31,places,office,building,true,office,branching
+31,animals,golden retriever,pet,true,golden retriever,overlapping
+31,artifact,metal chair,seat,true,wooden chair,equivocal
+31,plants,carrots,carrots,true,carrots,overlapping
+31,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+31,plants,sunflower,plant,true,dead flower,branching
+31,places,sunny beach,outdoor place,true,sunny beach,equivocal
+31,artifact,couch,couch,true,couch,branching
+31,animals,angler fish,fish,true,angler fish,equivocal
+31,plants,tomatos,food,false,burger,equivocal
+31,places,dive bar,bar,true,hotel lobby,overlapping
+31,animals,whale,animal,true,whale,branching
+32,artifact,metal chair,seat,false,metal stool,equivocal
+32,animals,poodle,dog,true,poodle,branching
+32,artifact,iron skillet,skillet,true,iron skillet,overlapping
+32,plants,sunflower,plant,true,sunflower,equivocal
+32,plants,flower,plant,true,flower,overlapping
+32,plants,tomatos,food,true,tomatos,branching
+32,animals,angler fish,fish,true,angler fish,equivocal
+32,places,sunny beach,outdoor place,true,sunny beach,equivocal
+32,animals,whale,animal,true,whale,overlapping
+32,places,cottage,house,true,cottage,branching
+32,artifact,table,furniture,false,NA,branching
+32,places,hotel lobby,bar,true,hotel lobby,overlapping
+33,artifact,table,thing,true,lawnmower,branching
+34,places,office,building,true,office,branching
+34,animals,golden retriever,pet,true,golden retriever,overlapping
+34,artifact,metal chair,seat,true,wooden chair,equivocal
+34,plants,carrots,carrots,true,carrots,overlapping
+34,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+34,plants,sunflower,plant,true,dead flower,branching
+34,places,sunny beach,outdoor place,true,sunny beach,equivocal
+34,artifact,couch,couch,true,couch,branching
+34,animals,angler fish,fish,true,angler fish,equivocal
+34,plants,tomatos,food,false,burger,equivocal
+34,places,dive bar,bar,true,hotel lobby,overlapping
+34,animals,whale,animal,true,whale,branching
+35,animals,goldfish,fish,true,goldfish,equivocal
+35,artifact,table,furniture,true,table,branching
+35,plants,lettuce,leaves,true,oak,overlapping
+35,animals,golden retriever,pet,true,golden retriever,overlapping
+35,places,office,building,true,office,branching
+35,plants,sunflower,plant,true,sunflower,equivocal
+35,animals,siamese cat,dog,false,poodle,branching
+35,artifact,metal chair,seat,false,wooden chair,equivocal
+35,places,dive bar,bar,false,hotel lobby,overlapping
+35,artifact,iron skillet,skillet,true,iron skillet,overlapping
+35,plants,carrot,carrot,true,carrot,branching
+35,places,snowy forest,cold place,false,snowy mountain,equivocal
+36,places,ice hotel room,outdoor place,false,snowy mountain,equivocal
+36,artifact,chair,seat,true,chair,branching
+36,animals,siamese cat,pet,false,dalmatian,branching
+36,animals,goldfish,fish,true,betta fish,equivocal
+36,plants,sunflower,living plant,true,sunflower,branching
+36,plants,sunflower,plant,true,sunflower,equivocal
+36,artifact,wooden chair,seat,true,metal chair,overlapping
+36,places,mansion,mansion,true,mansion,branching
+36,plants,oak,leaves,true,oak,overlapping
+36,places,diner,diner,true,diner,overlapping
+36,artifact,metal chair,metal thing,false,iron skillet,equivocal
+36,animals,golden retriever,pet,true,golden retriever,overlapping
+37,plants,tomatos,food,true,tomatos,branching
+37,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+37,animals,whale,animal,true,whale,overlapping
+37,plants,flower,plant,true,flower,overlapping
+37,animals,whale,animal,true,whale,branching
+37,places,cottage,house,true,cottage,branching
+37,artifact,iron skillet,skillet,true,iron skillet,overlapping
+37,animals,dalmatian,pet,true,dalmatian,equivocal
+37,places,park,place,true,park,overlapping
+37,places,snowy mountain,cold place,true,ice hotel room,equivocal
+37,artifact,couch,couch,true,couch,branching
+37,plants,burger,food,true,burger,equivocal
+38,plants,dead flower,living plant,false,sunflower,branching
+38,plants,sunflower,plant,true,sunflower,equivocal
+38,places,sunny beach,outdoor place,true,sunny beach,equivocal
+38,places,cottage,house,true,cottage,branching
+38,artifact,table,furniture,true,table,branching
+38,animals,siamese cat,pet,true,siamese cat,branching
+38,artifact,metal chair,metal thing,false,wooden ruler,overlapping
+38,animals,lion,lion,true,lion,overlapping
+38,animals,dalmatian,pet,true,dalmatian,equivocal
+38,places,park,place,true,park,overlapping
+38,artifact,metal chair,metal thing,false,iron skillet,equivocal
+38,plants,flower,plant,true,flower,overlapping
+39,places,ice hotel room,outdoor place,false,snowy mountain,equivocal
+39,artifact,chair,seat,true,chair,branching
+39,animals,siamese cat,pet,false,dalmatian,branching
+39,animals,goldfish,fish,true,betta fish,equivocal
+39,plants,sunflower,living plant,true,sunflower,branching
+39,plants,sunflower,plant,true,sunflower,equivocal
+39,artifact,wooden chair,seat,true,metal chair,overlapping
+39,places,mansion,mansion,true,mansion,branching
+39,plants,oak,leaves,true,oak,overlapping
+39,places,diner,diner,true,diner,overlapping
+39,artifact,metal chair,metal thing,false,iron skillet,equivocal
+39,animals,golden retriever,pet,true,golden retriever,overlapping
+40,plants,dead flower,living plant,false,sunflower,branching
+40,plants,sunflower,plant,true,sunflower,equivocal
+40,places,sunny beach,outdoor place,true,sunny beach,equivocal
+40,places,cottage,house,true,cottage,branching
+40,artifact,table,furniture,true,table,branching
+40,animals,siamese cat,pet,true,siamese cat,branching
+40,artifact,metal chair,metal thing,false,wooden ruler,overlapping
+40,animals,lion,lion,true,lion,overlapping
+40,animals,dalmatian,pet,true,dalmatian,equivocal
+40,places,park,place,true,park,overlapping
+40,artifact,metal chair,metal thing,false,iron skillet,equivocal
+40,plants,flower,plant,true,flower,overlapping
+41,plants,tomatos,food,true,tomatos,branching
+41,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+41,animals,whale,animal,true,whale,overlapping
+41,plants,flower,plant,true,flower,overlapping
+41,animals,whale,animal,true,whale,branching
+41,places,cottage,house,true,cottage,branching
+41,artifact,iron skillet,skillet,true,iron skillet,overlapping
+41,animals,dalmatian,pet,true,dalmatian,equivocal
+41,places,park,place,true,park,overlapping
+41,places,snowy mountain,cold place,true,ice hotel room,equivocal
+41,artifact,couch,couch,true,couch,branching
+41,plants,burger,food,true,burger,equivocal
+42,animals,siamese cat,dog,true,dalmatian,branching
+42,places,snowy forest,cold place,true,snowy mountain,equivocal
+42,places,hotel lobby,bar,true,hotel lobby,overlapping
+42,artifact,metal chair,seat,true,wooden chair,overlapping
+42,animals,lion,lion,true,lion,overlapping
+42,plants,lettuce,food,false,oak,overlapping
+42,animals,dalmatian,pet,true,dalmatian,equivocal
+42,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+42,artifact,table,furniture,true,table,branching
+42,plants,carrot,food,false,burger,equivocal
+42,plants,dead flower,plant,true,dead flower,branching
+42,places,park,place,true,park,branching
+43,animals,goldfish,fish,true,goldfish,equivocal
+43,artifact,table,furniture,true,table,branching
+43,plants,lettuce,leaves,true,oak,overlapping
+43,animals,golden retriever,pet,true,golden retriever,overlapping
+43,places,office,building,true,office,branching
+43,plants,sunflower,plant,true,sunflower,equivocal
+43,animals,siamese cat,dog,false,poodle,branching
+43,artifact,metal chair,seat,false,wooden chair,equivocal
+43,places,dive bar,bar,false,hotel lobby,overlapping
+43,artifact,iron skillet,skillet,true,iron skillet,overlapping
+43,plants,carrot,carrot,true,carrot,branching
+43,places,snowy forest,cold place,false,snowy mountain,equivocal
+44,animals,siamese cat,dog,true,dalmatian,branching
+44,places,snowy forest,cold place,true,snowy mountain,equivocal
+44,places,hotel lobby,bar,true,hotel lobby,overlapping
+44,artifact,metal chair,seat,true,wooden chair,overlapping
+44,animals,lion,lion,true,lion,overlapping
+44,plants,lettuce,food,false,oak,overlapping
+44,animals,dalmatian,pet,true,dalmatian,equivocal
+44,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+44,artifact,table,furniture,true,table,branching
+44,plants,carrot,food,false,burger,equivocal
+44,plants,dead flower,plant,true,dead flower,branching
+44,places,park,place,true,park,branching
+45,artifact,wooden chair,seat,true,metal chair,equivocal
+45,plants,sunflower,living plant,false,tomatos,branching
+45,animals,whale,animal,true,whale,branching
+45,plants,lettuce,food,false,carrots,overlapping
+45,animals,lion,lion,true,lion,overlapping
+45,places,dive bar,bar,false,hotel lobby,overlapping
+45,artifact,lawnmower,thing,true,lawnmower,branching
+45,animals,dalmatian,pet,true,dalmatian,equivocal
+45,plants,carrot,plant,false,sunflower,equivocal
+45,artifact,wooden chair,seat,true,wooden chair,overlapping
+45,places,park,place,true,park,branching
+45,places,sunny beach,outdoor place,true,sunny beach,equivocal
+46,places,park,place,true,park,overlapping
+46,places,office,building,true,office,branching
+46,plants,carrots,carrots,true,carrots,overlapping
+46,places,snowy mountain,cold place,true,ice hotel room,equivocal
+46,plants,burger,food,true,tomatos,equivocal
+46,artifact,couch,couch,true,couch,branching
+46,animals,lion,lion,true,lion,overlapping
+46,artifact,iron skillet,skillet,false,wooden ruler,overlapping
+46,artifact,metal stool,seat,false,wooden chair,equivocal
+46,animals,angler fish,fish,false,goldfish,equivocal
+46,animals,siamese cat,pet,true,siamese cat,branching
+46,plants,sunflower,living plant,false,tomatos,branching
+47,artifact,wooden chair,seat,true,metal chair,equivocal
+47,plants,sunflower,living plant,false,tomatos,branching
+47,animals,whale,animal,true,whale,branching
+47,plants,lettuce,food,false,carrots,overlapping
+47,animals,lion,lion,true,lion,overlapping
+47,places,dive bar,bar,false,hotel lobby,overlapping
+47,artifact,lawnmower,thing,true,lawnmower,branching
+47,animals,dalmatian,pet,true,dalmatian,equivocal
+47,plants,carrot,plant,false,sunflower,equivocal
+47,artifact,wooden chair,seat,true,wooden chair,overlapping
+47,places,park,place,true,park,branching
+47,places,sunny beach,outdoor place,true,sunny beach,equivocal
+48,artifact,metal chair,metal thing,true,metal chair,equivocal
+48,plants,carrot,plant,true,sunflower,equivocal
+48,artifact,metal chair,metal thing,true,metal chair,overlapping
+48,artifact,chair,seat,true,chair,branching
+48,places,snowy mountain,cold place,true,snowy mountain,equivocal
+48,plants,oak,leaves,true,oak,overlapping
+48,animals,angler fish,fish,true,angler fish,equivocal
+48,places,diner,diner,true,diner,overlapping
+48,animals,whale,animal,true,whale,overlapping
+48,places,office,building,true,office,branching
+48,animals,dalmatian,dalmatian,true,dalmatian,branching
+48,plants,dead flower,plant,true,dead flower,branching
+49,animals,angler fish,fish,false,goldfish,equivocal
+49,artifact,chair,seat,true,chair,branching
+49,artifact,wooden chair,seat,true,wooden chair,overlapping
+49,places,park,place,true,park,overlapping
+49,animals,siamese cat,pet,true,siamese cat,branching
+49,artifact,metal chair,seat,false,wooden chair,equivocal
+49,plants,carrots,carrots,true,carrots,overlapping
+49,places,mansion,mansion,true,mansion,branching
+49,plants,carrot,plant,false,sunflower,equivocal
+49,animals,whale,animal,true,whale,overlapping
+49,places,snowy forest,outdoor place,false,sunny beach,equivocal
+49,plants,carrot,carrot,true,carrot,branching
+50,places,park,place,true,park,overlapping
+50,places,office,building,true,office,branching
+50,plants,carrots,carrots,true,carrots,overlapping
+50,places,snowy mountain,cold place,true,ice hotel room,equivocal
+50,plants,burger,food,true,tomatos,equivocal
+50,artifact,couch,couch,true,couch,branching
+50,animals,lion,lion,true,lion,overlapping
+50,artifact,iron skillet,skillet,false,wooden ruler,overlapping
+50,artifact,metal stool,seat,false,wooden chair,equivocal
+50,animals,angler fish,fish,false,goldfish,equivocal
+50,animals,siamese cat,pet,true,siamese cat,branching
+50,plants,sunflower,living plant,false,tomatos,branching
+51,animals,angler fish,fish,false,goldfish,equivocal
+51,artifact,chair,seat,true,chair,branching
+51,artifact,wooden chair,seat,true,wooden chair,overlapping
+51,places,park,place,true,park,overlapping
+51,animals,siamese cat,pet,true,siamese cat,branching
+51,artifact,metal chair,seat,false,wooden chair,equivocal
+51,plants,carrots,carrots,true,carrots,overlapping
+51,places,mansion,mansion,true,mansion,branching
+51,plants,carrot,plant,false,sunflower,equivocal
+51,animals,whale,animal,true,whale,overlapping
+51,places,snowy forest,outdoor place,false,sunny beach,equivocal
+51,plants,carrot,carrot,true,carrot,branching
+52,artifact,metal chair,metal thing,true,metal chair,equivocal
+52,plants,carrot,plant,true,sunflower,equivocal
+52,artifact,metal chair,metal thing,true,metal chair,overlapping
+52,artifact,chair,seat,true,chair,branching
+52,places,snowy mountain,cold place,true,snowy mountain,equivocal
+52,plants,oak,leaves,true,oak,overlapping
+52,animals,angler fish,fish,true,angler fish,equivocal
+52,places,diner,diner,true,diner,overlapping
+52,animals,whale,animal,true,whale,overlapping
+52,places,office,building,true,office,branching
+52,animals,dalmatian,dalmatian,true,dalmatian,branching
+52,plants,dead flower,plant,true,dead flower,branching
+53,animals,goldfish,fish,true,goldfish,equivocal
+53,places,hotel lobby,restaurant,false,diner,overlapping
+53,plants,flower,plant,true,flower,overlapping
+53,animals,lion,lion,true,lion,overlapping
+53,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+53,places,mansion,mansion,true,mansion,branching
+53,plants,carrot,food,true,burger,equivocal
+53,artifact,iron skillet,metal thing,false,metal stool,equivocal
+53,places,snowy mountain,cold place,false,snowy forest,equivocal
+53,artifact,chair,seat,true,chair,branching
+53,animals,siamese cat,pet,true,siamese cat,branching
+53,plants,dead flower,plant,true,dead flower,branching
+54,places,hotel lobby,bar,true,hotel lobby,overlapping
+54,places,ice hotel room,cold place,false,snowy forest,equivocal
+54,plants,tomatos,plant,false,sunflower,equivocal
+54,artifact,metal stool,seat,false,wooden chair,equivocal
+54,animals,siamese cat,pet,true,siamese cat,branching
+54,places,mansion,mansion,true,mansion,branching
+54,animals,lion,lion,true,lion,overlapping
+54,animals,angler fish,fish,true,angler fish,equivocal
+54,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+54,plants,flower,plant,true,flower,overlapping
+54,artifact,lawnmower,thing,true,lawnmower,branching
+54,plants,tomatos,living plant,true,sunflower,branching
+55,places,hotel lobby,bar,true,hotel lobby,overlapping
+55,places,ice hotel room,cold place,false,snowy forest,equivocal
+55,plants,tomatos,plant,false,sunflower,equivocal
+55,artifact,metal stool,seat,false,wooden chair,equivocal
+55,animals,siamese cat,pet,true,siamese cat,branching
+55,places,mansion,mansion,true,mansion,branching
+55,animals,lion,lion,true,lion,overlapping
+55,animals,angler fish,fish,true,angler fish,equivocal
+55,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+55,plants,flower,plant,true,flower,overlapping
+55,artifact,lawnmower,thing,true,lawnmower,branching
+55,plants,tomatos,living plant,true,sunflower,branching
+56,places,park,place,true,park,branching
+56,animals,poodle,pet,false,siamese cat,branching
+56,places,diner,diner,true,diner,overlapping
+56,artifact,wooden chair,seat,true,wooden chair,overlapping
+56,places,snowy forest,cold place,true,ice hotel room,equivocal
+56,animals,angler fish,fish,true,angler fish,equivocal
+56,plants,dead flower,plant,true,dead flower,branching
+56,animals,house cat,cat,true,house cat,overlapping
+56,artifact,lawnmower,thing,true,lawnmower,branching
+56,artifact,wooden chair,seat,true,wooden chair,equivocal
+56,plants,flower,plant,true,flower,overlapping
+56,plants,carrot,plant,false,sunflower,equivocal
+57,animals,goldfish,fish,true,goldfish,equivocal
+57,places,hotel lobby,restaurant,false,diner,overlapping
+57,plants,flower,plant,true,flower,overlapping
+57,animals,lion,lion,true,lion,overlapping
+57,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+57,places,mansion,mansion,true,mansion,branching
+57,plants,carrot,food,true,burger,equivocal
+57,artifact,iron skillet,metal thing,false,metal stool,equivocal
+57,places,snowy mountain,cold place,false,snowy forest,equivocal
+57,artifact,chair,seat,true,chair,branching
+57,animals,siamese cat,pet,true,siamese cat,branching
+57,plants,dead flower,plant,true,dead flower,branching
+58,artifact,couch,couch,true,couch,branching
+58,animals,poodle,dog,true,poodle,branching
+58,animals,dalmatian,pet,true,dalmatian,equivocal
+58,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+58,plants,tomatos,food,true,tomatos,branching
+58,plants,tomatos,food,false,burger,equivocal
+58,animals,whale,animal,true,whale,overlapping
+58,places,snowy forest,outdoor place,true,sunny beach,equivocal
+58,plants,oak,leaves,true,oak,overlapping
+58,artifact,metal chair,seat,true,wooden chair,overlapping
+58,places,park,place,true,park,overlapping
+58,places,office,building,true,office,branching
+59,artifact,couch,couch,true,couch,branching
+59,animals,poodle,dog,true,poodle,branching
+59,animals,dalmatian,pet,true,dalmatian,equivocal
+59,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+59,plants,tomatos,food,true,tomatos,branching
+59,plants,tomatos,food,false,burger,equivocal
+59,animals,whale,animal,true,whale,overlapping
+59,places,snowy forest,outdoor place,true,sunny beach,equivocal
+59,plants,oak,leaves,true,oak,overlapping
+59,artifact,metal chair,seat,true,wooden chair,overlapping
+59,places,park,place,true,park,overlapping
+59,places,office,building,true,office,branching
+60,plants,tomatos,living plant,true,tomatos,branching
+60,artifact,metal chair,seat,true,metal chair,equivocal
+60,places,ice hotel room,cold place,false,snowy forest,equivocal
+60,artifact,table,furniture,true,couch,branching
+60,plants,carrots,carrots,true,carrots,overlapping
+60,plants,tomatos,plant,true,tomatos,equivocal
+60,animals,siamese cat,pet,false,dalmatian,branching
+60,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+60,places,office,building,true,office,branching
+60,places,park,place,true,park,overlapping
+60,animals,whale,animal,true,whale,overlapping
+60,animals,dalmatian,pet,true,dalmatian,equivocal
+61,animals,siamese cat,pet,true,siamese cat,branching
+61,plants,burger,food,true,burger,equivocal
+61,artifact,couch,couch,true,couch,branching
+61,artifact,metal chair,metal thing,true,metal chair,overlapping
+61,plants,carrots,carrots,true,carrots,overlapping
+61,animals,angler fish,fish,true,angler fish,equivocal
+61,animals,house cat,cat,true,house cat,overlapping
+61,plants,dead flower,plant,true,dead flower,branching
+61,artifact,metal stool,metal thing,true,iron skillet,equivocal
+61,places,office,building,true,office,branching
+61,places,diner,diner,true,diner,overlapping
+61,places,ice hotel room,cold place,true,ice hotel room,equivocal
+62,plants,tomatos,living plant,true,tomatos,branching
+62,artifact,metal chair,seat,true,metal chair,equivocal
+62,places,ice hotel room,cold place,false,snowy forest,equivocal
+62,artifact,table,furniture,true,couch,branching
+62,plants,carrots,carrots,true,carrots,overlapping
+62,plants,tomatos,plant,true,tomatos,equivocal
+62,animals,siamese cat,pet,false,dalmatian,branching
+62,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+62,places,office,building,true,office,branching
+62,places,park,place,true,park,overlapping
+62,animals,whale,animal,true,whale,overlapping
+62,animals,dalmatian,pet,true,dalmatian,equivocal
+63,places,park,place,true,park,branching
+63,animals,poodle,pet,false,siamese cat,branching
+63,places,diner,diner,true,diner,overlapping
+63,artifact,wooden chair,seat,true,wooden chair,overlapping
+63,places,snowy forest,cold place,true,ice hotel room,equivocal
+63,animals,angler fish,fish,true,angler fish,equivocal
+63,plants,dead flower,plant,true,dead flower,branching
+63,animals,house cat,cat,true,house cat,overlapping
+63,artifact,lawnmower,thing,true,lawnmower,branching
+63,artifact,wooden chair,seat,true,wooden chair,equivocal
+63,plants,flower,plant,true,flower,overlapping
+63,plants,carrot,plant,false,sunflower,equivocal
+64,animals,siamese cat,pet,true,siamese cat,branching
+64,plants,burger,food,true,burger,equivocal
+64,artifact,couch,couch,true,couch,branching
+64,artifact,metal chair,metal thing,true,metal chair,overlapping
+64,plants,carrots,carrots,true,carrots,overlapping
+64,animals,angler fish,fish,true,angler fish,equivocal
+64,animals,house cat,cat,true,house cat,overlapping
+64,plants,dead flower,plant,true,dead flower,branching
+64,artifact,metal stool,metal thing,true,iron skillet,equivocal
+64,places,office,building,true,office,branching
+64,places,diner,diner,true,diner,overlapping
+64,places,ice hotel room,cold place,true,ice hotel room,equivocal
+65,places,dive bar,bar,false,hotel lobby,overlapping
+65,places,cottage,house,true,cottage,branching
+65,artifact,lawnmower,thing,true,lawnmower,branching
+65,plants,carrot,plant,false,sunflower,equivocal
+65,plants,oak,leaves,true,oak,overlapping
+65,animals,dalmatian,pet,false,goldfish,equivocal
+65,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+65,animals,siamese cat,pet,true,siamese cat,branching
+65,plants,sunflower,living plant,true,sunflower,branching
+65,animals,lion,lion,true,lion,overlapping
+65,places,ice hotel room,cold place,true,snowy forest,equivocal
+65,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+66,places,dive bar,bar,false,hotel lobby,overlapping
+66,places,cottage,house,true,cottage,branching
+66,artifact,lawnmower,thing,true,lawnmower,branching
+66,plants,carrot,plant,false,sunflower,equivocal
+66,plants,oak,leaves,true,oak,overlapping
+66,animals,dalmatian,pet,false,goldfish,equivocal
+66,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+66,animals,siamese cat,pet,true,siamese cat,branching
+66,plants,sunflower,living plant,true,sunflower,branching
+66,animals,lion,lion,true,lion,overlapping
+66,places,ice hotel room,cold place,true,snowy forest,equivocal
+66,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+67,places,cottage,building,false,office,branching
+67,plants,carrots,carrots,true,carrots,overlapping
+67,artifact,table,furniture,true,table,branching
+67,artifact,metal chair,metal thing,false,iron skillet,equivocal
+67,plants,sunflower,living plant,false,dead flower,branching
+67,plants,carrot,food,false,burger,equivocal
+67,places,snowy forest,cold place,true,ice hotel room,equivocal
+67,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+67,animals,angler fish,fish,true,angler fish,equivocal
+67,places,diner,diner,true,diner,overlapping
+67,animals,poodle,dog,true,poodle,branching
+67,animals,whale,animal,true,whale,overlapping
+68,places,cottage,building,false,office,branching
+68,plants,carrots,carrots,true,carrots,overlapping
+68,artifact,table,furniture,true,table,branching
+68,artifact,metal chair,metal thing,false,iron skillet,equivocal
+68,plants,sunflower,living plant,false,dead flower,branching
+68,plants,carrot,food,false,burger,equivocal
+68,places,snowy forest,cold place,true,ice hotel room,equivocal
+68,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+68,animals,angler fish,fish,true,angler fish,equivocal
+68,places,diner,diner,true,diner,overlapping
+68,animals,poodle,dog,true,poodle,branching
+68,animals,whale,animal,true,whale,overlapping
+69,animals,lion,lion,true,lion,overlapping
+69,animals,betta fish,fish,false,betta fish,equivocal
+69,places,sunny beach,outdoor place,true,sunny beach,equivocal
+69,plants,lettuce,leaves,false,oak,overlapping
+69,plants,tomatos,living plant,true,tomatos,branching
+69,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+69,plants,carrot,food,false,burger,equivocal
+69,places,diner,diner,true,diner,overlapping
+69,animals,dalmatian,dalmatian,true,dalmatian,branching
+69,places,park,place,true,park,branching
+69,artifact,wooden chair,seat,true,wooden chair,overlapping
+69,artifact,table,furniture,true,table,branching
+70,animals,lion,lion,true,lion,overlapping
+70,animals,betta fish,fish,false,betta fish,equivocal
+70,places,sunny beach,outdoor place,true,sunny beach,equivocal
+70,plants,lettuce,leaves,false,oak,overlapping
+70,plants,tomatos,living plant,true,tomatos,branching
+70,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+70,plants,carrot,food,false,burger,equivocal
+70,places,diner,diner,true,diner,overlapping
+70,animals,dalmatian,dalmatian,true,dalmatian,branching
+70,places,park,place,true,park,branching
+70,artifact,wooden chair,seat,true,wooden chair,overlapping
+70,artifact,table,furniture,true,table,branching
+71,artifact,wooden chair,seat,true,wooden chair,equivocal
+71,artifact,iron skillet,skillet,true,iron skillet,overlapping
+71,places,park,place,true,park,overlapping
+71,artifact,chair,seat,true,couch,branching
+71,places,snowy forest,cold place,false,snowy mountain,equivocal
+71,places,office,building,true,office,branching
+71,animals,whale,animal,true,whale,overlapping
+71,animals,dalmatian,pet,true,dalmatian,equivocal
+71,plants,tomatos,food,true,tomatos,branching
+71,animals,dalmatian,dalmatian,true,dalmatian,branching
+71,plants,sunflower,plant,true,sunflower,equivocal
+71,plants,oak,leaves,true,oak,overlapping
+72,artifact,wooden chair,seat,true,wooden chair,equivocal
+72,artifact,iron skillet,skillet,true,iron skillet,overlapping
+72,places,park,place,true,park,overlapping
+72,artifact,chair,seat,true,couch,branching
+72,places,snowy forest,cold place,false,snowy mountain,equivocal
+72,places,office,building,true,office,branching
+72,animals,whale,animal,true,whale,overlapping
+72,animals,dalmatian,pet,true,dalmatian,equivocal
+72,plants,tomatos,food,true,tomatos,branching
+72,animals,dalmatian,dalmatian,true,dalmatian,branching
+72,plants,sunflower,plant,true,sunflower,equivocal
+72,plants,oak,leaves,true,oak,overlapping
+73,animals,dalmatian,pet,true,dalmatian,equivocal
+73,artifact,table,furniture,true,table,branching
+73,animals,lion,lion,true,lion,overlapping
+73,places,cottage,house,true,cottage,branching
+73,plants,flower,plant,true,lettuce,overlapping
+73,plants,tomatos,food,true,tomatos,branching
+73,animals,siamese cat,pet,true,siamese cat,branching
+73,places,ice hotel room,cold place,false,snowy forest,equivocal
+73,plants,sunflower,plant,true,sunflower,equivocal
+73,artifact,metal chair,metal thing,false,iron skillet,equivocal
+73,places,park,place,true,park,overlapping
+73,artifact,wooden chair,seat,true,wooden chair,overlapping
+74,animals,dalmatian,pet,true,dalmatian,equivocal
+74,artifact,table,furniture,true,table,branching
+74,animals,lion,lion,true,lion,overlapping
+74,places,cottage,house,true,cottage,branching
+74,plants,flower,plant,true,lettuce,overlapping
+74,plants,tomatos,food,true,tomatos,branching
+74,animals,siamese cat,pet,true,siamese cat,branching
+74,places,ice hotel room,cold place,false,snowy forest,equivocal
+74,plants,sunflower,plant,true,sunflower,equivocal
+74,artifact,metal chair,metal thing,false,iron skillet,equivocal
+74,places,park,place,true,park,overlapping
+74,artifact,wooden chair,seat,true,wooden chair,overlapping
+75,animals,poodle,dog,true,poodle,branching
+75,artifact,metal chair,metal thing,true,metal chair,overlapping
+75,animals,betta fish,fish,true,angler fish,equivocal
+75,places,ice hotel room,cold place,true,snowy forest,equivocal
+75,plants,oak,leaves,true,oak,overlapping
+75,plants,carrot,carrot,true,carrot,branching
+75,artifact,chair,seat,true,chair,branching
+75,artifact,metal stool,seat,false,wooden chair,equivocal
+75,animals,house cat,cat,true,house cat,overlapping
+75,plants,sunflower,plant,true,sunflower,equivocal
+75,places,park,place,true,park,overlapping
+75,places,office,building,true,office,branching
+76,animals,dalmatian,dalmatian,true,dalmatian,branching
+76,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+76,animals,betta fish,fish,true,goldfish,equivocal
+76,animals,golden retriever,pet,true,golden retriever,overlapping
+76,places,mansion,mansion,true,mansion,branching
+76,places,park,place,true,park,overlapping
+76,artifact,wooden chair,seat,true,wooden chair,equivocal
+77,places,snowy forest,cold place,true,snowy forest,equivocal
+77,plants,lettuce,leaves,true,oak,overlapping
+77,animals,betta fish,fish,false,angler fish,equivocal
+77,places,cottage,house,true,cottage,branching
+77,artifact,metal chair,seat,true,metal chair,equivocal
+77,places,diner,diner,true,diner,overlapping
+77,artifact,wooden ruler,thing,true,iron skillet,overlapping
+77,animals,poodle,pet,true,siamese cat,branching
+77,plants,sunflower,plant,true,sunflower,equivocal
+77,plants,dead flower,plant,true,dead flower,branching
+77,animals,house cat,cat,true,lion,overlapping
+77,artifact,lawnmower,thing,true,lawnmower,branching
+78,places,snowy forest,cold place,true,snowy forest,equivocal
+78,plants,lettuce,leaves,true,oak,overlapping
+78,animals,betta fish,fish,false,angler fish,equivocal
+78,places,cottage,house,true,cottage,branching
+78,artifact,metal chair,seat,true,metal chair,equivocal
+78,places,diner,diner,true,diner,overlapping
+78,artifact,wooden ruler,thing,true,iron skillet,overlapping
+78,animals,poodle,pet,true,siamese cat,branching
+78,plants,sunflower,plant,true,sunflower,equivocal
+78,plants,dead flower,plant,true,dead flower,branching
+78,animals,house cat,cat,true,lion,overlapping
+78,artifact,lawnmower,thing,true,lawnmower,branching
+79,animals,poodle,dog,true,poodle,branching
+79,artifact,metal chair,metal thing,true,metal chair,overlapping
+79,animals,betta fish,fish,true,angler fish,equivocal
+79,places,ice hotel room,cold place,true,snowy forest,equivocal
+79,plants,oak,leaves,true,oak,overlapping
+79,plants,carrot,carrot,true,carrot,branching
+79,artifact,chair,seat,true,chair,branching
+79,artifact,metal stool,seat,false,wooden chair,equivocal
+79,animals,house cat,cat,true,house cat,overlapping
+79,plants,sunflower,plant,true,sunflower,equivocal
+79,places,park,place,true,park,overlapping
+79,places,office,building,true,office,branching
+80,plants,tomatos,food,true,tomatos,branching
+80,artifact,lawnmower,thing,true,lawnmower,branching
+80,animals,betta fish,fish,true,goldfish,equivocal
+80,places,hotel lobby,bar,true,hotel lobby,overlapping
+80,animals,whale,animal,true,whale,branching
+80,plants,burger,food,true,burger,equivocal
+80,animals,whale,animal,true,whale,overlapping
+80,places,cottage,house,true,cottage,branching
+80,plants,lettuce,leaves,false,oak,overlapping
+80,places,snowy mountain,cold place,true,ice hotel room,equivocal
+80,artifact,metal chair,seat,true,wooden chair,equivocal
+80,artifact,metal chair,seat,true,wooden chair,overlapping
+81,animals,golden retriever,pet,true,golden retriever,overlapping
+81,plants,tomatos,food,true,carrot,branching
+81,animals,siamese cat,pet,false,dalmatian,branching
+81,places,ice hotel room,cold place,false,snowy forest,equivocal
+81,artifact,wooden chair,seat,true,wooden chair,equivocal
+81,places,hotel lobby,bar,true,hotel lobby,overlapping
+81,places,mansion,mansion,true,mansion,branching
+81,animals,goldfish,fish,false,angler fish,equivocal
+81,plants,carrot,food,false,burger,equivocal
+81,artifact,chair,seat,true,chair,branching
+81,plants,carrots,carrots,true,carrots,overlapping
+81,artifact,iron skillet,skillet,true,iron skillet,overlapping
+82,animals,golden retriever,pet,true,golden retriever,overlapping
+82,plants,tomatos,food,true,carrot,branching
+82,animals,siamese cat,pet,false,dalmatian,branching
+82,places,ice hotel room,cold place,false,snowy forest,equivocal
+82,artifact,wooden chair,seat,true,wooden chair,equivocal
+82,places,hotel lobby,bar,true,hotel lobby,overlapping
+82,places,mansion,mansion,true,mansion,branching
+82,animals,goldfish,fish,false,angler fish,equivocal
+82,plants,carrot,food,false,burger,equivocal
+82,artifact,chair,seat,true,chair,branching
+82,plants,carrots,carrots,true,carrots,overlapping
+82,artifact,iron skillet,skillet,true,iron skillet,overlapping
+83,artifact,iron skillet,skillet,true,iron skillet,overlapping
+83,places,snowy forest,cold place,true,snowy forest,equivocal
+83,plants,burger,food,true,burger,equivocal
+83,animals,goldfish,fish,false,angler fish,equivocal
+83,plants,carrot,carrot,true,carrot,branching
+83,animals,dalmatian,dalmatian,true,dalmatian,branching
+83,places,dive bar,bar,true,dive bar,overlapping
+83,artifact,table,furniture,true,table,branching
+83,places,cottage,house,true,cottage,branching
+83,plants,oak,leaves,true,oak,overlapping
+83,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+83,animals,lion,lion,true,lion,overlapping
+84,plants,dead flower,plant,true,dead flower,branching
+84,places,snowy forest,cold place,false,ice hotel room,equivocal
+84,plants,carrots,carrots,true,carrots,overlapping
+84,animals,golden retriever,pet,true,golden retriever,overlapping
+84,plants,burger,food,true,burger,equivocal
+84,artifact,iron skillet,skillet,true,iron skillet,overlapping
+84,animals,betta fish,fish,true,angler fish,equivocal
+84,places,park,place,true,park,branching
+84,animals,whale,animal,true,whale,branching
+84,artifact,metal stool,seat,true,wooden chair,equivocal
+84,artifact,table,furniture,true,table,branching
+84,places,dive bar,bar,false,hotel lobby,overlapping
+85,plants,dead flower,plant,true,dead flower,branching
+85,places,snowy forest,cold place,false,ice hotel room,equivocal
+85,plants,carrots,carrots,true,carrots,overlapping
+85,animals,golden retriever,pet,true,golden retriever,overlapping
+85,plants,burger,food,true,burger,equivocal
+85,artifact,iron skillet,skillet,true,iron skillet,overlapping
+85,animals,betta fish,fish,true,angler fish,equivocal
+85,places,park,place,true,park,branching
+85,animals,whale,animal,true,whale,branching
+85,artifact,metal stool,seat,true,wooden chair,equivocal
+85,artifact,table,furniture,true,table,branching
+85,places,dive bar,bar,false,hotel lobby,overlapping
+86,artifact,iron skillet,skillet,true,iron skillet,overlapping
+86,places,snowy forest,cold place,true,snowy forest,equivocal
+86,plants,burger,food,true,burger,equivocal
+86,animals,goldfish,fish,false,angler fish,equivocal
+86,plants,carrot,carrot,true,carrot,branching
+86,animals,dalmatian,dalmatian,true,dalmatian,branching
+86,places,dive bar,bar,true,dive bar,overlapping
+86,artifact,table,furniture,true,table,branching
+86,places,cottage,house,true,cottage,branching
+86,plants,oak,leaves,true,oak,overlapping
+86,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+86,animals,lion,lion,true,lion,overlapping
+87,animals,angler fish,fish,true,goldfish,equivocal
+87,plants,carrot,carrot,true,carrot,branching
+87,places,sunny beach,cold place,false,ice hotel room,equivocal
+87,animals,siamese cat,pet,true,siamese cat,branching
+87,places,mansion,mansion,true,mansion,branching
+87,artifact,lawnmower,thing,true,lawnmower,branching
+87,plants,carrot,plant,false,sunflower,equivocal
+87,artifact,metal stool,seat,false,metal chair,equivocal
+87,plants,carrots,carrots,true,carrots,overlapping
+87,artifact,iron skillet,skillet,true,iron skillet,overlapping
+87,animals,lion,lion,true,lion,overlapping
+87,places,park,place,true,park,overlapping
+88,animals,angler fish,fish,true,goldfish,equivocal
+88,plants,carrot,carrot,true,carrot,branching
+88,places,sunny beach,cold place,false,ice hotel room,equivocal
+88,animals,siamese cat,pet,true,siamese cat,branching
+88,places,mansion,mansion,true,mansion,branching
+88,artifact,lawnmower,thing,true,lawnmower,branching
+88,plants,carrot,plant,false,sunflower,equivocal
+88,artifact,metal stool,seat,false,metal chair,equivocal
+88,plants,carrots,carrots,true,carrots,overlapping
+88,artifact,iron skillet,skillet,true,iron skillet,overlapping
+88,animals,lion,lion,true,lion,overlapping
+88,places,park,place,true,park,overlapping
+89,artifact,metal chair,metal thing,true,metal chair,overlapping
+89,places,mansion,mansion,true,mansion,branching
+89,animals,whale,animal,true,whale,branching
+89,animals,dalmatian,pet,true,dalmatian,equivocal
+89,animals,golden retriever,pet,true,golden retriever,overlapping
+89,artifact,lawnmower,thing,true,lawnmower,branching
+89,artifact,metal chair,metal thing,true,metal chair,equivocal
+89,places,ice hotel room,cold place,true,ice hotel room,equivocal
+89,plants,tomatos,plant,false,sunflower,equivocal
+89,plants,oak,leaves,true,oak,overlapping
+89,places,park,place,true,park,overlapping
+89,plants,carrot,food,false,tomatos,branching
+90,artifact,metal chair,metal thing,true,metal chair,overlapping
+90,places,mansion,mansion,true,mansion,branching
+90,animals,whale,animal,true,whale,branching
+90,animals,dalmatian,pet,true,dalmatian,equivocal
+90,animals,golden retriever,pet,true,golden retriever,overlapping
+90,artifact,lawnmower,thing,true,lawnmower,branching
+90,artifact,metal chair,metal thing,true,metal chair,equivocal
+90,places,ice hotel room,cold place,true,ice hotel room,equivocal
+90,plants,tomatos,plant,false,sunflower,equivocal
+90,plants,oak,leaves,true,oak,overlapping
+90,places,park,place,true,park,overlapping
+90,plants,carrot,food,false,tomatos,branching
+91,places,diner,diner,true,diner,overlapping
+91,places,cottage,house,true,cottage,branching
+91,plants,lettuce,food,true,lettuce,overlapping
+91,artifact,wooden chair,seat,true,wooden chair,overlapping
+91,animals,house cat,cat,true,house cat,overlapping
+91,places,ice hotel room,cold place,false,snowy forest,equivocal
+91,animals,whale,animal,true,whale,branching
+91,plants,carrot,carrot,true,carrot,branching
+91,plants,burger,food,true,burger,equivocal
+91,artifact,chair,seat,true,chair,branching
+91,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+91,animals,goldfish,fish,true,goldfish,equivocal
+92,places,diner,diner,true,diner,overlapping
+92,places,cottage,house,true,cottage,branching
+92,plants,lettuce,food,true,lettuce,overlapping
+92,artifact,wooden chair,seat,true,wooden chair,overlapping
+92,animals,house cat,cat,true,house cat,overlapping
+92,places,ice hotel room,cold place,false,snowy forest,equivocal
+92,animals,whale,animal,true,whale,branching
+92,plants,carrot,carrot,true,carrot,branching
+92,plants,burger,food,true,burger,equivocal
+92,artifact,chair,seat,true,chair,branching
+92,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+92,animals,goldfish,fish,true,goldfish,equivocal
+93,plants,burger,food,true,burger,equivocal
+93,places,park,place,true,park,branching
+93,places,snowy forest,outdoor place,false,sunny beach,equivocal
+93,plants,dead flower,plant,true,dead flower,branching
+93,artifact,metal stool,seat,false,wooden chair,equivocal
+93,plants,lettuce,plant,true,flower,overlapping
+93,animals,whale,animal,true,whale,branching
+93,animals,house cat,cat,true,house cat,overlapping
+93,animals,angler fish,fish,true,angler fish,equivocal
+93,places,park,place,true,park,overlapping
+93,artifact,chair,seat,true,chair,branching
+93,artifact,iron skillet,skillet,true,iron skillet,overlapping
+94,plants,burger,food,true,burger,equivocal
+94,places,park,place,true,park,branching
+94,places,snowy forest,outdoor place,false,sunny beach,equivocal
+94,plants,dead flower,plant,true,dead flower,branching
+94,artifact,metal stool,seat,false,wooden chair,equivocal
+94,plants,lettuce,plant,true,flower,overlapping
+94,animals,whale,animal,true,whale,branching
+94,animals,house cat,cat,true,house cat,overlapping
+94,animals,angler fish,fish,true,angler fish,equivocal
+94,places,park,place,true,park,overlapping
+94,artifact,chair,seat,true,chair,branching
+94,artifact,iron skillet,skillet,true,iron skillet,overlapping
+95,artifact,couch,couch,true,couch,branching
+95,animals,whale,animal,true,lion,overlapping
+95,artifact,metal chair,metal thing,false,iron skillet,overlapping
+95,animals,angler fish,fish,true,goldfish,equivocal
+95,places,snowy mountain,outdoor place,false,sunny beach,equivocal
+95,plants,dead flower,plant,true,dead flower,branching
+95,animals,poodle,dog,true,poodle,branching
+95,plants,lettuce,leaves,false,oak,overlapping
+95,places,hotel lobby,bar,false,dive bar,overlapping
+95,plants,burger,food,true,burger,equivocal
+95,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+95,places,mansion,mansion,true,mansion,branching
+96,artifact,couch,couch,true,couch,branching
+96,animals,whale,animal,true,lion,overlapping
+96,artifact,metal chair,metal thing,false,iron skillet,overlapping
+96,animals,angler fish,fish,true,goldfish,equivocal
+96,places,snowy mountain,outdoor place,false,sunny beach,equivocal
+96,plants,dead flower,plant,true,dead flower,branching
+96,animals,poodle,dog,true,poodle,branching
+96,plants,lettuce,leaves,false,oak,overlapping
+96,places,hotel lobby,bar,false,dive bar,overlapping
+96,plants,burger,food,true,burger,equivocal
+96,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+96,places,mansion,mansion,true,mansion,branching
+97,places,dive bar,restaurant,false,diner,overlapping
+97,artifact,wooden chair,seat,false,metal chair,equivocal
+97,plants,burger,food,true,burger,equivocal
+97,plants,carrots,carrots,true,carrots,overlapping
+97,animals,whale,animal,true,whale,branching
+97,plants,sunflower,plant,true,dead flower,branching
+97,artifact,iron skillet,skillet,true,iron skillet,overlapping
+97,animals,golden retriever,pet,true,golden retriever,overlapping
+97,places,snowy mountain,outdoor place,false,snowy forest,equivocal
+97,places,park,place,true,park,branching
+97,animals,betta fish,fish,false,angler fish,equivocal
+97,artifact,table,thing,false,lawnmower,branching
+98,places,dive bar,restaurant,false,diner,overlapping
+98,artifact,wooden chair,seat,false,metal chair,equivocal
+98,plants,burger,food,true,burger,equivocal
+98,plants,carrots,carrots,true,carrots,overlapping
+98,animals,whale,animal,true,whale,branching
+98,plants,sunflower,plant,true,dead flower,branching
+98,artifact,iron skillet,skillet,true,iron skillet,overlapping
+98,animals,golden retriever,pet,true,golden retriever,overlapping
+98,places,snowy mountain,outdoor place,false,snowy forest,equivocal
+98,places,park,place,true,park,branching
+98,animals,betta fish,fish,false,angler fish,equivocal
+98,artifact,table,thing,false,lawnmower,branching
+99,plants,flower,plant,true,flower,overlapping
+99,artifact,table,thing,true,table,branching
+99,artifact,metal chair,seat,true,metal chair,overlapping
+99,animals,lion,lion,true,lion,overlapping
+99,artifact,metal stool,seat,true,metal stool,equivocal
+99,plants,burger,food,true,burger,equivocal
+99,animals,whale,animal,true,whale,branching
+99,animals,angler fish,fish,true,angler fish,equivocal
+99,places,snowy forest,cold place,true,snowy forest,equivocal
+99,places,diner,diner,true,diner,overlapping
+99,plants,sunflower,living plant,true,sunflower,branching
+99,places,mansion,mansion,true,mansion,branching
+100,plants,carrots,carrots,true,carrots,overlapping
+100,animals,golden retriever,pet,true,golden retriever,overlapping
+100,artifact,table,furniture,true,table,branching
+100,plants,burger,food,true,burger,equivocal
+100,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+100,animals,goldfish,fish,false,betta fish,equivocal
+100,plants,sunflower,living plant,true,sunflower,branching
+100,places,snowy forest,cold place,true,ice hotel room,equivocal
+100,animals,whale,animal,true,whale,branching
+100,places,cottage,house,true,cottage,branching
+100,places,dive bar,bar,false,hotel lobby,overlapping
+100,artifact,metal chair,seat,false,metal stool,equivocal
+101,plants,carrots,carrots,true,carrots,overlapping
+101,animals,golden retriever,pet,true,golden retriever,overlapping
+101,artifact,table,furniture,true,table,branching
+101,plants,burger,food,true,burger,equivocal
+101,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+101,animals,goldfish,fish,false,betta fish,equivocal
+101,plants,sunflower,living plant,true,sunflower,branching
+101,places,snowy forest,cold place,true,ice hotel room,equivocal
+101,animals,whale,animal,true,whale,branching
+101,places,cottage,house,true,cottage,branching
+101,places,dive bar,bar,false,hotel lobby,overlapping
+101,artifact,metal chair,seat,false,metal stool,equivocal
+102,places,dive bar,bar,false,diner,overlapping
+102,plants,tomatos,plant,true,sunflower,equivocal
+102,animals,whale,animal,true,golden retriever,overlapping
+102,places,park,place,true,mansion,branching
+102,places,ice hotel room,cold place,false,snowy forest,equivocal
+102,animals,dalmatian,pet,true,dalmatian,equivocal
+102,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+102,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+102,plants,tomatos,food,false,carrot,branching
+102,plants,carrots,carrots,true,carrots,overlapping
+102,animals,siamese cat,pet,true,dalmatian,branching
+102,artifact,table,furniture,true,couch,branching
+103,places,dive bar,bar,false,diner,overlapping
+103,plants,tomatos,plant,true,sunflower,equivocal
+103,animals,whale,animal,true,golden retriever,overlapping
+103,places,park,place,true,mansion,branching
+103,places,ice hotel room,cold place,false,snowy forest,equivocal
+103,animals,dalmatian,pet,true,dalmatian,equivocal
+103,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+103,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+103,plants,tomatos,food,false,carrot,branching
+103,plants,carrots,carrots,true,carrots,overlapping
+103,animals,siamese cat,pet,true,dalmatian,branching
+103,artifact,table,furniture,true,couch,branching
+104,artifact,wooden chair,seat,true,wooden chair,overlapping
+104,artifact,metal stool,metal thing,true,metal stool,equivocal
+104,animals,house cat,cat,true,house cat,overlapping
+104,plants,carrots,carrots,true,carrots,overlapping
+104,artifact,couch,couch,true,couch,branching
+104,animals,poodle,dog,false,poodle,branching
+104,animals,dalmatian,pet,true,dalmatian,equivocal
+104,places,sunny beach,outdoor place,true,snowy mountain,equivocal
+104,places,park,place,true,park,overlapping
+104,plants,carrot,food,true,burger,equivocal
+104,places,cottage,house,true,cottage,branching
+104,plants,sunflower,plant,false,dead flower,branching
+105,artifact,wooden chair,seat,true,wooden chair,overlapping
+105,artifact,metal stool,metal thing,true,metal stool,equivocal
+105,animals,house cat,cat,true,house cat,overlapping
+105,plants,carrots,carrots,true,carrots,overlapping
+105,artifact,couch,couch,true,couch,branching
+105,animals,poodle,dog,false,poodle,branching
+105,animals,dalmatian,pet,true,dalmatian,equivocal
+105,places,sunny beach,outdoor place,true,snowy mountain,equivocal
+105,places,park,place,true,park,overlapping
+105,plants,carrot,food,true,burger,equivocal
+105,places,cottage,house,true,cottage,branching
+105,plants,sunflower,plant,false,dead flower,branching
+106,animals,goldfish,pet,false,dalmatian,equivocal
+106,animals,poodle,dog,false,dalmatian,branching
+106,places,snowy forest,cold place,true,snowy forest,equivocal
+106,animals,lion,lion,true,lion,overlapping
+106,places,hotel lobby,bar,true,hotel lobby,overlapping
+106,places,office,building,true,office,branching
+106,plants,dead flower,plant,true,dead flower,branching
+106,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+106,plants,burger,food,true,burger,equivocal
+106,plants,flower,plant,true,flower,overlapping
+106,artifact,iron skillet,skillet,true,iron skillet,overlapping
+106,artifact,lawnmower,thing,true,lawnmower,branching
+107,animals,goldfish,pet,false,dalmatian,equivocal
+107,animals,poodle,dog,false,dalmatian,branching
+107,places,snowy forest,cold place,true,snowy forest,equivocal
+107,animals,lion,lion,true,lion,overlapping
+107,places,hotel lobby,bar,true,hotel lobby,overlapping
+107,places,office,building,true,office,branching
+107,plants,dead flower,plant,true,dead flower,branching
+107,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+107,plants,burger,food,true,burger,equivocal
+107,plants,flower,plant,true,flower,overlapping
+107,artifact,iron skillet,skillet,true,iron skillet,overlapping
+107,artifact,lawnmower,thing,true,lawnmower,branching
+108,artifact,wooden chair,seat,false,metal chair,equivocal
+108,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+108,animals,angler fish,fish,true,goldfish,equivocal
+108,plants,sunflower,living plant,true,sunflower,branching
+108,artifact,couch,couch,true,couch,branching
+108,places,office,building,true,office,branching
+108,animals,whale,animal,true,whale,overlapping
+108,places,dive bar,bar,true,hotel lobby,overlapping
+108,places,sunny beach,outdoor place,true,sunny beach,equivocal
+108,animals,siamese cat,pet,true,siamese cat,branching
+108,plants,flower,plant,true,flower,overlapping
+108,plants,carrot,food,false,burger,equivocal
+109,artifact,wooden chair,seat,false,metal chair,equivocal
+109,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+109,animals,angler fish,fish,true,goldfish,equivocal
+109,plants,sunflower,living plant,true,sunflower,branching
+109,artifact,couch,couch,true,couch,branching
+109,places,office,building,true,office,branching
+109,animals,whale,animal,true,whale,overlapping
+109,places,dive bar,bar,true,hotel lobby,overlapping
+109,places,sunny beach,outdoor place,true,sunny beach,equivocal
+109,animals,siamese cat,pet,true,siamese cat,branching
+109,plants,flower,plant,true,flower,overlapping
+109,plants,carrot,food,false,burger,equivocal
+110,places,park,place,true,park,branching
+110,animals,lion,lion,true,lion,overlapping
+110,artifact,metal chair,metal thing,true,metal chair,overlapping
+110,artifact,metal chair,metal thing,true,metal chair,equivocal
+110,animals,dalmatian,pet,true,dalmatian,equivocal
+110,places,hotel lobby,place,true,park,overlapping
+110,plants,tomatos,food,false,burger,equivocal
+110,animals,whale,animal,true,whale,branching
+110,places,snowy mountain,outdoor place,true,sunny beach,equivocal
+110,plants,flower,plant,true,flower,overlapping
+110,plants,dead flower,plant,true,dead flower,branching
+110,artifact,lawnmower,thing,true,lawnmower,branching
+111,places,park,place,true,park,branching
+111,animals,lion,lion,true,lion,overlapping
+111,artifact,metal chair,metal thing,true,metal chair,overlapping
+111,artifact,metal chair,metal thing,true,metal chair,equivocal
+111,animals,dalmatian,pet,true,dalmatian,equivocal
+111,places,hotel lobby,place,true,park,overlapping
+111,plants,tomatos,food,false,burger,equivocal
+111,animals,whale,animal,true,whale,branching
+111,places,snowy mountain,outdoor place,true,sunny beach,equivocal
+111,plants,flower,plant,true,flower,overlapping
+111,plants,dead flower,plant,true,dead flower,branching
+111,artifact,lawnmower,thing,true,lawnmower,branching
+112,plants,sunflower,plant,true,dead flower,branching
+112,animals,whale,animal,true,whale,branching
+112,artifact,table,furniture,true,table,branching
+112,plants,flower,plant,true,flower,overlapping
+112,animals,goldfish,fish,true,angler fish,equivocal
+112,places,ice hotel room,cold place,true,snowy forest,equivocal
+112,plants,burger,food,true,burger,equivocal
+112,places,diner,diner,true,diner,overlapping
+112,artifact,metal chair,seat,true,metal chair,equivocal
+112,places,office,building,true,office,branching
+112,artifact,metal chair,seat,false,wooden chair,overlapping
+112,animals,house cat,cat,true,house cat,overlapping
+113,plants,sunflower,plant,true,dead flower,branching
+113,animals,whale,animal,true,whale,branching
+113,artifact,table,furniture,true,table,branching
+113,plants,flower,plant,true,flower,overlapping
+113,animals,goldfish,fish,true,angler fish,equivocal
+113,places,ice hotel room,cold place,true,snowy forest,equivocal
+113,plants,burger,food,true,burger,equivocal
+113,places,diner,diner,true,diner,overlapping
+113,artifact,metal chair,seat,true,metal chair,equivocal
+113,places,office,building,true,office,branching
+113,artifact,metal chair,seat,false,wooden chair,overlapping
+113,animals,house cat,cat,true,house cat,overlapping
+114,plants,flower,plant,true,lettuce,overlapping
+114,animals,dalmatian,pet,true,dalmatian,equivocal
+114,places,cottage,house,true,cottage,branching
+114,animals,golden retriever,pet,true,golden retriever,overlapping
+114,artifact,wooden chair,seat,true,wooden chair,equivocal
+114,plants,carrot,food,true,burger,equivocal
+114,places,ice hotel room,cold place,false,snowy forest,equivocal
+114,plants,dead flower,plant,false,sunflower,branching
+114,animals,siamese cat,pet,true,siamese cat,branching
+114,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+114,places,dive bar,bar,true,dive bar,overlapping
+114,artifact,table,furniture,true,table,branching
+115,plants,flower,plant,true,lettuce,overlapping
+115,animals,dalmatian,pet,true,dalmatian,equivocal
+115,places,cottage,house,true,cottage,branching
+115,animals,golden retriever,pet,true,golden retriever,overlapping
+115,artifact,wooden chair,seat,true,wooden chair,equivocal
+115,plants,carrot,food,true,burger,equivocal
+115,places,ice hotel room,cold place,false,snowy forest,equivocal
+115,plants,dead flower,plant,false,sunflower,branching
+115,animals,siamese cat,pet,true,siamese cat,branching
+115,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+115,places,dive bar,bar,true,dive bar,overlapping
+115,artifact,table,furniture,true,table,branching
+116,places,sunny beach,outdoor place,false,snowy forest,equivocal
+116,plants,flower,plant,true,flower,overlapping
+116,artifact,chair,seat,true,chair,branching
+116,plants,dead flower,plant,true,dead flower,branching
+116,places,cottage,house,true,cottage,branching
+116,places,dive bar,restaurant,false,diner,overlapping
+116,plants,burger,food,true,burger,equivocal
+116,animals,poodle,dog,true,poodle,branching
+116,animals,betta fish,fish,true,goldfish,equivocal
+116,artifact,wooden chair,seat,true,wooden chair,overlapping
+116,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+116,animals,lion,lion,true,lion,overlapping
+117,places,sunny beach,outdoor place,false,snowy forest,equivocal
+117,plants,flower,plant,true,flower,overlapping
+117,artifact,chair,seat,true,chair,branching
+117,plants,dead flower,plant,true,dead flower,branching
+117,places,cottage,house,true,cottage,branching
+117,places,dive bar,restaurant,false,diner,overlapping
+117,plants,burger,food,true,burger,equivocal
+117,animals,poodle,dog,true,poodle,branching
+117,animals,betta fish,fish,true,goldfish,equivocal
+117,artifact,wooden chair,seat,true,wooden chair,overlapping
+117,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+117,animals,lion,lion,true,lion,overlapping
+118,animals,dalmatian,dalmatian,true,dalmatian,branching
+118,artifact,table,furniture,true,table,branching
+118,animals,lion,lion,true,lion,overlapping
+118,places,ice hotel room,cold place,true,ice hotel room,equivocal
+118,places,mansion,mansion,true,mansion,branching
+118,plants,dead flower,plant,true,dead flower,branching
+118,plants,lettuce,food,true,lettuce,overlapping
+118,animals,betta fish,fish,true,angler fish,equivocal
+118,artifact,wooden chair,seat,false,metal chair,equivocal
+118,artifact,iron skillet,skillet,true,iron skillet,overlapping
+118,plants,carrot,food,true,burger,equivocal
+118,places,diner,diner,true,diner,overlapping
+119,animals,dalmatian,dalmatian,true,dalmatian,branching
+119,artifact,table,furniture,true,table,branching
+119,animals,lion,lion,true,lion,overlapping
+119,places,ice hotel room,cold place,true,ice hotel room,equivocal
+119,places,mansion,mansion,true,mansion,branching
+119,plants,dead flower,plant,true,dead flower,branching
+119,plants,lettuce,food,true,lettuce,overlapping
+119,animals,betta fish,fish,true,angler fish,equivocal
+119,artifact,wooden chair,seat,false,metal chair,equivocal
+119,artifact,iron skillet,skillet,true,iron skillet,overlapping
+119,plants,carrot,food,true,burger,equivocal
+119,places,diner,diner,true,diner,overlapping
+120,animals,golden retriever,pet,true,golden retriever,overlapping
+120,plants,sunflower,living plant,true,tomatos,branching
+120,artifact,chair,seat,true,chair,branching
+120,places,ice hotel room,cold place,false,snowy forest,equivocal
+120,artifact,metal chair,seat,true,wooden chair,equivocal
+120,artifact,wooden chair,seat,true,wooden chair,overlapping
+120,animals,whale,animal,true,whale,branching
+120,places,park,place,true,park,overlapping
+120,plants,tomatos,plant,true,tomatos,equivocal
+120,places,mansion,mansion,true,mansion,branching
+120,plants,oak,leaves,true,oak,overlapping
+120,animals,betta fish,fish,true,angler fish,equivocal
+121,animals,golden retriever,pet,true,golden retriever,overlapping
+121,plants,sunflower,living plant,true,tomatos,branching
+121,artifact,chair,seat,true,chair,branching
+121,places,ice hotel room,cold place,false,snowy forest,equivocal
+121,artifact,metal chair,seat,true,wooden chair,equivocal
+121,artifact,wooden chair,seat,true,wooden chair,overlapping
+121,animals,whale,animal,true,whale,branching
+121,places,park,place,true,park,overlapping
+121,plants,tomatos,plant,true,tomatos,equivocal
+121,places,mansion,mansion,true,mansion,branching
+121,plants,oak,leaves,true,oak,overlapping
+121,animals,betta fish,fish,true,angler fish,equivocal
+122,places,diner,diner,true,diner,overlapping
+122,places,snowy forest,outdoor place,false,sunny beach,equivocal
+122,places,mansion,mansion,true,mansion,branching
+122,plants,dead flower,plant,true,dead flower,branching
+122,plants,lettuce,plant,true,lettuce,overlapping
+122,artifact,wooden chair,seat,true,metal chair,equivocal
+122,animals,betta fish,fish,true,betta fish,equivocal
+122,artifact,iron skillet,skillet,true,iron skillet,overlapping
+122,animals,whale,animal,true,whale,overlapping
+122,plants,burger,food,true,burger,equivocal
+122,artifact,table,thing,true,lawnmower,branching
+122,animals,whale,animal,true,whale,branching
+123,places,diner,diner,true,diner,overlapping
+123,places,snowy forest,outdoor place,false,sunny beach,equivocal
+123,places,mansion,mansion,true,mansion,branching
+123,plants,dead flower,plant,true,dead flower,branching
+123,plants,lettuce,plant,true,lettuce,overlapping
+123,artifact,wooden chair,seat,true,metal chair,equivocal
+123,animals,betta fish,fish,true,betta fish,equivocal
+123,artifact,iron skillet,skillet,true,iron skillet,overlapping
+123,animals,whale,animal,true,whale,overlapping
+123,plants,burger,food,true,burger,equivocal
+123,artifact,table,thing,true,lawnmower,branching
+123,animals,whale,animal,true,whale,branching
+124,animals,goldfish,pet,true,dalmatian,equivocal
+124,artifact,metal stool,seat,false,wooden chair,equivocal
+124,animals,lion,lion,true,lion,overlapping
+124,plants,carrot,food,false,burger,equivocal
+124,artifact,chair,seat,true,chair,branching
+124,places,mansion,mansion,true,mansion,branching
+124,animals,whale,animal,true,whale,branching
+124,places,hotel lobby,restaurant,true,diner,overlapping
+124,places,ice hotel room,cold place,false,snowy forest,equivocal
+124,plants,oak,leaves,true,oak,overlapping
+124,artifact,metal chair,metal thing,true,metal chair,overlapping
+124,plants,sunflower,living plant,false,tomatos,branching
+125,animals,goldfish,pet,true,dalmatian,equivocal
+125,artifact,metal stool,seat,false,wooden chair,equivocal
+125,animals,lion,lion,true,lion,overlapping
+125,plants,carrot,food,false,burger,equivocal
+125,artifact,chair,seat,true,chair,branching
+125,places,mansion,mansion,true,mansion,branching
+125,animals,whale,animal,true,whale,branching
+125,places,hotel lobby,restaurant,true,diner,overlapping
+125,places,ice hotel room,cold place,false,snowy forest,equivocal
+125,plants,oak,leaves,true,oak,overlapping
+125,artifact,metal chair,metal thing,true,metal chair,overlapping
+125,plants,sunflower,living plant,false,tomatos,branching
+126,places,sunny beach,outdoor place,false,snowy forest,equivocal
+126,animals,goldfish,pet,false,dalmatian,equivocal
+126,plants,sunflower,plant,true,sunflower,branching
+126,animals,whale,animal,true,whale,overlapping
+126,animals,siamese cat,pet,true,siamese cat,branching
+126,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+126,artifact,wooden chair,seat,true,wooden chair,equivocal
+126,artifact,couch,couch,true,couch,branching
+126,places,diner,diner,true,diner,overlapping
+126,plants,sunflower,plant,true,sunflower,equivocal
+126,plants,carrots,carrots,true,carrots,overlapping
+126,places,cottage,house,true,cottage,branching
+126,places,cottage,house,true,cottage,branching
+127,places,sunny beach,outdoor place,false,snowy forest,equivocal
+127,animals,goldfish,pet,false,dalmatian,equivocal
+127,plants,sunflower,plant,true,sunflower,branching
+127,animals,whale,animal,true,whale,overlapping
+127,animals,siamese cat,pet,true,siamese cat,branching
+127,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+127,artifact,wooden chair,seat,true,wooden chair,equivocal
+127,artifact,couch,couch,true,couch,branching
+127,places,diner,diner,true,diner,overlapping
+127,plants,sunflower,plant,true,sunflower,equivocal
+127,plants,carrots,carrots,true,carrots,overlapping
+127,places,cottage,house,true,cottage,branching
+127,places,cottage,house,true,cottage,branching
+128,places,mansion,mansion,true,mansion,branching
+128,artifact,table,furniture,false,couch,branching
+128,animals,poodle,dog,true,poodle,branching
+128,animals,house cat,cat,true,house cat,overlapping
+128,places,ice hotel room,cold place,true,ice hotel room,equivocal
+128,places,hotel lobby,place,true,park,overlapping
+128,artifact,wooden chair,seat,true,wooden chair,overlapping
+128,plants,tomatos,food,true,tomatos,branching
+128,plants,lettuce,food,true,lettuce,overlapping
+128,animals,betta fish,fish,false,angler fish,equivocal
+128,artifact,metal chair,metal thing,true,iron skillet,equivocal
+128,plants,sunflower,plant,true,sunflower,equivocal
+129,places,mansion,mansion,true,mansion,branching
+129,artifact,table,furniture,false,couch,branching
+129,animals,poodle,dog,true,poodle,branching
+129,animals,house cat,cat,true,house cat,overlapping
+129,places,ice hotel room,cold place,true,ice hotel room,equivocal
+129,places,hotel lobby,place,true,park,overlapping
+129,artifact,wooden chair,seat,true,wooden chair,overlapping
+129,plants,tomatos,food,true,tomatos,branching
+129,plants,lettuce,food,true,lettuce,overlapping
+129,animals,betta fish,fish,false,angler fish,equivocal
+129,artifact,metal chair,metal thing,true,iron skillet,equivocal
+129,plants,sunflower,plant,true,sunflower,equivocal
+130,animals,betta fish,fish,true,dalmatian,equivocal
+130,artifact,couch,couch,true,couch,branching
+130,plants,burger,food,true,burger,equivocal
+130,places,dive bar,bar,false,park,overlapping
+130,plants,lettuce,food,true,carrots,overlapping
+130,plants,sunflower,living plant,false,tomatos,branching
+130,artifact,metal chair,seat,true,wooden chair,equivocal
+130,animals,dalmatian,dalmatian,true,dalmatian,branching
+130,places,mansion,mansion,true,mansion,branching
+130,artifact,wooden chair,seat,true,wooden chair,overlapping
+130,animals,whale,animal,true,whale,overlapping
+130,places,sunny beach,outdoor place,true,sunny beach,equivocal
+131,animals,betta fish,fish,true,dalmatian,equivocal
+131,artifact,couch,couch,true,couch,branching
+131,plants,burger,food,true,burger,equivocal
+131,places,dive bar,bar,false,park,overlapping
+131,plants,lettuce,food,true,carrots,overlapping
+131,plants,sunflower,living plant,false,tomatos,branching
+131,artifact,metal chair,seat,true,wooden chair,equivocal
+131,animals,dalmatian,dalmatian,true,dalmatian,branching
+131,places,mansion,mansion,true,mansion,branching
+131,artifact,wooden chair,seat,true,wooden chair,overlapping
+131,animals,whale,animal,true,whale,overlapping
+131,places,sunny beach,outdoor place,true,sunny beach,equivocal
+132,animals,goldfish,fish,true,goldfish,equivocal
+132,places,hotel lobby,bar,false,dive bar,overlapping
+132,places,office,building,true,office,branching
+132,artifact,chair,seat,true,chair,branching
+132,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+132,plants,oak,leaves,true,oak,overlapping
+132,plants,carrot,carrot,true,carrot,branching
+132,artifact,metal stool,metal thing,false,metal chair,equivocal
+132,places,sunny beach,outdoor place,true,sunny beach,equivocal
+132,animals,lion,lion,true,lion,overlapping
+132,animals,dalmatian,dalmatian,true,dalmatian,branching
+132,plants,carrot,food,true,burger,equivocal
+133,animals,goldfish,fish,true,goldfish,equivocal
+133,places,hotel lobby,bar,false,dive bar,overlapping
+133,places,office,building,true,office,branching
+133,artifact,chair,seat,true,chair,branching
+133,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+133,plants,oak,leaves,true,oak,overlapping
+133,plants,carrot,carrot,true,carrot,branching
+133,artifact,metal stool,metal thing,false,metal chair,equivocal
+133,places,sunny beach,outdoor place,true,sunny beach,equivocal
+133,animals,lion,lion,true,lion,overlapping
+133,animals,dalmatian,dalmatian,true,dalmatian,branching
+133,plants,carrot,food,true,burger,equivocal
+134,plants,flower,plant,false,lettuce,overlapping
+134,animals,poodle,dog,true,poodle,branching
+134,artifact,table,furniture,true,table,branching
+134,places,snowy forest,outdoor place,true,sunny beach,equivocal
+134,artifact,metal stool,metal thing,false,iron skillet,equivocal
+134,animals,lion,lion,true,lion,overlapping
+134,animals,goldfish,fish,false,angler fish,equivocal
+134,places,cottage,house,true,cottage,branching
+134,places,diner,diner,true,diner,overlapping
+134,plants,carrot,plant,false,sunflower,equivocal
+134,artifact,iron skillet,skillet,true,iron skillet,overlapping
+134,plants,sunflower,living plant,true,sunflower,branching
+135,plants,flower,plant,false,lettuce,overlapping
+135,animals,poodle,dog,true,poodle,branching
+135,artifact,table,furniture,true,table,branching
+135,places,snowy forest,outdoor place,true,sunny beach,equivocal
+135,artifact,metal stool,metal thing,false,iron skillet,equivocal
+135,animals,lion,lion,true,lion,overlapping
+135,animals,goldfish,fish,false,angler fish,equivocal
+135,places,cottage,house,true,cottage,branching
+135,places,diner,diner,true,diner,overlapping
+135,plants,carrot,plant,false,sunflower,equivocal
+135,artifact,iron skillet,skillet,true,iron skillet,overlapping
+135,plants,sunflower,living plant,true,sunflower,branching
+136,animals,dalmatian,pet,false,goldfish,equivocal
+136,places,mansion,mansion,true,mansion,branching
+136,places,dive bar,bar,true,hotel lobby,overlapping
+136,places,sunny beach,outdoor place,true,sunny beach,equivocal
+136,plants,sunflower,plant,true,sunflower,equivocal
+136,artifact,iron skillet,skillet,true,iron skillet,overlapping
+136,animals,whale,animal,false,siamese cat,branching
+136,plants,oak,leaves,true,oak,overlapping
+136,animals,whale,animal,true,whale,overlapping
+136,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+136,artifact,lawnmower,thing,true,lawnmower,branching
+136,plants,dead flower,plant,true,dead flower,branching
+137,animals,dalmatian,pet,false,goldfish,equivocal
+137,places,mansion,mansion,true,mansion,branching
+137,places,dive bar,bar,true,hotel lobby,overlapping
+137,places,sunny beach,outdoor place,true,sunny beach,equivocal
+137,plants,sunflower,plant,true,sunflower,equivocal
+137,artifact,iron skillet,skillet,true,iron skillet,overlapping
+137,animals,whale,animal,false,siamese cat,branching
+137,plants,oak,leaves,true,oak,overlapping
+137,animals,whale,animal,true,whale,overlapping
+137,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+137,artifact,lawnmower,thing,true,lawnmower,branching
+137,plants,dead flower,plant,true,dead flower,branching
+138,plants,lettuce,plant,true,lettuce,overlapping
+138,artifact,couch,couch,true,couch,branching
+138,animals,goldfish,fish,true,goldfish,equivocal
+138,plants,carrot,carrot,true,carrot,branching
+138,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+138,plants,tomatos,plant,false,sunflower,equivocal
+138,animals,whale,animal,true,whale,branching
+138,places,snowy forest,cold place,true,snowy forest,equivocal
+138,places,cottage,house,true,cottage,branching
+138,artifact,metal chair,metal thing,true,metal chair,overlapping
+138,animals,lion,lion,true,lion,overlapping
+138,places,diner,diner,true,diner,overlapping
+139,plants,lettuce,plant,true,lettuce,overlapping
+139,artifact,couch,couch,true,couch,branching
+139,animals,goldfish,fish,true,goldfish,equivocal
+139,plants,carrot,carrot,true,carrot,branching
+139,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+139,plants,tomatos,plant,false,sunflower,equivocal
+139,animals,whale,animal,true,whale,branching
+139,places,snowy forest,cold place,true,snowy forest,equivocal
+139,places,cottage,house,true,cottage,branching
+139,artifact,metal chair,metal thing,true,metal chair,overlapping
+139,animals,lion,lion,true,lion,overlapping
+139,places,diner,diner,true,diner,overlapping
+140,artifact,lawnmower,thing,false,couch,branching
+140,artifact,wooden chair,seat,false,iron skillet,overlapping
+140,plants,flower,plant,true,flower,overlapping
+140,animals,angler fish,fish,true,dalmatian,equivocal
+140,animals,house cat,cat,true,house cat,overlapping
+140,places,office,building,true,office,branching
+140,places,sunny beach,outdoor place,false,ice hotel room,equivocal
+140,animals,poodle,dog,false,dalmatian,branching
+140,artifact,wooden chair,seat,true,wooden chair,equivocal
+140,plants,burger,food,true,burger,equivocal
+140,places,dive bar,bar,true,dive bar,overlapping
+140,plants,tomatos,food,false,carrot,branching
+141,artifact,lawnmower,thing,false,couch,branching
+141,artifact,wooden chair,seat,false,iron skillet,overlapping
+141,plants,flower,plant,true,flower,overlapping
+141,animals,angler fish,fish,true,dalmatian,equivocal
+141,animals,house cat,cat,true,house cat,overlapping
+141,places,office,building,true,office,branching
+141,places,sunny beach,outdoor place,false,ice hotel room,equivocal
+141,animals,poodle,dog,false,dalmatian,branching
+141,artifact,wooden chair,seat,true,wooden chair,equivocal
+141,plants,burger,food,true,burger,equivocal
+141,places,dive bar,bar,true,dive bar,overlapping
+141,plants,tomatos,food,false,carrot,branching
+142,artifact,lawnmower,couch,false,couch,branching
+142,animals,angler fish,fish,true,goldfish,equivocal
+142,plants,sunflower,living plant,false,dead flower,branching
+142,places,dive bar,bar,true,hotel lobby,overlapping
+142,plants,carrot,plant,false,sunflower,equivocal
+142,animals,dalmatian,dalmatian,true,dalmatian,branching
+142,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+142,places,sunny beach,outdoor place,true,sunny beach,equivocal
+142,artifact,metal chair,metal thing,true,metal chair,overlapping
+142,animals,whale,animal,true,whale,overlapping
+142,plants,oak,leaves,true,oak,overlapping
+142,places,cottage,building,false,office,branching
+143,artifact,lawnmower,couch,false,couch,branching
+143,animals,angler fish,fish,true,goldfish,equivocal
+143,plants,sunflower,living plant,false,dead flower,branching
+143,places,dive bar,bar,true,hotel lobby,overlapping
+143,plants,carrot,plant,false,sunflower,equivocal
+143,animals,dalmatian,dalmatian,true,dalmatian,branching
+143,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+143,places,sunny beach,outdoor place,true,sunny beach,equivocal
+143,artifact,metal chair,metal thing,true,metal chair,overlapping
+143,animals,whale,animal,true,whale,overlapping
+143,plants,oak,leaves,true,oak,overlapping
+143,places,cottage,building,false,office,branching
+144,artifact,iron skillet,seat,true,wooden chair,equivocal
+144,places,snowy forest,cold place,true,ice hotel room,equivocal
+144,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+144,places,mansion,mansion,true,mansion,branching
+144,animals,dalmatian,dalmatian,true,dalmatian,branching
+144,plants,carrots,carrots,true,carrots,overlapping
+144,animals,dalmatian,pet,true,dalmatian,equivocal
+144,artifact,table,furniture,true,table,branching
+144,plants,dead flower,plant,true,dead flower,branching
+144,places,park,place,true,park,overlapping
+144,animals,house cat,cat,true,house cat,overlapping
+144,plants,sunflower,plant,true,sunflower,equivocal
+145,artifact,iron skillet,seat,true,wooden chair,equivocal
+145,places,snowy forest,cold place,true,ice hotel room,equivocal
+145,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+145,places,mansion,mansion,true,mansion,branching
+145,animals,dalmatian,dalmatian,true,dalmatian,branching
+145,plants,carrots,carrots,true,carrots,overlapping
+145,animals,dalmatian,pet,true,dalmatian,equivocal
+145,artifact,table,furniture,true,table,branching
+145,plants,dead flower,plant,true,dead flower,branching
+145,places,park,place,true,park,overlapping
+145,animals,house cat,cat,true,house cat,overlapping
+145,plants,sunflower,plant,true,sunflower,equivocal
+146,plants,carrot,food,true,burger,equivocal
+146,animals,whale,animal,true,whale,branching
+146,places,dive bar,bar,true,dive bar,overlapping
+146,animals,house cat,cat,true,house cat,overlapping
+146,artifact,table,furniture,false,chair,branching
+146,plants,tomatos,food,true,tomatos,branching
+146,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+146,plants,flower,plant,true,flower,overlapping
+146,places,office,building,true,office,branching
+146,places,ice hotel room,cold place,true,ice hotel room,equivocal
+146,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+146,animals,betta fish,fish,false,angler fish,equivocal
+147,plants,carrot,food,true,burger,equivocal
+147,animals,whale,animal,true,whale,branching
+147,places,dive bar,bar,true,dive bar,overlapping
+147,animals,house cat,cat,true,house cat,overlapping
+147,artifact,table,furniture,false,chair,branching
+147,plants,tomatos,food,true,tomatos,branching
+147,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+147,plants,flower,plant,true,flower,overlapping
+147,places,office,building,true,office,branching
+147,places,ice hotel room,cold place,true,ice hotel room,equivocal
+147,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+147,animals,betta fish,fish,false,angler fish,equivocal
+148,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+148,plants,tomatos,living plant,true,tomatos,branching
+148,animals,poodle,dog,true,poodle,branching
+148,animals,golden retriever,pet,true,golden retriever,overlapping
+148,plants,burger,food,true,burger,equivocal
+148,artifact,lawnmower,thing,true,lawnmower,branching
+148,animals,angler fish,fish,true,betta fish,equivocal
+148,places,diner,diner,true,diner,overlapping
+148,places,ice hotel room,cold place,false,snowy mountain,equivocal
+148,plants,carrots,carrots,true,carrots,overlapping
+148,artifact,metal stool,seat,false,wooden chair,equivocal
+148,places,mansion,mansion,true,mansion,branching
+149,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+149,plants,tomatos,living plant,true,tomatos,branching
+149,animals,poodle,dog,true,poodle,branching
+149,animals,golden retriever,pet,true,golden retriever,overlapping
+149,plants,burger,food,true,burger,equivocal
+149,artifact,lawnmower,thing,true,lawnmower,branching
+149,animals,angler fish,fish,true,betta fish,equivocal
+149,places,diner,diner,true,diner,overlapping
+149,places,ice hotel room,cold place,false,snowy mountain,equivocal
+149,plants,carrots,carrots,true,carrots,overlapping
+149,artifact,metal stool,seat,false,wooden chair,equivocal
+149,places,mansion,mansion,true,mansion,branching
+150,places,dive bar,bar,true,dive bar,overlapping
+150,animals,house cat,cat,true,house cat,overlapping
+150,places,snowy forest,outdoor place,false,sunny beach,equivocal
+150,plants,tomatos,plant,true,sunflower,equivocal
+150,artifact,table,furniture,true,table,branching
+150,artifact,metal stool,metal thing,true,metal stool,equivocal
+150,places,office,building,true,office,branching
+150,plants,dead flower,plant,true,dead flower,branching
+150,animals,angler fish,fish,true,angler fish,equivocal
+150,animals,siamese cat,pet,true,siamese cat,branching
+150,artifact,wooden chair,seat,true,wooden chair,overlapping
+150,plants,oak,leaves,true,oak,overlapping
+151,places,dive bar,bar,true,dive bar,overlapping
+151,animals,house cat,cat,true,house cat,overlapping
+151,places,snowy forest,outdoor place,false,sunny beach,equivocal
+151,plants,tomatos,plant,true,sunflower,equivocal
+151,artifact,table,furniture,true,table,branching
+151,artifact,metal stool,metal thing,true,metal stool,equivocal
+151,places,office,building,true,office,branching
+151,plants,dead flower,plant,true,dead flower,branching
+151,animals,angler fish,fish,true,angler fish,equivocal
+151,animals,siamese cat,pet,true,siamese cat,branching
+151,artifact,wooden chair,seat,true,wooden chair,overlapping
+151,plants,oak,leaves,true,oak,overlapping
+152,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+152,artifact,couch,couch,true,couch,branching
+152,places,office,building,true,office,branching
+152,animals,goldfish,fish,true,angler fish,equivocal
+152,plants,tomatos,plant,false,sunflower,equivocal
+152,artifact,metal chair,seat,false,wooden chair,equivocal
+152,places,hotel lobby,restaurant,false,diner,overlapping
+152,animals,whale,animal,true,whale,branching
+152,plants,flower,plant,true,flower,overlapping
+152,animals,lion,lion,true,lion,overlapping
+152,plants,carrot,carrot,true,carrot,branching
+152,places,snowy mountain,cold place,false,ice hotel room,equivocal
+153,places,office,building,true,office,branching
+153,artifact,wooden chair,seat,true,wooden chair,overlapping
+153,plants,carrots,carrots,true,carrots,overlapping
+153,animals,whale,animal,true,whale,branching
+153,artifact,chair,seat,true,chair,branching
+153,animals,whale,animal,true,whale,overlapping
+153,plants,burger,food,true,burger,equivocal
+153,places,hotel lobby,restaurant,true,dive bar,overlapping
+153,plants,sunflower,plant,false,dead flower,branching
+153,artifact,iron skillet,seat,true,metal stool,equivocal
+153,places,snowy mountain,cold place,true,snowy mountain,equivocal
+153,animals,goldfish,pet,true,dalmatian,equivocal
+154,places,office,building,true,office,branching
+154,artifact,wooden chair,seat,true,wooden chair,overlapping
+154,plants,carrots,carrots,true,carrots,overlapping
+154,animals,whale,animal,true,whale,branching
+154,artifact,chair,seat,true,chair,branching
+154,animals,whale,animal,true,whale,overlapping
+154,plants,burger,food,true,burger,equivocal
+154,places,hotel lobby,restaurant,true,dive bar,overlapping
+154,plants,sunflower,plant,false,dead flower,branching
+154,artifact,iron skillet,seat,true,metal stool,equivocal
+154,places,snowy mountain,cold place,true,snowy mountain,equivocal
+154,animals,goldfish,pet,true,dalmatian,equivocal
+155,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+155,artifact,couch,couch,true,couch,branching
+155,places,office,building,true,office,branching
+155,animals,goldfish,fish,true,angler fish,equivocal
+155,plants,tomatos,plant,false,sunflower,equivocal
+155,artifact,metal chair,seat,false,wooden chair,equivocal
+155,places,hotel lobby,restaurant,false,diner,overlapping
+155,animals,whale,animal,true,whale,branching
+155,plants,flower,plant,true,flower,overlapping
+155,animals,lion,lion,true,lion,overlapping
+155,plants,carrot,carrot,true,carrot,branching
+155,places,snowy mountain,cold place,false,ice hotel room,equivocal
+156,plants,sunflower,plant,true,sunflower,equivocal
+156,animals,golden retriever,pet,true,golden retriever,overlapping
+156,plants,oak,leaves,true,oak,overlapping
+156,animals,dalmatian,dalmatian,true,dalmatian,branching
+156,places,office,building,true,office,branching
+156,places,dive bar,bar,false,hotel lobby,overlapping
+156,places,snowy mountain,cold place,true,snowy forest,equivocal
+156,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+156,animals,angler fish,fish,true,angler fish,equivocal
+156,artifact,metal chair,seat,false,wooden chair,equivocal
+156,artifact,table,furniture,true,table,branching
+156,plants,dead flower,plant,false,sunflower,branching
+157,plants,sunflower,plant,true,sunflower,equivocal
+157,animals,golden retriever,pet,true,golden retriever,overlapping
+157,plants,oak,leaves,true,oak,overlapping
+157,animals,dalmatian,dalmatian,true,dalmatian,branching
+157,places,office,building,true,office,branching
+157,places,dive bar,bar,false,hotel lobby,overlapping
+157,places,snowy mountain,cold place,true,snowy forest,equivocal
+157,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+157,animals,angler fish,fish,true,angler fish,equivocal
+157,artifact,metal chair,seat,false,wooden chair,equivocal
+157,artifact,table,furniture,true,table,branching
+157,plants,dead flower,plant,false,sunflower,branching
+158,artifact,metal stool,metal thing,true,iron skillet,equivocal
+158,artifact,metal chair,metal thing,true,wooden chair,overlapping
+158,animals,poodle,dog,true,poodle,branching
+158,places,cottage,house,false,mansion,branching
+158,artifact,lawnmower,thing,true,lawnmower,branching
+158,animals,house cat,cat,true,house cat,overlapping
+158,places,hotel lobby,bar,true,hotel lobby,overlapping
+158,plants,carrot,carrot,true,carrot,branching
+158,plants,lettuce,food,true,lettuce,overlapping
+158,plants,burger,food,true,burger,equivocal
+158,places,sunny beach,outdoor place,false,snowy forest,equivocal
+158,animals,betta fish,fish,false,angler fish,equivocal
+159,artifact,metal stool,metal thing,true,iron skillet,equivocal
+159,artifact,metal chair,metal thing,true,wooden chair,overlapping
+159,animals,poodle,dog,true,poodle,branching
+159,places,cottage,house,false,mansion,branching
+159,artifact,lawnmower,thing,true,lawnmower,branching
+159,animals,house cat,cat,true,house cat,overlapping
+159,places,hotel lobby,bar,true,hotel lobby,overlapping
+159,plants,carrot,carrot,true,carrot,branching
+159,plants,lettuce,food,true,lettuce,overlapping
+159,plants,burger,food,true,burger,equivocal
+159,places,sunny beach,outdoor place,false,snowy forest,equivocal
+159,animals,betta fish,fish,false,angler fish,equivocal
+160,places,diner,diner,true,diner,overlapping
+160,artifact,iron skillet,skillet,true,iron skillet,overlapping
+160,artifact,metal stool,seat,true,wooden chair,equivocal
+160,plants,carrot,carrot,true,carrot,branching
+160,plants,carrot,food,false,burger,equivocal
+160,plants,oak,leaves,true,oak,overlapping
+160,animals,lion,cat,false,house cat,overlapping
+160,places,snowy mountain,outdoor place,false,sunny beach,equivocal
+160,artifact,lawnmower,thing,true,lawnmower,branching
+160,animals,dalmatian,dalmatian,true,dalmatian,branching
+160,animals,dalmatian,pet,false,goldfish,equivocal
+160,places,cottage,house,true,cottage,branching
+161,places,mansion,mansion,true,mansion,branching
+161,plants,lettuce,food,false,carrots,overlapping
+161,animals,dalmatian,pet,true,dalmatian,equivocal
+161,artifact,iron skillet,skillet,true,iron skillet,overlapping
+161,plants,tomatos,food,false,burger,equivocal
+161,places,dive bar,bar,true,hotel lobby,overlapping
+161,places,snowy forest,cold place,true,snowy forest,equivocal
+161,plants,tomatos,food,true,tomatos,branching
+161,animals,dalmatian,dalmatian,true,dalmatian,branching
+161,artifact,lawnmower,thing,true,lawnmower,branching
+161,animals,golden retriever,pet,true,golden retriever,overlapping
+161,artifact,metal stool,metal thing,false,iron skillet,equivocal
+162,places,diner,diner,true,diner,overlapping
+162,artifact,iron skillet,skillet,true,iron skillet,overlapping
+162,artifact,metal stool,seat,true,wooden chair,equivocal
+162,plants,carrot,carrot,true,carrot,branching
+162,plants,carrot,food,false,burger,equivocal
+162,plants,oak,leaves,true,oak,overlapping
+162,animals,lion,cat,false,house cat,overlapping
+162,places,snowy mountain,outdoor place,false,sunny beach,equivocal
+162,artifact,lawnmower,thing,true,lawnmower,branching
+162,animals,dalmatian,dalmatian,true,dalmatian,branching
+162,animals,dalmatian,pet,false,goldfish,equivocal
+162,places,cottage,house,true,cottage,branching
+163,places,mansion,mansion,true,mansion,branching
+163,plants,lettuce,food,false,carrots,overlapping
+163,animals,dalmatian,pet,true,dalmatian,equivocal
+163,artifact,iron skillet,skillet,true,iron skillet,overlapping
+163,plants,tomatos,food,false,burger,equivocal
+163,places,dive bar,bar,true,hotel lobby,overlapping
+163,places,snowy forest,cold place,true,snowy forest,equivocal
+163,plants,tomatos,food,true,tomatos,branching
+163,animals,dalmatian,dalmatian,true,dalmatian,branching
+163,artifact,lawnmower,thing,true,lawnmower,branching
+163,animals,golden retriever,pet,true,golden retriever,overlapping
+163,artifact,metal stool,metal thing,false,iron skillet,equivocal
+164,places,mansion,mansion,false,mansion,branching
+164,plants,dead flower,food,false,tomatos,branching
+164,plants,flower,plant,true,flower,overlapping
+164,artifact,table,furniture,true,table,branching
+164,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+164,plants,sunflower,plant,true,sunflower,equivocal
+164,artifact,metal chair,seat,false,wooden chair,overlapping
+164,animals,house cat,cat,true,house cat,overlapping
+164,places,diner,diner,true,diner,overlapping
+164,places,snowy forest,outdoor place,false,sunny beach,equivocal
+164,animals,whale,animal,true,whale,branching
+164,animals,dalmatian,pet,true,dalmatian,equivocal
+165,places,mansion,mansion,false,mansion,branching
+165,plants,dead flower,food,false,tomatos,branching
+165,plants,flower,plant,true,flower,overlapping
+165,artifact,table,furniture,true,table,branching
+165,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+165,plants,sunflower,plant,true,sunflower,equivocal
+165,artifact,metal chair,seat,false,wooden chair,overlapping
+165,animals,house cat,cat,true,house cat,overlapping
+165,places,diner,diner,true,diner,overlapping
+165,places,snowy forest,outdoor place,false,sunny beach,equivocal
+165,animals,whale,animal,true,whale,branching
+165,animals,dalmatian,pet,true,dalmatian,equivocal
+166,artifact,metal chair,metal thing,true,iron skillet,equivocal
+166,artifact,couch,couch,true,couch,branching
+166,places,dive bar,bar,true,dive bar,overlapping
+166,plants,tomatos,food,true,tomatos,branching
+166,animals,whale,animal,true,whale,branching
+166,artifact,iron skillet,skillet,true,iron skillet,overlapping
+166,animals,betta fish,fish,false,angler fish,equivocal
+166,plants,carrot,plant,false,sunflower,equivocal
+166,places,park,place,true,park,branching
+166,places,sunny beach,outdoor place,true,sunny beach,equivocal
+166,plants,oak,leaves,true,oak,overlapping
+166,animals,golden retriever,pet,true,golden retriever,overlapping
+167,artifact,metal chair,metal thing,true,iron skillet,equivocal
+167,artifact,couch,couch,true,couch,branching
+167,places,dive bar,bar,true,dive bar,overlapping
+167,plants,tomatos,food,true,tomatos,branching
+167,animals,whale,animal,true,whale,branching
+167,artifact,iron skillet,skillet,true,iron skillet,overlapping
+167,animals,betta fish,fish,false,angler fish,equivocal
+167,plants,carrot,plant,false,sunflower,equivocal
+167,places,park,place,true,park,branching
+167,places,sunny beach,outdoor place,true,sunny beach,equivocal
+167,plants,oak,leaves,true,oak,overlapping
+167,animals,golden retriever,pet,true,golden retriever,overlapping
+168,plants,carrot,food,false,burger,equivocal
+168,plants,carrot,carrot,true,carrot,branching
+168,plants,flower,plant,true,flower,overlapping
+168,places,dive bar,bar,true,hotel lobby,overlapping
+168,animals,golden retriever,pet,true,golden retriever,overlapping
+168,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+168,places,sunny beach,outdoor place,true,sunny beach,equivocal
+168,places,park,place,true,park,branching
+168,artifact,couch,couch,true,couch,branching
+168,animals,dalmatian,dalmatian,true,dalmatian,branching
+168,artifact,metal chair,metal thing,true,metal chair,equivocal
+168,animals,betta fish,fish,false,goldfish,equivocal
+169,plants,carrot,food,false,burger,equivocal
+169,plants,carrot,carrot,true,carrot,branching
+169,plants,flower,plant,true,flower,overlapping
+169,places,dive bar,bar,true,hotel lobby,overlapping
+169,animals,golden retriever,pet,true,golden retriever,overlapping
+169,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+169,places,sunny beach,outdoor place,true,sunny beach,equivocal
+169,places,park,place,true,park,branching
+169,artifact,couch,couch,true,couch,branching
+169,animals,dalmatian,dalmatian,true,dalmatian,branching
+169,artifact,metal chair,metal thing,true,metal chair,equivocal
+169,animals,betta fish,fish,false,goldfish,equivocal
+170,plants,sunflower,plant,true,carrot,equivocal
+170,artifact,couch,couch,true,couch,branching
+170,places,snowy mountain,cold place,true,snowy mountain,equivocal
+170,places,cottage,house,true,cottage,branching
+170,plants,oak,leaves,true,oak,overlapping
+170,places,hotel lobby,bar,false,dive bar,overlapping
+170,animals,angler fish,pet,true,dalmatian,equivocal
+170,artifact,metal chair,metal thing,true,metal chair,overlapping
+170,animals,poodle,dog,true,poodle,branching
+170,plants,sunflower,plant,false,dead flower,branching
+170,artifact,metal stool,seat,true,metal stool,equivocal
+170,animals,house cat,cat,true,house cat,overlapping
+171,plants,sunflower,plant,true,carrot,equivocal
+171,artifact,couch,couch,true,couch,branching
+171,places,snowy mountain,cold place,true,snowy mountain,equivocal
+171,places,cottage,house,true,cottage,branching
+171,plants,oak,leaves,true,oak,overlapping
+171,places,hotel lobby,bar,false,dive bar,overlapping
+171,animals,angler fish,pet,true,dalmatian,equivocal
+171,artifact,metal chair,metal thing,true,metal chair,overlapping
+171,animals,poodle,dog,true,poodle,branching
+171,plants,sunflower,plant,false,dead flower,branching
+171,artifact,metal stool,seat,true,metal stool,equivocal
+171,animals,house cat,cat,true,house cat,overlapping
+172,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+172,artifact,lawnmower,thing,true,lawnmower,branching
+172,animals,dalmatian,dalmatian,true,dalmatian,branching
+172,places,park,place,true,park,branching
+172,animals,betta fish,fish,false,angler fish,equivocal
+172,plants,carrot,plant,false,tomatos,equivocal
+172,places,hotel lobby,place,true,park,overlapping
+172,places,ice hotel room,cold place,true,ice hotel room,equivocal
+172,plants,sunflower,living plant,false,tomatos,branching
+172,plants,flower,plant,true,flower,overlapping
+172,animals,house cat,cat,true,house cat,overlapping
+172,artifact,iron skillet,skillet,true,iron skillet,overlapping
+173,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+173,artifact,lawnmower,thing,true,lawnmower,branching
+173,animals,dalmatian,dalmatian,true,dalmatian,branching
+173,places,park,place,true,park,branching
+173,animals,betta fish,fish,false,angler fish,equivocal
+173,plants,carrot,plant,false,tomatos,equivocal
+173,places,hotel lobby,place,true,park,overlapping
+173,places,ice hotel room,cold place,true,ice hotel room,equivocal
+173,plants,sunflower,living plant,false,tomatos,branching
+173,plants,flower,plant,true,flower,overlapping
+173,animals,house cat,cat,true,house cat,overlapping
+173,artifact,iron skillet,skillet,true,iron skillet,overlapping
+174,plants,sunflower,plant,true,sunflower,equivocal
+174,animals,lion,lion,true,lion,overlapping
+174,plants,lettuce,food,true,lettuce,overlapping
+174,animals,angler fish,fish,true,NA,equivocal
+174,artifact,lawnmower,thing,true,lawnmower,branching
+174,artifact,wooden chair,seat,true,wooden chair,overlapping
+174,animals,dalmatian,dalmatian,true,dalmatian,branching
+174,places,snowy mountain,cold place,false,snowy forest,equivocal
+174,places,park,place,false,NA,overlapping
+174,artifact,wooden chair,seat,false,metal stool,equivocal
+174,plants,dead flower,plant,false,NA,branching
+174,places,park,place,true,park,branching
+175,plants,sunflower,plant,true,sunflower,equivocal
+175,animals,lion,lion,true,lion,overlapping
+175,plants,lettuce,food,true,lettuce,overlapping
+175,animals,angler fish,fish,true,NA,equivocal
+175,artifact,lawnmower,thing,true,lawnmower,branching
+175,artifact,wooden chair,seat,true,wooden chair,overlapping
+175,animals,dalmatian,dalmatian,true,dalmatian,branching
+175,places,snowy mountain,cold place,false,snowy forest,equivocal
+175,places,park,place,false,NA,overlapping
+175,artifact,wooden chair,seat,false,metal stool,equivocal
+175,plants,dead flower,plant,false,NA,branching
+175,places,park,place,true,park,branching
+176,plants,lettuce,leaves,false,oak,overlapping
+176,places,park,place,true,park,branching
+176,artifact,metal chair,metal thing,true,metal chair,overlapping
+176,plants,burger,food,true,burger,equivocal
+176,animals,whale,animal,true,whale,branching
+176,places,diner,diner,true,diner,overlapping
+176,animals,dalmatian,pet,true,dalmatian,equivocal
+176,animals,lion,lion,true,lion,overlapping
+176,places,snowy mountain,cold place,true,ice hotel room,equivocal
+176,artifact,chair,seat,true,chair,branching
+176,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+176,plants,tomatos,food,true,tomatos,branching
+177,plants,lettuce,leaves,false,oak,overlapping
+177,places,park,place,true,park,branching
+177,artifact,metal chair,metal thing,true,metal chair,overlapping
+177,plants,burger,food,true,burger,equivocal
+177,animals,whale,animal,true,whale,branching
+177,places,diner,diner,true,diner,overlapping
+177,animals,dalmatian,pet,true,dalmatian,equivocal
+177,animals,lion,lion,true,lion,overlapping
+177,places,snowy mountain,cold place,true,ice hotel room,equivocal
+177,artifact,chair,seat,true,chair,branching
+177,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+177,plants,tomatos,food,true,tomatos,branching
+178,animals,poodle,dalmatian,false,dalmatian,branching
+178,plants,carrots,carrots,true,carrots,overlapping
+178,animals,house cat,cat,true,house cat,overlapping
+178,plants,carrot,carrot,true,carrot,branching
+178,artifact,wooden chair,seat,false,metal chair,equivocal
+178,places,office,building,true,office,branching
+178,places,hotel lobby,bar,true,hotel lobby,overlapping
+178,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+178,plants,carrot,food,true,burger,equivocal
+178,animals,goldfish,pet,false,dalmatian,equivocal
+178,artifact,chair,seat,true,chair,branching
+178,places,snowy mountain,outdoor place,false,sunny beach,equivocal
+179,animals,poodle,dalmatian,false,dalmatian,branching
+179,plants,carrots,carrots,true,carrots,overlapping
+179,animals,house cat,cat,true,house cat,overlapping
+179,plants,carrot,carrot,true,carrot,branching
+179,artifact,wooden chair,seat,false,metal chair,equivocal
+179,places,office,building,true,office,branching
+179,places,hotel lobby,bar,true,hotel lobby,overlapping
+179,artifact,wooden ruler,thing,true,wooden ruler,overlapping
+179,plants,carrot,food,true,burger,equivocal
+179,animals,goldfish,pet,false,dalmatian,equivocal
+179,artifact,chair,seat,true,chair,branching
+179,places,snowy mountain,outdoor place,false,sunny beach,equivocal
+180,places,hotel lobby,place,false,park,overlapping
+180,artifact,iron skillet,skillet,true,iron skillet,overlapping
+180,places,ice hotel room,cold place,true,ice hotel room,equivocal
+180,plants,carrot,carrot,true,carrot,branching
+180,places,mansion,mansion,true,mansion,branching
+180,animals,whale,animal,true,whale,branching
+180,animals,goldfish,pet,false,dalmatian,equivocal
+180,artifact,chair,seat,true,chair,branching
+180,artifact,metal chair,seat,true,metal chair,equivocal
+180,animals,whale,animal,true,whale,overlapping
+180,plants,carrot,plant,false,sunflower,equivocal
+180,plants,oak,leaves,true,oak,overlapping
+181,places,hotel lobby,place,false,park,overlapping
+181,artifact,iron skillet,skillet,true,iron skillet,overlapping
+181,places,ice hotel room,cold place,true,ice hotel room,equivocal
+181,plants,carrot,carrot,true,carrot,branching
+181,places,mansion,mansion,true,mansion,branching
+181,animals,whale,animal,true,whale,branching
+181,animals,goldfish,pet,false,dalmatian,equivocal
+181,artifact,chair,seat,true,chair,branching
+181,artifact,metal chair,seat,true,metal chair,equivocal
+181,animals,whale,animal,true,whale,overlapping
+181,plants,carrot,plant,false,sunflower,equivocal
+181,plants,oak,leaves,true,oak,overlapping
+182,places,mansion,mansion,true,mansion,branching
+182,animals,lion,lion,true,lion,overlapping
+182,animals,poodle,dog,true,poodle,branching
+182,artifact,wooden chair,seat,true,wooden chair,overlapping
+182,artifact,wooden chair,seat,true,wooden chair,equivocal
+182,plants,tomatos,plant,true,tomatos,equivocal
+182,plants,carrot,carrot,true,carrot,branching
+182,places,sunny beach,outdoor place,true,sunny beach,equivocal
+182,places,dive bar,bar,true,hotel lobby,overlapping
+182,animals,dalmatian,pet,true,dalmatian,equivocal
+182,plants,lettuce,plant,false,flower,overlapping
+182,artifact,couch,couch,true,couch,branching
+183,places,mansion,mansion,true,mansion,branching
+183,animals,lion,lion,true,lion,overlapping
+183,animals,poodle,dog,true,poodle,branching
+183,artifact,wooden chair,seat,true,wooden chair,overlapping
+183,artifact,wooden chair,seat,true,wooden chair,equivocal
+183,plants,tomatos,plant,true,tomatos,equivocal
+183,plants,carrot,carrot,true,carrot,branching
+183,places,sunny beach,outdoor place,true,sunny beach,equivocal
+183,places,dive bar,bar,true,hotel lobby,overlapping
+183,animals,dalmatian,pet,true,dalmatian,equivocal
+183,plants,lettuce,plant,false,flower,overlapping
+183,artifact,couch,couch,true,couch,branching
+184,plants,carrot,carrot,true,carrot,branching
+184,artifact,chair,seat,true,chair,branching
+184,artifact,iron skillet,skillet,true,iron skillet,overlapping
+184,animals,dalmatian,pet,true,dalmatian,equivocal
+184,artifact,metal chair,metal thing,false,iron skillet,equivocal
+184,animals,golden retriever,pet,true,golden retriever,overlapping
+184,places,mansion,mansion,true,mansion,branching
+184,places,park,place,true,park,overlapping
+184,animals,poodle,dog,true,poodle,branching
+184,plants,burger,food,true,burger,equivocal
+184,places,snowy forest,outdoor place,false,ice hotel room,equivocal
+184,plants,oak,plant,false,flower,overlapping
+185,plants,carrot,carrot,true,carrot,branching
+185,artifact,chair,seat,true,chair,branching
+185,artifact,iron skillet,skillet,true,iron skillet,overlapping
+185,animals,dalmatian,pet,true,dalmatian,equivocal
+185,artifact,metal chair,metal thing,false,iron skillet,equivocal
+185,animals,golden retriever,pet,true,golden retriever,overlapping
+185,places,mansion,mansion,true,mansion,branching
+185,places,park,place,true,park,overlapping
+185,animals,poodle,dog,true,poodle,branching
+185,plants,burger,food,true,burger,equivocal
+185,places,snowy forest,outdoor place,false,ice hotel room,equivocal
+185,plants,oak,plant,false,flower,overlapping
+186,places,hotel lobby,bar,true,hotel lobby,overlapping
+186,animals,dalmatian,pet,true,dalmatian,equivocal
+186,animals,poodle,dog,true,poodle,branching
+186,plants,carrots,carrots,true,carrots,overlapping
+186,artifact,iron skillet,skillet,true,iron skillet,overlapping
+186,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+186,plants,dead flower,plant,true,dead flower,branching
+186,places,snowy mountain,cold place,false,ice hotel room,equivocal
+186,animals,whale,animal,true,whale,overlapping
+186,artifact,lawnmower,thing,true,lawnmower,branching
+186,places,cottage,house,true,cottage,branching
+186,plants,carrot,plant,false,sunflower,equivocal
+187,places,hotel lobby,bar,true,hotel lobby,overlapping
+187,animals,dalmatian,pet,true,dalmatian,equivocal
+187,animals,poodle,dog,true,poodle,branching
+187,plants,carrots,carrots,true,carrots,overlapping
+187,artifact,iron skillet,skillet,true,iron skillet,overlapping
+187,artifact,iron skillet,metal thing,true,iron skillet,equivocal
+187,plants,dead flower,plant,true,dead flower,branching
+187,places,snowy mountain,cold place,false,ice hotel room,equivocal
+187,animals,whale,animal,true,whale,overlapping
+187,artifact,lawnmower,thing,true,lawnmower,branching
+187,places,cottage,house,true,cottage,branching
+187,plants,carrot,plant,false,sunflower,equivocal
+188,places,snowy mountain,cold place,false,ice hotel room,equivocal
+188,places,park,place,true,park,overlapping
+188,artifact,chair,seat,true,chair,branching
+188,artifact,wooden chair,seat,true,wooden chair,equivocal
+188,plants,dead flower,plant,true,dead flower,branching
+188,animals,whale,animal,true,whale,branching
+188,artifact,metal chair,metal thing,true,metal chair,overlapping
+188,animals,dalmatian,pet,true,dalmatian,equivocal
+188,animals,house cat,cat,true,house cat,overlapping
+188,plants,carrot,plant,true,tomatos,equivocal
+188,places,park,place,true,park,branching
+188,plants,flower,plant,true,flower,overlapping
+189,places,snowy mountain,cold place,false,ice hotel room,equivocal
+189,places,park,place,true,park,overlapping
+189,artifact,chair,seat,true,chair,branching
+189,artifact,wooden chair,seat,true,wooden chair,equivocal
+189,plants,dead flower,plant,true,dead flower,branching
+189,animals,whale,animal,true,whale,branching
+189,artifact,metal chair,metal thing,true,metal chair,overlapping
+189,animals,dalmatian,pet,true,dalmatian,equivocal
+189,animals,house cat,cat,true,house cat,overlapping
+189,plants,carrot,plant,true,tomatos,equivocal
+189,places,park,place,true,park,branching
+189,plants,flower,plant,true,flower,overlapping
+190,animals,golden retriever,pet,false,house cat,overlapping
+190,places,sunny beach,outdoor place,true,sunny beach,equivocal
+190,artifact,metal stool,seat,true,wooden chair,equivocal
+190,plants,carrots,carrots,true,carrots,overlapping
+190,plants,sunflower,living plant,true,sunflower,branching
+190,places,park,place,true,park,branching
+190,animals,dalmatian,fish,false,angler fish,equivocal
+190,artifact,wooden chair,seat,true,wooden chair,overlapping
+190,plants,carrot,plant,false,sunflower,equivocal
+190,artifact,table,furniture,true,table,branching
+190,places,dive bar,bar,false,hotel lobby,overlapping
+190,animals,poodle,dog,true,poodle,branching
+191,animals,golden retriever,pet,false,house cat,overlapping
+191,places,sunny beach,outdoor place,true,sunny beach,equivocal
+191,artifact,metal stool,seat,true,wooden chair,equivocal
+191,plants,carrots,carrots,true,carrots,overlapping
+191,plants,sunflower,living plant,true,sunflower,branching
+191,places,park,place,true,park,branching
+191,animals,dalmatian,fish,false,angler fish,equivocal
+191,artifact,wooden chair,seat,true,wooden chair,overlapping
+191,plants,carrot,plant,false,sunflower,equivocal
+191,artifact,table,furniture,true,table,branching
+191,places,dive bar,bar,false,hotel lobby,overlapping
+191,animals,poodle,dog,true,poodle,branching

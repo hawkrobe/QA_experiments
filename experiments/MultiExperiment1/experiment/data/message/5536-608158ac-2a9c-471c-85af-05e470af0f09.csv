@@ -1,0 +1,4 @@
+gameid, time, goal, objectSet, sender, contents
+5536-6,1430253880721,siamese cat,4,guesser, " where   is   pet  ?"
+5536-6,1430253884960,siamese cat,4,helper, "The whale is behind gate 3"
+5536-6,1430253916789,office,1,guesser, " where   is   that   building  ?"
