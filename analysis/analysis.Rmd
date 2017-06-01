@@ -348,100 +348,109 @@ examineParams <- function(name, useTypicality, winningModel) {
 Answerer (no typicality)
 
 ```{r}
-examineParams('answerer_modelComparisonParams', useTypicality=FALSE)
+examineParams('answerer_modelComparisonParams', useTypicality=FALSE, winningModel = 'pragmatic')
 ```
 
 Questioner (no typicality)
 
 ```{r}
-examineParams('questioner_modelComparisonParams', useTypicality=FALSE)
+examineParams('questioner_modelComparisonParams', useTypicality=FALSE, winningModel = 'pragmatic')
 ```
 
 ## Examine posterior predictives
 
 ```{r}
 getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
-  read.csv(inputname, sep = ",", row.names = NULL)   
-}
+ inputName <- paste0("../modeling/guessingGame/Bayesian/data/", name, '.csv')
+  
+  raw <- read_csv(inputName) %>%
+    mutate(t = floor((row_number()-1)/160)) %>%
+    unite(key, parameter:value)%>%
+    spread(key, prob) 
 
+  if(!is.na(chosenBeta)) {
+    raw <- raw %>%
+      mutate(beta = as.character(beta)) %>%
+      filter(beta == chosenBeta) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -beta) 
+  } 
+  if(!is.na(chosenModelType)){
+    raw <- raw %>%
+      filter(source == chosenModelType) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -source) 
+  } 
+  output <- raw %>% 
+    gather(key, prob, `animal_branching_animals_dalmatian.` : `thing_overlapping_artifact_wooden ruler.`) %>% 
+    separate(key, into= c('parameter', 'item1', 'item2', 'value'), sep = '_')
+  return(output)
+}
+View(getRawParams('answerer_modelComparisonParams', chosenBeta = '0', chosenModelType = 'pragmatic'))
+View(getRawPredictives('answerer_modelComparisonPredictives', chosenBeta = '0', chosenModelType = 'pragmatic'))
 ```
 
 ```{r}
 examinePredictives <- function(name, useTypicality, winningModel) {
   inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
-  
-  
   beta <- ifelse(useTypicality, NA, 0)
 
-  samples = getRawParams(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
+  samples = getRawPredictives(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
     mutate(MCMCprob = exp(MCMCprob)) %>%
     filter(MCMCprob > 0.001) %>%
     mutate(n = floor(MCMCprob*1000)) %>%
     do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
-    select(-t, -n, -MCMCprob) %>%
-    gather(parameter, value) %>%
-    mutate(value = as.numeric(as.character( value)))
-
-  if(typicality == 'withoutTypicality') {
-    apredictive.samples <- apredictive %>% 
-      filter(beta == 0) %>%
-      filter(MCMCprob == max(MCMCprob))
-  } else {
-    apredictive.samples <- filter(MCMCprob > 0.0001) %>% 
-      apredictive[rep(row.names(apredictive),
-                  apredictive$MCMCprob*1000), 
-                  -length(colnames(apredictive))]
-  }
-
-  apredictive.samples <- apredictive.samples %>%
-    mutate(question = as.character(parameter),
-           answer = substr(as.character(value), 1, 
-                           nchar(as.character(value)) - 1),
-           type = as.character(item1),
-           domain = as.character(item2)) %>%
-    do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
-    do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-    mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
-    select(type, domain, utterance, response, prob)
+    select(-MCMCprob)# %>%
+    # mutate(question = as.character(parameter),
+    #        answer = substr(as.character(value), 1, 
+    #                        nchar(as.character(value)) - 1),
+    #        type = as.character(item1),
+    #        domain = as.character(item2)) %>%
+    # do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
+    # do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+    # mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
+    # select(type, domain, utterance, response, prob)
+  
   View(apredictive.samples)
-  apredictive.pp <- apredictive.samples %>%
-    group_by(type, domain, utterance, response) %>%
-    summarize(MAP = prob) %>%
-              # credHigh = HPDhi(prob),
-              #credLow = HPDlo(prob)) %>%
-    right_join(d_a, by = c("response", "utterance", "domain", "type"))
-  #View(apredictive.pp)
-  acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
-
-  answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
-    + theme(text = element_text(size = 20),
-            axis.text.x = element_text(angle=90, vjust=1))
-    + xlab("Model predicted probability")
-    + ylim(0,1)
-    + ylab("Empirical Probability")
-    #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
-    #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
-    + geom_point(aes(colour = domain, shape = type))
-    + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-    + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-    + ggtitle("Answerer Posterior Predictive")
-    + geom_smooth(method = "lm")
-    + annotate('text', label = paste0('r =',acor), x= 0.8, y = 0.1, size = 8)
-    + coord_fixed() 
-    + theme(rect = element_rect(fill = "transparent"), # bg of the panel
-            panel.background = element_rect(fill = "transparent",colour = NA),
-            plot.background = element_rect(fill = "transparent",colour = NA),
-            panel.grid.major = element_blank(), # get rid of major grid
-            panel.grid.minor = element_blank(), # get rid of minor grid
-            legend.background = element_rect(fill = "transparent",colour = NA),
-            legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
-  ))
-  print(answer_plots)
-  outputfile <- paste0('../../../writing/2016/journal-manuscript/figures/',
-                       name, '.pdf')
-  ggsave(outputfile, answer_plots, 
-         width = 6, height = 6, bg = "transparent")
+  # apredictive.pp <- apredictive.samples %>%
+  #   group_by(type, domain, utterance, response) %>%
+  #   summarize(MAP = prob) %>%
+  #             # credHigh = HPDhi(prob),
+  #             #credLow = HPDlo(prob)) %>%
+  #   right_join(d_a, by = c("response", "utterance", "domain", "type"))
+  # acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
+  # 
+  # answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
+  #   + theme(text = element_text(size = 20),
+  #           axis.text.x = element_text(angle=90, vjust=1))
+  #   + xlab("Model predicted probability")
+  #   + ylim(0,1)
+  #   + ylab("Empirical Probability")
+  #   #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
+  #   #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
+  #   + geom_point(aes(colour = domain, shape = type))
+  #   + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+  #   + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+  #   + ggtitle("Answerer Posterior Predictive")
+  #   + geom_smooth(method = "lm")
+  #   + annotate('text', label = paste0('r =',acor), x= 0.8, y = 0.1, size = 8)
+  #   + coord_fixed() 
+  #   + theme(rect = element_rect(fill = "transparent"), # bg of the panel
+  #           panel.background = element_rect(fill = "transparent",colour = NA),
+  #           plot.background = element_rect(fill = "transparent",colour = NA),
+  #           panel.grid.major = element_blank(), # get rid of major grid
+  #           panel.grid.minor = element_blank(), # get rid of minor grid
+  #           legend.background = element_rect(fill = "transparent",colour = NA),
+  #           legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
+  # ))
+  # print(answer_plots)
+  # outputfile <- paste0('../../../writing/2016/journal-manuscript/figures/',
+  #                      name, '.pdf')
+  # ggsave(outputfile, answer_plots, 
+  #        width = 6, height = 6, bg = "transparent")
 }
 #generateAnswererPredictiveFit('answerer_PragOnlyPredictives', 'withTypicality')
-generateAnswererPredictiveFit('answerer_PragOnlyPredictives', 'withoutTypicality')
+examinePredictives('answerer_modelComparisonPredictives', useTypicality = F, winningModel = 'pragmatic')
 ```
