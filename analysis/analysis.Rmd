@@ -10,8 +10,6 @@ library(tidyverse)
 
 library(GGally)
 library(coda)
-library(knitr)
-library(gridExtra)
 library(boot)
 
 estimate_mode <- function(s) {
@@ -233,11 +231,36 @@ cat(paste0(c('\nQ3-Q2 = ', estimate,
 
 # Bayesian Data Analysis
 
-## Model Comparison; uniform typicality
+Define some helper functions...
 
 ```{r}
-options( scipen = 0 )
-options( digits =22)
+# renormalize posterior for fixed beta/modelType
+# (returns full joint posterior if none specified)
+getRawParams = function(name, chosenBeta=NA, chosenModelType=NA) {
+  inputName <- paste0("../modeling/guessingGame/Bayesian/data/", name, '.csv')
+  
+  raw <- read_csv(inputName) %>%
+    mutate(t = floor((row_number()-1)/3)) %>%
+    spread(parameter, value) %>%
+    filter(MCMCprob != '-Inf')
+  
+  if(!is.na(chosenBeta)) {
+    raw <- raw %>%
+      mutate(beta = as.character(beta)) %>%
+      filter(beta == chosenBeta) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -beta) 
+  } 
+  if(!is.na(chosenModelType)){
+    raw <- raw %>%
+      filter(modelType == chosenModelType) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -modelType) 
+  } 
+  return(raw)
+}
 
 sumlogprob <- function(a, b) {
   if(a>b) {
@@ -247,31 +270,178 @@ sumlogprob <- function(a, b) {
   }
 }
 
-computeBayesFactor <- function(name, typicality) {
-  inputFile <- paste0("../modeling/guessingGame/Bayesian/data/",
-                      name, '.csv')
-  raw <- read_csv(inputFile) %>% 
-    mutate(t = floor((row_number()-1)/3)) %>% 
-    spread(parameter, value)
-  
-  # filter & renormalize
-  if(typicality == 'none') {
-    raw <- raw %>% 
-      filter(beta == 0) %>% 
-      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
-      mutate(MCMCprob = log(intermed/sum(intermed)))
-  }
-  
-  # BDA result
-  res <- raw %>% 
+printTable <- function(samples) {
+  cat('parameter posteriors')
+  print(samples %>%
+    group_by(parameter) %>%
+    summarize(md_lo = round(HPDlo(value), 3),
+              md_hi = round(HPDhi(value), 3),
+              value = estimate_mode(value)))
+}
+```
+
+## Without empirical typicalities
+
+### Model Comparison 
+
+```{r}
+modelComparison <- function(name, useTypicality) {
+  beta <- ifelse(useTypicality, NA, 0)
+  data <- getRawParams(name, chosenBeta = beta)
+
+  return(data %>% 
     group_by(modelType) %>% 
     summarize(prob = reduce(MCMCprob, sumlogprob))
-  
-  return(res)
+  )
 }
 
-print(paste0('BF (beta=0, questioner): ',
-             computeBayesFactor("answerer_modelComparisonParams", 'none')))
-print(paste0('BF (beta=0, answerer): ',
-      computeBayesFactor("full_answererParams")))
+# Marginalize over alpha
+cat('BF (beta=0, answerer)')
+modelComparison("answerer_modelComparisonParams", FALSE)
+cat('BF (beta=0, questioner)')
+modelComparison("questioner_modelComparisonParams", FALSE)
+```
+
+### Examine posteriors
+
+Set up helper functions. Note that we only look at the parameter posterior for the model that won our model comparison (otherwise this would be a mixture of the best parameters for each model we considered)
+
+```{r}
+examineParams <- function(name, useTypicality, winningModel) {
+  beta <- ifelse(useTypicality, NA, 0)
+
+  samples = getRawParams(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
+    mutate(MCMCprob = exp(MCMCprob)) %>%
+    filter(MCMCprob > 0.001) %>%
+    mutate(n = floor(MCMCprob*1000)) %>%
+    do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
+    select(-t, -n, -MCMCprob) %>%
+    gather(parameter, value) %>%
+    mutate(value = as.numeric(as.character( value)))
+
+  printTable(samples)
+  
+  questionParamPosterior <- ggplot(samples, aes(x = value))+
+      geom_histogram(aes(y=..density..), 
+                   data =subset(samples, parameter == "alpha" ), 
+                   binwidth = .25, colour="black", fill="white") +
+      geom_histogram(aes(y=..density..), 
+                   data=subset(samples, parameter == "beta"), 
+                   binwidth = .05, colour="black", fill="white") +
+      geom_density(aes(y=..density..),
+                   data =subset(samples, parameter == "alpha" ), 
+                   adjust = 2, alpha=.2, fill="#FF6666")+
+      geom_density(aes(y=..density..),
+                   data=subset(samples, parameter == "beta"), 
+                   adjust = 5, alpha=.2, fill="#FF6666")+
+      facet_wrap(~parameter, scales = 'free') +
+      theme_few(9)
+  
+  print(questionParamPosterior)
+  outputName = paste0("../writing/2016/journal-manuscript/figures/",
+                     name, ".pdf")
+  ggsave(outputName, questionParamPosterior, 
+         width = 6, height = 3, bg = "transparent")
+}
+```
+
+Answerer (no typicality)
+
+```{r}
+examineParams('answerer_modelComparisonParams', useTypicality=FALSE)
+```
+
+Questioner (no typicality)
+
+```{r}
+examineParams('questioner_modelComparisonParams', useTypicality=FALSE)
+```
+
+## Examine posterior predictives
+
+```{r}
+getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
+  read.csv(inputname, sep = ",", row.names = NULL)   
+}
+
+```
+
+```{r}
+examinePredictives <- function(name, useTypicality, winningModel) {
+  inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
+  
+  
+  beta <- ifelse(useTypicality, NA, 0)
+
+  samples = getRawParams(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
+    mutate(MCMCprob = exp(MCMCprob)) %>%
+    filter(MCMCprob > 0.001) %>%
+    mutate(n = floor(MCMCprob*1000)) %>%
+    do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
+    select(-t, -n, -MCMCprob) %>%
+    gather(parameter, value) %>%
+    mutate(value = as.numeric(as.character( value)))
+
+  if(typicality == 'withoutTypicality') {
+    apredictive.samples <- apredictive %>% 
+      filter(beta == 0) %>%
+      filter(MCMCprob == max(MCMCprob))
+  } else {
+    apredictive.samples <- filter(MCMCprob > 0.0001) %>% 
+      apredictive[rep(row.names(apredictive),
+                  apredictive$MCMCprob*1000), 
+                  -length(colnames(apredictive))]
+  }
+
+  apredictive.samples <- apredictive.samples %>%
+    mutate(question = as.character(parameter),
+           answer = substr(as.character(value), 1, 
+                           nchar(as.character(value)) - 1),
+           type = as.character(item1),
+           domain = as.character(item2)) %>%
+    do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
+    do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+    mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
+    select(type, domain, utterance, response, prob)
+  View(apredictive.samples)
+  apredictive.pp <- apredictive.samples %>%
+    group_by(type, domain, utterance, response) %>%
+    summarize(MAP = prob) %>%
+              # credHigh = HPDhi(prob),
+              #credLow = HPDlo(prob)) %>%
+    right_join(d_a, by = c("response", "utterance", "domain", "type"))
+  #View(apredictive.pp)
+  acor = round(cor(apredictive.pp$MAP, apredictive.pp$empProb), 2)
+
+  answer_plots = (ggplot(apredictive.pp, aes(x = MAP, y = empProb))
+    + theme(text = element_text(size = 20),
+            axis.text.x = element_text(angle=90, vjust=1))
+    + xlab("Model predicted probability")
+    + ylim(0,1)
+    + ylab("Empirical Probability")
+    #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci)) 
+    #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
+    + geom_point(aes(colour = domain, shape = type))
+    + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+    + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+    + ggtitle("Answerer Posterior Predictive")
+    + geom_smooth(method = "lm")
+    + annotate('text', label = paste0('r =',acor), x= 0.8, y = 0.1, size = 8)
+    + coord_fixed() 
+    + theme(rect = element_rect(fill = "transparent"), # bg of the panel
+            panel.background = element_rect(fill = "transparent",colour = NA),
+            plot.background = element_rect(fill = "transparent",colour = NA),
+            panel.grid.major = element_blank(), # get rid of major grid
+            panel.grid.minor = element_blank(), # get rid of minor grid
+            legend.background = element_rect(fill = "transparent",colour = NA),
+            legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
+  ))
+  print(answer_plots)
+  outputfile <- paste0('../../../writing/2016/journal-manuscript/figures/',
+                       name, '.pdf')
+  ggsave(outputfile, answer_plots, 
+         width = 6, height = 6, bg = "transparent")
+}
+#generateAnswererPredictiveFit('answerer_PragOnlyPredictives', 'withTypicality')
+generateAnswererPredictiveFit('answerer_PragOnlyPredictives', 'withoutTypicality')
 ```
