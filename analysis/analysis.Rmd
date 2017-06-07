@@ -233,10 +233,11 @@ modelComparison <- function(name, useTypicality) {
 }
 
 # Marginalize over alpha
-cat('BF (beta=0, answerer)')
-modelComparison("answerer_modelComparisonParams", FALSE)
-cat('BF (beta=0, questioner)')
-modelComparison("questioner_modelComparisonParams", FALSE)
+comp.ans = modelComparison("answerer_modelComparisonParams", FALSE) %>% spread(modelType, prob) 
+cat('\nBF (beta=0, answerer)', exp(comp.ans$pragmatic - comp.ans$explicit))
+
+comp.quest = modelComparison("questioner_modelComparisonParams", FALSE) %>% spread(modelType, prob) 
+cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit))
 ```
 
 ### Examine parameter posteriors
@@ -313,6 +314,7 @@ examinePredictives <- function(name, useTypicality, winningModel) {
   predictive = recode(samples, QorA)
 
   cor_label = round(cor(predictive$MAP, predictive$empProb), 2)
+  title = paste0(winningModel, strsplit(name, '_')[[1]][1], " Posterior Predictive")
   
   predictive.plot = (ggplot(predictive, aes(x = MAP, y = empProb))
     + xlab("Model predicted probability")
@@ -323,7 +325,7 @@ examinePredictives <- function(name, useTypicality, winningModel) {
     + geom_point(aes(colour = domain, shape = type),  size = 2)
     + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
     + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-    + ggtitle(paste0(QorA, " Posterior Predictive"))
+    + ggtitle(title)
     + geom_smooth(method = "lm")
     + annotate('text', label = paste0('r =',cor_label), x= 0.8, y = 0.1)
     + coord_fixed()
@@ -340,7 +342,7 @@ examinePredictives <- function(name, useTypicality, winningModel) {
   outputfile <- paste0('../writing/2016/journal-manuscript/figures/',
                        name, '_typ', useTypicality, '_model', winningModel, '.pdf')
   ggsave(outputfile, predictive.plot,
-         width = 6, height = 6, bg = "transparent")
+         width = 3, height = 3, bg = "transparent")
   return(predictive.plot)
 }
 ```
@@ -350,7 +352,9 @@ Answerer (no typicality)
 ```{r}
 A1 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = F, winningModel = 'explicit')
 A2 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = F, winningModel = 'pragmatic')
-plot_grid(A1, A2, nrow = 1)
+A3 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
+A4 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
+#plot_grid(A1, A2, A3, A4, nrow = 2, ncol = 2)
 ```
 
 Questioner (no typicality)
@@ -378,6 +382,7 @@ plot_grid(A1, A2)
 Questioner
 
 ```{r}
-examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
-examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
+Q1 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
+Q2 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
+plot_grid(Q1, Q2)
 ```
