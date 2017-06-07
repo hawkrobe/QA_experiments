@@ -565,6 +565,8 @@ Similar to the Twenty Questions task commonly used in developmental studies \cit
 \caption{Experiment interfaces, for the questioner (left) and answerer (right).}
 \label{fig:expviews}
 \end{figure*}
+
+\subsection{Methods}
 \subsubsection{Participants} We recruited 199 participants from Amazon's Mechanical Turk to participate in this task. Fifty participants were excluded due to a server crash that terminated the task before completion. Two additional games were excluded because their participants were non-native English speakers. This left 74 unique completed games.
 
 \subsubsection{Stimuli \& Procedure} A set of twelve items were created by crossing four domains (animals, plants, places, and artifacts) with three concept hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}) where our models make different predictions. These stimuli exploit the flexibility of our choice of referring expression when referring to objects. A speaker can refer to a Dalmatian as a ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all would technically be true; . Each item consists of four objects (the leaves of the trees in Figure \ref{fig:hierarchyStructures}) which are hidden behind the four gates and may be assigned to the questioner as goal objects, as well as four question labels drawn from different levels in the concept hierarchy (highlighted in red in Figure \ref{fig:hierarchyStructures}) which the questioner may use to ask about their assigned goal\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \scriptsize\url{https://github.com/hawkrobe/Q\_and\_A/stimuliLabels.pdf}}.
@@ -573,6 +575,7 @@ The procedure was designed to accommodate real-time player-to-player interaction
 
 The questioner and answerer interfaces are displayed in Figure \ref{fig:expviews}. Chat messages were printed on the left side of the screen, and players used the right side as a workspace to view goals, ask questions, and respond with answers. At the beginning of each trial, the wheel on the questioner's screen (Figure \ref{fig:expviews}, left) would spin and select one of the four goals at random. The questioner then clicked and dragged one and only one of the question labels into the pre-set frame ``Where is the\dots?'' to ask a question. The answerer saw these words being dragged in real time. Once the questioner clicked the `send' button, the resulting question appeared in the chat log and control was passed to the answerer, who dragged the objected they wanted to reveal into a ``reveal box.'' The questioner watched as the outline of the gate moved, in real time, and saw the image as soon as the answerer dropped it in the box. Finally, the questioner was asked to click on the gate they believed the goal object was behind. Each participant provided one response for each of the twelve items, presented in random order. 
 
+\subsection{Results}
 \subsubsection{Qualitative Behavioral Results}
 
 Before conducting quantitative model comparisons, we highlight several key qualitative patterns in the behavioral data that bear on our theory. First, we note that there was generally high correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities across domains for both questioners and answerers, with the exception of the `place' domain in answerers ($r = 0.78$; see Supp. Table \ref{table:experiment4correlations}). We thus collapse across domains in the following qualitative analyses, using labels from the ``animal'' domain for concreteness.
@@ -587,7 +590,7 @@ $Q_2$, however, prefers ``Cat?'' over ``Pet?'', because the other child of ``Cat
 
 \begin{figure}[t!]
 \begin{center}
-\includegraphics[scale=.46]{OverlappingModelComparison.pdf}
+\includegraphics[scale=.9]{OverlappingModelComparison.pdf}
 \end{center}
 \caption{Questioner responses on overlapping condition. Labels drawn from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% confidence intervals.}
 \label{fig:Exp4ZoomedIn}
@@ -611,34 +614,32 @@ The proportion of participants asking each possible question in this scenario, c
 
 %In the `branching' hierarchy (Figure \ref{fig:hierarchyStructures}(c)), we found that questioners strongly prefer to ask about the `dalmatian' when trying to find the dalmatian, $\chi^2(3) = 190, p < 0.001$, about the `dog' when trying to find the poodle, $\chi^2(3) = 152, p < 0.001$, about the `pet' when trying to find the siamese cat, $\chi^2(3) = 168, p < 0.001$, and about the `animal' when trying to find the whale, $\chi^2(3) = 210, p < 0.001$. %Answerers respond in kind. , and in an earlier version of the multi-player study we report in this section.
 
-\subsubsection{Model comparison}
+\subsubsection{Quantitative model comparison}
 
-These results show that our non-pragmatic models cannot account for key qualitative phenomena while our pragmatic models make the correct predictions. Next, we show that our pragmatic models also provide better overall quantitative fits to the behavioral data. Before showing the results of our direct model comparison, we formalize the experimental task in our modeling framework. 
+Our non-pragmatic models cannot account for key qualitative phenomena while our pragmatic models ($A_2$ and $Q_2$) make the correct predictions. Next, we show that our pragmatic models also provide better overall quantitative fits to the behavioral data. Before showing the results of our direct model comparison, we formalize the experimental task in our modeling framework. 
 
-Corresponding to the structure of our experiment design, we take the set of possible worlds $\mathcal{W}$ on a given trial to be the set of possible permutations of the four objects to the four locations (yielding $4! = 24$ possibilities). Because we explicitly instructed questioners to be find the location of a particular object, we then take the space of goals $\mathcal{G}$ to be the set of goal projections $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. 
+Corresponding to the structure of our experiment design, we take the set of possible worlds $\mathcal{W}$ on a given trial to be the set of possible permutations of the four objects to the four locations (yielding $4! = 24$ possibilities). Because we explicitly instructed questioners to be find the location of a particular object, we then take the space of goals $\mathcal{G}$ to be the set of goal projections $$g_o(w) = \textrm{loc}(o,w)$$ where $\textrm{loc(o,w)}$ is a simple function looking up the location of object $o$ in world $w$. Similarly, the answer space $\mathcal{A}$ is the set of constructions ``The $o$ is behind gate $i$.'' which evaluate to true in worlds where $o$ is at location $i$ and false otherwise.
 
-To populate our question space $\mathcal{Q}$, we must specify the explicit meaning of the question ``Where is the $x$?'' for each of the four labels allowed in a given trial (see Fig. \ref{fig:hierarchyStructures}). As in our discussion of \citeA{GroenendijkStokhof84_SemanticsOfQuestions} above, we take \textrm{\den{Where is $o$?}} for a given object $o$ to be a projection from a world to the location of $o$ in that world. We then enrich this meaning to account for the use of the definite article \emph{the} for labels at higher levels of the taxonomy (e.g. asking ``Where is the dog?'' when there is more than one dog). Under the standard formal semantics of \emph{the}, the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, then, the use of a definite article \emph{presupposes} the uniqueness or salience of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. Thus our explicit meaning of each question $q$ is: 
+To populate our question space $\mathcal{Q}$, we must specify the explicit meaning of the question ``Where is the $x$?'' for each of the four labels allowed in a given trial (see Fig. \ref{fig:hierarchyStructures}). As in our discussion of \citeA{GroenendijkStokhof84_SemanticsOfQuestions} above, we take \textrm{\den{Where is $o$?}} for a given object $o$ to be a projection from a world to the location of $o$ in that world. We must then say how to define this projection for uses of the definite article \emph{the} at higher levels of the taxonomy (e.g. asking ``Where is the dog?'' when there is more than one dog). Under the standard formal semantics of \emph{the}, the denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, then, the use of a definite article \emph{presupposes} the uniqueness or salience of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. Thus we take the literal meaning of each question $q$ to be: 
 $$\textrm{\den{Where is the x?}} = q_{x}(w) = \textrm{loc}(s_x,w)$$ where $s_x$ is the \emph{salient} object of category $x$. 
 
-Because the answerer does not know \emph{a priori} which object is the salient one, they interpret the question by drawing an object from a saliency distribution, given the category in the noun phrase: $s_x \sim \mathcal{S}(o | x)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. For this section, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:hierarchyStructures}). Finally, the answer space $\mathcal{A}$ is the set of constructions ``The $o$ is behind gate $i$.'' which evaluate to true in worlds where $o$ is at location $i$ and false otherwise.  %\footnote{Later, we will collect empirical saliency priors, and show how this affects the model's fit.} Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
+Because the answerer does not know \emph{a priori} which object is the salient one, they interpret the question by drawing an object from a saliency distribution, given the category in the noun phrase: $s_x \sim \mathcal{S}(o | x)$. This distribution may depend on typicality judgements \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. For this section, we take the saliency prior to be uniform over all objects that are within a category (e.g. over all leaves of the subtree beneath the given label; see Fig. \ref{fig:hierarchyStructures}).  %\footnote{Later, we will collect empirical saliency priors, and show how this affects the model's fit.} Note that other variations of the question, such as ``Where \emph{are} the animal\emph{s}?'', would be given different semantics (e.g. projecting a world to the set of all locations occupied by animals rather than the single location of the salient animal). 
 
-For a rigorous model comparison among explicit and pragmatic models, we conducted a Bayesian data analysis \cite{LeeWagenmakers14_BDA}. For our data analysis, we introduce a binary parameter $\gamma \in \{\textrm{explicit}, \textrm{pragmatic}\}$  determining which model's likelihood function to use, and jointly infer this parameter along with a rationality parameter $\alpha$ for each model by conditioning on our empirical data. After integrating over values of $\alpha$, the posterior $P(\gamma | \textrm{data})$ can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}, from which a Bayes Factor can be computed:
+For a rigorous model comparison among our different questioner and answerer models, we conducted a Bayesian data analysis \cite{LeeWagenmakers14_BDA}. We introduce a discrete hyperparameter $\gamma \in \{0, 1, 2\}$  determining which model to use, and jointly learn this parameter along with a continuous rationality parameter $\alpha$ for each model by conditioning on our empirical data. After integrating over values of $\alpha$, the posterior $P(\gamma | \textrm{data})$ can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}.
 
-$$BF = \frac{P(\textrm{data}\, |\, \gamma = \textrm{pragmatic})}{P(\textrm{data}\, |\, \gamma = \textrm{explicit})}$$
+We place uninformative priors over these parameters $$\gamma \sim \textrm{unif}\{0, 2\}$$ $$\alpha \sim \textrm{unif}(0,20)$$ and perform inference using enumeration over discrete bins. Each model was run with uniform prior probability over worlds, goals, questions, and answers.
 
-We place uninformative priors over these parameters $$\gamma \sim Bernoulli(.5)$$ $$\alpha \sim Unif(0,20)$$ and perform inference using enumeration over discrete bins. This gives us a 
+We can immediately rule out $A_0$ and $Q_0$, which predict a uniform distribution of responses within each condition and had a negligible posterior probability in our model comparison. Among the remaining answerer models, we found decisive evidence for $A_2$ relative to $A_1$ (BF $= 4.43 \times 10^{87}$). For our questioner models, we found substantial evidence for $Q_2$ relative $Q_1$ (BF $=4.33$). Posterior predictives are shown alongside the empirical data for each model in Fig. \ref{fig:predictives}, and posteriors for $\alpha$ can be found in Supplemental. 
 
- Each model was run with uniform prior probability over worlds, goals, questions, and answers, and with equal cost for all utterances. 
-
-
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale=.5]{betaZeroAnswerer_Predictives}
-\includegraphics[scale=.5]{betaZeroQuestioner_Predictives}
-\end{center}
-\caption{Full space of models, and their correlations with the data, broken down by item and type.}
-\label{fig:Exp2ModelSpace}
-\end{figure*}
+%
+%\begin{figure*}[t!]
+%\begin{center}
+%\includegraphics[scale=.5]{betaZeroAnswerer_Predictives}
+%\includegraphics[scale=.5]{betaZeroQuestioner_Predictives}
+%\end{center}
+%\caption{Full space of models, and their correlations with the data, broken down by item and type.}
+%\label{fig:answererPredictives}
+%\end{figure*}
 
 
 %
@@ -652,24 +653,25 @@ We place uninformative priors over these parameters $$\gamma \sim Bernoulli(.5)$
 %We also see that it makes a relatively good quantitative prediction, with the predicted probability lying within the 95\% confidence interval of the empirical estimate for both the ``Q2'' and ``Q3'' responses. 
 %Recall that a single free parameter $\alpha$ for each model was fit to maximize correlations for the entire (pooled) dataset. 
 
-\subsubsection{Discussion}
+%\subsection{Discussion}
 
 %%We also identified four shortcomings of Experiment 1. First, despite the success in distinguishing between answerer models, our data are not sufficient to distinguish between the explicit and pragmatic \emph{questioner} models. The two models did not make significantly different predictions for this experiment (and both are sufficient to account for the data). 
 %
 %
 %
-%Finally, because there was overwhelming agreement among participants on the appropriate question to ask and the appropriate answer to give, our response probabilities are clumped at the ends of the scale. Thus, while there is an excellent quantitative fit between our model and the data, assessed with the correlation coefficient, we were essentially fitting endpoints. We would like to collect more graded judgements between these endpoints, where our model predicts that participants will disagree.
-% 
 
-This experiment tested our model in two novel ways. First, we found that only the pragmatic answerer can account for essential qualitative features of the response data. For example, the explicit answerer predicts a uniform distribution over responses to the `animal?' question in the branching hierarchy. All four of the objects are animals and under the assumption that all four are equally salient, the question meaning projection is equally likely to pick out any of them. Contrary to these predictions, we found that answerers overwhelmingly preferred the response ``whale'' to the other three responses, which is accurately predicted by the Gricean dynamics of the pragmatic model. If the questioner were interested in any animal other than the whale, they would have asked a different question; since they didn't, they must have meant the whale. Like our final case study, this task required the answerer to use the questioner's utterance as a signal of their underlying goals.
+%First, we found additional evidence that $A_2$ answerer can account for essential qualitative features of the response data. For example, the explicit answerer predicts a uniform distribution over responses to the `animal?' question in the branching hierarchy. All four of the objects are animals and under the assumption that all four are equally salient, the question meaning projection is equally likely to pick out any of them. Contrary to these predictions, we found that answerers overwhelmingly preferred the response ``whale'' to the other three responses, which is accurately predicted by the Gricean dynamics of the pragmatic model. If the questioner were interested in any animal other than the whale, they would have asked a different question; since they didn't, they must have meant the whale. Like our final case study, this task required the answerer to use the questioner's utterance as a signal of their underlying goals.
 
-Additionally, we were able to test the predictions of the \emph{questioner} component of the model for the first time, since questioner responses have not previously been treated as a dependent variable worthy of explanation. We found that at an aggregate level, both the explicit and pragmatic questioner models do a good job of predicting what questions an agent will pick when faced with a particular goal and particular beliefs about how the answerer will reason about their utterance. However, our results for the overlapping hierarchy in particular show that the pragmatic model is necessary to account for some critical aspects of the data. 
+%Additionally, we were able to test the predictions of the \emph{questioner} component of the model for the first time. We found that at an aggregate level, both $Q_1$ and $Q_2$ accurately predict what questions an agent will pick when faced with a particular goal. However, our results for the overlapping hierarchy in particular show that the pragmatic model is necessary to account for some critical aspects of the data. 
 
-The ``place'' domain that we flagged as a potential outlier earlier in the results is the only domain that does not show the pattern of responses predicted by the pragmatic questioner model. This is likely due to the choice of images displayed to participants: the two ``parent'' nodes of the critical goal are ``bar'' and ``restaurant,'' and we represented the intersection of these two categories as a hotel lobby. However, the image we chose placed emphasis in the bar in the hotel, which likely biased participants toward the ``bar'' response instead of the ``restaurant response'' predicted by the pragmatic model. Including it does not change the statistical results, but we do not believe it is representative of questioner behavior. 
+%% NOTE ABOUT OUTLIER, if necessary... 
+%The ``place'' domain that we flagged as a potential outlier earlier in the results is the only domain that does not show the pattern of responses predicted by the pragmatic questioner model. This is likely due to the choice of images displayed to participants: the two ``parent'' nodes of the critical goal are ``bar'' and ``restaurant,'' and we represented the intersection of these two categories as a hotel lobby. However, the image we chose placed emphasis in the bar in the hotel, which likely biased participants toward the ``bar'' response instead of the ``restaurant response'' predicted by the pragmatic model. 
 
 \section{Enriching question semantics with saliency knowledge}
 
-While our pragmatic models make the correct qualitative predictions, they clearly fail to capture graded responses across different domains. This is especially striking in the `equivocal' condition where our models predict no preference in questioner behavior: if asking about the goldfish, which is both a ``pet'' and a ``fish,'' the symmetry of the alternatives provides no pragmatic reason to favor one label over the other. Instead, we found a high degree of variability across domains. For example, when questioners were trying to find a pet goldfish, 85\% of participants preferred the label `fish' to the label `pet,' even though both are technically true. In the `artifacts' domain, on the other hand, questioners had no preference between asking about the `seat' or `metal thing' when the objects (metal chairs) fell into both categories.%To some extent, this is expected from a model with only a single parameter fit for all domains simultaneously. We could have fit separate rationality parameters for each domain to capture domain-level differences. However, we expect that this variability can be accounted for in a more principled way by the saliency prior. Our assumption of uniformity may be incorrect. Indeed, we found that 
+We established earlier that among our answerer models only $A_2$, which goes beyond the literal meaning of the question to infer and address underlying \emph{goals}, could account for classic qualitative answerer-sensitivity effects. In our interactive behavioral experiment, we presented both answerer and questioner models with the additional \emph{quantitative} challenge of accounting for trial-level variance in a novel dialogue scenario. In summary, we found strong converging support for $A_2$ relative to our other answerer models and, for the first time, tested the predictions of our questioner models. While both $Q_1$ and $Q_2$ provided good predictive fits to our question-asking data, only $Q_2$ could account for asymmetries in the critical \emph{overlapping} condition and was therefore also weakly preferred in a Bayesian model comparison. 
+
+Still, Fig. \ref{fig:predictives} makes it clear that $A_2$ and $Q_2$ fail to capture graded responses across different domains. This is especially striking in the `equivocal' condition where our models predict no preference in questioner behavior: if asking about the goldfish, which is both a ``pet'' and a ``fish,'' the symmetry of the alternatives provides no pragmatic reason to favor one label over the other. Instead, we found a high degree of variability across domains. For example, when questioners were trying to find a pet goldfish, 85\% of participants preferred the label `fish' to the label `pet,' even though both are technically true. In the `artifacts' domain, on the other hand, questioners had no preference between asking about the `seat' or `metal thing' when the objects (metal chairs) fell into both categories.%To some extent, this is expected from a model with only a single parameter fit for all domains simultaneously. We could have fit separate rationality parameters for each domain to capture domain-level differences. However, we expect that this variability can be accounted for in a more principled way by the saliency prior. Our assumption of uniformity may be incorrect. Indeed, we found that 
 
 This could be explained as a typicality effect. A Dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}, hence a questioner considering this knowledge as common ground would know that asking ``Where is the pet?'' would tend to elicit information about the dalmatian. If they were looking for information about the goldfish, they would then prefer to ask about the `fish' category, where a goldfish is a highly typical example. 
 
@@ -691,28 +693,29 @@ We next carried out a model comparison using these empirically measured saliency
 
 For a more precise test of whether participants are using uniform priors or the distributions we measured empirically, we conducted a Bayesian data analysis of our questioner and answerer models \cite{HemmerTauberSteyvers15_BDAplus}. For the purposes of this analysis, we model the saliency prior as a mixture of the uniform distribution assumed in earlier experiments and the saliency distribution we empirically measured. 
 
-\begin{figure}[th!]
-\begin{center}
-\includegraphics[scale=.5]{AnswererParamPosteriors.pdf}
-\includegraphics[scale=.5]{QuestionerParamPosteriors.pdf}
-\end{center}
-\caption{Posteriors for the parameters inferred by our Bayesian data analyses. 
+%\begin{figure}[th!]
+%\begin{center}
+%\includegraphics[scale=.5]{AnswererParamPosteriors.pdf}
+%\includegraphics[scale=.5]{QuestionerParamPosteriors.pdf}
+%\end{center}
+%\caption{Posteriors for the parameters inferred by our Bayesian data analyses. 
 %\todo[inline]{Label questioner row; include (dumb) bar plot of gamma on log scale?}
-}
-\label{fig:BayesianParamPosteriors}
-\end{figure}
+%}
+%\label{fig:BayesianParamPosteriors}
+%\end{figure}
+
 \subsection{Discussion}
 
 We introduce a parameter $\beta \in [0,1]$ controlling the mixture weight, with $\beta = 0$ corresponding to a pure uniform distribution and $\beta = 1$ corresponding to a pure empirical distribution. 
 
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale=.5]{fullAnswerer_Predictives}
-\includegraphics[scale=.5]{fullQuestioner_Predictives}
-\end{center}
-\caption{Model-data fit for posterior predictives. Vertical error bars are bootstrapped 95\% confidence intervals for estimated probabilities. Horizontal error bars are 95\% highest posterior density intervals around the MAP estimate.}
-\label{fig:posteriorPredictives}
-\end{figure*}
+%\begin{figure*}[t!]
+%\begin{center}
+%\includegraphics[scale=.5]{fullAnswerer_Predictives}
+%\includegraphics[scale=.5]{fullQuestioner_Predictives}
+%\end{center}
+%\caption{Model-data fit for posterior predictives. Vertical error bars are bootstrapped 95\% confidence intervals for estimated probabilities. Horizontal error bars are 95\% highest posterior density intervals around the MAP estimate.}
+%\label{fig:posteriorPredictives}
+%\end{figure*}
 
 We first note that the posterior distribution of alpha values inferred here roughly match the maximizing alpha values found by grid search in earlier experiments, with a modal value of $\alpha = 8.05$ (95\% highest posterior density (HPD) interval $=[7.3, 8.7])$ for the answerer model and $\alpha = 6.25$ (95\% HPD $=[6, 6.5]$) for the questioner model. Second, we found maximum a posteriori (MAP) beta values of $\beta = 0.5$ (95\% HPD $=[.4, .55]$) for our answerer model, and $\beta = 0.35$ (95\% HPD interval $= [0.3, 0.45]$) for our questioner model, implying that both questioners and answerers use a mixture between a purely uniform and purely empirical saliency prior. Finally, our model comparison parameter $\gamma$ showed overwhelming evidence for the pragmatic answerer model (BF $= \sim6 \times 10^{72}$) and strong evidence for the pragmatic questioner model (BF $= \sim2\times 10^{7}$).
 
