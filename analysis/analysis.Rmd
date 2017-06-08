@@ -15,7 +15,7 @@ library(cowplot)
 
 source("./analysisHelpers.R")
 
-options("scipen"=10) 
+options("scipen"=1) 
 ```
 
 Experiment data analysis
@@ -215,11 +215,9 @@ cat(paste0(c('\nQ3-Q2 = ', estimate,
              ', ', upperDiffScore, ']')))
 ```
 
-# Bayesian Data Analysis
+# Interactive Experiment
 
-## No empirical typicalities
-
-### Model Comparison 
+## Model Comparison 
 
 ```{r}
 modelComparison <- function(name, useTypicality) {
@@ -233,14 +231,16 @@ modelComparison <- function(name, useTypicality) {
 }
 
 # Marginalize over alpha
-comp.ans = modelComparison("answerer_modelComparisonParams", FALSE) %>% spread(modelType, prob) 
+comp.ans = modelComparison("answerer_modelComparisonParams", useTypicality = FALSE) %>% 
+  spread(modelType, prob) 
 cat('\nBF (beta=0, answerer)', exp(comp.ans$pragmatic - comp.ans$explicit))
 
-comp.quest = modelComparison("questioner_modelComparisonParams", FALSE) %>% spread(modelType, prob) 
+comp.quest = modelComparison("questioner_modelComparisonParams", useTypicality = FALSE) %>% 
+  spread(modelType, prob) 
 cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit))
 ```
 
-### Examine parameter posteriors
+## Examine parameter posteriors
 
 Set up helper functions. Note that we only look at the parameter posterior for the model that won our model comparison (otherwise this would be a mixture of the best parameters for each model we considered)
 
@@ -365,9 +365,79 @@ Q2 = examinePredictives('questioner_modelComparisonPredictives', useTypicality =
 plot_grid(Q1, Q2, nrow = 1)
 ```
 
-## With typicality
+# Enriching with typicality
 
-### Examine params 
+```{r}
+typPs = read.csv("../data/priorsExperiment-subject_information.csv")
+
+nonNative = typPs %>% 
+  filter(!(language %in% c("english", "English")))
+
+confused = typPs %>% 
+  filter(asses != "Yes")
+
+badGames = union(nonNative$workerid, confused$workerid)
+
+cat("We removed", length(nonNative$workerid), "ps due to native language")
+cat("and", length(setdiff(confused$workerid, nonNative$workerid)), "more due to confusion")
+
+typData = read.csv("../data/priorsExperiment-trials.csv") %>%
+  filter(!(workerid %in% badGames)) 
+
+totalCounts = typData %>%
+  group_by(domain,type,label) %>%
+  summarize(total = n()) 
+
+proportions = typData %>%
+  inner_join(totalCounts) %>%
+  group_by(domain,type,label,response) %>%
+  summarize(prop = n() / mean(total))
+```
+
+## Deviations from uniformity
+
+```{r}
+chisq.pvals = typData %>% 
+  count(domain, type, label, response) %>%
+  group_by(domain, type, label) %>%
+  filter(length(n) > 1) %>%
+  do(data.frame(stat = chisq.test(.$n)$p.value)) %>%
+  ungroup() %>%
+  select(stat)
+length(which(chisq.pvals < 0.05/length(chisq.pvals$stat))) / length(chisq.pvals$stat)
+```
+
+### Model comparison
+
+```{r}
+# Marginalize over alpha
+comp.ans = modelComparison("answerer_modelComparisonParams", useTypicality = TRUE) %>% 
+  spread(modelType, prob) 
+cat('\nBF (beta=0, answerer)', exp(comp.ans$pragmatic - comp.ans$explicit))
+
+comp.quest = modelComparison("questioner_modelComparisonParams", useTypicality = TRUE) %>% 
+  spread(modelType, prob) 
+cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit))
+```
+
+### Typicality test
+
+Savage-Dickey
+
+```{r}
+savageDickey <- function(name) {
+  res <- getRawParams(name, chosenModelType = 'pragmatic') %>% 
+    group_by(beta) %>% 
+    summarize(posterior = reduce(MCMCprob, sumlogprob)) %>%
+    mutate(prior = log(1/11)) %>%
+    mutate(BF = exp(posterior - prior)) %>%
+    filter(beta == 0)
+  return(res$BF)
+}
+
+savageDickey('answerer_modelComparisonParams')
+savageDickey('questioner_modelComparisonParams')
+```
 
 ### Examine predictives 
 
