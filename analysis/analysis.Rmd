@@ -10,28 +10,12 @@ library(tidyverse)
 
 library(GGally)
 library(coda)
-library(knitr)
-library(gridExtra)
 library(boot)
+library(cowplot)
 
-estimate_mode <- function(s) {
-  d <- density(s)
-  return(d$x[which.max(d$y)])
-}
+source("./analysisHelpers.R")
 
-HPDhi<- function(s){
-  m <- HPDinterval(mcmc(s))
-  return(m["var1","upper"])
-}
-
-HPDlo<- function(s){
-  m <- HPDinterval(mcmc(s))
-  return(m["var1","lower"])
-}
-options("scipen"=10) 
-# opts_knit$set(root.dir = '')
-# setwd("/Users/rxdh/Box Sync/stanford/research/goodman/q&a/MultiExperiment2/")
-
+options("scipen"=1) 
 ```
 
 Experiment data analysis
@@ -82,7 +66,6 @@ In order to compare different items in a convenient way, we're going to map the 
 
 
 ```{r}
-source("./analysisHelpers.R")
 d <- mapWordsToNodes(d)
 ```
 
@@ -148,12 +131,13 @@ for example:
 
 ```{r}
 # Collapse across domains
-overall_distribution = (d_a %>% 
-                          group_by(utterance, type, response) %>% 
-                          summarize(count = sum(count)))
-print(overall_distribution %>% 
-        filter(utterance == 'Q4' & type == 'branching') %>%
-        mutate(prob = count / sum(count)))
+overall_distribution = d_a %>% 
+  group_by(utterance, type, response) %>% 
+  summarize(count = sum(count))
+
+overall_distribution %>% 
+  filter(utterance == 'Q4' & type == 'branching') %>%
+  mutate(prob = count / sum(count))
 ```
 
 statistical test:
@@ -231,47 +215,244 @@ cat(paste0(c('\nQ3-Q2 = ', estimate,
              ', ', upperDiffScore, ']')))
 ```
 
-# Bayesian Data Analysis
+# Interactive Experiment
 
-## Model Comparison; uniform typicality
+## Model Comparison 
 
 ```{r}
-options( scipen = 0 )
-options( digits =22)
+modelComparison <- function(name, useTypicality) {
+  beta <- ifelse(useTypicality, NA, 0)
+  data <- getRawParams(name, chosenBeta = beta)
 
-sumlogprob <- function(a, b) {
-  if(a>b) {
-    return(a+log1p(exp(b-a)))
-  } else{
-    return(b+log1p(exp(a-b)))
-  }
-}
-
-computeBayesFactor <- function(name, typicality) {
-  inputFile <- paste0("../modeling/guessingGame/Bayesian/data/",
-                      name, '.csv')
-  raw <- read_csv(inputFile) %>% 
-    mutate(t = floor((row_number()-1)/3)) %>% 
-    spread(parameter, value)
-  
-  # filter & renormalize
-  if(typicality == 'none') {
-    raw <- raw %>% 
-      filter(beta == 0) %>% 
-      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
-      mutate(MCMCprob = log(intermed/sum(intermed)))
-  }
-  
-  # BDA result
-  res <- raw %>% 
+  return(data %>% 
     group_by(modelType) %>% 
     summarize(prob = reduce(MCMCprob, sumlogprob))
-  
-  return(res)
+  )
 }
 
-print(paste0('BF (beta=0, questioner): ',
-             computeBayesFactor("answerer_modelComparisonParams", 'none')))
-print(paste0('BF (beta=0, answerer): ',
-      computeBayesFactor("full_answererParams")))
+# Marginalize over alpha
+comp.ans = modelComparison("answerer_modelComparisonParams", useTypicality = FALSE) %>% 
+  spread(modelType, prob) 
+cat('\nBF (beta=0, answerer)', exp(comp.ans$pragmatic - comp.ans$explicit))
+
+comp.quest = modelComparison("questioner_modelComparisonParams", useTypicality = FALSE) %>% 
+  spread(modelType, prob) 
+cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit))
+```
+
+## Examine parameter posteriors
+
+Set up helper functions. Note that we only look at the parameter posterior for the model that won our model comparison (otherwise this would be a mixture of the best parameters for each model we considered)
+
+```{r}
+examineParams <- function(name, useTypicality, winningModel) {
+  beta <- ifelse(useTypicality, NA, 0)
+
+  samples = getRawParams(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
+    mutate(MCMCprob = exp(MCMCprob)) %>%
+    filter(MCMCprob > 0.001) %>%
+    mutate(n = floor(MCMCprob*1000)) %>%
+    do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
+    select(-t, -n, -MCMCprob) %>%
+    gather(parameter, value) %>%
+    mutate(value = as.numeric(as.character( value)))
+
+  printTable(samples)
+  
+  questionParamPosterior <- ggplot(samples, aes(x = value))+
+      geom_histogram(aes(y=..density..), 
+                   data =subset(samples, parameter == "alpha" ), 
+                   binwidth = .25, colour="black", fill="white") +
+      geom_histogram(aes(y=..density..), 
+                   data=subset(samples, parameter == "beta"), 
+                   binwidth = .05, colour="black", fill="white") +
+      geom_density(aes(y=..density..),
+                   data =subset(samples, parameter == "alpha" ), 
+                   adjust = 2, alpha=.2, fill="#FF6666")+
+      geom_density(aes(y=..density..),
+                   data=subset(samples, parameter == "beta"), 
+                   adjust = 5, alpha=.2, fill="#FF6666")+
+      facet_wrap(~parameter, scales = 'free') +
+      theme_few(9)
+  
+  print(questionParamPosterior)
+  outputName = paste0("../writing/2016/journal-manuscript/figures/",
+                     name, ".pdf")
+  ggsave(outputName, questionParamPosterior, 
+         width = 6, height = 3, bg = "transparent")
+}
+```
+
+Answerer (no typicality)
+
+```{r}
+examineParams('answerer_modelComparisonParams', useTypicality=FALSE, winningModel = 'pragmatic')
+```
+
+Questioner (no typicality)
+
+```{r}
+examineParams('questioner_modelComparisonParams', useTypicality=FALSE, winningModel = 'pragmatic')
+```
+
+## Examine posterior predictives
+
+```{r}
+examinePredictives <- function(name, useTypicality, winningModel) {
+  inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
+  beta <- ifelse(useTypicality, NA, '0')
+  QorA <- toupper(substr(strsplit(name, '_')[[1]][1], 0, 1))
+  samples = getRawPredictives(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
+    mutate(MCMCprob = exp(MCMCprob))  %>%
+    filter(MCMCprob > 0.0001) %>%
+    mutate(n = floor(MCMCprob*10000)) %>%
+    do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
+    select(-MCMCprob) %>%
+    mutate(type = as.character(item1),
+           domain = as.character(item2))
+
+  predictive = recode(samples, QorA)
+
+  cor_label = round(cor(predictive$MAP, predictive$empProb), 2)
+  title = paste0(winningModel, strsplit(name, '_')[[1]][1], " Posterior Predictive")
+  
+  predictive.plot = (ggplot(predictive, aes(x = MAP, y = empProb))
+    + xlab("Model predicted probability")
+    + ylim(0,1)
+    + ylab("Empirical Probability")
+    #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci))
+    #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
+    + geom_point(aes(colour = domain, shape = type),  size = 2)
+    + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
+    + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
+    + ggtitle(title)
+    + geom_smooth(method = "lm")
+    + annotate('text', label = paste0('r =',cor_label), x= 0.8, y = 0.1)
+    + coord_fixed()
+    + theme_few(10)
+    + theme(legend.position="bottom", aspect.ratio = 1) 
+    # + theme(rect = element_rect(fill = "transparent"), # bg of the panel
+    #         panel.background = element_rect(fill = "transparent",colour = NA),
+    #         plot.background = element_rect(fill = "transparent",colour = NA),
+    #         panel.grid.major = element_blank(), # get rid of major grid
+    #         panel.grid.minor = element_blank(), # get rid of minor grid
+    #         legend.background = element_rect(fill = "transparent",colour = NA),
+    #         legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
+  )
+  outputfile <- paste0('../writing/2016/journal-manuscript/figures/',
+                       name, '_typ', useTypicality, '_model', winningModel, '.pdf')
+  ggsave(outputfile, predictive.plot,
+         width = 3, height = 3, bg = "transparent")
+  return(predictive.plot)
+}
+```
+
+Answerer (no typicality)
+
+```{r}
+A1 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = F, winningModel = 'explicit')
+A2 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = F, winningModel = 'pragmatic')
+A3 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
+A4 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
+#plot_grid(A1, A2, A3, A4, nrow = 2, ncol = 2)
+```
+
+Questioner (no typicality)
+
+```{r}
+Q1 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = F, winningModel = 'explicit')
+Q2 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = F, winningModel = 'pragmatic')
+plot_grid(Q1, Q2, nrow = 1)
+```
+
+# Enriching with typicality
+
+```{r}
+typPs = read.csv("../data/priorsExperiment-subject_information.csv")
+
+nonNative = typPs %>% 
+  filter(!(language %in% c("english", "English")))
+
+confused = typPs %>% 
+  filter(asses != "Yes")
+
+badGames = union(nonNative$workerid, confused$workerid)
+
+cat("We removed", length(nonNative$workerid), "ps due to native language")
+cat("and", length(setdiff(confused$workerid, nonNative$workerid)), "more due to confusion")
+
+typData = read.csv("../data/priorsExperiment-trials.csv") %>%
+  filter(!(workerid %in% badGames)) 
+
+totalCounts = typData %>%
+  group_by(domain,type,label) %>%
+  summarize(total = n()) 
+
+proportions = typData %>%
+  inner_join(totalCounts) %>%
+  group_by(domain,type,label,response) %>%
+  summarize(prop = n() / mean(total))
+```
+
+## Deviations from uniformity
+
+```{r}
+chisq.pvals = typData %>% 
+  count(domain, type, label, response) %>%
+  group_by(domain, type, label) %>%
+  filter(length(n) > 1) %>%
+  do(data.frame(stat = chisq.test(.$n)$p.value)) %>%
+  ungroup() %>%
+  select(stat)
+length(which(chisq.pvals < 0.05/length(chisq.pvals$stat))) / length(chisq.pvals$stat)
+```
+
+### Model comparison
+
+```{r}
+# Marginalize over alpha
+comp.ans = modelComparison("answerer_modelComparisonParams", useTypicality = TRUE) %>% 
+  spread(modelType, prob) 
+cat('\nBF (beta=0, answerer)', exp(comp.ans$pragmatic - comp.ans$explicit))
+
+comp.quest = modelComparison("questioner_modelComparisonParams", useTypicality = TRUE) %>% 
+  spread(modelType, prob) 
+cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit))
+```
+
+### Typicality test
+
+Savage-Dickey
+
+```{r}
+savageDickey <- function(name) {
+  res <- getRawParams(name, chosenModelType = 'pragmatic') %>% 
+    group_by(beta) %>% 
+    summarize(posterior = reduce(MCMCprob, sumlogprob)) %>%
+    mutate(prior = log(1/11)) %>%
+    mutate(BF = exp(posterior - prior)) %>%
+    filter(beta == 0)
+  return(res$BF)
+}
+
+savageDickey('answerer_modelComparisonParams')
+savageDickey('questioner_modelComparisonParams')
+```
+
+### Examine predictives 
+
+Answerer 
+
+```{r}
+A1 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
+A2 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
+plot_grid(A1, A2)
+```
+
+Questioner
+
+```{r}
+Q1 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
+Q2 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
+plot_grid(Q1, Q2)
 ```

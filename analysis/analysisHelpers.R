@@ -290,26 +290,125 @@ getProbsAndCIs <- function(data, QorA, R = 1000, collapseDomains) {
   return(outputData)
 }
 
-# Expect two columns that end with _prob (i.e. emp_prob and model_prob)
-optimalFit <- function(data, equal = FALSE) {
-  prob_correlation <- data %>%
-    group_by(modelLevel, rationality) %>%
-    filter(rationality > 1) %>%
-    summarise(correlation = cor(modelProb, empProb, method = 'pearson')) %>%
-    mutate(m = max(correlation)) %>%
-    ungroup() %>%
-    filter(m == correlation) %>%
-    mutate(maximizingR = rationality) %>%
-    group_by(modelLevel, correlation) %>%
-    summarize(maximizingR = min(maximizingR)) %>%
-    select(modelLevel, maximizingR, correlation) %>%
-    ungroup() 
-  
-  # add literal back in w/ correlation = NA
-  if(!any(prob_correlation$modelLevel == "literal")) {
-    prob_correlation <- rbind(prob_correlation, c('literal', 1.0, NA))
-  }
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
 
-  return(data %>% inner_join(prob_correlation) %>% 
-           filter(rationality == maximizingR))
+HPDhi<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+
+HPDlo<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+
+# renormalize posterior for fixed beta/modelType
+# (returns full joint posterior if none specified)
+getRawParams = function(name, chosenBeta=NA, chosenModelType=NA) {
+  inputName <- paste0("../modeling/guessingGame/Bayesian/data/", name, '.csv')
+  
+  raw <- read_csv(inputName) %>%
+    mutate(t = floor((row_number()-1)/3)) %>%
+    spread(parameter, value) %>%
+    filter(MCMCprob != '-Inf')
+  
+  if(!is.na(chosenBeta)) {
+    raw <- raw %>%
+      mutate(beta = as.character(beta)) %>%
+      filter(beta == chosenBeta) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -beta) 
+  } 
+  if(!is.na(chosenModelType)){
+    raw <- raw %>%
+      filter(modelType == chosenModelType) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -modelType) 
+  } 
+  return(raw)
+}
+
+sumlogprob <- function(a, b) {
+  if(a>b) {
+    return(a+log1p(exp(b-a)))
+  } else{
+    return(b+log1p(exp(a-b)))
+  }
+}
+
+printTable <- function(samples) {
+  cat('parameter posteriors')
+  print(samples %>%
+          group_by(parameter) %>%
+          summarize(md_lo = round(HPDlo(value), 3),
+                    md_hi = round(HPDhi(value), 3),
+                    value = estimate_mode(value)))
+}
+
+recode <- function(samples, QorA){
+  if(QorA == 'A') {
+    recoded = samples %>% 
+      mutate(question = as.character(parameter),
+             answer = substr(as.character(value), 1,
+                             nchar(as.character(value)) - 1)) %>%
+      do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
+      do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+      mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
+      select(type, domain, utterance, response, prob) %>%
+      group_by(type, domain, utterance, response) 
+  } else {
+    recoded = samples %>% 
+      mutate(goal = as.character(parameter), 
+             question = as.character(value)) %>%
+      do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+      do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+      mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
+      select(type, domain, goal, response, prob) %>%
+      group_by(type, domain, goal, response) 
+  }
+  output = recoded %>%
+    summarize(MAP = estimate_mode(prob),
+              credHigh = HPDhi(prob),
+              credLow = HPDlo(prob))
+  if(QorA == 'A') {
+    return(output %>% right_join(d_a, by = c("response", "utterance", "domain", "type")))
+  } else {
+    return(output %>% right_join(d_q, by = c("response", "goal", "domain", "type")))
+  }
+}
+
+getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
+  inputName <- paste0("../modeling/guessingGame/Bayesian/data/", name, '.csv')
+  
+  raw <- read_csv(inputName) %>%
+    mutate(t = floor((row_number()-1)/160)) %>%
+    unite(key, parameter:value)%>%
+    mutate(key = paste0(key, '~')) %>%
+    spread(key, prob) %>%
+    filter(MCMCprob != '-Inf')
+  if(!is.na(chosenBeta)) {
+    raw <- raw %>%
+      mutate(beta = as.character(beta)) %>%
+      filter(beta == chosenBeta) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -beta) 
+  } 
+  if(!is.na(chosenModelType)){
+    raw <- raw %>%
+      filter(source == chosenModelType) %>%
+      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
+      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      select(-intermed, -source)
+  } 
+  output <- raw %>% 
+    gather(key, prob, ends_with('~')) %>% 
+    mutate(key = substr(key, 1, nchar(key)-1)) %>%
+    separate(key, into= c('parameter', 'item1', 'item2', 'value'), sep = '_')
+  return(output)
 }
