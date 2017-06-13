@@ -526,9 +526,7 @@ Now, suppose $Q_1$ is interested in a long list of cards (say, all but Diner's C
 
 In these case studies, we illustrated three empirical answerer-sensitivity effects that serve as desiderata for how our dialogue agent should interpret and respond to questions. They should be sensitive to the question utterance, the context, and the relationship between the questioner's goal and the utterance they produce to fulfill that goal.
 
-Our simple informative speaker $A_0$ was insensitive to all of these factors because it lacked a listener component that could induce any dependence on its partner's utterance. An informative answerer $A_1$ who also attempted to be relevant to the literal meaning of the question was sensitive to the question utterance but unable to adapt its responses to different contexts or give more or less literal answers to different questions. Finally, our most sophisticated answerer $A_2$, who inferred the questioner's underlying goals and attempted to be directly relevant to those goals, qualitatively captured all three effects in the same fashion \citeA{Clark79_IndirectSpeechActs} observed. 
-
-In Supplemental, we show that only $A_2$ captures two additional answerer-sensitivity effects with similar characteristics. The first, from \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, also emphasizes the role of context: the same wh-question "Where do they sell Italian newspapers in Amsterdam?" is given an \emph{exhaustive} answer (i.e. a complete list of all such locations) in some contexts, and a \emph{mention-some} answer (i.e. a subset of such locations) in others. The second, from 
+Our simple informative speaker $A_0$ was insensitive to all of these factors because it lacked a listener component that could induce any dependence on its partner's utterance. An informative answerer $A_1$ who also attempted to be relevant to the literal meaning of the question was sensitive to the question utterance but unable to adapt its responses to different contexts or give more or less literal answers to different questions. Finally, our most sophisticated answerer $A_2$, who inferred the questioner's underlying goals and attempted to be directly relevant to those goals, qualitatively captured all three effects in the same fashion \citeA{Clark79_IndirectSpeechActs} observed. In the Appendix, we also show that only $A_2$ captures two additional answerer-sensitivity effects with similar characteristics from \citeA{GroenendijkStokhof84_SemanticsOfQuestions} and  \citeA{GibbsBryant08_OptimalRelevance}.
 
 %can use these mechanisms to explain a range of sophisticated psycholinguistic phenomena, both qualitatively and quantitatively.
 
@@ -577,12 +575,13 @@ The procedure was designed to accommodate real-time player-to-player interaction
 
 The questioner and answerer interfaces are displayed in Figure \ref{fig:expviews}. Chat messages were printed on the left side of the screen, and players used the right side as a workspace to view goals, ask questions, and respond with answers. At the beginning of each trial, the wheel on the questioner's screen (Figure \ref{fig:expviews}, left) would spin and select one of the four goals at random. The questioner then clicked and dragged one and only one of the question labels into the pre-set frame ``Where is the\dots?'' to ask a question. The answerer saw these words being dragged in real time. Once the questioner clicked the `send' button, the resulting question appeared in the chat log and control was passed to the answerer, who dragged the objected they wanted to reveal into a ``reveal box.'' The questioner watched as the outline of the gate moved, in real time, and saw the image as soon as the answerer dropped it in the box. Finally, the questioner was asked to click on the gate they believed the goal object was behind. Each participant provided one response for each of the twelve items, presented in random order. 
 
+
 \subsection{Results}
 \subsubsection{Qualitative Behavioral Results}
 
 Before conducting quantitative model comparisons, we highlight several key qualitative patterns in the behavioral data that bear on our theory. First, we note that there was generally high correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities across domains for both questioners and answerers, with the exception of the `place' domain in answerers ($r = 0.78$; see Supp. Table \ref{table:experiment4correlations}). We thus collapse across domains in the following qualitative analyses, using labels from the ``animal'' domain for concreteness.
 
-Second, answerer responses deviated significantly from a uniform distribution across true statements. The strongest example of this deviation is in the branching hierarchy. Suppose the questioner asked ``Where is the animal?'' Since all four objects are animals, we might expect an answerer relying solely on the meaning of the utterance to have no preference over which of the animals to provide information about. Both $A_0$ and $A_1$ make this qualitative prediction. Instead, 94\% of answerers responded with the location of the ``whale,'' the object that isn't described by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$. 
+Second, answerer responses deviated significantly from a uniform distribution across true statements. The strongest example of this deviation is in the branching hierarchy. Suppose the questioner asked ``Where is the animal?'' Since all four objects are animals, we might expect an answerer relying solely on the meaning of the utterance to have no preference over which of the animals to provide information about. Both $A_0$ and $A_1$ make this qualitative prediction. Instead, 94\% of answerers responded with the location of the ``whale,'' the object that isn't described by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:results}A).
 
 This non-uniform pattern, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, is only consistent with $A_2$, which reasons about the questioner's underlying goal given their question utterance. Because $Q_1$ would have been more likely to ask a different question if they had a non-``whale'' goal (e.g. if looking for the Dalmatian, they would be more likely to ask ``Where is the Dalmatian?''), the highly general ``Animal?'' question is nonetheless strong evidence that their goal is to find the whale. Having inferred this goal, $A_2$ gives the most informative, relevant answer: the location of the whale.
 
@@ -590,15 +589,23 @@ Next, we turn to a subtler qualitative pattern in the ``overlapping'' condition 
 
 $Q_2$, however, prefers ``Cat?'' over ``Pet?'', because the other child of ``Cat?'' -- the lion -- is pragmatically blocked by the ``Lion?'' question. In other words, when $A_2$ hears ``Cat?'' they reason that if $Q_1$'s underlying goal were the ``lion'' they would have \emph{said} lion; because they didn't, they must mean the other cat. Thus, we have a pair of sharply distinguishable predictions: $Q_0$ predicts all four questions will be equally likely, $Q_1$ predicts that ``Pet?'' and ``Cat?'' will be equally likely, and $Q_2$ predicts an asymmetry where ``Cat?'' is the preferred question.
 
-\begin{figure}[t!]
+\begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale=.9]{OverlappingModelComparison.pdf}
+\includegraphics[scale = .9]{ResultsFig.png}
 \end{center}
-\caption{Questioner responses on overlapping condition. Labels drawn from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% confidence intervals.}
-\label{fig:Exp4ZoomedIn}
-\end{figure}
+\caption{(A-B) Qualitative results. Answerer responses on branching condition and questioner responses on overlapping condition. Labels shown from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% confidence intervals. (C) Quantitative model comparison; marginal likelihoods shown on log scale. (D) Posterior predictives for each model (excluding $A_0$ and $Q_0$).}
+\label{fig:results}
+\end{figure*}
+%
+%\begin{figure}[t!]
+%\begin{center}
+%\includegraphics[scale=.9]{OverlappingModelComparison.pdf}
+%\end{center}
+%\caption{.}
+%\label{fig:Exp4ZoomedIn}
+%\end{figure}
 
-The proportion of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:Exp4ZoomedIn}. We find that the pragmatic model makes the correct qualitative prediction -- the empirical probability of asking ``Cat?'' ($\hat{p} = 0.64$) is significantly different from the  probability of asking ``Pet?'' ($\hat{p} = 0.25$; bootstrapped $95\%$ CI on difference: $[0.17, 0.58]$). This critical condition thus provides evidence for an additional layer of social reasoning: that questioners may consider the answerer's inference about likely underlying goals when selecting their question. 
+The proportion of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:results}B. We find that the pragmatic model makes the correct qualitative prediction -- the empirical probability of asking ``Cat?'' ($\hat{p} = 0.64$) is significantly different from the  probability of asking ``Pet?'' ($\hat{p} = 0.25$; bootstrapped $95\%$ CI on difference: $[0.17, 0.58]$). This critical condition thus provides evidence for an additional layer of social reasoning: that questioners may consider the answerer's inference about likely underlying goals when selecting their question. 
 
 %Thus, in examining the results below we will collapse across domains for simplicity of analysis. 
 %Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
@@ -636,7 +643,7 @@ $$\begin{array}{rcl}
 \end{array}$$ 
 and perform inference using enumeration over discrete bins. Each model was run with uniform prior probability over worlds, goals, questions, and answers.
 
-We can immediately rule out $A_0$ and $Q_0$, which predict a uniform distribution of responses within each condition and had a negligible posterior probability in our model comparison. Among the remaining answerer models, we found decisive evidence for $A_2$ relative to $A_1$ (BF $= 4.43 \times 10^{87}$). For our questioner models, we found substantial evidence for $Q_2$ relative $Q_1$ (BF $=4.33$). Posterior predictives are shown alongside the empirical data for each model in Fig. \ref{fig:predictives}, and posteriors for $\alpha$ can be found in Supplemental. 
+We can immediately rule out $A_0$ and $Q_0$, which predict a uniform distribution of responses within each condition and had a negligible posterior probability in our model comparison. Among the remaining answerer models, we found decisive evidence for $A_2$ relative to $A_1$ (BF $= 4.43 \times 10^{87}$). For our questioner models, we found substantial evidence for $Q_2$ relative $Q_1$ (BF $=4.33$). Posterior predictives are shown alongside the empirical data for each model in Fig. \ref{fig:predictives}, and posteriors for $\alpha$ can be found in the Appendix. 
 
 %
 %\begin{figure*}[t!]
@@ -704,7 +711,7 @@ How does correcting this assumption affect our quantitative model predictions? T
 
 First, because the testing question precedes the estimation questions \cite{Jeffreys, Simonsohn}, we conduct a new model comparison. We compute Bayes Factors marginalizing over both $\alpha$ and $\beta$ to test whether there is still support for $A_2$ and $Q_2$ after providing the flexibility to use empirical saliencies. We again found overwhelming evidence for $A_2$ over $A_1$ (BF $= \sim6 \times 10^{72}$) and strong evidence for $Q_2$ over $Q_1$ (BF $= \sim2\times 10^{7}$).
 
-Next, having established support for $A_2$ and $Q_2$, we examine the posteriors over their $\beta$ parameters. In particular, because our earlier assumption of uniform saliency $(\beta = 0)$ is nested within our current prior, we use the Savage--Dickey method to test whether there is support for using empirical saliencies \cite{Wagenmakers10_SavageDickey}. The Savage--Dickey density ratio compares the posterior at the nested model's point value with the prior at the same point; the extent to which the posterior density has decreased relative to the prior is a measure of evidence against the nested model. We found substantial evidence against the nested $\beta=0$ model for both the questioner ($4.10 \times 10^{-14}$) and the answerer ($8.96\times 10^{-21}$), indicating that participants interpret questions using non-uniform saliencies. Finally, the posterior predictives for $A_2$ and $Q_2$ after including empirical saliencies explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively. Posteriors over alpha are similar to our previous results (see Supplemental).
+Next, having established support for $A_2$ and $Q_2$, we test to extent to which the introduction of empirical saliencies improved our predictions. Again using Bayes Factors, which penalize our empirical saliency model for its additional flexibility, we found strong evidence against the nested $\beta=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants interpret questions using non-uniform saliencies. Finally, the posterior predictives for $A_2$ and $Q_2$ after including empirical saliencies explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively. Posteriors over alpha are similar to our previous results (see Appendix).
 
 %maximum a posteriori (MAP) beta values of $\beta = 0.5$ (95\% HPD $=[.4, .55]$) for our answerer model, and $\beta = 0.35$ (95\% HPD interval $= [0.3, 0.45]$) for our questioner model. 
 
@@ -752,7 +759,7 @@ In this section, we revisited an assumption of the question semantics we used to
 Asking questions is one of our most efficient and reliable means of learning about the world. Yet we do not often pose these questions to an impartial oracle; we ask other agents, in dialogue. In this paper, we jointly consider the decision problem faced by each agent. Questioners must plan over the possible answers they are likely to receive from their partner and seek to maximize the future reduction in their own uncertainty. Answerers, in turn, seek to informatively and relevantly address the underlying questioner goals most likely to have generated the question. 
 
 %\todo[inline]{Refactor next paragraph to separate out stuff that's included in the model from external stuff}
-We provided several lines of evidence supporting this theory---formalized in our $A_2$ and $Q_2$ models---over simpler utilities. In a series of answerer simulations, we showed that only $A_2$ could qualitatively account for classic answerer-sensitivity effects from \citeA{Clark79_IndirectSpeechActs}: answers depend critically upon the question utterance, the context in which a question is asked, and the relationship between the questioner's underlying goal and their question. We also found strong evidence for $A_2$ and $Q_2$ using novel question and answer data jointly collected from a real-time, multi-player dialogue experiment, which was further bolstered by enriching our literal question semantics with measured saliency priors. %as well as strong quantitative evidence from a rigorous model comparison on trial-by-trial data. By  in this experiment, we also observed systematic use of indirect questions, as predicted by $Q_1$ and $Q_2$. However, only $Q_2$, who relies on higher-order pragmatic reasoning about what goals an answerer would infer from their question utterance, could account for the critical overlapping condition. 
+We provided several lines of evidence supporting this theory---formalized in our $A_2$ and $Q_2$ models---over simpler utilities. In a series of answerer simulations, we showed that only $A_2$ could qualitatively account for classic answerer-sensitivity effects from \citeA{Clark79_IndirectSpeechActs}: answers depend critically upon the question utterance, the context in which a question is asked, and the relationship between the questioner's underlying goal and their question. We then found strong evidence for $A_2$ and $Q_2$ using novel question and answer data jointly collected from a real-time, multi-player dialogue experiment, which was further bolstered by enriching our literal question semantics with measured saliency priors. %as well as strong quantitative evidence from a rigorous model comparison on trial-by-trial data. By  in this experiment, we also observed systematic use of indirect questions, as predicted by $Q_1$ and $Q_2$. However, only $Q_2$, who relies on higher-order pragmatic reasoning about what goals an answerer would infer from their question utterance, could account for the critical overlapping condition. 
 %Finally, enriching the semantics of ``Where is \emph{the}\dots?'' questions to use more realistic saliency priors both eliminated a potential confound and also significantly improved our quantitative fit. %, questioners relied on higher-order pragmatic reasoning about what inferences an answerer would make about their own underlying goals when deciding what question to ask, but a Bayesian model comparison showed that the simpler explicit model is sufficient to explain the vast majority of our data.
 
 %In the case of our Experiment 1 hierarchy, there exists a simple, heuristic strategy that produces the same pattern of responses as our model without requiring any social inference. Suppose questioners saw their goal on a given trial and ruled out labels that do not apply (e.g. a `cat' is neither a `dalmatian' nor a `dog'), then picked the most specific of the remaining labels (`pet' picks out a smaller set of objects than `animal'). Whether through use of this heuristic strategy or pragmatic inference (as our model suggests), questioners strongly converged on a single mapping from goals to question utterances. 
@@ -808,7 +815,6 @@ By formalizing the utilities of dialogue agents and the computational principles
 \bibliography{qa}
 \bibliographystyle{apacite}
 
-%\section{Supplemental}
 
 \begin{table*}[t!]
 \centering
@@ -825,7 +831,7 @@ plant &    0.94 & 0.96 & 1.00 & 0.97 & 0.92  & 0.78 &  1.00 & 0.91\\
 artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 \end{tabular}
 \\[1.5pt]
-\caption{Supplemental: Inter-domain correlations on corresponding response rates} 
+\caption{Appendix: Inter-domain correlations on corresponding response rates} 
 \label{table:experiment4correlations}
 \end{table*}
 
@@ -841,7 +847,8 @@ artifact & 0.94 & 0.95 & 0.97 & 1.00 & 0.97 & 0.78 &  0.91 & 1.00\\
 %\label{fig:cafeExperimentResults}
 %\end{figure*}
 
-For a slightly more complex example, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an exhaustive list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a mention of a single location would be sufficient. Many recent theoretical explanations in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}. While there are no experimental results on \emph{mention-some} and \emph{mention-all} readings with which we can compare our model's output, we include the phenomenon as a case study for its value in demonstrating how our model formalizes the standard explanation. 
+%Here, we consider the classic puzzle of \emph{mention-some} and \emph{mention-all} readings of wh-questions  \cite{GroenendijkStokhof84_SemanticsOfQuestions}. 
+Some \emph{wh-}questions, like ``Who is coming to dinner tonight?'' are intended to elicit an \emph{exhaustive} list of the entities that are answers. For ostensibly similar questions, like ``Where can I find a bathroom in this building?'', a mention of a single location would be sufficient. Many recent theoretical explanations of this phenomenon in the linguistics literature appeal to questioner goals \cite<e.g.>{SchulzVanRooij06_ExhaustiveInterpretation, Ginzburg95_ResolvingQuestions}, which is easily formalized in our model as a context-prior. 
 
 We focus on a question like ``Where do they sell Italian newspapers in Amsterdam?'' that can intuitively be ambiguous between these meanings depending on who is asking: if it is a tourist, they probably just want to know the nearest place, but if it is a businessperson trying to build a newspaper distribution network, they likely want the whole list \cite<see>{GroenendijkStokhof84_SemanticsOfQuestions}. The puzzle is  one of disambiguation\footnote{Our modeling framework is compatible with another account where the `mention-some' reading is derived from the exhaustive reading via implicature \cite<e.g.>[Chapter 6]{George11_Dissertation}, but this debate lies outside the scope of this paper}: how can the same question take on different meaning in different contexts? According to our account, this happens via an inference about the questioner's underlying goal. This explanation relies on the same mechanism as the previous section, but shows how the model can operate over more complex world states and arbitrarily large spaces of possible answers.
 
