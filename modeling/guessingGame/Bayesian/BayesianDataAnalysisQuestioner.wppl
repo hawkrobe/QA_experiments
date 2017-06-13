@@ -7,26 +7,26 @@ var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
-  // Sample params
-  var rawAlpha = uniformDraw(_.range(0, 20, 0.05)),
+  var modelType = uniformDraw(['Q0_unif', 'Q1_unif', 'Q2_unif',
+			       'Q0_emp', 'Q1_emp', 'Q2_emp']);
+  var rawAlpha = uniformDraw(_.range(0, 15, 0.1)),
       alpha = Number.parseFloat(rawAlpha.toFixed(3));
-  var rawBeta = uniformDraw(_.range(0, 1.01, 0.05)),
+  var rawBeta = modelType.split('_')[1] === 'unif' ? 0 : uniformDraw(_.range(0, 1.01, .1)),
       beta = Number.parseFloat(rawBeta.toFixed(3));
-  var questionerType = uniformDraw(['literal', 'explicit', 'pragmatic']);
 
   globalStore.predictives = {};
 
   // Run model and condition on data
   var score = sum(map(function(item) {
     var model = QAmodel(item[0], item[1], alpha, beta);
-    var questioner = model.questioner;    
+    var questioner = model.questioner;  
     return sum(map(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
-      var questionerERP = questioner(questionerType, qud);
+      var questionerERP = questioner(modelType.split('_')[0], qud);
       // Save predictives
       foreach(questionerERP.support(),function(s){
       	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
-      	var key = [qud, item[0], item[1], strippedQuestion, alpha, beta, questionerType].join(",");
+      	var key = [qud, item[0], item[1], strippedQuestion, alpha, beta, modelType].join(",");
       	var newPair = _.zipObject([key], [Math.exp(questionerERP.score(s))]);
       	globalStore.predictives = extend(globalStore.predictives, newPair);
       });
@@ -36,12 +36,13 @@ var modelAnalysis = function() {
     }, model.qudSpace));
   }, items));
 
-  console.log([alpha, beta, questionerType]);
+  console.log([alpha, beta, modelType]);
   console.log(score);
   factor(score);
+  
+  var paramsKey = [alpha, beta, modelType].join(',');
   return {predictive: globalStore.predictives,
-	  params : {alpha: alpha, beta: beta,
-		    modelType: questionerType}};
+	  params : _.zipObject([paramsKey], [score])};
 };
 
 var outputERP = Infer({method: 'enumerate'}, modelAnalysis);

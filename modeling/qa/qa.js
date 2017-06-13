@@ -40,12 +40,13 @@ var writeERP = function(erp, labels, filename, fixed) {
 // Note this is highly specific to a single type of erp
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
-  fs.writeSync(predictiveFile, ["parameter", "item1", 
-				"item2", "value", "alpha", "beta", "source", 
-				"prob", "MCMCprob"] + '\n');
+  fs.writeSync(predictiveFile, ["parameter", "item1", "item2", "value",
+				"alpha", "beta", "modelType",
+				"prediction", "posteriorProb"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
-  fs.writeSync(paramFile, ["parameter", "value", "MCMCprob"] + '\n');
+  fs.writeSync(paramFile, ["alpha", "beta", "modelType",
+			   "logLikelihood", "posteriorProb"] + '\n');
 
   var supp = erp.support();
   supp.forEach(function(s) {

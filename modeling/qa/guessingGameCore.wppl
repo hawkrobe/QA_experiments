@@ -101,7 +101,7 @@ var QAmodel = function(type, domain, rationality,  beta) {
   var QUDPosteriorFromInference = dp.cache(function(question){
     return Infer({method: 'enumerate'}, function() {
       var qudName = qudPrior();
-      var q_erp = questioner('explicit', qudName);
+      var q_erp = questioner('Q1', qudName);
       observe(q_erp, question);
       return qudName;
     });
@@ -132,18 +132,20 @@ var QAmodel = function(type, domain, rationality,  beta) {
   });
   
   
-  var questioner = dp.cache(function(type, qudName) {
+  var questioner = dp.cache(function(questionerType, qudName) {
+    var answererType = (questionerType === 'Q2' ? 'A2' :
+			questionerType === 'Q1' ? 'A1' : 'A0');
     return Infer({method: 'enumerate'}, function() {
       var question = questionPrior();
       var possibleAnswer = Infer({method: 'enumerate'}, function(){
         var trueWorld = worldPrior();
-        return sample(answerer(type, question, trueWorld));
+        return sample(answerer(answererType, question, trueWorld));
       });
       var infGain = function(answer){
         var prior = getProjectedWorldPrior(qudName);
         var posterior = Infer({method: 'enumerate'}, function(){
           var world = worldPrior();
-          observe(answerer(type, question, world), answer);
+          observe(answerer(answererType, question, world), answer);
           return makeGoalFromName(qudName)(world);
         });
         return qa.KL(posterior, prior);
@@ -153,10 +155,10 @@ var QAmodel = function(type, domain, rationality,  beta) {
     });
   });
 
-  var answerer = dp.cache(function(type, question, trueWorld) {
-    var qudPosterior = (type === 'pragmatic' ? QUDPosteriorFromInference(question) :
-                        type === 'explicit' ? QUDPosteriorFromMeaning(question) :
-                        type === 'literal' ? Delta({v: function(v) {return v;}}) :
+  var answerer = dp.cache(function(answererType, question, trueWorld) {
+    var qudPosterior = (answererType === 'A2' ? QUDPosteriorFromInference(question) :
+                        answererType === 'A1' ? QUDPosteriorFromMeaning(question) :
+                        answererType === 'A0' ? Delta({v: function(v) {return v;}}) :
                         console.error('type not recognized'));
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
     return Infer({method: 'enumerate'}, function(){
