@@ -310,24 +310,24 @@ HPDlo<- function(s){
 getRawParams = function(name, chosenBeta=NA, chosenModelType=NA) {
   inputName <- paste0("../modeling/guessingGame/Bayesian/data/", name, '.csv')
   
-  raw <- read_csv(inputName) %>%
-    mutate(t = floor((row_number()-1)/3)) %>%
-    spread(parameter, value) %>%
-    filter(MCMCprob != '-Inf')
+  raw <- read_csv(inputName) 
+    #filter(posteriorProb != '-Inf')
+    # mutate(t = floor((row_number()-1)/4)) %>%
+    # spread(parameter, value) %>%
   
   if(!is.na(chosenBeta)) {
     raw <- raw %>%
       mutate(beta = as.character(beta)) %>%
       filter(beta == chosenBeta) %>%
-      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
-      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      mutate(intermed = exp(posteriorProb - max(posteriorProb))) %>%
+      mutate(posteriorProb = log(intermed/sum(intermed))) %>%
       select(-intermed, -beta) 
   } 
   if(!is.na(chosenModelType)){
     raw <- raw %>%
       filter(modelType == chosenModelType) %>%
-      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
-      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      mutate(intermed = exp(posteriorProb - max(posteriorProb))) %>%
+      mutate(posteriorProb = log(intermed/sum(intermed))) %>%
       select(-intermed, -modelType) 
   } 
   return(raw)
@@ -359,7 +359,7 @@ recode <- function(samples, QorA){
       do(mutate(., answer = vectorizedMapAnswer(type, answer))) %>%
       do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
       mutate(utterance = as.factor(question), response = as.factor(answer)) %>%
-      select(type, domain, utterance, response, prob) %>%
+      select(type, domain, utterance, response, prediction) %>%
       group_by(type, domain, utterance, response) 
   } else {
     recoded = samples %>% 
@@ -368,13 +368,13 @@ recode <- function(samples, QorA){
       do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
       do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
       mutate(goal = as.factor(goal), response = as.factor(question)) %>% 
-      select(type, domain, goal, response, prob) %>%
+      select(type, domain, goal, response, prediction) %>%
       group_by(type, domain, goal, response) 
   }
   output = recoded %>%
-    summarize(MAP = estimate_mode(prob),
-              credHigh = HPDhi(prob),
-              credLow = HPDlo(prob))
+    summarize(MAP = estimate_mode(prediction),
+              credHigh = HPDhi(prediction),
+              credLow = HPDlo(prediction))
   if(QorA == 'A') {
     return(output %>% right_join(d_a, by = c("response", "utterance", "domain", "type")))
   } else {
@@ -389,25 +389,26 @@ getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
     mutate(t = floor((row_number()-1)/160)) %>%
     unite(key, parameter:value)%>%
     mutate(key = paste0(key, '~')) %>%
-    spread(key, prob) %>%
-    filter(MCMCprob != '-Inf')
+    spread(key, prediction) %>%
+    filter(posteriorProb != '-Inf')
+
   if(!is.na(chosenBeta)) {
     raw <- raw %>%
       mutate(beta = as.character(beta)) %>%
       filter(beta == chosenBeta) %>%
-      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
-      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
+      mutate(intermed = exp(posteriorProb - max(posteriorProb))) %>%
+      mutate(posteriorProb = log(intermed/sum(intermed))) %>%
       select(-intermed, -beta) 
   } 
   if(!is.na(chosenModelType)){
     raw <- raw %>%
-      filter(source == chosenModelType) %>%
-      mutate(intermed = exp(MCMCprob - max(MCMCprob))) %>%
-      mutate(MCMCprob = log(intermed/sum(intermed))) %>%
-      select(-intermed, -source)
+      filter(modelType == chosenModelType) %>%
+      mutate(intermed = exp(posteriorProb - max(posteriorProb))) %>%
+      mutate(posteriorProb = log(intermed/sum(intermed))) %>%
+      select(-intermed, -modelType)
   } 
   output <- raw %>% 
-    gather(key, prob, ends_with('~')) %>% 
+    gather(key, prediction, ends_with('~')) %>% 
     mutate(key = substr(key, 1, nchar(key)-1)) %>%
     separate(key, into= c('parameter', 'item1', 'item2', 'value'), sep = '_')
   return(output)

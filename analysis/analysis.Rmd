@@ -8,6 +8,7 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 
+library(ggthemes)
 library(GGally)
 library(coda)
 library(boot)
@@ -140,6 +141,32 @@ overall_distribution %>%
   mutate(prob = count / sum(count))
 ```
 
+Plot:
+
+```{r}
+collapsed_a = d %>% 
+      mutate(response=ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
+      mutate(utterance=ordered(questionNodes,levels=c("Q1","Q2","Q3","Q4"))) %>%
+      group_by(type, utterance) %>%
+      do(getProbsAndCIs(data = ., QorA = 'a', R = 1000, TRUE))
+
+collapsed_a %>% 
+  filter(utterance == "Q4" & type == "branching") %>%
+  mutate(response = factor(response, levels = c('A1', 'A2', 'A3', 'A4'), 
+                           labels = c('dalmatian', 'poodle', 'cat', 'whale'))) %>%
+  ggplot(aes(x = response, y = empProb)) +
+    geom_bar(stat='identity') +
+    geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = .25) +
+    geom_hline(aes(yintercept = .25), linetype = 2) +
+    theme_few(9) +
+    ylim(0,1) +
+    ggtitle("answer in branching condition\nwhen asked 'Where is the animal?'")
+
+ggsave("../writing/2016/journal-manuscript/figures/BranchingModelComparison.pdf", 
+       width = 3.5, height=2)
+
+```
+
 statistical test:
 
 ```{r}
@@ -172,7 +199,7 @@ plottableQ = collapsed_q %>%
 (ggplot(plottableQ, aes(x = response, y = empirical))
  + geom_bar(position = 'dodge', stat= 'identity')
  + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
-                 position = 'dodge', width =.25)
+                 position = 'dodge', width =.25) 
  + ggtitle("Question asked in overlapping condition\nwhen goal is to find 'house cat'")
  + theme_few(9)
  + ylim(0,1)
@@ -221,23 +248,61 @@ cat(paste0(c('\nQ3-Q2 = ', estimate,
 
 ```{r}
 modelComparison <- function(name, useTypicality) {
-  beta <- ifelse(useTypicality, NA, 0)
-  data <- getRawParams(name, chosenBeta = beta)
-
+  # beta <- ifelse(useTypicality, NA, 0)
+  data <- getRawParams(name)#, chosenBeta = beta)
   return(data %>% 
     group_by(modelType) %>% 
-    summarize(prob = reduce(MCMCprob, sumlogprob))
+    summarize(prob = reduce(logLikelihood, sumlogprob) - log(length(logLikelihood)))
   )
 }
+```
 
+Answerers:
+
+```{r}
 # Marginalize over alpha
-comp.ans = modelComparison("answerer_modelComparisonParams", useTypicality = FALSE) %>% 
+comp.ans = modelComparison("answerer_modelComparisonParams")%>% 
   spread(modelType, prob) 
-cat('\nBF (beta=0, answerer)', exp(comp.ans$pragmatic - comp.ans$explicit))
+cat('\nBF (beta=0, answerer)', exp(comp.ans$A2_unif - comp.ans$A1_unif))
 
-comp.quest = modelComparison("questioner_modelComparisonParams", useTypicality = FALSE) %>% 
+modelComparison("answerer_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('emp', 'unif'), labels = c('empirical', 'uniform'))) %>%
+  mutate(model = reorder(model, order(prob, decreasing = T))) %>%
+  ggplot(aes(x = model, y = prob, fill = saliency)) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    guides(fill=guide_legend(title="Saliency prior")) +
+    ylab('log-likelihood') +
+    scale_fill_colorblind() +
+    theme_few(12) +
+    theme(legend.position = 'top') 
+
+
+ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoods.pdf", 
+       width = 3.5, height=3)
+```
+
+```{r}
+comp.quest = modelComparison("questioner_modelComparisonParams") %>% 
   spread(modelType, prob) 
-cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit))
+cat('\nBF (beta=0, questioner)', exp(comp.quest$Q2_unif - comp.quest$Q1_unif))
+
+modelComparison("questioner_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('emp', 'unif'), labels = c('empirical', 'uniform'))) %>%
+  mutate(model = ordered(model, levels = c('Q2', 'Q1', 'Q0'), labels = c('Q2', 'Q1', 'Q0'))) %>%
+  ggplot(aes(x = model, y = prob, fill = saliency)) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    guides(fill=guide_legend(title="Saliency prior")) +
+    ylab('log-likelihood') +
+    scale_fill_colorblind() +
+    theme_few(12) +
+    theme(legend.position = 'top')
+
+ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoods.pdf", 
+       width = 3.5, height=3)
 ```
 
 ## Examine parameter posteriors
@@ -292,45 +357,45 @@ examineParams('answerer_modelComparisonParams', useTypicality=FALSE, winningMode
 Questioner (no typicality)
 
 ```{r}
-examineParams('questioner_modelComparisonParams', useTypicality=FALSE, winningModel = 'pragmatic')
+examineParams('questioner_modelComparisonParams', useTypicality=TRUE, winningModel = 'pragmatic')
 ```
 
 ## Examine posterior predictives
 
 ```{r}
-examinePredictives <- function(name, useTypicality, winningModel) {
+examinePredictives <- function(name, winningModel) {
   inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
-  beta <- ifelse(useTypicality, NA, '0')
+  beta <- NA
   QorA <- toupper(substr(strsplit(name, '_')[[1]][1], 0, 1))
   samples = getRawPredictives(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
-    mutate(MCMCprob = exp(MCMCprob))  %>%
-    filter(MCMCprob > 0.0001) %>%
-    mutate(n = floor(MCMCprob*10000)) %>%
+    mutate(posteriorProb = exp(posteriorProb))  %>%
+    filter(posteriorProb > 0.0001) %>%
+    mutate(n = floor(posteriorProb*10000)) %>%
     do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
-    select(-MCMCprob) %>%
+    select(-posteriorProb) %>%
     mutate(type = as.character(item1),
            domain = as.character(item2))
 
   predictive = recode(samples, QorA)
 
   cor_label = round(cor(predictive$MAP, predictive$empProb), 2)
-  title = paste0(winningModel, strsplit(name, '_')[[1]][1], " Posterior Predictive")
+  title = paste0(winningModel, ' ', strsplit(name, '_')[[1]][1], " Posterior Predictive")
   
   predictive.plot = (ggplot(predictive, aes(x = MAP, y = empProb))
-    + xlab("Model predicted probability")
+    + xlab("")
     + ylim(0,1)
-    + ylab("Empirical Probability")
+    + ylab("")
     #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci))
     #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
-    + geom_point(aes(colour = domain, shape = type),  size = 2)
+    + geom_point(alpha = .5, size=2)#aes(colour = domain, shape = type),  size = 2)
     + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
     + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-    + ggtitle(title)
-    + geom_smooth(method = "lm")
+#    + ggtitle(title)
+    #+ geom_smooth(method = "lm")
     + annotate('text', label = paste0('r =',cor_label), x= 0.8, y = 0.1)
     + coord_fixed()
-    + theme_few(10)
-    + theme(legend.position="bottom", aspect.ratio = 1) 
+    + theme_few(12)
+    + theme(aspect.ratio = 1) 
     # + theme(rect = element_rect(fill = "transparent"), # bg of the panel
     #         panel.background = element_rect(fill = "transparent",colour = NA),
     #         plot.background = element_rect(fill = "transparent",colour = NA),
@@ -340,7 +405,7 @@ examinePredictives <- function(name, useTypicality, winningModel) {
     #         legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
   )
   outputfile <- paste0('../writing/2016/journal-manuscript/figures/',
-                       name, '_typ', useTypicality, '_model', winningModel, '.pdf')
+                       name, '_model', winningModel, '.pdf')
   ggsave(outputfile, predictive.plot,
          width = 3, height = 3, bg = "transparent")
   return(predictive.plot)
@@ -350,19 +415,17 @@ examinePredictives <- function(name, useTypicality, winningModel) {
 Answerer (no typicality)
 
 ```{r}
-A1 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = F, winningModel = 'explicit')
-A2 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = F, winningModel = 'pragmatic')
-A3 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
-A4 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
+A1 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A1_unif')
+A2 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A2_unif')
 #plot_grid(A1, A2, A3, A4, nrow = 2, ncol = 2)
 ```
 
 Questioner (no typicality)
 
 ```{r}
-Q1 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = F, winningModel = 'explicit')
-Q2 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = F, winningModel = 'pragmatic')
-plot_grid(Q1, Q2, nrow = 1)
+Q1 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q1_unif')
+Q2 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q2_unif')
+#plot_grid(Q1, Q2, nrow = 1)
 ```
 
 # Enriching with typicality
@@ -411,13 +474,13 @@ length(which(chisq.pvals < 0.05/length(chisq.pvals$stat))) / length(chisq.pvals$
 
 ```{r}
 # Marginalize over alpha
-comp.ans = modelComparison("answerer_modelComparisonParams", useTypicality = TRUE) %>% 
+comp.ans = modelComparison("answerer_modelComparisonParams") %>% 
   spread(modelType, prob) 
-cat('\nBF (beta=0, answerer)', exp(comp.ans$pragmatic - comp.ans$explicit))
+cat('\nBF (beta=0, questioner)', exp(comp.ans$A2_emp - comp.ans$A1_emp))
 
-comp.quest = modelComparison("questioner_modelComparisonParams", useTypicality = TRUE) %>% 
+comp.quest = modelComparison("questioner_modelComparisonParams") %>% 
   spread(modelType, prob) 
-cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit))
+cat('\nBF (beta=0, questioner)', exp(comp.quest$Q2_emp - comp.quest$Q1_emp))
 ```
 
 ### Typicality test
@@ -425,18 +488,8 @@ cat('\nBF (beta=0, questioner)', exp(comp.quest$pragmatic - comp.quest$explicit)
 Savage-Dickey
 
 ```{r}
-savageDickey <- function(name) {
-  res <- getRawParams(name, chosenModelType = 'pragmatic') %>% 
-    group_by(beta) %>% 
-    summarize(posterior = reduce(MCMCprob, sumlogprob)) %>%
-    mutate(prior = log(1/11)) %>%
-    mutate(BF = exp(posterior - prior)) %>%
-    filter(beta == 0)
-  return(res$BF)
-}
-
-savageDickey('answerer_modelComparisonParams')
-savageDickey('questioner_modelComparisonParams')
+exp(comp.ans$A2_emp - comp.ans$A2_unif)
+exp(comp.quest$Q2_emp - comp.quest$Q2_unif)
 ```
 
 ### Examine predictives 
@@ -444,15 +497,15 @@ savageDickey('questioner_modelComparisonParams')
 Answerer 
 
 ```{r}
-A1 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
-A2 = examinePredictives('answerer_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
-plot_grid(A1, A2)
+A1 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A1_emp')
+A2 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A2_emp')
+#plot_grid(A1, A2)
 ```
 
 Questioner
 
 ```{r}
-Q1 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'explicit')
-Q2 = examinePredictives('questioner_modelComparisonPredictives', useTypicality = T, winningModel = 'pragmatic')
-plot_grid(Q1, Q2)
+Q1 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q1_emp')
+Q2 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q2_emp')
+#plot_grid(Q1, Q2)
 ```
