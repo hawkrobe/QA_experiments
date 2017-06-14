@@ -141,30 +141,66 @@ overall_distribution %>%
   mutate(prob = count / sum(count))
 ```
 
-Plot:
+get CIs for plots
 
 ```{r}
 collapsed_a = d %>% 
       mutate(response=ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
       mutate(utterance=ordered(questionNodes,levels=c("Q1","Q2","Q3","Q4"))) %>%
       group_by(type, utterance) %>%
-      do(getProbsAndCIs(data = ., QorA = 'a', R = 1000, TRUE))
+      do(getProbsAndCIs(data = ., QorA = 'a', R = 1000, TRUE)) %>%
+  mutate(source='empirical')
+```
 
+get collapsed model predictives for plot
+
+```{r}
+A1 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 'A1_unif') %>%
+  filter(posteriorProb == max(posteriorProb)) %>%
+  mutate(source = 'A1') 
+A2 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 'A2_unif') %>%
+  filter(posteriorProb == max(posteriorProb)) %>%
+  mutate(source = 'A2')
+
+models = rbind(A1, A2) %>%
+  select(parameter, item1, item2, value, prediction, source) %>%
+  rename(question = parameter, answer = value, type = item1, domain = item2) %>%
+  do(mutate(., answer = vectorizedMapAnswer(type, gsub(".$", "", answer)))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  filter(type == 'branching' & question == "Q4") %>%
+  select(domain, answer, prediction, source) %>%
+  group_by(answer, source) %>%
+  summarize(prob = mean(prediction)) %>%
+  ungroup() %>%
+  mutate(lower_ci = NA, upper_ci = NA) 
+```
+
+Plot:
+
+```{r}
+cbPalette = c(rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
 collapsed_a %>% 
   filter(utterance == "Q4" & type == "branching") %>%
-  mutate(response = factor(response, levels = c('A1', 'A2', 'A3', 'A4'), 
-                           labels = c('dalmatian', 'poodle', 'cat', 'whale'))) %>%
-  ggplot(aes(x = response, y = empProb)) +
-    geom_bar(stat='identity') +
-    geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), width = .25) +
-    geom_hline(aes(yintercept = .25), linetype = 2) +
-    theme_few(9) +
+  ungroup() %>%
+  select(-type, -count, -utterance, -groupSize) %>%
+  rename(prob = empProb, answer = response) %>%
+  mutate(source = 'empirical') %>%
+  rbind(models) %>%
+  mutate(answer = factor(answer, levels = c('A1', 'A2', 'A3', 'A4'), 
+                       labels = c('dalmatian', 'poodle', 'cat', 'whale'))) %>%
+  ggplot(aes(x = answer, y = prob, fill = source)) +
+    geom_bar(stat='identity', position = 'dodge') +
+    geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), color = 'gray', 
+                  position = position_dodge(width = 0.9), width = .25) +
+    theme_few(10) +
+    scale_fill_manual(values=cbPalette) +
+    facet_wrap(~ source) +
     ylim(0,1) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("answer in branching condition\nwhen asked 'Where is the animal?'")
 
 ggsave("../writing/2016/journal-manuscript/figures/BranchingModelComparison.pdf", 
-       width = 3.5, height=2)
-
+       width = 4, height=3)
 ```
 
 statistical test:
@@ -182,31 +218,69 @@ Make plot
 gs = c("G1", "G2", "G3", "G4")
 qs = c("Q1","Q2","Q3","Q4")
 collapsed_q <- d %>% 
-    mutate(response = ordered(questionNodes, levels = qs)) %>%
-    mutate(goal = ordered(goalNodes, levels = gs)) %>%
-    group_by(goal,type) %>%
-    filter(type == "overlapping") %>%
-    do(getProbsAndCIs(data = ., QorA = 'q', R = 1000, TRUE)) %>%
-    mutate(empirical = empProb) %>%
-    select(goal, type, response, count, lower_ci, upper_ci, 
-           groupSize, empirical)
+  mutate(response = ordered(questionNodes, levels = qs)) %>%
+  mutate(goal = ordered(goalNodes, levels = gs)) %>%
+  group_by(goal,type) %>%
+  filter(type == "overlapping") %>%
+  do(getProbsAndCIs(data = ., QorA = 'q', R = 1000, TRUE)) %>%
+  mutate(empirical = empProb) %>%
+  select(goal, type, response, count, lower_ci, upper_ci, 
+         groupSize, empirical) %>%
+  mutate(source = 'empirical')
+```
 
+```{r}
+Q1 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q1_unif') %>%
+  filter(posteriorProb == max(posteriorProb)) %>%
+  mutate(source = 'Q1') 
+Q2 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q2_unif') %>%
+  filter(posteriorProb == max(posteriorProb)) %>%
+  mutate(source = 'Q2')
+
+models = rbind(Q1, Q2) %>%
+  select(parameter, item1, item2, value, prediction, source) %>%
+  rename(goal = parameter, question = value, type = item1, domain = item2) %>%
+  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
+  mutate(goal = ordered(goal, levels = gs)) %>%
+  filter(type == 'overlapping' & goal == "G2") %>%
+  select(domain, question, prediction, source) %>%
+  group_by(question, source) %>%
+  summarize(prob = mean(prediction)) %>%
+  ungroup() %>%
+  mutate(lower_ci = NA, upper_ci = NA) 
+```
+
+plot 
+
+```{r}
+cbPalette = c(rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
 plottableQ = collapsed_q %>% 
   filter(goal == "G2") %>%
-  mutate(response = factor(response, levels = qs, 
-                           labels = c('lion?', 'cat?', 'pet?', 'animal?')))
+  ungroup() %>%
+  select(-type, -count, -goal, -groupSize) %>%
+  rename(prob = empirical, question = response) %>%
+  mutate(source = 'empirical') %>%
+  rbind(models) %>%
+  mutate(question = factor(question, levels = qs, 
+                           labels = c('lion?', 'cat?', 'pet?', 'animal?'))) %>%
+  mutate(source = ordered(source, levels = c('Q1', 'Q2', 'empirical')))
 
-(ggplot(plottableQ, aes(x = response, y = empirical))
+(ggplot(plottableQ, aes(x = question, y = prob, fill =source))
  + geom_bar(position = 'dodge', stat= 'identity')
  + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
-                 position = 'dodge', width =.25) 
- + ggtitle("Question asked in overlapping condition\nwhen goal is to find 'house cat'")
- + theme_few(9)
+                 position =position_dodge(width = 0.9), width =.25, color = 'gray') 
+ + ggtitle("question in overlapping condition\nwhen goal is to find 'house cat'")
+ + theme_few(10)
+ + scale_fill_manual(values=cbPalette) 
+ + facet_wrap(~ source)
  + ylim(0,1)
+ + theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
  + ylab('% participants'))
 
+
 ggsave("../writing/2016/journal-manuscript/figures/OverlappingModelComparison.pdf", 
-       width = 3.5, height=2)
+       width = 4, height=3)
 ```
 
 get statistical result
@@ -305,6 +379,28 @@ ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoods.pdf"
        width = 3.5, height=3)
 ```
 
+Inset
+
+```{r}
+modelComparison("questioner_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('emp', 'unif'), labels = c('empirical', 'uniform'))) %>%
+  mutate(model = ordered(model, levels = c('Q2', 'Q1', 'Q0'), labels = c('Q2', 'Q1', 'Q0'))) %>%
+  filter(model != "Q0") %>%
+  ggplot(aes(x = model, y = prob, fill = saliency)) +
+    geom_bar(stat = 'identity', position = 'dodge') +
+    guides(fill=guide_legend(title="Saliency prior")) +
+    ylab('log-likelihood') +
+    scale_fill_colorblind() +
+    theme_few(12) +
+    coord_cartesian(ylim=c(-360, -275)) +
+    theme(legend.position = 'top')
+
+ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoodsZoom.pdf", 
+       width = 3.5, height=3)
+```
+
 ## Examine parameter posteriors
 
 Set up helper functions. Note that we only look at the parameter posterior for the model that won our model comparison (otherwise this would be a mixture of the best parameters for each model we considered)
@@ -368,13 +464,7 @@ examinePredictives <- function(name, winningModel) {
   beta <- NA
   QorA <- toupper(substr(strsplit(name, '_')[[1]][1], 0, 1))
   samples = getRawPredictives(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
-    mutate(posteriorProb = exp(posteriorProb))  %>%
-    filter(posteriorProb > 0.0001) %>%
-    mutate(n = floor(posteriorProb*10000)) %>%
-    do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
-    select(-posteriorProb) %>%
-    mutate(type = as.character(item1),
-           domain = as.character(item2))
+    rawPredictivesToSamples()
 
   predictive = recode(samples, QorA)
 
@@ -404,6 +494,11 @@ examinePredictives <- function(name, winningModel) {
     #         legend.background = element_rect(fill = "transparent",colour = NA),
     #         legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
   )
+  if(winningModel %in% c('Q2_emp', 'Q1_emp')) {
+    predictive.plot <- predictive.plot + 
+      geom_point(data = subset(predictive, type == 'overlapping'), 
+                 aes(x = MAP, y = empProb), color = 'coral')
+  }
   outputfile <- paste0('../writing/2016/journal-manuscript/figures/',
                        name, '_model', winningModel, '.pdf')
   ggsave(outputfile, predictive.plot,
