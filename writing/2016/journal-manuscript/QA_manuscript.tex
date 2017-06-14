@@ -591,9 +591,9 @@ $Q_2$, however, prefers ``Cat?'' over ``Pet?'', because the other child of ``Cat
 
 \begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale = .9]{ResultsFig.png}
+\includegraphics[scale = .7]{ResultsFig.pdf}
 \end{center}
-\caption{(A-B) Qualitative results. Answerer responses on branching condition and questioner responses on overlapping condition. Labels shown from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% confidence intervals. (C) Quantitative model comparison; marginal likelihoods shown on log scale. (D) Posterior predictives for each model (excluding $A_0$ and $Q_0$).}
+\caption{(A-B) Key qualitative results, alongside model predictions. Answerer responses on branching condition and questioner responses on overlapping condition. Labels shown from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% confidence intervals. (C) Quantitative model comparison; marginal likelihoods shown on log scale. Insert zooms in on $Q_1$ and $Q_2$. (D) Posterior predictives for each model (excluding $A_0$ and $Q_0$). Colored dots indicate overlapping condition.}
 \label{fig:results}
 \end{figure*}
 %
@@ -709,9 +709,9 @@ For each label $x$, we computed the proportion of participants that clicked on e
 
 How does correcting this assumption affect our quantitative model predictions? The empirical saliency distributions we collected can be directly substituted in for $\mathcal{S}(o|x)$ when defining the literal semantics of ``Where is \emph{the}\dots?'' questions, used by $A_1$. To test whether a model using this empirically-measured non-uniform distribution provides a better fit to the data, we add an additional parameter $\beta \sim \textrm{Unif}[0,1]$ which interpolates between our original uniform salience prior ($\beta = 0$) and the empirical salience distribution we measured ($\beta = 1$). In other words, we assume participants use some mixture between the pure uniform and empirical and infer the mixture weight.
 
-First, because the testing question precedes the estimation questions \cite{Jeffreys, Simonsohn}, we conduct a new model comparison. We compute Bayes Factors marginalizing over both $\alpha$ and $\beta$ to test whether there is still support for $A_2$ and $Q_2$ after providing the flexibility to use empirical saliencies. We again found overwhelming evidence for $A_2$ over $A_1$ (BF $= \sim6 \times 10^{72}$) and strong evidence for $Q_2$ over $Q_1$ (BF $= \sim2\times 10^{7}$).
+First, we compute Bayes Factors marginalizing over both $\alpha$ and $\beta$ to test whether there is still support for $A_2$ and $Q_2$ after providing the flexibility to use empirical saliencies. We again found overwhelming evidence for $A_2$ over $A_1$ (BF $= \sim6 \times 10^{72}$) and strong evidence for $Q_2$ over $Q_1$ (BF $= \sim2\times 10^{7}$).
 
-Next, having established support for $A_2$ and $Q_2$, we test to extent to which the introduction of empirical saliencies improved our predictions. Again using Bayes Factors, which penalize our empirical saliency model for its additional flexibility, we found strong evidence against the nested $\beta=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants interpret questions using non-uniform saliencies. Finally, the posterior predictives for $A_2$ and $Q_2$ after including empirical saliencies explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively. Posteriors over alpha are similar to our previous results (see Appendix).
+Next, having established support for $A_2$ and $Q_2$, we test the extent to which the introduction of empirical saliencies improved our predictions. Again using Bayes Factors, which penalize our empirical saliency model for its additional flexibility, we found strong evidence against the nested $\beta=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants interpret questions using non-uniform saliencies (see Fig. \ref{fig:results}C). Finally, the posterior predictives for $A_2$ and $Q_2$ after including empirical saliencies explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively (see Fig. \ref{fig:results}D). Posteriors over alpha are similar to our previous results (see Appendix).
 
 %maximum a posteriori (MAP) beta values of $\beta = 0.5$ (95\% HPD $=[.4, .55]$) for our answerer model, and $\beta = 0.35$ (95\% HPD interval $= [0.3, 0.45]$) for our questioner model. 
 
