@@ -155,6 +155,9 @@ collapsed_a = d %>%
 get collapsed model predictives for plot
 
 ```{r}
+A0 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 'A0_unif') %>%
+  filter(posteriorProb == max(posteriorProb)) %>%
+  mutate(source = 'A0') 
 A1 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 'A1_unif') %>%
   filter(posteriorProb == max(posteriorProb)) %>%
   mutate(source = 'A1') 
@@ -162,7 +165,7 @@ A2 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 
   filter(posteriorProb == max(posteriorProb)) %>%
   mutate(source = 'A2')
 
-models = rbind(A1, A2) %>%
+models = rbind(A0, A1, A2) %>%
   select(parameter, item1, item2, value, prediction, source) %>%
   rename(question = parameter, answer = value, type = item1, domain = item2) %>%
   do(mutate(., answer = vectorizedMapAnswer(type, gsub(".$", "", answer)))) %>%
@@ -178,7 +181,7 @@ models = rbind(A1, A2) %>%
 Plot:
 
 ```{r}
-cbPalette = c(rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
+cbPalette = c(rgb(.6, .6, .4), rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
 collapsed_a %>% 
   filter(utterance == "Q4" & type == "branching") %>%
   ungroup() %>%
@@ -190,11 +193,11 @@ collapsed_a %>%
                        labels = c('dalmatian', 'poodle', 'cat', 'whale'))) %>%
   ggplot(aes(x = answer, y = prob, fill = source)) +
     geom_bar(stat='identity', position = 'dodge') +
-    geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), color = 'gray', 
-                  position = position_dodge(width = 0.9), width = .25) +
+    geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), color = rgb(0.15,0.15,0.15), 
+                  position = position_dodge(width = 0.9), width = 0) +
     theme_few(10) +
     scale_fill_manual(values=cbPalette) +
-    facet_wrap(~ source) +
+    facet_grid(~ source) +
     ylim(0,1) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     ggtitle("answer in branching condition\nwhen asked 'Where is the animal?'")
@@ -230,6 +233,9 @@ collapsed_q <- d %>%
 ```
 
 ```{r}
+Q0 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q0_unif') %>%
+  filter(alpha == 10 & beta == 0) %>%
+  mutate(source = 'Q0') 
 Q1 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q1_unif') %>%
   filter(posteriorProb == max(posteriorProb)) %>%
   mutate(source = 'Q1') 
@@ -237,7 +243,7 @@ Q2 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType 
   filter(posteriorProb == max(posteriorProb)) %>%
   mutate(source = 'Q2')
 
-models = rbind(Q1, Q2) %>%
+models = rbind(Q0, Q1, Q2) %>%
   select(parameter, item1, item2, value, prediction, source) %>%
   rename(goal = parameter, question = value, type = item1, domain = item2) %>%
   do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
@@ -254,7 +260,7 @@ models = rbind(Q1, Q2) %>%
 plot 
 
 ```{r}
-cbPalette = c(rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
+cbPalette = c(rgb(.6, .6, .4), rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
 plottableQ = collapsed_q %>% 
   filter(goal == "G2") %>%
   ungroup() %>%
@@ -264,16 +270,16 @@ plottableQ = collapsed_q %>%
   rbind(models) %>%
   mutate(question = factor(question, levels = qs, 
                            labels = c('lion?', 'cat?', 'pet?', 'animal?'))) %>%
-  mutate(source = ordered(source, levels = c('Q1', 'Q2', 'empirical')))
+  mutate(source = ordered(source, levels = c('Q0', 'Q1', 'Q2', 'empirical')))
 
 (ggplot(plottableQ, aes(x = question, y = prob, fill =source))
  + geom_bar(position = 'dodge', stat= 'identity')
  + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
-                 position =position_dodge(width = 0.9), width =.25, color = 'gray') 
+                 position =position_dodge(width = 0.9), width =0, color = rgb(.15, .15, .15)) 
  + ggtitle("question in overlapping condition\nwhen goal is to find 'house cat'")
  + theme_few(10)
  + scale_fill_manual(values=cbPalette) 
- + facet_wrap(~ source)
+ + facet_grid(~ source)
  + ylim(0,1)
  + theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
  + ylab('% participants'))
@@ -334,6 +340,7 @@ modelComparison <- function(name, useTypicality) {
 Answerers:
 
 ```{r}
+library(ggforce)
 # Marginalize over alpha
 comp.ans = modelComparison("answerer_modelComparisonParams")%>% 
   spread(modelType, prob) 
@@ -342,19 +349,55 @@ cat('\nBF (beta=0, answerer)', exp(comp.ans$A2_unif - comp.ans$A1_unif))
 modelComparison("answerer_modelComparisonParams")%>% 
   arrange(prob) %>%
   separate(col = modelType, into = c('model', 'saliency')) %>%
-  mutate(saliency = ordered(saliency, levels = c('emp', 'unif'), labels = c('empirical', 'uniform'))) %>%
-  mutate(model = reorder(model, order(prob, decreasing = T))) %>%
-  ggplot(aes(x = model, y = prob, fill = saliency)) +
-    geom_bar(stat = 'identity', position = 'dodge') +
-    guides(fill=guide_legend(title="Saliency prior")) +
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
+  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) %>%
+  ggplot(aes(x = model, y = prob, alpha=saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(alpha=guide_legend(title="Saliency prior")) +
     ylab('log-likelihood') +
-    scale_fill_colorblind() +
-    theme_few(12) +
-    theme(legend.position = 'top') 
+    scale_fill_manual(values = cbPalette) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    theme(legend.position = 'top',
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
 
 
 ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoods.pdf", 
-       width = 3.5, height=3)
+       width = 2, height=3)
+```
+zoomed in facet
+
+```{r}
+modelComparison("answerer_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
+  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) %>%
+  filter(model != 'A0') %>%
+  ggplot(aes(x = model, y = prob, alpha=saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(alpha=guide_legend(title="Saliency prior")) +
+    ylab('') +
+    scale_fill_manual(values = tail(cbPalette, 3)) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    coord_cartesian(ylim=c(-900, -500)) +
+    theme(legend.position = 'top', 
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg 
+ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoodsZoomed.pdf", 
+       width = 1.5, height=3)
 ```
 
 ```{r}
@@ -365,18 +408,27 @@ cat('\nBF (beta=0, questioner)', exp(comp.quest$Q2_unif - comp.quest$Q1_unif))
 modelComparison("questioner_modelComparisonParams")%>% 
   arrange(prob) %>%
   separate(col = modelType, into = c('model', 'saliency')) %>%
-  mutate(saliency = ordered(saliency, levels = c('emp', 'unif'), labels = c('empirical', 'uniform'))) %>%
-  mutate(model = ordered(model, levels = c('Q2', 'Q1', 'Q0'), labels = c('Q2', 'Q1', 'Q0'))) %>%
-  ggplot(aes(x = model, y = prob, fill = saliency)) +
-    geom_bar(stat = 'identity', position = 'dodge') +
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
+  mutate(model = ordered(model, levels = c('Q0', 'Q1', 'Q2'))) %>%
+  ggplot(aes(x = model, y = prob, alpha = saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
     guides(fill=guide_legend(title="Saliency prior")) +
     ylab('log-likelihood') +
-    scale_fill_colorblind() +
-    theme_few(12) +
-    theme(legend.position = 'top')
+    scale_fill_manual(values = cbPalette) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    theme(legend.position = 'top',
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
+
 
 ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoods.pdf", 
-       width = 3.5, height=3)
+       width = 2, height=3)
 ```
 
 Inset
@@ -385,20 +437,29 @@ Inset
 modelComparison("questioner_modelComparisonParams")%>% 
   arrange(prob) %>%
   separate(col = modelType, into = c('model', 'saliency')) %>%
-  mutate(saliency = ordered(saliency, levels = c('emp', 'unif'), labels = c('empirical', 'uniform'))) %>%
-  mutate(model = ordered(model, levels = c('Q2', 'Q1', 'Q0'), labels = c('Q2', 'Q1', 'Q0'))) %>%
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
   filter(model != "Q0") %>%
-  ggplot(aes(x = model, y = prob, fill = saliency)) +
-    geom_bar(stat = 'identity', position = 'dodge') +
-    guides(fill=guide_legend(title="Saliency prior")) +
+  mutate(model = ordered(model, levels = c('Q1', 'Q2'))) %>%
+  ggplot(aes(x = model, y = prob, alpha = saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(alpha=guide_legend(title="Saliency prior")) +
     ylab('log-likelihood') +
-    scale_fill_colorblind() +
-    theme_few(12) +
-    coord_cartesian(ylim=c(-360, -275)) +
-    theme(legend.position = 'top')
+    scale_fill_manual(values = tail(cbPalette, 3)) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    coord_cartesian(ylim=c(-350, -300)) +
+    theme(legend.position = 'top',
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
 
-ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoodsZoom.pdf", 
-       width = 3.5, height=3)
+
+ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoodsZoomed.pdf", 
+       width = 1.5, height=3)
 ```
 
 ## Examine parameter posteriors
@@ -434,7 +495,7 @@ examineParams <- function(name, useTypicality, winningModel) {
                    data=subset(samples, parameter == "beta"), 
                    adjust = 5, alpha=.2, fill="#FF6666")+
       facet_wrap(~parameter, scales = 'free') +
-      theme_few(9)
+      theme_few(10)
   
   print(questionParamPosterior)
   outputName = paste0("../writing/2016/journal-manuscript/figures/",
@@ -477,14 +538,14 @@ examinePredictives <- function(name, winningModel) {
     + ylab("")
     #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci))
     #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
-    + geom_point(alpha = .5, size=2)#aes(colour = domain, shape = type),  size = 2)
+    + geom_point(alpha = .5, size=1.5)#aes(colour = domain, shape = type),  size = 2)
     + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
     + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
 #    + ggtitle(title)
     #+ geom_smooth(method = "lm")
     + annotate('text', label = paste0('r =',cor_label), x= 0.8, y = 0.1)
     + coord_fixed()
-    + theme_few(12)
+    + theme_few(10)
     + theme(aspect.ratio = 1) 
     # + theme(rect = element_rect(fill = "transparent"), # bg of the panel
     #         panel.background = element_rect(fill = "transparent",colour = NA),
@@ -497,12 +558,13 @@ examinePredictives <- function(name, winningModel) {
   if(winningModel %in% c('Q2_emp', 'Q1_emp')) {
     predictive.plot <- predictive.plot + 
       geom_point(data = subset(predictive, type == 'overlapping'), 
-                 aes(x = MAP, y = empProb), color = 'coral')
+                 aes(x = MAP, y = empProb), color = rgb(0, .5, .8))
   }
+
   outputfile <- paste0('../writing/2016/journal-manuscript/figures/',
                        name, '_model', winningModel, '.pdf')
   ggsave(outputfile, predictive.plot,
-         width = 3, height = 3, bg = "transparent")
+         width = 1.8, height = 1.8, bg = "transparent")
   return(predictive.plot)
 }
 ```

@@ -350,6 +350,17 @@ printTable <- function(samples) {
                     value = estimate_mode(value)))
 }
 
+rawPredictivesToSamples <- function(predictives) {
+  return(predictives %>% 
+    mutate(posteriorProb = exp(posteriorProb))  %>%
+    filter(posteriorProb > 0.0001) %>%
+    mutate(n = floor(posteriorProb*10000)) %>%
+    do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
+    select(-posteriorProb) %>%
+    mutate(type = as.character(item1),
+           domain = as.character(item2)))
+}
+
 recode <- function(samples, QorA){
   if(QorA == 'A') {
     recoded = samples %>% 
@@ -389,8 +400,8 @@ getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
     mutate(t = floor((row_number()-1)/160)) %>%
     unite(key, parameter:value)%>%
     mutate(key = paste0(key, '~')) %>%
-    spread(key, prediction) %>%
-    filter(posteriorProb != '-Inf')
+    spread(key, prediction)# %>%
+    #filter(posteriorProb != '-Inf')
 
   if(!is.na(chosenBeta)) {
     raw <- raw %>%
