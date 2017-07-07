@@ -56,7 +56,7 @@ In this paper, we extend recent probabilistic cognitive models of goal-relevant 
 The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal. 
 Critically, this suggests that the question itself can be a signal to the speaker's underlying goals, and that a helpful answerer should be informative with respect to \emph{inferred} goals, beyond the literal meaning of the question. 
 We compare models within this framework based on three different pieces of evidence: 
-First, we examine classic effects in psycholinguistics showing that the same question can yield different answers depending on the relevant goal in context.
+First, we examine classic effects in psycholinguistics showing that the same question can yield different answers depending on the contextually relevant goal.
 Second, we run a real-time, multi-player communication game to jointly test predictions made by the questioner and answerer components of our model.
 Third, we show that the \emph{salience} of goals affects both asking and answering questions.
 We find that sophisticated pragmatic reasoning in dialogue is needed to account for critical aspects of the data.
@@ -74,7 +74,7 @@ At a very young age, children can strategically select \emph{who} to ask \cite{L
 Robots that ask questions to clarify commands \cite{DeitsTellex___Roy13_HumanRobotDialog} or obtain assistance with a task \cite{FongThorpeBaur03_RobotQuestions} make for better collaborators. 
 In tutoring scenarios, students who ask better questions tend to be more successful \cite{GraesserPerson94_QuestionAskingTutoring}, and scientists who design their studies to ask better questions can obtain much more informative results \cite{ClarkSchober92_InfluencingAnswers, MyungPitt09_OED}.
 
-A question is only as useful as its answer, however, and not all answers are created equal. How, then, does an answerer select from the broad range of possible responses? This is straightforward in some cases. For direct, factual questions, for example, an answerer can use the explicit meaning of the question, which specifies a particular gap in the questioner's knowledge, and respond with the requested piece of information if it is known: 
+A question is only as useful as its answer, however, and not all answers are equal. How does an answerer select from the broad range of possible responses? This is straightforward in some cases. For direct, factual questions, for example, an answerer can use the explicit meaning of the question, which specifies a particular gap in the questioner's knowledge, and respond with the requested piece of information (if it is known): 
 \enumsentence{
 	Q: Who was the 16th president of the U.S.?\\
 	A: Abraham Lincoln.}
@@ -103,7 +103,7 @@ Finally, there's a class of questions familiar to any classroom instructor, wher
 
  What do these exchanges have in common? Q strategically chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
 
-A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle interplay between a questioner choosing a question to ask and an answerer choosing  a response raises two specific questions for formal models of language behavior: What makes a question useful? And what makes an answer helpful? 
+A, in turn, reasons beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle interplay between a questioner choosing a question to ask and an answerer choosing  a response raises two specific questions for formal models of linguistic behavior: What makes a question useful? And what makes an answer helpful? 
 
 We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems}, that the value of a question is the extent to which it can be expected to elicit useful information from an answerer. 
 More specifically, for the questioner, the value of a question is the expected information gained relevant to her interests, given the set of likely answers it may provoke. The value of an answer, then, is the extent to which it resolves questioner uncertainty over the goal-relevant aspect of the world. 
@@ -116,7 +116,8 @@ The rest of this paper is structured as follows. First, we review previous exper
 %we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
 %We then formally individuate literal, explicit, and pragmatic models in this family, which represent different hypotheses about how questioners and answerers reason about their task. 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
-Because data on \emph{questioner} behavior is relatively sparse, and these classic results did not sufficiently test the questioner component of our model, we collected data in a real-time, multi-player communication task allowing us to manipulate private goals, potential questions, and potential answers. After testing the predictions of the different models on data from a simple version of the task, we use our models to discover conditions that disambiguate our hypotheses in a second experiment using a wider set of stimuli.
+Because data on \emph{questioner} behavior is relatively sparse, and these classic results did not sufficiently test the questioner component of our model, we collected data in a real-time, multi-player communication task allowing us to manipulate private goals, potential questions, and potential answers. After testing the predictions of the different models on data from a simple version of the task \ndg{we don't include the simple version anymore, do we?}, we use our models to discover conditions that disambiguate our hypotheses in a second experiment using a wider set of stimuli.
+\ndg{never really mention the salience stuff in intro...}
 We close with a brief discussion of how our approach grounds question-asking and answering in social cognition, noting the potential scalability of our framework to more complex discourse contexts, natural language understanding, and active learning.
 
 
