@@ -56,7 +56,7 @@ In this paper, we extend recent probabilistic cognitive models of goal-relevant 
 The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal. 
 Critically, this suggests that the question itself can be a signal to the speaker's underlying goals, and that a helpful answerer should be informative with respect to \emph{inferred} goals, beyond the literal meaning of the question. 
 We compare models within this framework based on three different pieces of evidence: 
-First, we examine classic effects in psycholinguistics showing that the same question can yield different answers depending on the contextually relevant goal.
+First, we examine classic effects in psycholinguistics showing that the same question can yield different answers depending on the context.
 Second, we run a real-time, multi-player communication game to jointly test predictions made by the questioner and answerer components of our model.
 Third, we show that the \emph{salience} of goals affects both asking and answering questions.
 We find that sophisticated pragmatic reasoning in dialogue is needed to account for critical aspects of the data.
@@ -112,7 +112,7 @@ Our contribution in this paper is threefold. First, while psychologists have lea
 
 %
 
-The rest of this paper is structured as follows. First, we review previous experimental results and formal models from the question-asking and question-answering literature. We then lay out the details of our computational approach  to questioner and answerer models, including several variants of each. We present a set of computational experiments demonstrating how this set of models captures three classic answerer-sensitivity effects.
+The rest of this paper is structured as follows. First, we review previous experimental results and formal models from the question-asking and question-answering literature. We then lay out the details of our computational approach  to questioner and answerer models, including several variants of each. We present a set of computational experiments demonstrating how these models capture three classic answerer-sensitivity effects.
 %we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
 %We then formally individuate literal, explicit, and pragmatic models in this family, which represent different hypotheses about how questioners and answerers reason about their task. 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
@@ -126,7 +126,7 @@ We close with a brief discussion of how our approach grounds question-asking and
 A number of psycholinguistic studies have provided evidence that answerers are both sensitive to a questioner's goals and attempt to be informative with respect to those goals.
 For instance, in Clark's \citeyear{Clark79_IndirectSpeechActs} classic study, researchers called liquor merchants and asked ``Does a fifth of Jim Beam cost more than \$5?'' Before asking the question, they provided some context for their call by saying either ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). 
 These contexts signaled different speaker goals. In the uninformative condition, the goal is simply to buy whiskey, hence the exact price would be useful information; in the five dollar condition, the goal was literally to find out whether or not the speaker could \emph{afford} the whiskey, so a yes/no answer would suffice. 
-If merchants inferred these goals from the context signal and responded with respect to these goals, we would expect different types of answers in the two conditions. Indeed, merchants gave a literal yes/no answer significantly more often in the latter condition than the former, where an exact price was more common. 
+If merchants inferred these goals from the context signal and responded with respect to these goals, we would expect different types of answers in the two conditions. Indeed, merchants gave a literal yes/no answer more often in the latter condition than the former, where an exact price was more common. 
 
 Goals can also be inferred from non-linguistic environmental cues. For instance, \citeA{DerHenstCarlesSperber02_RelevanceTellingTime} investigated answers to questions like ``Do you have the time?'' that permit answers with different degrees of approximation to the true time \cite<see also>{GibbsBryant08_OptimalRelevance}. In a baseline condition, participants who were approached in public typically rounded their answers to the nearest 5 or 10 minute interval even when they were wearing a digital watch. 
 %This showed that answerers were not simply reducing their \emph{own} effort, since rounding a time displayed on a digital watch requires an extra processing step. 
@@ -150,7 +150,7 @@ However, questioners must also select between many alternative questions in orde
 
 An artificial agent capable of flexibly answering questions posed in natural language would be valuable for a diversity of practical applications, from customer service and technical support to health care and financial consulting. It's no surprise, then, that the problem of question-answering has attracted attention from researchers in the artificial intelligence community for decades \cite{Simmons65_QuestionsComputer, Lehnert77_QuestionAnswering, AllenPerrault80_IntentionUtterances, GreenCarberry94_IndirectAnswersModel, MollaVicedo07_QARestrictedDomains}. Some of these systems are highly domain-restricted interfaces for databases, such as the kind that could be used to show airline customers flights that meet their criteria, but many build on insights from early work in cognitive science to represent questioner intentions as schemas or plans. For instance, the system designed by \citeA{AllenPerrault80_IntentionUtterances} uses a set of logical rules to generate a space of possible plans, searches this space using a set of heuristics, identifies obstacles to fulfilling this plan, and takes a set of actions to address the obstacles. 
 
-While AI researchers were building automated systems to answer questions, linguists were developing formal theories of what questions and answers meant in the first place, mainly focusing on the notion of informativeness. In Groenendijk and Stokhof's \citeyear{GroenendijkStokhof84_SemanticsOfQuestions} foundational work on question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others \cite{Ginzburg95_ResolvingQuestions} have pointed out, this predicts that wh-questions like ``Where do they sell Italian newspapers in Amsterdam?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location in the city. Clearly, this is not the case: a single nearby location would suffice. These theories also cannot account for contextual variation in what counts as a useful answer: if a media executive asked this same question at a corporate meeting, they might legitimately be requesting an exhaustive list.
+While AI researchers were building automated systems to answer questions, linguists were developing formal theories of what questions and answers meant in the first place, mainly focusing on the notion of informativeness. In Groenendijk and Stokhof's \citeyear{GroenendijkStokhof84_SemanticsOfQuestions} foundational work on question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible complete answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others \cite{Ginzburg95_ResolvingQuestions} have pointed out, this predicts that wh-questions like ``Where do they sell Italian newspapers in Amsterdam?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location in the city. Clearly, this is not the case: a single nearby location would suffice. These theories also cannot account for contextual variation in what counts as a useful answer: if a media executive asked this same question at a corporate meeting, they might legitimately be requesting an exhaustive list.
 
 More recent theories have tried to fix these problems by introducing some consideration of the questioner's goals. \citeA{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals in terms of a decision problem faced by the questioner and assumed to be in common ground. He considers two proposals for how meanings depend on this decision problem, ultimately arguing for the second. 
 
@@ -244,7 +244,7 @@ U_{A_0}(a;w) = \ln P_I(w|a)
 \end{equation}
 
 Critically, $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs about worlds, conditioning on the literal meaning of the utterance $a$ being true:
-$$P_I(w|a) = \delta_{\textrm{\den{a}}(w)} P(w)$$
+$$P_I(w|a) \propto \delta_{\textrm{\den{a}}(w)} P(w)$$
 where $\delta_{e}$ is the delta function returning 1 when $e$ evaluates to true and 0 otherwise, and $P(w)$ is a prior over true states of the world. 
 %In other words, the interpreter constrains the prior on worlds to the subset of its support that is consistent with the given utterance, and $A_0$ attempts to (soft)-maximize the probability of the true world in this posterior. 
 
@@ -261,8 +261,8 @@ Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speak
 %$$\widehat{P^g}(w') = \sum_{w\in\mathcal{W}} \delta_{w' = g(w)} P(w)$$ 
 Thus, we modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
 $$U_{A_1}(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a)$$
-where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
-$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$\todo[inline]{rdh: not 100\% satisfied with this notation}}.
+where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$.\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
+$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$\todo[inline]{rdh: not 100\% satisfied with this notation}}
 
 %$$
 %\begin{array}{rcl}
@@ -271,7 +271,7 @@ $$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$\todo[inline]{rdh: no
 %                 & = & \ln \sum_{w'\in\mathcal{W}} K_g(w,w')P_I(w' | a)
 %\end{array}
 %$$
-This modified speaker component suggests a simple proposal for a corresponding listener component: we use the semantics of the question $q$ itself as the goal projection:
+This modified utility suggests simply using the semantics of the question $q$ itself as the goal projection:
 $$P_{A_1}(a|q,w) \propto \exp(\alpha U_{A_1}(a; q,w))$$
 This implements one of the simplest plausible theories of answerers in dialogue: $A_1$ directly interprets a question as an epistemic goal, then informatively produces an utterance that reduces the questioner's uncertainty under that goal projection. 
 
@@ -297,7 +297,7 @@ U(q;g) & = & \E{P(a|q)}{IG^g(a,q)} \\
 $$
 %
 
-The expectation over likely answers $P(a|q)$ is computed by running an imagined answerer model forward, marginalizing over the possible worlds $w \in\mathcal{W}$ they might have knowledge of. The likelihood of an answer weights its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected prior distribution and posterior after hearing $a$.
+The expectation over likely answers $P(a|q)$ is computed by running an imagined answerer model forward, marginalizing over the possible worlds $w \in\mathcal{W}$ they might have knowledge of. The value of an answer depends on its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected prior distribution and posterior after hearing $a$.
 %
 $$
 IG^g(a,q) = \KL{\widehat{P^g}(w|q, a)}{\widehat{P^g}(w)}\\
@@ -305,9 +305,9 @@ $$
 %
 
 In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future and inverting that model to infer the true world the answerer was trying to communicate:
-$$P(w|q,a) = P_{A_i}(a| q, w)P(w)$$
+$$P(w|q,a) \propto P_{A_i}(a| q, w)P(w)$$
 
-Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret their question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. Critically, in contrast to \citeA{GroenendijkStokhof84_SemanticsOfQuestions} and \citeA{VanRooy03_QuestioningDecisionProblems}, the questioner's behavior is not governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it.
+Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. Critically, in contrast to \citeA{GroenendijkStokhof84_SemanticsOfQuestions} and \citeA{VanRooy03_QuestioningDecisionProblems}, the questioner's behavior is not governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it.
 
 \subsection{$A_2$: Goal-Sensitive Answerer}
 
@@ -359,9 +359,11 @@ By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an a
 %
 
 
-In the next section, we illustrate key properties of our \emph{answerers} by modeling several classic goal-sensitivity effects reported by \citeA{Clark79_IndirectSpeechActs}. These case studies center around three empirical observations about the factors determining answerer behavior in dialogue. First, and most obviously, answers should be sensitive to the surface form of the question utterance: ``Do you accept credit cards?'' should elicit a different distribution of responses than ``Where can I find a restroom?''. Second, answers should be sensitive to context: the \emph{same} question utterance elicits different responses across contexts where different goals are more or less likely. Third, and most subtly, answers should be sensitive to the cue provided by the question utterance itself toward the questioner's underlying goals.
 
-\section{Case studies in answerer sensitivity \\ from Clark (1979)}
+\section{Case studies in answerer sensitivity}
+
+In the this section, we illustrate key properties of our \emph{answerers} by modeling several classic goal-sensitivity effects reported by \citeA{Clark79_IndirectSpeechActs}. These case studies center around three empirical observations about the factors determining answerer behavior in dialogue. First, and most obviously, answers should be sensitive to the surface form of the question utterance: ``Do you accept credit cards?'' should elicit a different distribution of responses than ``Where can I find a restroom?''. Second, answers should be sensitive to context: the \emph{same} question utterance elicits different responses across contexts where different goals are more or less likely. Third, and most subtly, answers should be sensitive to the cue provided by the question utterance itself toward the questioner's underlying goals.
+
 
 % We proceed to demonstrate the way our model addresses four classic examples of question and answer pragmatics from the psycholinguistics literature. There has been little use of questioner behavior as a dependent variable in previous literature, hence our examples explore the sensitivity of the answerer to plausible goals of the questioner. 
 %These examples do not serve as a strong test of our model's predictions, because we will have to make post-hoc assumptions about prior distributions or goal spaces in each study.
