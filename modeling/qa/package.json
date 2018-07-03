@@ -1,11 +1,14 @@
 {
   "name": "qa",
-  "main" : "qa.js",
+  "main": "qa.js",
   "webppl": {
-    "wppl": ["guessingGameCore.wppl", "guessingGameWorldKnowledge.wppl"]
+    "wppl": [
+      "guessingGameCore.wppl",
+      "guessingGameWorldKnowledge.wppl"
+    ]
   },
   "dependencies": {
-    "underscore" : "~1.7.0",
-    "babyparse" : "*"
+    "lodash": "~4.17.4",
+    "babyparse": "*"
   }
 }
