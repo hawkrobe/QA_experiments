@@ -295,7 +295,53 @@ var butLast = function(xs){
   return xs.slice(0, xs.length-1);
 };
 
+// Meaning of answer is locations of all cards mentioned
+var locationAnswerMeaning = function(utterance){
+  return function(world){
+    return _.every(utterance, function(v) {
+      var components = v.split('_of_');
+      return _.find(world, {rank: components[0], suit: components[1]})['location'];
+    }) ? 1 : 0;
+  };
+};
 
+var nameToQUD = function(qudName) {
+  var components = qudName.split("_of_");
+  return function(world){
+    return _.find(world, {rank: components[0], suit: components[1]})['location'];
+  };
+};
+
+// Have to do two things in loop; compute normalizing constant & kernal thing
+var interpreterScore = function(trueWorld, answer, qudName, worldDist) {
+  var normalizingConstant = 0;
+  var collapsedVal = 0;
+  var worldStates = worldDist.support();
+  var f = locationAnswerMeaning(answer);
+  var qud = nameToQUD(qudName);
+  for(var i = 0; i < worldStates.length; i++) {
+    var worldState = worldStates[i];
+    var qudMatch = qud(trueWorld) === qud(worldState) ? 1 : 0;
+    normalizingConstant += (f(worldState) * Math.exp(worldDist.score(worldState)));
+    collapsedVal += (f(worldState) * Math.exp(worldDist.score(worldState)) * qudMatch);
+  }
+  return (Math.log(collapsedVal) -
+	  Math.log(normalizingConstant));
+};
+
+var A1Score = function(trueAnswer, question, world, config) {
+  var qudName = butLast(question).split('_is_')[1];
+  var normalizingConstant = 0;
+  for(var i = 0; i <config.answers.length; i++) {
+    var answer = config.answers[i];
+    var utility = interpreterScore(world, answer, qudName, config.worldPrior);
+    normalizingConstant += utility * config.rationality - answer.length;
+  }
+  console.log('after loop');
+  var trueScore = interpreterScore(world, trueAnswer, qudName, config.worldPrior);
+  return (Math.log(trueScore * config.rationality - trueAnswer.length) -
+	  Math.log(normalizingConstant));
+};
 
 var printERP = function(erp) {
   erp.support().map(
@@ -385,6 +431,8 @@ module.exports = {
   printERP: printERP,
   readCSV: readCSV,
   writeCSV: writeCSV,
+  interpreterScore: interpreterScore,
+  A1Score: A1Score,
   appendCSV: appendCSV,
   writeERP: writeERP,
   bayesianErpWriter: bayesianErpWriter,
