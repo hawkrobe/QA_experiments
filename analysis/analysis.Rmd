@@ -10,9 +10,9 @@ library(tidyverse)
 
 library(ggthemes)
 library(GGally)
-library(coda)
-library(boot)
-library(cowplot)
+# library(coda)
+# library(boot)
+# library(cowplot)
 
 source("./analysisHelpers.R")
 
@@ -330,6 +330,7 @@ cat(paste0(c('\nQ3-Q2 = ', estimate,
 modelComparison <- function(name, useTypicality) {
   # beta <- ifelse(useTypicality, NA, 0)
   data <- getRawParams(name)#, chosenBeta = beta)
+  View(data)
   return(data %>% 
     group_by(modelType) %>% 
     summarize(prob = reduce(logLikelihood, sumlogprob) - log(length(logLikelihood)))
@@ -665,4 +666,69 @@ Questioner
 Q1 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q1_emp')
 Q2 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q2_emp')
 #plot_grid(Q1, Q2)
+```
+
+# Make Clark simulation figure from model output on forest.db
+
+## Questioner distributions
+
+```{r}
+library(jsonlite)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+rbind(fromJSON(txt = '../modeling/simulations/outputFromForest/questionerWithAmExQUD.json') %>% mutate(source = 'AmEx'),
+      fromJSON(txt = '../modeling/simulations/outputFromForest/questionerWithBigQUD.json') %>% mutate(source = 'All cards')) %>%
+  separate(x, into = c('garbage', 'newX'), sep = 'Do you accept ') %>%
+  select(-garbage) %>%
+  mutate(y = y + 0.01) %>%
+  mutate(x = factor(newX, levels = c("AmericanExpress?", "MasterCard?", "Visa?", "CarteBlanche?", "Diners?", "credit cards?"))) %>%
+ggplot(aes(x = x, y = y)) +
+  geom_bar(stat = 'identity') +
+  facet_wrap(~ source, nrow = 3, ncol = 1) +
+  theme_few()+
+  ylim(0,1.01) +
+  xlab('number of cards') +
+  ylab('probability') + 
+  theme(aspect.ratio = 1, 
+        axis.text.y = element_text(size=10),
+        axis.text.x = element_text(size=10, angle=90, hjust=1), 
+        text = element_text(size=12)) 
+
+ggsave('../writing/2016/journal-manuscript/figures/questionerOutput.pdf', height = 4.51, width = 7.29)
+```
+
+```{r}
+rbind(fromJSON(txt = '../modeling/simulations/outputFromForest/QUDposteriorQ1.json') %>% mutate(source = 'Q1'),
+      fromJSON(txt = '../modeling/simulations/outputFromForest/QUDposteriorQ5.json') %>% mutate(source = 'Q5'),
+      fromJSON(txt = '../modeling/simulations/outputFromForest/QUDprior.json') %>% mutate(source = 'prior')) %>%
+ggplot(aes(x = x, y = y)) +
+  geom_bar(stat = 'identity') +
+  facet_wrap(~ source, nrow = 3, ncol = 1) +
+  theme_few()+
+  ylim(0,1) +
+  xlab('number of cards') +
+  ylab('probability') + 
+  theme(aspect.ratio = 1,  
+        text = element_text(size=10), 
+        axis.text.y = element_text(size=10),
+        axis.text.x = element_text(size=10)) 
+
+ggsave('../writing/2016/journal-manuscript/figures/goalPosteriors.pdf', height = 4.51, width = 7.29)
+```
+```{r}
+rbind(fromJSON(txt = '../modeling/simulations/outputFromForest/answerWithQ1.json') %>% mutate(source = 'Q1'),
+      fromJSON(txt = '../modeling/simulations/outputFromForest/answerWithQ5.json') %>% mutate(source = 'Q5')) %>%
+ggplot(aes(x = x, y = y)) +
+  geom_bar(stat = 'identity') +
+  facet_wrap(~ source, nrow = 3, ncol = 1) +
+  theme_few()+
+  ylim(0,1) +
+  #xlab('number of cards') +
+  ylab('probability') + 
+  theme(aspect.ratio = 1,  
+        text = element_text(size=12), 
+        axis.text.y = element_text(size=12),
+        axis.text.x = element_text(size=12)) 
+ggsave('../writing/2016/journal-manuscript/figures/answererOutput.pdf', height = 4.51, width = 7.29)
 ```
