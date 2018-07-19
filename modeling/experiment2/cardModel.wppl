@@ -8,15 +8,14 @@ var KL = function(erpTrue, erpApprox){
       var probP = Math.exp(scoreP);                          
       return probP == 0.0 ? 0.0 : probP * (scoreP - scoreQ); 
     }, values));                                             
-};                                                           
-///
+};
 
 //   ---------------
 // | World knowledge |
 //   ---------------
 
 // Questioner assumes all these cards are somewhere...
-var ranks = ['K', 'A']//['10', 'J', 'Q', 'K', 'A'];
+var ranks = ['K', 'A'];//, 'J', 'Q', 'K', 'A'];
 var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 var cards = _.flatten(map(function(suit) {
   return map(function(rank) {
@@ -48,15 +47,6 @@ var worldPrior = Infer({method: 'enumerate'}, function(){
 // | Question knowledge |
 //  -------------------
 
-// Project down to subspace of location of card in question
-var rankOfSuitQuestionMeaning = function(utterance) {
-  var components = qa.butLast(utterance).split("_is_")[1].split("_of_");
-  return function(world){
-    return _.map(filter(function(x) {x.rank == components[0] & x.suit == components[1]}, world),
-		  'location');
-  };
-};
-
 var questionPrior = Infer({method: 'enumerate'}, function(){
   var rank = uniformDraw(ranks);
   var suit = uniformDraw(suits);  
@@ -67,22 +57,26 @@ var questionPrior = Infer({method: 'enumerate'}, function(){
 // | Answer knowledge |
 //  -----------------
 
-// TODO: allow answers to contain multiple pieces of information
+var cardSets = map(function(v) {map(function(k){return k.rank + '_of_' + k.suit;}, v);},
+		   qa.powerset(cards));
+var answers = filter(function(v) {return v.length < 5 && v.length > 0;},
+		    cardSets);
 var answerPrior = Infer({method: 'enumerate'}, function() {
-  var rank = uniformDraw(ranks);
-  var suit = uniformDraw(suits);
-  return rank + "_of_" + suit;
+  return uniformDraw(answers);
 });
 
 var cardMatch = function(x, rank, suit) {
   return isRank(x, rank) && isSuit(x, suit);
 };
 
+// Meaning of answer is locations of all cards mentioned
 var locationAnswerMeaning = function(utterance){
-  var components = utterance.split('_of_');
   return function(world){
-    return filter(function(x) {return cardMatch(x, components[0], components[1]);},
-		  world)[0]['location'];
+    all(function(v) {
+      var components = v.split('_of_');
+      return filter(function(x) {return cardMatch(x, components[0], components[1]);},
+		    world)[0]['location'];
+    }, utterance);
   };
 };
 
@@ -91,22 +85,9 @@ var locationAnswerMeaning = function(utterance){
 //   -----------
 
 var meaning = function(utterance){
-  return (_.includes(questionPrior.support(), utterance) ? rankOfSuitQuestionMeaning(utterance) :
-          (_.includes(answerPrior.support(), utterance) ? locationAnswerMeaning(utterance) :
-           console.error('unknown utterance!', utterance)));
+  return (_.includes(answerPrior.support(), utterance) ? locationAnswerMeaning(utterance) :
+          console.error('unknown utterance!', utterance));
 };
-
-// Note that because answerer is symmetric across worlds,
-// and worlds have equal probability, we can just say
-// same or different from true world?
-var interpreter = cache(function(answer){                                     
-  return Infer({method: 'enumerate'}, function(){                             
-    var world = sample(worldPrior);
-    var answerMeaning = meaning(answer);
-    condition(answerMeaning(world));                                          
-    return world;                                                             
-  });                                                                         
-});                                                                           
 
 //  ------
 // | QUDs |
@@ -117,7 +98,7 @@ var qudPrior = function(goalSets){
 };
 
 // Project down to subspace of location of card in question
-var locationQUD = function(qudName, flag) {
+var locationQUD = function(qudName) {
   var components = qudName.split("_of_");
   return function(world){
     return _.map(filter(function(x) {x.rank == components[0] & x.suit == components[1]}, world),
@@ -132,73 +113,71 @@ var QUDPosteriorFromMeaning = function(question) {
     console.error('unknown question' + question);
 };
 
-var QUDPosteriorFromInference = function(question, context){
+var QUDPosteriorFromInference = dp.cache(function(question, context){
   return Infer({method: 'enumerate'}, function() {
     var qudName = qudPrior(context);
-    var q_erp = questioner('explicit', qudName);
-    observe(q_erp, question);
-    return qudName;
+    observe(questioner('explicit', qudName), question);
+    return uniformDraw(qudName);
   });
-};
+});
 
 var nameToQUD = function(qudName){
   if(qudName == 'identity') 
-    return function(v) {return v;};
-  // else if(_.isArray(qudName)) 
-  //   return locationQUD(uniformDraw(qudName));
-      // function(v) {all(function(q) {
-    //   var qud = locationQUD(q, 1);
-    //   return qud(v);
-    // }, qudName);};
+    return function(w) {return w;};
   else 
     return locationQUD(qudName);
 };
 
+// Note that because answerer is symmetric across worlds,
+// and worlds have equal probability, we can just say
+// same or different from true world?
+
 //  -------
 // | Models |
 //  -------
-                                                                         
-var getProjectedWorldPrior = function(qudName) {                             
-  var qud = nameToQUD(qudName);                                              
-  return Infer({method: 'enumerate'}, function(){
+
+var getPriorProb = dp.cache(function(goal) {
+  var qud = nameToQUD(goal);                                              
+  return Infer({method: 'enumerate'}, function() {
     var world = sample(worldPrior);
-    return qud(world);
-  });                                                                        
-};                                                                           
+    return qud(world) ? 0 : uniformDraw(_.range(1,cards.length));
+  });
+});
 
-var rationality = 5;
+// Simplification for this simple problem...
+var getPosteriorProb = dp.cache(function(type, answer, goal) {
+  var qud = nameToQUD(goal);
+  var likelihood = Infer({method: 'enumerate'}, function() {
+    var w = sample(worldPrior);
+    condition(meaning(answer)(w));
+    return qud(w);
+  }).score(true);
+  return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
+});
 
-var questioner = dp.cache(function(type, goalSet) {
+var Qrationality = 10;
+var Arationality = 3;
+var goalContext = [['A_of_hearts', 'K_of_spades', 'K_of_hearts', 'K_of_clubs'],
+		   ['A_of_hearts', 'K_of_spades', 'K_of_diamonds', 'A_of_diamonds'],
+		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_clubs', 'A_of_clubs'],
+//		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_', 'K_of_clubs']
+		  ];
+
+var questioner = dp.cache(function(type, trueGoal) {
   return Infer({method: 'enumerate'}, function() {
     var question = sample(questionPrior);
-    console.log('question: ' + question);
-
-    var goal = uniformDraw(goalSet);
-    console.log('goal: ' + goal);
-
+    var goal = uniformDraw(trueGoal);
+//    console.log('thinking about question ' + question + ' with goal ' + goal);
     // Note here that probabilities of diff. possible worlds is already reflected in
     // definition of true world (and alternatives)
-    var possibleAnswer = answerer(type, question, trueWorld);
-    console.log('possible answer:');
-    console.log(possibleAnswer);
-    var prior = getProjectedWorldPrior(goal);
-    console.log('prior');
-    console.log(prior);
+    var possibleAnswer = answerer(type, question, trueWorld, goalContext);
 
-    var infGain = function(answer){
-      console.log(answer);
-      // TODO: double-check this... 
-      var posterior = Infer({method: 'enumerate'}, function(){
-        var world = sample(worldPrior);
-        observe(answerer(type, question, world), answer);
-        return nameToQUD(goal)(world);
-      });
-      console.log('posterior');
-      console.log(posterior);
-
-      return KL(posterior, prior);
-    };
-    factor(expectation(possibleAnswer, infGain) * rationality);
+    var infGain = expectation(possibleAnswer, function(answer){
+      var priorProb = getPriorProb(goal);
+      var posteriorProb = getPosteriorProb(type, answer, goal);
+      return KL(posteriorProb, priorProb);
+    });
+    factor(infGain * Qrationality);
     return question;
   });
 });
@@ -208,43 +187,20 @@ var answerer = dp.cache(function(type, question, trueWorld, context) {
                       type === 'explicit' ? QUDPosteriorFromMeaning(question) :
                       type === 'literal' ? Delta({v: 'identity'}) :
                       console.error('type not recognized'));
-  console.log(qudPosterior);
+  if(type == 'pragmatic') {
+    console.log('qud posterior for question ' + question);
+    console.log(qudPosterior);
+  }
   return Infer({method: 'enumerate'}, function(){
-    var qud = nameToQUD(sample(qudPosterior));
     var answer = sample(answerPrior);
-    var utility = expectation(interpreter(answer), function(possibleWorld) {
-      return qud(possibleWorld) == qud(trueWorld);
+    var newUtility = expectation(qudPosterior, function(qudName) {
+      return qa.interpreterScore(trueWorld, answer, qudName, worldPrior);
     });
-    factor(Math.log(utility) * rationality);      
+    factor(newUtility * Arationality - answer.length);      
     return answer;
   });
 });
 
-var trueWorld = sample(worldPrior);
-var goalContext = [['A_of_hearts', 'K_of_spades', 'K_of_hearts', 'K_of_clubs'],
-		   ['A_of_hearts', 'K_of_spades', 'K_of_diamonds', 'A_of_diamonds'],
-		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_clubs', 'A_of_clubs'],
-		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_hearts', 'K_of_clubs']];
-//answerer('explicit', 'where_is_K_of_hearts?', goalContext);
 //questioner('explicit', goalContext[0]);
-answerer('pragmatic', 'where_is_K_of_hearts?', trueWorld, goalContext);
-// var qud = nameToQUD(goalContext[0]);
-// qud( [{"suit":"hearts","rank":"K","location":true},{"suit":"hearts","rank":"A","location":true},{"suit":"diamonds","rank":"K","location":true},{"suit":"diamonds","rank":"A","location":true},{"suit":"clubs","rank":"K","location":true},{"suit":"clubs","rank":"A","location":false},{"suit":"spades","rank":"K","location":true},{"suit":"spades","rank":"A","location":true}]);
-// Infer({method: 'enumerate'}, function(){
-//   var world = sample(worldPrior);
-//   observe(answerer('explicit', 'where_is_K_of_hearts?', world), 'K_of_hearts');
-//   return world//nameToQUD(goalContext[0])(world);
-// });
-// var world = 4;
-
-// print('A0:');
-// viz.table(answerer('literal', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
-// viz.table(answerer('literal', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
-
-// print('A1:');
-// viz.table(answerer('explicit', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
-// viz.table(answerer('explicit', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
-
-// print('A2:')
-// viz.table(answerer('pragmatic', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
-// viz.table(answerer('pragmatic', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
+//answerer('pragmatic', 'where_is_K_of_spades?', trueWorld, goalContext);
+questioner('pragmatic', goalContext[0]);

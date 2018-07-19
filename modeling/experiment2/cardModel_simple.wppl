@@ -27,7 +27,7 @@ var bernoulliKL = function(p, q){
 //   ---------------
 
 // Questioner assumes all these cards are somewhere...
-var objs = ['o1', 'o2', 'o3', 'o4']//['10', 'J', 'Q', 'K', 'A'];
+var objs = ['o1', 'o2', 'o3', 'o4']//, 'o4']//['10', 'J', 'Q', 'K', 'A'];
     
 // In principle, we have uncertainty over exact locations in a grid-world
 // but to reduce computational complexity, we simply represent whether same
@@ -66,36 +66,47 @@ var questionPrior = Infer({method: 'enumerate'}, function(){
 //  -----------------
 
 //var objSets = qa.powerset(objs);
-var new_answers = objs;
-var old_answers = _.flatten(map(function(o) {
-  return map(function(loc) {
-    return o + '@' + loc;
-  }, _.range(objs.length));
-}, objs));
+var new_answers = qa.powerset(objs);
+var old_answers = Infer({method: 'enumerate'}, function() {
+  var objSet = uniformDraw(qa.powerset(objs));
+  
+  var locSet = uniformDraw(qa.powerset(_.range(objs.length)));
+  condition(objSet.length == locSet.length);
+  var locSeq = uniformDraw(qa.permute(locSet));
+  return map2(function(obj, loc) {obj + '@' + loc}, objSet, locSeq);
+}).support();
 
 var new_answerPrior = Infer({method: 'enumerate'}, function() {
-  return uniformDraw(new_answers);
+  var answer = uniformDraw(new_answers);
+  condition(answer.length > 0);
+  return answer;
 });
 
 var old_answerPrior = Infer({method: 'enumerate'}, function() {
-  return uniformDraw(old_answers);
+  var answer = uniformDraw(old_answers);
+  condition(answer.length > 0);
+  return answer;
 });
 
 
 // Meaning of answer is locations of all cards mentioned
 var new_locationAnswerMeaning = function(utterance){
   return function(world){
-    return filter(function(x) {return x.obj == utterance;},
-		  world)[0]['location'];
+    all(function(v) {
+      return filter(function(x) {return x.obj == v;},
+		    world)[0]['location'];
+    }, utterance);
   };
 };
 
 var old_locationAnswerMeaning = function(utterance){
-  var obj = utterance.split('@')[0];
-  var loc = utterance.split('@')[1];
   return function(world){
-    return filter(function(x) {return x.obj == obj;},
-		  world)[0]['location'] == loc;
+    all(function(v) {
+      var obj = v.split('@')[0];
+      var loc = v.split('@')[1];
+      return filter(function(x) {return x.obj == obj;},
+		    world)[0]['location'] == loc;
+    }, utterance);
   };
 };
 
@@ -131,6 +142,18 @@ var locationQUD = function(qudName) {
   };
 };
 
+var qudPrior = function(goalSets){
+  return uniformDraw(goalSets);
+};
+
+var QUDPosteriorFromInference = dp.cache(function(question, context, version){
+  return Infer({method: 'enumerate'}, function() {
+    var qudName = qudPrior(context);
+    observe(Q('explicit', qudName, version), question);
+    return uniformDraw(qudName);
+  });
+});
+
 var QUDPosteriorFromMeaning = function(question) {
   if(_.includes(questionPrior.support(), question))
     return Delta({v: qa.butLast(question).split('_is_')[1]});
@@ -158,94 +181,79 @@ var nameToQUD = function(qudName){
 var makeTruthfulAnswerPrior = dp.cache(function(answerPrior, trueWorld, version) {
   return Infer({method: 'enumerate'}, function(){
     var answer = sample(answerPrior);
-    factor(interpreter(answer, version).score(trueWorld));
+    condition(_.isFinite(interpreter(answer, version).score(trueWorld)));
     return answer;
   });
 });
 
+// For prior & posterior, need to break out true/false into actual locations and
 var getPriorProb = dp.cache(function(goal, version) {
   var qud = nameToQUD(goal);
   var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
   return Infer({method: 'enumerate'}, function() {
     var world = sample(worldPrior);
-    return qud(world);
+    return (version == 'old' ? qud(world) :
+	    (qud(world) ? 0 : uniformDraw(_.range(1,objs.length))));
   });                                                                        
 });                                                                           
 
-var getPosteriorProb = dp.cache(function(question, answer, goal, version) {
+// Takes a coarse-grained true/false world and converts back to original space (with symmetry)
+// TODO: is there some way of breaking down the possible locations corresponding to
+// the 'false' world here? 
+var getSubsetOfWorlds = dp.cache(function(answer, goal, version) {
+  var qud = nameToQUD(goal);
+  var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
+  var likelihood = Infer({method: 'enumerate'}, function() {
+    var w = sample(worldPrior);
+    condition(meaning(answer, 'new')(w));
+    return qud(w);
+  }).score(true);
+  return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
+});
+
+var getPosteriorProb = dp.cache(function(question, answer, goal, version, type) {
   var qud = nameToQUD(goal);
   var worldPrior = version == 'new' ? Delta({v:new_trueWorld}) : old_worldPrior;
   return Infer({method: 'enumerate'}, function() {
     var world = sample(worldPrior);
-    observe(A1(question, world, version), answer);
+    observe(A(type, question, world, version), answer);
     return qud(world);
   });
 });
 
-var rationality = 5;
-var goalContext = [['A_of_hearts', 'K_of_spades', 'K_of_hearts', 'K_of_clubs'],
-		   ['A_of_hearts', 'K_of_spades', 'K_of_diamonds', 'A_of_diamonds'],
-		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_clubs', 'A_of_clubs'],
-		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_spades', 'K_of_clubs']];
+var rationality = 10;
+var goalContext = [['o2', 'o3', 'o1'],
+		   ['o1', 'o2', 'o4']
+		  ];
 
-var Q1 = dp.cache(function(goal, version) {
+var Q = dp.cache(function(type, goalSet, version) {
   var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
-  var qud = nameToQUD(goal);
   return Infer({method: 'enumerate'}, function() {
+    var goal = uniformDraw(goalSet);
     var question = sample(questionPrior);
     var possibleAnswer = (
       version == 'new' ?
-	A1(question, new_trueWorld, version) :
+	A(type, question, new_trueWorld, version) :
 	Infer({method: 'enumerate'}, function() {
 	  var trueWorld = sample(worldPrior);
-	  return sample(A1(question, trueWorld, version));
+	  return sample(A(type, question, trueWorld, version));
 	})
     );
     var infGain = expectation(possibleAnswer, function(answer){
-      console.log(answer);
-      var priorProb = (version == 'old' ? getPriorProb(goal, version) :
-		       Infer({method: 'enumerate'}, function() {
-			 var likelihood = getPriorProb(goal, version).score(true);
-			 console.log(Math.round(1/Math.exp(likelihood)));
-			 return randomInteger(Math.round(1/Math.exp(likelihood)));
-		       }));
-      console.log('prior');
-      console.log(version == 'old' ? priorProb : Math.exp(priorProb));
-      var posteriorProb = (version == 'old' ? getPosteriorProb(question, answer, goal, version) :
-			   getSubsetOfWorlds(question, answer,goal,version));
-
-      console.log('posterior');
-      //console.log('KL ' + bernoulliKL(Math.exp(posteriorProb), Math.exp(priorProb)));
+      var priorProb = getPriorProb(goal, version);
+      var posteriorProb = (version == 'old' ?
+			   getPosteriorProb(question, answer, goal, version, type) :
+			   getSubsetOfWorlds(answer,goal,version));
       return KL(posteriorProb, priorProb);
     });
-    console.log('inf gain: ' + infGain);
-//    console.log(infGain);
     factor(infGain * rationality);
     return question;
   });
 });
 
-// TODO: is there some way of breaking down the possible locations corresponding to
-// the 'true' world here? or can we just assume for here that it's true
-var getSubsetOfWorlds = dp.cache(function(question, answer, goal, version) {
-  var qud = nameToQUD(goal);
-  var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
-  var likelihood = Infer({method: 'enumerate'}, function() {
-    var w = sample(worldPrior);
-    //observe(A1(question, w, version), answer);
-    condition(meaning(answer, version)(w));
-    console.log(w);
-    console.log(meaning(answer, version)(w));
-    return qud(w);
-  }).score(true);
-  return Infer({method: 'enumerate'}, function() {
-    console.log(Math.round(1/Math.exp(likelihood)));
-    return randomInteger(Math.round(1/Math.exp(likelihood)));
-  });
-});
-
-var A1 = dp.cache(function(question, trueWorld, version) {
-  var qudPosterior = QUDPosteriorFromMeaning(question);
+var A = dp.cache(function(type, question, trueWorld, version) {
+  var qudPosterior = (type == 'explicit' ? QUDPosteriorFromMeaning(question) :
+		      QUDPosteriorFromInference(question, goalContext, version));
   var answerPrior = version == 'old' ? old_answerPrior : new_answerPrior;
   return Infer({method: 'enumerate'}, function(){
     var answer = (version == 'old' ?
@@ -256,34 +264,21 @@ var A1 = dp.cache(function(question, trueWorld, version) {
     var newUtility = expectation(interpreter(answer, version), function(w) {
       return qud(w) == qud(trueWorld);
     });
-    factor(newUtility * rationality);      
+    factor(newUtility * rationality - answer.length);      
     return answer;
   });
 });
 
-// console.log(A1('where_is_o2?',
-// 	       [{"obj":"o1","location":true},{"obj":"o2","location":true},{"obj":"o3","location":true}],
-// 	       'new'))
-//console.log(getSubsetOfWorlds('where_is_o2?', 'o3', 'o2', 'new'));
 
 // NOTES:
 // 1. collapsing worlds & answer space equivalent to restricting to only 'true' answers...
 
-//
-var version = 'old';
+var version = 'new';
 var trueWorld = version == 'old' ? old_trueWorld : new_trueWorld;
-//A1('where_is_o2?', trueWorld, version);
-Q1('o3', version);
-//answerer('explicit', 'where_is_K_of_hearts?', trueWorld, goalContext);
-//questioner('pragmatic', goalContext[0]);
-// var qud = nameToQUD(goalContext[0]);
-// qud( [{"suit":"hearts","rank":"K","location":true},{"suit":"hearts","rank":"A","location":true},{"suit":"diamonds","rank":"K","location":true},{"suit":"diamonds","rank":"A","location":true},{"suit":"clubs","rank":"K","location":true},{"suit":"clubs","rank":"A","location":false},{"suit":"spades","rank":"K","location":true},{"suit":"spades","rank":"A","location":true}]);
-// Infer({method: 'enumerate'}, function(){
-//   var world = sample(worldPrior);
-//   observe(answerer('explicit', 'where_is_K_of_hearts?', world), 'K_of_hearts');
-//   return world//nameToQUD(goalContext[0])(world);
-// });
-// var world = 4;
+// A('explicit', 'where_is_o1?', trueWorld, version);
+// Q('explicit', ['o3', 'o1'], version);
+//A('pragmatic', 'where_is_o1?', trueWorld, version);
+Q('pragmatic', ['o1', 'o2', 'o4'], version);
 
 // print('A0:');
 // viz.table(answerer('literal', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
