@@ -1,4 +1,5 @@
 .DS_Store
+*.nb.html
 .RData
 .Rhistory
 auth.json
@@ -8,6 +9,9 @@ node_modules
 *.bbl
 *.blg
 *.log
+*.top
+*.tui
+*-mpgraph.mp
 *.fff
 *.synctex.gz
 cogsci_qa.pdf
