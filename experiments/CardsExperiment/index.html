@@ -37,7 +37,6 @@
   <body>
 
     <div id='header'>
-      <button id='submitbutton' style="display: none;">Submit board</button>
       <div id='textInfo'>
 	<h1 id='roleLabel'></h1> 
 	<p id='instructs'> </p>
@@ -46,9 +45,10 @@
       <p style="color:red" id='roundnumber'>Waiting room</p>
       <p style="color:green" id='score'> </p>
     </div>
-    
 
-    <div id='main'>
+    <p id="waiting"></p>
+
+    <div id='main' style='display:none'>
       <span>
         <div id='message_panel'>
 	  <ul id="messages"></ul>
@@ -64,9 +64,13 @@
             </form>
           </div>
         </div>
+	<div id='goal_panel' style="display:none">
+	  <h1>Goals</h1>
+	  <div id="goals" class="grid"></div>
+	</div>
+
 	<div id='context_panel'>
-	  <p id="waiting"></p>
-	  <div id="context" class="grid"></div>
+	  <div id="context" class="grid" style="display:none"></div>
 	  <button id="advance_button"
 		  style="width:100px; height:50px;font-size:150%;margin: 20px;display:none"
 		  onclick="advanceRound()">
@@ -75,27 +79,27 @@
 	</div>
     </div>
 
-    <div id="dimScreen" style="display:none"></div>
+    <!-- <div id="dimScreen" style="display:none"></div> -->
 
-    <div id="post_test" style="display:none">
-      <span>
-	<div id="transition_text">
-	  <p>Now that you've made up a language together, can you tell us what different words mean?</p>
-	  <br />
-	  <p>In the final part of this experiment, you'll be doing two short tasks:</p>
-	  <br />
-	  <p>In one, we'll show you a <b>word</b> and ask you which objects it refers to.</p>
-	  <br />
-	  <p>In the other, we'll show you an <b>object</b> and ask you which words refer to it.<p>
-	    <br />
-	  <p>Ready to begin?</p>
-	  <button id="transition_button" style="width:100px; height:50px;font-size:150%;margin: 20px"> Next </button>
-	</div>
-	<p id="post_test_instruction"></p>
-        <div id="word_grid" class="grid"></div>
-        <div id="object_grid" class="grid"></div>
-	<button id="post_test_button" style="width:100px; height:50px;font-size:150%;margin: 20px;"> Next </button>
-    </div>
+    <!-- <div id="post_test" style="display:none"> -->
+    <!--   <span> -->
+    <!-- 	<div id="transition_text"> -->
+    <!-- 	  <p>Now that you've made up a language together, can you tell us what different words mean?</p> -->
+    <!-- 	  <br /> -->
+    <!-- 	  <p>In the final part of this experiment, you'll be doing two short tasks:</p> -->
+    <!-- 	  <br /> -->
+    <!-- 	  <p>In one, we'll show you a <b>word</b> and ask you which objects it refers to.</p> -->
+    <!-- 	  <br /> -->
+    <!-- 	  <p>In the other, we'll show you an <b>object</b> and ask you which words refer to it.<p> -->
+    <!-- 	    <br /> -->
+    <!-- 	  <p>Ready to begin?</p> -->
+    <!-- 	  <button id="transition_button" style="width:100px; height:50px;font-size:150%;margin: 20px"> Next </button> -->
+    <!-- 	</div> -->
+    <!-- 	<p id="post_test_instruction"></p> -->
+    <!--     <div id="word_grid" class="grid"></div> -->
+    <!--     <div id="object_grid" class="grid"></div> -->
+    <!-- 	<button id="post_test_button" style="width:100px; height:50px;font-size:150%;margin: 20px;"> Next </button> -->
+    <!-- </div> -->
 
     <div id="exit_survey" style="display:none">
       <br><br><br><br><br>

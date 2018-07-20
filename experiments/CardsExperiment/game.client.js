@@ -1,5 +1,3 @@
-
-
 //   Copyright (c) 2012 Sven "FuzzYspo0N" Bergström,
 //                   2013 Robert XD Hawkins
 
@@ -38,8 +36,6 @@ var client_onserverupdate_received = function(data){
     });
   }
 
-  console.log(data.trialInfo);
-  
   if (globalGame.roundNum != data.roundNum) {
     globalGame.goalSets = data.trialInfo.currStim.goalSets;
     globalGame.targetGoal = data.trialInfo.currStim.target;
@@ -64,6 +60,9 @@ var client_onserverupdate_received = function(data){
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();
+    $('#context').show();
+    $('#goal_panel').show();
+
     globalGame.get_player(globalGame.my_id).message = "";
 
     // reset labels
@@ -71,19 +70,19 @@ var client_onserverupdate_received = function(data){
     $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
 
     // Insert labels & show dropzone
-    $('#labels').empty().append(
-      _.map(globalGame.labels, (word) => {
-	return '<p class="cell draggable drag-drop">' + word + '</p>';
-      }))
-      .append('<div id="chatarea" class="dropzone"></div>');
+    // $('#labels').empty().append(
+    //   _.map(globalGame.labels, (word) => {
+    // 	return '<p class="cell draggable drag-drop">' + word + '</p>';
+    //   }))
+    //   .append('<div id="chatarea" class="dropzone"></div>');
 
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
       enableLabels(globalGame);
       $('#advance_button').hide();
       $('#instructs')
 	.empty()
-	.append("<p>Click & drag one word down to the grey box</p>" +
-		"<p>so the listener can fill the order!</p>");
+	.append("<p>Fill in the question</p>" +
+		"<p>so your partner can help you find the cards!</p>");
     } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
       disableLabels(globalGame);
       $('#advance_button').show().attr('disabled', 'disabled');

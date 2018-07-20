@@ -214,19 +214,19 @@ ALOT...don't understand how to adjust that.*/
 
 #message_panel {
 	height: 90%;
-	width: 40%;
+	width: 25%;
 
 	float: left;
 
-	margin-left: 5%;
-	margin-right: 5%;
+	margin-left: 2.5%;
+	margin-right: 2.5%;
 	list-style-type: none;
 
 	border: solid 1px #999;
 }
 
 #messages {
-	height:90%;
+	height:80%;
 	text-align: left;
 	font-size: 200%;
 	overflow-y: scroll;
@@ -240,7 +240,7 @@ ALOT...don't understand how to adjust that.*/
 
 #chatarea input {
     border: 0; 
-    height: 99%;
+    height: 50%;
     font-size: 125%;
     border-radius: 5px;
     width: 50%;
@@ -252,8 +252,9 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #chatarea button {
-	width: 12%; 
-	height: 5vh;
+	width: 25%; 
+	height: 50%;
+	border-radius: 5px;
 	font-size: 150%;
 	background: rgb(130, 224, 255); 
 	border: none; 
@@ -261,6 +262,26 @@ ALOT...don't understand how to adjust that.*/
 	margin-left: .5%;
 	margin-right: .5%;
 	float:bottom;
+}
+
+#exit_survey {
+    height: auto;
+    width: auto;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto ;
+    left:0; right:0; top:10%; bottom: 0;
+    position: absolute;
+}
+
+#goal_panel {
+    height: 90%;
+    width: 20%;
+    float: left;
+    border: 1px;
+    border-color: white;
+   list-style-type: none;
 }
 
 #context_panel {
