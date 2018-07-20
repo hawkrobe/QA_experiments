@@ -44,9 +44,21 @@ function highlightCell(color, condition) {
   }
 }
 
+function initGoals(goalSets, target) {
+  console.log(goalSets);
+  _.forOwn(goalSets, function(value, key) {
+    var div = $('<div/>')
+	.attr({style: `background-color: #219600; grid-row: ${key[1]}`});
+    var card = $('<img/>').attr({
+      height: '100%', width: '65%', src: '/images/' + value + '.png', 'data-name' : value,
+      style : `margin-left: auto; margin-right: auto; vertical-align: middle`
+    });
+    $("#goal_panel").append(card);
+  });
+}
+
 function initGrid(objects) {
   // Add objects to grid
-  console.log(objects);
   _.forEach(_.range(1, 5), x => {
     _.forEach(_.range(1, 5), y => {
       var div = $('<div/>')
@@ -61,11 +73,6 @@ function initGrid(objects) {
       $("#context").append(div);
     });
   });
-
-  // TODO: Mark goal target(s) for speaker (above grid)
-  // if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-  //   highlightCell('grey', x => x.targetStatus == 'target'); 
-  // }
 
   // Unbind old click listeners if they exist
   $('#context img')
@@ -85,6 +92,7 @@ var drawScreen = function(game, player) {
     $('#waiting').html(player.message);
   } else {
     $('#waiting').html('');
+    initGoals(game.goalSets, game.target);    
     initGrid(game.objects);
   }
 };

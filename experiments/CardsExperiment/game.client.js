@@ -59,9 +59,7 @@ var client_onserverupdate_received = function(data){
 
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
-    $('#messages').empty();
-    $('#context').show();
-    $('#goal_panel').show();
+    $('#main').show();
 
     globalGame.get_player(globalGame.my_id).message = "";
 
