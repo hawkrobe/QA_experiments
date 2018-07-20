@@ -37,26 +37,16 @@ var client_onserverupdate_received = function(data){
       z[1].id = z[0].id;
     });
   }
+
+  console.log(data.trialInfo);
   
   if (globalGame.roundNum != data.roundNum) {
-    globalGame.objects = _.map(data.trialInfo.currStim, function(obj) {
-      // Extract the coordinates matching your role &
-      // remove the speakerCoords and listenerCoords properties
-      var customCoords = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
-			  obj.speakerCoords : obj.listenerCoords);
-      console.log(customCoords);
-      var customObj = _.chain(obj)
-	  .omit('speakerCoords', 'listenerCoords')
-	  .extend(obj, {
-	    trueX : customCoords.trueX, trueY : customCoords.trueY,
-	    gridX : customCoords.gridX, gridY : customCoords.gridY,
-	    box : customCoords.box
-	  })
-	  .value();
-      
+    globalGame.goalSets = data.trialInfo.currStim.goalSets;
+    globalGame.targetGoal = data.trialInfo.currStim.target;
+    globalGame.objects = _.map(data.trialInfo.currStim.hiddenCards, function(obj) {
       var imgObj = new Image(); //initialize object as an image (from HTML5)
-      imgObj.src = customObj.url; // tell client where to find it
-      return _.extend(customObj, {img: imgObj});
+      imgObj.src = obj.url; // tell client where to find it
+      return _.extend(obj, {img: imgObj});
     });
   };
   
@@ -66,14 +56,7 @@ var client_onserverupdate_received = function(data){
   globalGame.roundNum = data.roundNum;
   globalGame.roundStartTime = new Date();
   globalGame.allObjects = data.allObjects;
-  globalGame.stimulusHalf = data.stimulusHalf;
 
-  // Only update these on first round
-  if(!_.has(globalGame, 'labels') & !_.isUndefined(data.trialInfo.labels)) {
-    console.log(data.trialInfo.labels);
-    globalGame.labels = _.shuffle(data.trialInfo.labels);
-  }
-  
   if(!_.has(globalGame, 'data')) {
     globalGame.data = data.dataObj;
   }
@@ -81,8 +64,6 @@ var client_onserverupdate_received = function(data){
   // Get rid of "waiting" screen if there are multiple players
   if(data.players.length > 1) {
     $('#messages').empty();
-    // $("#chatbox").removeAttr("disabled");
-    // $('#chatbox').focus();
     globalGame.get_player(globalGame.my_id).message = "";
 
     // reset labels
