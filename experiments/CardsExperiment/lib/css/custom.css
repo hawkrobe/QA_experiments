@@ -225,6 +225,44 @@ ALOT...don't understand how to adjust that.*/
 	border: solid 1px #999;
 }
 
+#messages {
+	height:90%;
+	text-align: left;
+	font-size: 200%;
+	overflow-y: scroll;
+}
+
+/* #chatarea form { */
+/* 	padding: 3px;  */
+/* 	height: 5vh; */
+/* 	width: 100vh;  */
+/* } */
+
+#chatarea input {
+    border: 0; 
+    height: 99%;
+    font-size: 125%;
+    border-radius: 5px;
+    width: 50%;
+    padding: 5px;
+    margin-left: .5%;
+    margin-right: .5%;
+    margin-top: .5%;
+    margin-bottom: .5%;
+}
+
+#chatarea button {
+	width: 12%; 
+	height: 5vh;
+	font-size: 150%;
+	background: rgb(130, 224, 255); 
+	border: none; 
+	padding: 10px;
+	margin-left: .5%;
+	margin-right: .5%;
+	float:bottom;
+}
+
 #context_panel {
 	height: 90%;
 	width: 40%;
@@ -236,24 +274,12 @@ ALOT...don't understand how to adjust that.*/
 	list-style-type: none;
 }
 
-#labels {
-	height:100%;
-	text-align: left;
-	font-size: 200%;
-	overflow-y: visible;
-}
-
-#post_test {
-	height: auto;
-	width: auto;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: auto ;
-	left:0; right:0; top:0; bottom: 0;
-	position: absolute;
-}
-
+/* #labels { */
+/* 	height:100%; */
+/* 	text-align: left; */
+/* 	font-size: 200%; */
+/* 	overflow-y: visible; */
+/* } */
 #word_grid {
     float: top;
     border:solid 1px #333;

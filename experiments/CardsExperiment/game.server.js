@@ -55,6 +55,14 @@ var onMessage = function(client,message) {
     });
     break;
 
+    case 'chatMessage' :
+    if(client.game.player_count == 2 && !gc.paused) {
+      var msg = message_parts[1].replace(/~~~/g,'.');
+      _.map(all, function(p){
+	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+    }
+    break;
+
   case 'drop' :
     _.map(others, (p) => {
       p.player.instance.emit('drop', {name: message_parts[1]});
