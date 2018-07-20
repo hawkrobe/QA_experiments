@@ -185,17 +185,21 @@ ALOT...don't understand how to adjust that.*/
 
 #context {
     display: grid;
-         background: #000000;
-	float: top;
-	/* border:solid 1px #333; */
-	height: 60vh;
-	width: 60vh;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: auto ;
-	margin-top: 10%;
-	/* margin-right: 5%; */
-	/* background: #383838; */
+    /* background: #000000; */
+    float: top;
+    /* border:solid 1px #333333; *\/ */
+    grid-template-columns: 14.625vh 14.625vh 14.625vh 14.625vh;
+    grid-template-rows: 14.625vh 14.625vh 14.625vh 14.625vh;
+    height: 60vh;
+    width: 60vh;
+    grid-gap: .5vh;
+    background-color: #222222;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto ;
+    margin-top: 10%;
+    /* margin-right: 5%; */
+    background: #383838;
 }
 
 #advance_button {

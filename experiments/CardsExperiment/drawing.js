@@ -46,22 +46,26 @@ function highlightCell(color, condition) {
 
 function initGrid(objects) {
   // Add objects to grid
-  _.forEach(objects, (obj) => {
-    console.log(obj);
-    var gridX = obj['gridX'];
-    var gridY = obj['gridY'];
-    $("#context").append(
-      $('<img/>').attr({
-	height: '100%', width: '100%', src: obj.url, 'data-name' : obj.name, style :
-	`grid-column: ${gridX}; grid-row: ${gridY}; border: 10px solid; border-color : black`
-      })
-    );
+  console.log(objects);
+  _.forEach(_.range(1, 5), x => {
+    _.forEach(_.range(1, 5), y => {
+      var div = $('<div/>')
+	  .attr({style: `background-color: #2196F3; grid-column: ${x}; grid-row: ${y}`});
+      var obj = _.find(objects, {'gridX' : x, 'gridY' : y});
+      if(!_.isUndefined(obj)) {
+	div.append($('<img/>').attr({
+	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
+	  style : `margin-left: auto; margin-right: auto; vertical-align: middle`
+	}));
+      } 
+      $("#context").append(div);
+    });
   });
 
-  // Mark target(s) for speaker
-  if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-    highlightCell('grey', x => x.targetStatus == 'target'); 
-  }
+  // TODO: Mark goal target(s) for speaker (above grid)
+  // if (globalGame.my_role === globalGame.playerRoleNames.role1) {
+  //   highlightCell('grey', x => x.targetStatus == 'target'); 
+  // }
 
   // Unbind old click listeners if they exist
   $('#context img')
