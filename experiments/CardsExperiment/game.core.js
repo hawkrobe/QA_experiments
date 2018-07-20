@@ -33,11 +33,11 @@ var game_core = function(options){
 
   // Some config settings
   this.email = 'rxdh@stanford.edu';
-  this.projectName = 'basicLevel';
-  this.experimentName = 'artificialLanguage';
-  this.iterationName = 'experiment2_pilot';
+  this.projectName = 'QA';
+  this.experimentName = 'cards';
+  this.iterationName = 'testing';
   this.anonymizeCSV = true;
-  this.bonusAmt = 3; // in cents
+  this.bonusAmt = 10; // in cents
   
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
@@ -45,14 +45,14 @@ var game_core = function(options){
   // How many players in the game?
   this.players_threshold = 2;
   this.playerRoleNames = {
-    role1 : 'speaker',
-    role2 : 'listener'
+    role1 : 'seeker',
+    role2 : 'helper'
   };
 
   //Dimensions of world in pixels and numberof cells to be divided into;
-  this.numHorizontalCells = 2;
-  this.numVerticalCells = 2;
-  this.cellDimensions = {height : 600, width : 600}; // in pixels
+  this.numHorizontalCells = 4;
+  this.numVerticalCells = 4;
+  this.cellDimensions = {height : 300, width : 300}; // in pixels
   this.cellPadding = 0;
   this.world = {
     height: 600 * 2,
@@ -63,10 +63,10 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 72;
+  this.numRounds = 1;
   this.feedbackDelay = 300;
 
-  // This will be populated with the tangram set
+  // This will be populated with the objectst
   this.trialInfo = {roles: _.values(this.playerRoleNames)};
 
   if(this.server) {
@@ -74,12 +74,9 @@ var game_core = function(options){
     this.expName = options.expName;
     this.active = false;
     this.player_count = options.player_count;
-    var rawObjects = require('./objects.json');
-    this.stimulusHalf = _.sample(['square', 'circle']);
-    this.objects = _.filter(rawObjects, ['super', this.stimulusHalf]);
-    this.condition = 'mixed';//_.sample(['mixed', 'singleton', 'set']);
+    this.objects = require('./images/objects.json');
     this.trialList = this.makeTrialList();
-    this.language = new ArtificialLanguage();
+    console.log(this.trialList);
     this.data = {
       id : this.id,
       subject_information : {
@@ -156,24 +153,13 @@ game_core.prototype.newRound = function(delay) {
 
       localThis.trialInfo = {
 	currStim: localThis.trialList[localThis.roundNum],
-	currContextType: localThis.contextTypeList[localThis.roundNum],
-	currRepetition: localThis.repetitionList[localThis.roundNum],
-	labels: localThis.language.vocab,
+	currGoalType: localThis.contextTypeList[localThis.roundNum],
 	roles: _.zipObject(_.map(localThis.players, p =>p.id),
 			   _.reverse(_.values(localThis.trialInfo.roles)))
       };
       localThis.server_send_update();
     }
   }, delay);
-};
-
-game_core.prototype.coordExtension = function(obj, gridCell) {
-  return {
-    trueX : gridCell.centerX - obj.width/2,
-    trueY : gridCell.centerY - obj.height/2,
-    gridPixelX: gridCell.centerX - 100,
-    gridPixelY: gridCell.centerY - 100
-  };
 };
 
 // Take condition as argument
@@ -185,147 +171,111 @@ game_core.prototype.makeTrialList = function () {
   this.repetitionList = [];
   
   // Keep sampling until we get a suitable sequence
-  var sequence = this.sampleTargetSequence();
-  while(!checkSequence(sequence)) {
-    sequence = this.sampleTargetSequence();
-  }
-  sequence = markRepetitions(sequence);
-  console.log(sequence);
+  var sequence = this.sampleGoalSequence();
+  
   // Construct trial list (in sets of complete rounds)
   for (var i = 0; i < this.numRounds; i++) {
     var trialInfo = sequence[i];
-    this.contextTypeList.push(trialInfo['trialType']);
-    this.repetitionList.push(trialInfo['repetition']);
-    var world = this.sampleTrial(trialInfo['target'], trialInfo['trialType']); 
-    trialList.push(_.map(world, function(obj) {
-      var newObj = _.clone(obj);
-      var speakerGridCell = that.getPixelFromCell(obj.speakerCoords);
-      var listenerGridCell = that.getPixelFromCell(obj.listenerCoords);
-      newObj.width = that.cellDimensions.width * 3/4;
-      newObj.height = that.cellDimensions.height * 3/4;      
-      _.extend(newObj.speakerCoords, that.coordExtension(newObj, speakerGridCell));
-      _.extend(newObj.listenerCoords, that.coordExtension(newObj, listenerGridCell));
-      return newObj;
-    }));
+    this.contextTypeList.push(trialInfo['goalType']);
+
+    var world = this.sampleTrial(trialInfo); 
+    trialList.push(world);
   };
-  return(trialList);
+  return trialList;
 };
 
-var designMatrix = {
-  'mixed'     : ['singleton', 'singleton', 'set'],
-  'singleton' : ['singleton'],
-  'set'       : ['set']
+var makeGoalObject = function(goals) {
+  var goalNames = _.map(_.range(goals.length), v=>'g' + v);
+  return _.zipObject(goalNames, goals);
+};
+
+game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
+  if(goalType == 'filler') {
+    var numGoals = _.sample([2,3,4]);
+    return makeGoalObject(_.map(_.sampleSize(hiddenCards, numGoals), 'name'));
+  } else {
+    console.error('goal type ' + goalType + ' not yet implementetd');
+  }
 };
 
 // Ensure each object appears even number of times, evenly spaced across trial types...?
-game_core.prototype.sampleTargetSequence = function() {
-  var trials = designMatrix[this.condition];
-  var targetRepetitions = this.numRounds / this.objects.length;
-  var trialTypeSequenceLength = trials.length;
-  var that = this;
-  return _.flattenDeep(_.map(_.range(targetRepetitions / trialTypeSequenceLength), i => {
-    return _.shuffle(_.flatten(_.map(trials, function(trialType) {
-      return _.map(that.objects, function(target) {
-	var id = trialType == 'set' ? target.name.slice(0, -1) + 's' : target.name;
-	return {target, id, trialType};
+game_core.prototype.sampleGoalSequence = function() {
+  return _.flattenDeep(_.map(_.range(this.numRounds), i => {
+    return {
+      goalType: _.sample(['filler']),    // Sample a goal type for this round
+      numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
+    };
+  }));
+};
+
+// // Want to make sure there are no adjacent targets (e.g. gap is at least 1 apart?)
+// function mapPairwise(arr, func){
+//   var l = [];
+//   for(var i=0;i<arr.length-1;i++){
+//     l.push(func(arr[i], arr[i+1]));
+//   }
+//   return l;
+// }
+
+// // Make sure targets don't appear back-to-back
+// // TODO: also make sure trial types aren't too clumpy?
+// var checkSequence = function(proposalList) {
+//   return _.every(mapPairwise(proposalList, function(curr, next) {
+//     return curr.id !== next.id;
+//   }));
+// };
+
+// // Make sure all distractors come in pairs
+// game_core.prototype.sampleDistractors = function(target, contextType) {
+//   var targetMatch = contextType == 'set' ? [] : _.filter(this.objects, v => {
+//     return v.basic == target.basic && v.subID != target.subID;
+//   });
+//   var otherDistractor = _.sample(_.filter(this.objects, v => {
+//     return v.basic != target.basic;
+//   }));
+//   var distractorMatch = _.filter(this.objects, v => {
+//     return v.basic == otherDistractor.basic && v.subID != otherDistractor.subID;
+//   });
+//   return targetMatch.concat(otherDistractor).concat(distractorMatch);
+// };
+
+
+game_core.prototype.sampleTrial = function(trialInfo) {
+  // Sample set of hidden cards
+  var hiddenCards = _.sampleSize(this.objects, trialInfo.numCards);
+
+  // Sample the goal sets and pick one to be the target
+  var goalSets = this.sampleGoalSet(trialInfo.goalType, hiddenCards);
+  var target = _.sample(_.keys(goalSets));
+
+  // Sample places to put cards
+  var locs = this.sampleStimulusLocs(trialInfo.numCards);
+  console.log(locs);
+  return _.extend({}, trialInfo, {
+    goalSets, target,
+    hiddenCards: _.map(hiddenCards, function(obj, index) {
+      return _.extend({}, obj, {
+	gridX: locs[index]['x'],
+	gridY: locs[index]['y']
+	// width : this.cellDimensions.width * 3/4,
+	// height : this.cellDimensions.height * 3/4
       });
-    })));
-  }));
-};
-
-function markRepetitions(trialList) {
-  var setSeenCounts = {
-    'redSquares' : 0, 'blueSquares': 0, 'stripedCircles' : 0, 'spottedCircles': 0,
-    'redSquare1' : 0, 'redSquare2' : 0, 'blueSquare1' : 0, 'blueSquare2' : 0,
-    'spottedCircle1' : 0, 'spottedCircle2' : 0, 'stripedCircle1' : 0, 'stripedCircle2' : 0
-  };
-  return _.map(trialList, function(trial) {
-    var localRepetition = setSeenCounts[trial.id];
-    setSeenCounts[trial.id] += 1;
-    return _.extend({}, trial, {repetition: localRepetition});
+    })
   });
 };
 
-// Want to make sure there are no adjacent targets (e.g. gap is at least 1 apart?)
-function mapPairwise(arr, func){
-  var l = [];
-  for(var i=0;i<arr.length-1;i++){
-    l.push(func(arr[i], arr[i+1]));
-  }
-  return l;
-}
-
-// Make sure targets don't appear back-to-back
-// TODO: also make sure trial types aren't too clumpy?
-var checkSequence = function(proposalList) {
-//  console.log(proposalList);
-  return _.every(mapPairwise(proposalList, function(curr, next) {
-    return curr.id !== next.id;
-  }));
-};
-
-// Make sure all distractors come in pairs
-game_core.prototype.sampleDistractors = function(target, contextType) {
-  var targetMatch = contextType == 'set' ? [] : _.filter(this.objects, v => {
-    return v.basic == target.basic && v.subID != target.subID;
-  });
-  var otherDistractor = _.sample(_.filter(this.objects, v => {
-    return v.basic != target.basic;
-  }));
-  var distractorMatch = _.filter(this.objects, v => {
-    return v.basic == otherDistractor.basic && v.subID != otherDistractor.subID;
-  });
-  return targetMatch.concat(otherDistractor).concat(distractorMatch);
-};
-
-game_core.prototype.sampleTargetSet = function(target, contextType) {
-  if(contextType == 'singleton') {
-    return [_.extend({}, target, {targetStatus: 'target'})];
-  } else {
-    return _.filter(this.objects, v => v.basic == target.basic);
-  }
-};
-
-// take context type as argument
-game_core.prototype.sampleTrial = function(target, contextType) {
-  var targets = _.map(this.sampleTargetSet(target, contextType),
-		      v => _.extend({}, v, {targetStatus: 'target'}));
-  var distractors = _.map(this.sampleDistractors(target, contextType),
-			  v => _.extend({}, v, {targetStatus: 'distractor'}));
-  var locs = this.sampleStimulusLocs();
-  return _.map(distractors.concat(targets), function(obj, index) {
-    return _.extend(obj, {
-      listenerCoords: {
-	gridX: locs.listener[index][0],
-	gridY: locs.listener[index][1]},
-      speakerCoords: {
-	gridX: locs.speaker[index][0],
-	gridY: locs.speaker[index][1]}
+function getAllLocs() {
+  return _.flattenDeep(_.map(_.range(1,5), function(i) {
+    return _.map(_.range(1,5), function(j) {
+      return {x: i, y: j};
     });
-  });
+  }));
 };
 
-// maps a grid location to the exact pixel coordinates
-// for x = 1,2,3,4; y = 1,2,3,4
-game_core.prototype.getPixelFromCell = function (coords) {
-  var x = coords.gridX;
-  var y = coords.gridY;
-  return {
-    centerX: (this.cellPadding/2 + this.cellDimensions.width * (x - 1)
-        + this.cellDimensions.width / 2),
-    centerY: (this.cellPadding/2 + this.cellDimensions.height * (y - 1)
-        + this.cellDimensions.height / 2),
-    upperLeftX : (this.cellDimensions.width * (x - 1) + this.cellPadding/2),
-    upperLeftY : (this.cellDimensions.height * (y - 1) + this.cellPadding/2),
-    width: this.cellDimensions.width,
-    height: this.cellDimensions.height
-  };
-};
-
-game_core.prototype.sampleStimulusLocs = function() {
-  var listenerLocs = _.shuffle([[1,1], [2,1], [1,2], [2,2]]);
-  var speakerLocs = _.shuffle([[1,1], [2,1], [1,2], [2,2]]);
-  return {listener : listenerLocs, speaker : speakerLocs};
+game_core.prototype.sampleStimulusLocs = function(numObjects) {
+  var locs = getAllLocs();
+  console.log(locs);
+  return _.sampleSize(locs, numObjects);
 };
 
 game_core.prototype.server_send_update = function(){
@@ -338,6 +288,8 @@ game_core.prototype.server_send_update = function(){
             player: null};
   });
 
+//  console.log(this.trialInfo.currStim);
+
   var state = {
     gs : this.game_started,   // true when game's started
     pt : this.players_threshold,
@@ -345,7 +297,6 @@ game_core.prototype.server_send_update = function(){
     dataObj  : this.data,
     roundNum : this.roundNum,
     trialInfo: this.trialInfo,
-    language: this.language,
     allObjects: this.objects,
     stimulusHalf : this.stimulusHalf
   };
@@ -356,38 +307,4 @@ game_core.prototype.server_send_update = function(){
   this.state = state;
   _.map(local_game.get_active_players(), function(p){
     p.player.instance.emit( 'onserverupdate', state);});
-};
-
-var ArtificialLanguage = function() {
-  this.vocabSize = 9;
-  this.wordLength = 4;
-  this.possibleVowels = ['a','e','i','o','u'];
-  this.possibleConsonants = ['g','h','k','l','m','n','p','w'];
-  // Keep sampling vocabs until we get one that works
-  this.vocab = this.sampleVocab();
-  while(!this.verifyVocab(this.vocab)) {
-    this.vocab = this.sampleVocab();
-  }
-};
-
-ArtificialLanguage.prototype.sampleVocab = function() {
-  var vocab = _.map(_.range(this.vocabSize), (wordNum) => {
-    return _.map(_.range(this.wordLength), (charNum) => {
-      var chars = charNum % 2 === 0 ? this.possibleConsonants : this.possibleVowels;
-      return _.sample(chars);
-    }).join('');
-  });
-  return this.verifyVocab(vocab) ? vocab : this.sampleVocab();
-}; 
-
-// Ensure no words have same morpheme in same position
-ArtificialLanguage.prototype.verifyVocab = function(vocab) {
-  var morphemes = _.map(vocab, w => _.map(_.chunk(w.split(''), 2), m => m.join('')));
-  var uniqueMorphemes = _.every(_.zip.apply(_, morphemes), morpheme => {
-    return _.uniq(morpheme).length === vocab.length;
-  });
-  // Prevent some sketchy words from being generated
-  var sketchyWords = ['niga', 'kike', 'kale', 'wine', 'nope', 'male', 'page', 'name'];
-  var noTabooWords = _.intersection(vocab,sketchyWords).length == 0;
-  return uniqueMorphemes && noTabooWords;
 };
