@@ -89,8 +89,6 @@ var client_onserverupdate_received = function(data){
 var advanceRound = function() {
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
-  console.log('sending reveal message')
-  console.log(globalGame.selections)
   globalGame.socket.emit("reveal", {selections: globalGame.selections});
 };
 
@@ -145,12 +143,21 @@ var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
 };
 
+var checkCards = function() {
+  var targetCards = globalGame.goalSets[globalGame.targetGoal];
+  return _.isEqual(_.intersection(targetCards, globalGame.revealedCards),
+		   targetCards);
+}
+
 var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('reveal', function(data) {
-    var clickedObjNames = data.selections;
-    _.forEach(clickedObjNames, name => $(`img[data-name="${name}"]`).show());
+    globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
+    _.forEach(data.selections, name => $(`img[data-name="${name}"]`).show());
+    if(checkCards()) {
+      game.socket.send('allCardsFound');
+    }
   });
   
   game.socket.on('newRoundUpdate', function(data){

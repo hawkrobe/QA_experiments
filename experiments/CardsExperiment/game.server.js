@@ -32,14 +32,6 @@ var onMessage = function(client,message) {
   var others = gc.get_others(client.userid);
   switch(message_type) {
 
-  case 'postTest_word' :
-    console.log('received word post test message');
-    break;
-
-  case 'postTest_object' :
-    console.log('received object post test message');
-    break;
-
   case 'playerTyping' :
     _.map(others, function(p) {
       p.player.instance.emit( 'playerTyping', {typing: message_parts[1]});
@@ -54,6 +46,10 @@ var onMessage = function(client,message) {
     }
     break;
 
+  case 'allCardsFound' :
+    gc.newRound(3000);
+    break;
+    
   case 'drop' :
     _.map(others, (p) => {
       p.player.instance.emit('drop', {name: message_parts[1]});

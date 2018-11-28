@@ -65,7 +65,8 @@ var game_core = function(options){
   // How many rounds do we want people to complete?
   this.numRounds = 2;
   this.feedbackDelay = 300;
-
+  this.revealedCards = [];
+  
   // This will be populated with the objectst
   this.trialInfo = {roles: _.values(this.playerRoleNames)};
 
@@ -76,7 +77,6 @@ var game_core = function(options){
     this.player_count = options.player_count;
     this.objects = require('./images/objects.json');
     this.trialList = this.makeTrialList();
-    console.log(this.trialList);
     this.data = {
       id : this.id,
       subject_information : {
