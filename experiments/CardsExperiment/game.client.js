@@ -67,13 +67,6 @@ var client_onserverupdate_received = function(data){
     // Update w/ role (can only move stuff if agent)
     $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
 
-    // Insert labels & show dropzone
-    // $('#labels').empty().append(
-    //   _.map(globalGame.labels, (word) => {
-    // 	return '<p class="cell draggable drag-drop">' + word + '</p>';
-    //   }))
-    //   .append('<div id="chatarea" class="dropzone"></div>');
-
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
       enableLabels(globalGame);
       $('#advance_button').hide();
@@ -97,7 +90,9 @@ var client_onserverupdate_received = function(data){
 var advanceRound = function() {
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
-  globalGame.socket.send(["clickedObj", globalGame.selections].join('.'));
+  console.log('sending reveal message')
+  console.log(globalGame.selections)
+  globalGame.socket.emit("reveal", {selections: globalGame.selections});
 };
 
 var client_onMessage = function(data) {
@@ -118,26 +113,6 @@ var client_onMessage = function(data) {
       $('#context').hide();
       break;
 
-    case 'feedback' :      
-      // update local score
-      var clickedObjNames = commanddata.split(',');
-      var targetNames = _.map(_.filter(globalGame.objects, (x) => {
-	return x.targetStatus == 'target';
-      }), 'name');
-      var scoreDiff = (_.isEqual(new Set(clickedObjNames), new Set(targetNames)) ?
-		       globalGame.bonusAmt : 0);
-      globalGame.data.subject_information.score += scoreDiff;
-      $('#score').empty()
-        .append("Bonus: $" + (globalGame.data.subject_information.score/100).toFixed(2));
-      
-      // draw feedback
-      if (globalGame.my_role === globalGame.playerRoleNames.role1) {
-	drawSketcherFeedback(globalGame, scoreDiff, clickedObjNames);
-      } else {
-	drawViewerFeedback(globalGame, scoreDiff, clickedObjNames);
-      }
-
-      break;
       
     case 'alert' : // Not in database, so you can't play...
       alert('You did not enter an ID');
@@ -174,6 +149,11 @@ var client_addnewround = function(game) {
 var customSetup = function(game) {
   // Set up new round on client's browsers after submit round button is pressed.
   // This means clear the chatboxes, update round number, and update score on screen
+  game.socket.on('reveal', function(data) {
+    var clickedObjNames = data.selections;
+    _.forEach(clickedObjNames, name => $(`img[data-name="${name}"]`).show());
+  });
+  
   game.socket.on('newRoundUpdate', function(data){
     globalGame.messageSent = false;
     $('#messages').empty();

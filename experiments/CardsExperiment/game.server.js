@@ -40,15 +40,6 @@ var onMessage = function(client,message) {
     console.log('received object post test message');
     break;
 
-  case 'clickedObj' :
-    // Write event to file
-    others[0].player.instance.send('s.feedback.' + message_parts[1]);
-    target.instance.send('s.feedback.' + message_parts[1]);
-
-    // Continue
-    gc.newRound(4000);
-    break;
-
   case 'playerTyping' :
     _.map(others, function(p) {
       p.player.instance.emit( 'playerTyping', {typing: message_parts[1]});
@@ -74,6 +65,14 @@ var onMessage = function(client,message) {
     break;
   }
 };
+
+var setCustomEvents = function(socket) {
+  socket.on('reveal', function(data) {
+    console.log('revealed');
+    var partner = socket.game.get_others(socket.userid)[0];
+    partner.player.instance.emit('reveal', data);    
+  });
+}
 
 /*
   Associates events in onMessage with callback returning json to be saved
@@ -188,4 +187,4 @@ var dataOutput = function() {
   };
 }();
 
-module.exports = {dataOutput, onMessage};
+module.exports = {dataOutput, onMessage, setCustomEvents};
