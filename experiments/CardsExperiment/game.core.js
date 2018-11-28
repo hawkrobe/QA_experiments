@@ -198,7 +198,6 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
   }
 };
 
-// Ensure each object appears even number of times, evenly spaced across trial types...?
 game_core.prototype.sampleGoalSequence = function() {
   return _.flattenDeep(_.map(_.range(this.numRounds), i => {
     return {
@@ -207,38 +206,6 @@ game_core.prototype.sampleGoalSequence = function() {
     };
   }));
 };
-
-// // Want to make sure there are no adjacent targets (e.g. gap is at least 1 apart?)
-// function mapPairwise(arr, func){
-//   var l = [];
-//   for(var i=0;i<arr.length-1;i++){
-//     l.push(func(arr[i], arr[i+1]));
-//   }
-//   return l;
-// }
-
-// // Make sure targets don't appear back-to-back
-// // TODO: also make sure trial types aren't too clumpy?
-// var checkSequence = function(proposalList) {
-//   return _.every(mapPairwise(proposalList, function(curr, next) {
-//     return curr.id !== next.id;
-//   }));
-// };
-
-// // Make sure all distractors come in pairs
-// game_core.prototype.sampleDistractors = function(target, contextType) {
-//   var targetMatch = contextType == 'set' ? [] : _.filter(this.objects, v => {
-//     return v.basic == target.basic && v.subID != target.subID;
-//   });
-//   var otherDistractor = _.sample(_.filter(this.objects, v => {
-//     return v.basic != target.basic;
-//   }));
-//   var distractorMatch = _.filter(this.objects, v => {
-//     return v.basic == otherDistractor.basic && v.subID != otherDistractor.subID;
-//   });
-//   return targetMatch.concat(otherDistractor).concat(distractorMatch);
-// };
-
 
 game_core.prototype.sampleTrial = function(trialInfo) {
   // Sample set of hidden cards
