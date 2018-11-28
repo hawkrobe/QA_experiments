@@ -35,7 +35,7 @@ function setupHandlers() {
 
 function initGoals(goalSets, target) {
   _.forEach(_.shuffle(_.values(goalSets)), function(goals, i) {
-    var border = (_.isEqual(goals, goalSets['g1']) &&
+    var border = (_.isEqual(goals, goalSets[globalGame.targetGoal]) &&
 		  globalGame.my_role == globalGame.playerRoleNames.role1 ?
 		  'green' : 'black');
     var cell = $('<div/>').attr({
