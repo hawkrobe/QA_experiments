@@ -83,7 +83,7 @@ var sharedSetup = function(game) {
   
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
-    var origMsg = $('#chatbox').val();
+    var origMsg = "Where is the " + $('#chatbox').val() + "?";
     var timeElapsed = Date.now() - globalGame.typingStartTime;
     var msg = ['chatMessage', origMsg.replace(/\./g, '~~~'), timeElapsed].join('.');
     if($('#chatbox').val() != '') {
