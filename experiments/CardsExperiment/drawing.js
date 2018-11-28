@@ -33,33 +33,30 @@ function setupHandlers() {
   });
 }
 
-// function highlightCell(color, condition) {
-//   var targetObjects = _.filter(globalGame.objects, condition);
-//   console.log('highlighting in ' + color);
-//   console.log(globalGame.objects);
-//   console.log(targetObjects);
-//   for (var i = 0; i < targetObjects.length; i++){
-//     var name = targetObjects[i]['name'];
-//     $(`img[data-name="${name}"]`)
-//       .css({'border-color' : color});
-//   }
-// }
-
 function initGoals(goalSets, target) {
-  _.forOwn(goalSets, function(value, key) {
-    var div = $('<div/>')
-	.attr({style: `background-color: #219600; grid-row: ${key[1]}`});
-    var card = $('<img/>').attr({
-      height: '20%', width: '65%', src: '/images/thumbnails/' + value + '.svg', 'data-name' : value,
-      style : `margin-left: auto; margin-right: auto; vertical-align: middle`
+  _.forEach(_.shuffle(_.values(goalSets)), function(goals, i) {
+    var border = (_.isEqual(goals, goalSets['g1']) &&
+		  globalGame.my_role == globalGame.playerRoleNames.role1 ?
+		  'green' : 'black');
+    var cell = $('<div/>').attr({
+      class : 'grid',
+      style: `border-style: solid; border-color: ${border}`
     });
-    $("#goal_panel").append(card);
+    _.forEach(_.shuffle(goals), function(goalCard, j) {
+      var card = $('<img/>').attr({
+	height: '20%',//, width: '65%',
+	src: '/images/thumbnails/' + goalCard + '.svg',
+	'data-name' : goalCard,
+	style : `margin-left: auto; margin-right: auto; vertical-align: middle;`
+      });
+      cell.append(card);
+    });
+    $('#goals').append(cell);
   });
 }
 
 function initGrid(objects) {
   // Add objects to grid
-  var showObjs = 
   _.forEach(_.range(1, 5), x => {
     _.forEach(_.range(1, 5), y => {
       var div = $('<div/>')

@@ -63,7 +63,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 1;
+  this.numRounds = 2;
   this.feedbackDelay = 300;
 
   // This will be populated with the objectst
@@ -192,7 +192,7 @@ var makeGoalObject = function(goals) {
 game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
   if(goalType == 'filler') {
     var numGoals = _.sample([2,3,4]);
-    return makeGoalObject(_.map(_.sampleSize(hiddenCards, numGoals), 'name'));
+    return makeGoalObject(_.map(_.sampleSize(hiddenCards, numGoals), v => [v.name]));
   } else {
     console.error('goal type ' + goalType + ' not yet implementetd');
   }
@@ -217,15 +217,13 @@ game_core.prototype.sampleTrial = function(trialInfo) {
 
   // Sample places to put cards
   var locs = this.sampleStimulusLocs(trialInfo.numCards);
-  console.log(locs);
   return _.extend({}, trialInfo, {
-    goalSets, target,
+    goalSets,
+    target,
     hiddenCards: _.map(hiddenCards, function(obj, index) {
       return _.extend({}, obj, {
 	gridX: locs[index]['x'],
 	gridY: locs[index]['y']
-	// width : this.cellDimensions.width * 3/4,
-	// height : this.cellDimensions.height * 3/4
       });
     })
   });
@@ -241,7 +239,6 @@ function getAllLocs() {
 
 game_core.prototype.sampleStimulusLocs = function(numObjects) {
   var locs = getAllLocs();
-  console.log(locs);
   return _.sampleSize(locs, numObjects);
 };
 
