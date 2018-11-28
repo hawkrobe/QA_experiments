@@ -141,72 +141,72 @@ var drawScreen = function(game, player) {
 // };
 
 
-function disableLabels(game) {
-  interact('p').unset();
-  interact('#chatarea').unset();
-}
+// function disableLabels(game) {
+//   interact('p').unset();
+//   interact('#chatarea').unset();
+// }
 
-function enableLabels(game) {
-  var labels = document.querySelector('#message_panel');
-  var startPos = null;
-  var dropCenter = null;
-  interact('p', {context: labels})
-    .draggable({
-      restrict: {
-      	restriction: "parent",
-      	endOnly: true,
-      	elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-      },
-      onstart: function(event) {
-      	var rect = interact.getElementRect(event.target);
+// function enableLabels(game) {
+//   var labels = document.querySelector('#message_panel');
+//   var startPos = null;
+//   var dropCenter = null;
+//   interact('p', {context: labels})
+//     .draggable({
+//       restrict: {
+//       	restriction: "parent",
+//       	endOnly: true,
+//       	elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+//       },
+//       onstart: function(event) {
+//       	var rect = interact.getElementRect(event.target);
 
-      	// record center point when starting the very first a drag
-      	startPos = {
-          x: rect.left + rect.width  / 2,
-          y: rect.top  + rect.height / 2
-      	}
+//       	// record center point when starting the very first a drag
+//       	startPos = {
+//           x: rect.left + rect.width  / 2,
+//           y: rect.top  + rect.height / 2
+//       	}
 
-      	event.interactable.draggable({
-          snap: {
-            targets: [startPos]
-          }
-      	});
-      },
+//       	event.interactable.draggable({
+//           snap: {
+//             targets: [startPos]
+//           }
+//       	});
+//       },
 
-      snap: {
-        targets: [startPos],
-        range: Infinity,
-        relativePoints: [ { x: 0.5, y: 0.5 } ],
-        endOnly: true
-      },
-      onmove: dragMoveListener
-    });
+//       snap: {
+//         targets: [startPos],
+//         range: Infinity,
+//         relativePoints: [ { x: 0.5, y: 0.5 } ],
+//         endOnly: true
+//       },
+//       onmove: dragMoveListener
+//     });
   
-  interact('#chatarea')
-    .dropzone({
-      accept: '.draggable',
-      overlap: .5,
-      ondragenter: function (event) {
-	var draggableElement = event.relatedTarget,
-            dropzoneElement  = event.target,
-            dropRect         = interact.getElementRect(dropzoneElement);
+//   interact('#chatarea')
+//     .dropzone({
+//       accept: '.draggable',
+//       overlap: .5,
+//       ondragenter: function (event) {
+// 	var draggableElement = event.relatedTarget,
+//             dropzoneElement  = event.target,
+//             dropRect         = interact.getElementRect(dropzoneElement);
 	
-        dropCenter = {
-          x: dropRect.left + dropRect.width  / 2,
-          y: dropRect.top  + dropRect.height / 2
-        };
+//         dropCenter = {
+//           x: dropRect.left + dropRect.width  / 2,
+//           y: dropRect.top  + dropRect.height / 2
+//         };
 	
-        event.draggable.draggable({
-          snap: {
-            targets: [dropCenter]
-          }
-        });
-      },
-      ondrop: function(event) {
-	$('#chatarea').css('background-color', '#32CD32');
-	var timeElapsed = new Date() - game.roundStartTime;
-	game.socket.send('drop.' + event.relatedTarget.innerHTML + '.' + timeElapsed);
-	interact('p', {context: labels}).draggable(false);
-      }
-    });
-};
+//         event.draggable.draggable({
+//           snap: {
+//             targets: [dropCenter]
+//           }
+//         });
+//       },
+//       ondrop: function(event) {
+// 	$('#chatarea').css('background-color', '#32CD32');
+// 	var timeElapsed = new Date() - game.roundStartTime;
+// 	game.socket.send('drop.' + event.relatedTarget.innerHTML + '.' + timeElapsed);
+// 	interact('p', {context: labels}).draggable(false);
+//       }
+//     });
+// };

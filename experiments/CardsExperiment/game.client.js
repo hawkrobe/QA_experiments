@@ -68,14 +68,13 @@ var client_onserverupdate_received = function(data){
     $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
 
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
-      enableLabels(globalGame);
       $('#advance_button').hide();
       $('#instructs')
 	.empty()
 	.append("<p>Fill in the question</p>" +
 		"<p>so your partner can help you find the cards!</p>");
     } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
-      disableLabels(globalGame);
+      $('#chatarea').hide();
       $('#advance_button').show().attr('disabled', 'disabled');
       $('#instructs').empty().append(
 	"<p>After you see the speaker drag a word into the box,</p>" 
