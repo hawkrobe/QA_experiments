@@ -11,14 +11,15 @@ function handleButton() {
   }
 }
 
-function handleHighlighting(selector, name) {
+function handleHighlighting(imgSelector, name) {
   var alreadyClicked = _.includes(globalGame.selections, name);
+  var cellSelector = imgSelector.parent();
   if(alreadyClicked) {
-    _.remove(globalGame.selections, obj => obj == name);
-    selector.css({'border-color' : 'black'});
+    _.remove(globalGame.selections, obj => obj == name);    
+    cellSelector.css({'border-color' : 'black'});
   } else if (globalGame.selections.length < 2) {
-    globalGame.selections.push(selector.attr('data-name'));
-    selector.css({'border-color' : 'grey'});
+    globalGame.selections.push(name);
+    cellSelector.css({'border-color' : 'green'});
   }
 }
 
@@ -26,31 +27,30 @@ function setupHandlers() {
   $('#context img').click(function(event) {
     var name = $(this).attr('data-name');
     if(globalGame.messageSent) {
-      handleHighlighting($(this), name);
+      handleHighlighting($( this ), name);
       handleButton();
     }
   });
 }
 
-function highlightCell(color, condition) {
-  var targetObjects = _.filter(globalGame.objects, condition);
-  console.log('highlighting in ' + color);
-  console.log(globalGame.objects);
-  console.log(targetObjects);
-  for (var i = 0; i < targetObjects.length; i++){
-    var name = targetObjects[i]['name'];
-    $(`img[data-name="${name}"]`)
-      .css({'border-color' : color});
-  }
-}
+// function highlightCell(color, condition) {
+//   var targetObjects = _.filter(globalGame.objects, condition);
+//   console.log('highlighting in ' + color);
+//   console.log(globalGame.objects);
+//   console.log(targetObjects);
+//   for (var i = 0; i < targetObjects.length; i++){
+//     var name = targetObjects[i]['name'];
+//     $(`img[data-name="${name}"]`)
+//       .css({'border-color' : color});
+//   }
+// }
 
 function initGoals(goalSets, target) {
-  console.log(goalSets);
   _.forOwn(goalSets, function(value, key) {
     var div = $('<div/>')
 	.attr({style: `background-color: #219600; grid-row: ${key[1]}`});
     var card = $('<img/>').attr({
-      height: '100%', width: '65%', src: '/images/' + value + '.png', 'data-name' : value,
+      height: '20%', width: '65%', src: '/images/thumbnails/' + value + '.svg', 'data-name' : value,
       style : `margin-left: auto; margin-right: auto; vertical-align: middle`
     });
     $("#goal_panel").append(card);
@@ -59,15 +59,20 @@ function initGoals(goalSets, target) {
 
 function initGrid(objects) {
   // Add objects to grid
+  var showObjs = 
   _.forEach(_.range(1, 5), x => {
     _.forEach(_.range(1, 5), y => {
       var div = $('<div/>')
-	  .attr({style: `background-color: #2196F3; grid-column: ${x}; grid-row: ${y}`});
+	  .attr({style: `border-style: solid; border-color: black; \
+                         background-color: black; grid-column: ${x}; grid-row: ${y}`});
       var obj = _.find(objects, {'gridX' : x, 'gridY' : y});
-      if(!_.isUndefined(obj)) {
+      if(!_.isUndefined(obj)){
+	var visible = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
+		       'display: none' : '');
 	div.append($('<img/>').attr({
 	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
-	  style : `margin-left: auto; margin-right: auto; vertical-align: middle`
+	  style : `margin-left: auto; margin-right: auto; \
+                   vertical-align: middle; ${visible}`
 	}));
       } 
       $("#context").append(div);
@@ -88,7 +93,6 @@ function initGrid(objects) {
 var drawScreen = function(game, player) {
   // Draw message in center (for countdown, e.g.)
   if (player.message) {
-    console.log('drawing message');
     $('#waiting').html(player.message);
   } else {
     $('#waiting').html('');
@@ -97,44 +101,44 @@ var drawScreen = function(game, player) {
   }
 };
 
-function drawSketcherFeedback(globalGame, scoreDiff, clickedObjNames) {
-  var numTargets = _.filter(globalGame.objects, x => x.targetStatus == 'target').length;
-  var targetWord = numTargets > 1 ? 'targets' : 'target';
-  var clickedWord = clickedObjNames.length > 1 ? 'objects' : 'object';
-  highlightCell('grey', x => x.targetStatus == 'target');
-  if (scoreDiff > 0) {
-    highlightCell('#19A319', x => _.includes(clickedObjNames, x.name));
-    setTimeout(() => {
-      $('#feedback').html('Great job! Your partner correctly identified the ' + targetWord + '.');
-    }, globalGame.feedbackDelay);
-  } else {
-    highlightCell('#FFA500', x => _.includes(clickedObjNames, x.name));
-    setTimeout(() => {
-      $('#feedback').html('Too bad... Your partner clicked the ' + clickedWord + ' outlined in ' +
-			  'orange'.fontcolor('#FFA500') + '.');
-    }, globalGame.feedbackDelay);
-  }
-};
+// function drawSketcherFeedback(globalGame, scoreDiff, clickedObjNames) {
+//   var numTargets = _.filter(globalGame.objects, x => x.targetStatus == 'target').length;
+//   var targetWord = numTargets > 1 ? 'targets' : 'target';
+//   var clickedWord = clickedObjNames.length > 1 ? 'objects' : 'object';
+//   highlightCell('grey', x => x.targetStatus == 'target');
+//   if (scoreDiff > 0) {
+//     highlightCell('#19A319', x => _.includes(clickedObjNames, x.name));
+//     setTimeout(() => {
+//       $('#feedback').html('Great job! Your partner correctly identified the ' + targetWord + '.');
+//     }, globalGame.feedbackDelay);
+//   } else {
+//     highlightCell('#FFA500', x => _.includes(clickedObjNames, x.name));
+//     setTimeout(() => {
+//       $('#feedback').html('Too bad... Your partner clicked the ' + clickedWord + ' outlined in ' +
+// 			  'orange'.fontcolor('#FFA500') + '.');
+//     }, globalGame.feedbackDelay);
+//   }
+// };
 
-function drawViewerFeedback(globalGame, scoreDiff, clickedObjNames) {
-  var numTargets = _.filter(globalGame.objects, x => x.targetStatus == 'target').length;
-  var targetWord = numTargets > 1 ? 'targets' : 'target';
-  var conjugation = numTargets > 1 ? 'are' : 'is';
+// function drawViewerFeedback(globalGame, scoreDiff, clickedObjNames) {
+//   var numTargets = _.filter(globalGame.objects, x => x.targetStatus == 'target').length;
+//   var targetWord = numTargets > 1 ? 'targets' : 'target';
+//   var conjugation = numTargets > 1 ? 'are' : 'is';
 
-  highlightCell('grey', x => _.includes(clickedObjNames, x.name));
-  if (scoreDiff > 0) {
-    highlightCell('#19A319', x => x.targetStatus == 'target');
-    setTimeout(() => {
-      $('#feedback').html('Great job! You correctly identified the ' + targetWord + '!');
-    }, globalGame.feedbackDelay);
-  } else {
-    highlightCell('#FFA500', x => x.targetStatus == 'target');
-    setTimeout(() => {
-      $('#feedback').html('Sorry... The ' + targetWord + ' ' + conjugation + ' outlined in '
-			  + 'orange'.fontcolor("#FFA500").bold() + '.');
-    }, globalGame.feedbackDelay);
-  }
-};
+//   highlightCell('grey', x => _.includes(clickedObjNames, x.name));
+//   if (scoreDiff > 0) {
+//     highlightCell('#19A319', x => x.targetStatus == 'target');
+//     setTimeout(() => {
+//       $('#feedback').html('Great job! You correctly identified the ' + targetWord + '!');
+//     }, globalGame.feedbackDelay);
+//   } else {
+//     highlightCell('#FFA500', x => x.targetStatus == 'target');
+//     setTimeout(() => {
+//       $('#feedback').html('Sorry... The ' + targetWord + ' ' + conjugation + ' outlined in '
+// 			  + 'orange'.fontcolor("#FFA500").bold() + '.');
+//     }, globalGame.feedbackDelay);
+//   }
+// };
 
 
 function disableLabels(game) {
