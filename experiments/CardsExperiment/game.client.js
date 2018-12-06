@@ -89,7 +89,9 @@ var client_onserverupdate_received = function(data){
 var advanceRound = function() {
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
+  disableCards(globalGame.selections);
   globalGame.socket.emit("reveal", {selections: globalGame.selections});
+  globalGame.selections = [];
 };
 
 var client_onMessage = function(data) {

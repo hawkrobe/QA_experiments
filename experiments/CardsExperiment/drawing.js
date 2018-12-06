@@ -23,6 +23,16 @@ function handleHighlighting(imgSelector, name) {
   }
 }
 
+function disableCards(cards) {
+  _.forEach(cards, (name) => {
+    // Disable card
+    var cardElement = $(`img[data-name="${name}"]`);
+    cardElement.off('click');
+    cardElement.css({'transition': 'opacity 0.3s',
+		     opacity: 0.2});
+  });
+}
+
 function setupHandlers() {
   $('#context img').click(function(event) {
     var name = $(this).attr('data-name');
@@ -46,7 +56,6 @@ function initGoals(goalSets, target) {
       var card = $('<img/>').attr({
 	height: '20%',//, width: '65%',
 	src: '/images/thumbnails/' + goalCard + '.svg',
-	'data-name' : goalCard,
 	style : `margin-left: auto; margin-right: auto; vertical-align: middle;`
       });
       cell.append(card);
