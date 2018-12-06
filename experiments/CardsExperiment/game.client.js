@@ -121,7 +121,6 @@ var client_onMessage = function(data) {
 
     case 'add_player' : // New player joined... Need to add them to our list.
       console.log("adding player" + commanddata);
-      clearTimeout(globalGame.timeoutID);
       if(hidden === 'hidden') {
         flashTitle("GO!");
       }
@@ -216,16 +215,14 @@ var client_onjoingame = function(num_players, role) {
   });
 
   if(num_players == 1) {
-    this.timeoutID = setTimeout(function() {
-      if(_.size(this.urlParams) == 4) {
-        this.submitted = true;
-        window.opener.turk.submit(this.data, true);
-        window.close();
-      } else {
-        console.log("would have submitted the following :");
-        console.log(this.data);
-      }
-    }, 1000 * 60 * 15);
+    if(_.size(this.urlParams) == 4) {
+      this.submitted = true;
+      window.opener.turk.submit(this.data, true);
+      window.close();
+    } else {
+      console.log("would have submitted the following :");
+      console.log(this.data);
+    }
     globalGame.get_player(globalGame.my_id).message = ('<p>Waiting for another player...<br /> Please do not refresh the page!<br /> If wait exceeds 15 minutes, we recommend returning the HIT and trying again later.</p>');
   }
 };
