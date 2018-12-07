@@ -69,6 +69,7 @@ var client_onserverupdate_received = function(data){
 
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
       $('#advance_button').hide();
+      $('#chatarea').show();      
       $('#instructs')
 	.empty()
 	.append("<p>Fill in the question</p>" +
