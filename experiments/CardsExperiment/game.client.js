@@ -170,6 +170,7 @@ var customSetup = function(game) {
     globalGame.messageSent = false;
     $('#messages').empty();
     $("#context").empty();
+    $('#goals').empty();
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
