@@ -155,7 +155,9 @@ var customSetup = function(game) {
   // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('reveal', function(data) {
     globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
-    _.forEach(data.selections, name => $(`img[data-name="${name}"]`).show());
+    _.forEach(data.selections, name => {
+      $(`img[data-name="${name}"]`).css({opacity: 0.0}).show().css({opacity: 1, 'transition': 'opacity 2s linear'});
+    });
     if(checkCards()) {
       game.socket.send('allCardsFound');
     }
