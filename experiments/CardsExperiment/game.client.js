@@ -91,6 +91,7 @@ var advanceRound = function() {
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(globalGame.selections);
   globalGame.socket.emit("reveal", {selections: globalGame.selections});
+  globalGame.messageSent = false;
   globalGame.selections = [];
 };
 
@@ -151,12 +152,14 @@ var checkCards = function() {
 }
 
 var customSetup = function(game) {
-  // Set up new round on client's browsers after submit round button is pressed.
-  // This means clear the chatboxes, update round number, and update score on screen
   game.socket.on('reveal', function(data) {
     globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
+    // Fade in revealed cards
     _.forEach(data.selections, name => {
-      $(`img[data-name="${name}"]`).css({opacity: 0.0}).show().css({opacity: 1, 'transition': 'opacity 2s linear'});
+      $(`img[data-name="${name}"]`)
+	.css({opacity: 0.0})
+	.show()
+	.css({opacity: 1, 'transition': 'opacity 2s linear'});
     });
     if(checkCards()) {
       game.socket.send('allCardsFound');
@@ -184,30 +187,7 @@ var customSetup = function(game) {
     $("#dimScreen").show();
     $("#post_test").show();
     setupPostTest();
-  });
-  
-  game.socket.on('drop', function(event) {
-    var dropRect = $('#chatarea')[0].getBoundingClientRect();
-    var dropCenter = {
-      x: dropRect.left + dropRect.width  / 2,
-      y: dropRect.top  + dropRect.height / 2
-    };
-    var target = $(`p:contains("${event.name}")`);
-    var targetRect = target[0].getBoundingClientRect();
-    var dx = (dropRect.left + dropRect.width/2) - (targetRect.left + targetRect.width/2);
-    var dy = (dropRect.top + dropRect.height/2) - (targetRect.top + targetRect.height/2);
-
-    target.css({
-      "webkitTransform":'translate(' + dx + 'px, ' + dy + 'px)',
-      "MozTransform":'translate(' + dx + 'px, ' + dy + 'px)',
-      "msTransform":'translate(' + dx + 'px, ' + dy + 'px)',
-      "OTransform":'translate(' + dx + 'px, ' + dy + 'px)',
-      "transform":'translate(' + dx + 'px, ' + dy + 'px)'
-    });
-      
-    $('#chatarea').css('background-color', '#32CD32');
-    globalGame.messageSent = true;
-  });
+  });  
 };
 
 var client_onjoingame = function(num_players, role) {

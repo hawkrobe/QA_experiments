@@ -28,8 +28,9 @@ function disableCards(cards) {
     // Disable card
     var cardElement = $(`img[data-name="${name}"]`);
     cardElement.off('click');
-    cardElement.css({'transition': 'opacity 0.3s',
+    cardElement.css({'transition': 'opacity 1s',
 		     opacity: 0.2});
+    cardElement.parent().css({'border-color' : 'black'});
   });
 }
 
