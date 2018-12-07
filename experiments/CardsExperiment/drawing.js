@@ -53,6 +53,7 @@ function initGoals(goalSets, target) {
       class : 'grid',
       style: `border-style: solid; border-color: ${border}`
     });
+    cell.append($('<p/>').append(`#${i+1}`))
     _.forEach(_.shuffle(goals), function(goalCard, j) {
       var card = $('<img/>').attr({
 	height: '20%',//, width: '65%',
@@ -62,6 +63,7 @@ function initGoals(goalSets, target) {
       cell.append(card);
     });
     $('#goals').append(cell);
+    $('#goals').append('<hr>');
   });
 }
 
