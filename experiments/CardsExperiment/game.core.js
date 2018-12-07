@@ -193,6 +193,11 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
   if(goalType == 'filler') {
     var numGoals = _.sample([2,3,4]);
     return makeGoalObject(_.map(_.sampleSize(hiddenCards, numGoals), v => [v.name]));
+  } if(goalType == 'overlapping') {
+    var overlappingGoal = _.sampleSize(hiddenCards, 1)[0]['name'];
+    var otherGoals = _.filter(hiddenCards, v => v.name != overlappingGoal);
+    return makeGoalObject(_.map(_.sampleSize(otherGoals, 2),
+				v => [v.name, overlappingGoal]));
   } else {
     console.error('goal type ' + goalType + ' not yet implementetd');
   }
@@ -201,7 +206,7 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
 game_core.prototype.sampleGoalSequence = function() {
   return _.flattenDeep(_.map(_.range(this.numRounds), i => {
     return {
-      goalType: _.sample(['filler']),    // Sample a goal type for this round
+      goalType: _.sample(['overlapping']),// Sample a goal type for this round
       numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
     };
   }));
