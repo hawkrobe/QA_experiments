@@ -63,7 +63,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 10;
+  this.numRounds = 6;
   this.feedbackDelay = 300;
   this.revealedCards = [];
   
@@ -173,7 +173,6 @@ game_core.prototype.makeTrialList = function () {
   
   // Keep sampling until we get a suitable sequence
   var sequence = this.sampleGoalSequence();
-  
   // Construct trial list (in sets of complete rounds)
   for (var i = 0; i < this.numRounds; i++) {
     var trialInfo = sequence[i];
@@ -191,23 +190,29 @@ var makeGoalObject = function(goals) {
 };
 
 game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
-  if(goalType == 'filler') {
-    var numGoals = _.sample([2,3,4]);
+  var numGoals = 2;
+  if(goalType == 'catch') {
     return makeGoalObject(_.map(_.sampleSize(hiddenCards, numGoals), v => [v.name]));
-  } if(goalType == 'overlapping') {
+  } else if(goalType == 'overlap') {
     var overlappingGoal = _.sampleSize(hiddenCards, 1)[0]['name'];
     var otherGoals = _.filter(hiddenCards, v => v.name != overlappingGoal);
     return makeGoalObject(_.map(_.sampleSize(otherGoals, 2),
 				v => [v.name, overlappingGoal]));
+  } else if(goalType == 'baseline') {
+    var goal1 = _.map(_.sampleSize(hiddenCards, 2), 'name');
+    var others = _.filter(hiddenCards, v => !_.includes(v.name, goal1));
+    var goal2 = _.map(_.sampleSize(others, 2), 'name');
+    return makeGoalObject([goal1, goal2]);
   } else {
     console.error('goal type ' + goalType + ' not yet implementetd');
   }
 };
 
 game_core.prototype.sampleGoalSequence = function() {
-  return _.flattenDeep(_.map(_.range(this.numRounds), i => {
+  var typeSeq = ['overlap', 'overlap', 'catch', 'catch', 'baseline', 'baseline'];
+  return _.flattenDeep(_.map(_.shuffle(typeSeq), type => {
     return {
-      goalType: _.sample(['overlapping', 'filler']),// Sample a goal type for this round
+      goalType: type,// Sample a goal type for this round
       numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
     };
   }));
