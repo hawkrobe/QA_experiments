@@ -16,10 +16,10 @@ function handleHighlighting(imgSelector, name) {
   var cellSelector = imgSelector.parent();
   if(alreadyClicked) {
     _.remove(globalGame.selections, obj => obj == name);    
-    cellSelector.css({'border-color' : 'black'});
+    cellSelector.css({'border-color' : 'white', 'border-width' : '1px'});
   } else if (globalGame.selections.length < 2) {
     globalGame.selections.push(name);
-    cellSelector.css({'border-color' : 'green'});
+    cellSelector.css({'border-color' : '#32CD32', 'border-width' : '5px'});
   }
 }
 
@@ -30,7 +30,7 @@ function disableCards(cards) {
     cardElement.off('click');
     cardElement.css({'transition': 'opacity 1s',
 		     opacity: 0.2});
-    cardElement.parent().css({'border-color' : 'black'});
+    cardElement.parent().css({'border-color' : 'white', 'border-width': '1px'});
   });
 }
 
@@ -50,13 +50,15 @@ function initGoals(goalSets, target) {
 		  globalGame.my_role == globalGame.playerRoleNames.role1 ?
 		  'green' : 'black');
     var cell = $('<div/>').attr({
+      height: '10%',
       class : 'grid',
       style: `border-style: solid; border-color: ${border}`
     });
     cell.append($('<p/>').append(`#${i+1}`))
     _.forEach(_.shuffle(goals), function(goalCard, j) {
       var card = $('<img/>').attr({
-	height: '20%',//, width: '65%',
+	width: '33%',
+	outline: '1px solid white',
 	src: '/images/thumbnails/' + goalCard + '.svg',
 	style : `margin-left: auto; margin-right: auto; vertical-align: middle;`
       });
@@ -65,6 +67,7 @@ function initGoals(goalSets, target) {
     $('#goals').append(cell);
     $('#goals').append('<hr>');
   });
+  $('#goals').fadeIn();
 }
 
 function initGrid(objects) {
@@ -72,7 +75,7 @@ function initGrid(objects) {
   _.forEach(_.range(1, 5), x => {
     _.forEach(_.range(1, 5), y => {
       var div = $('<div/>')
-	  .attr({style: `border-style: solid; border-color: black; \
+	  .attr({style: `border: solid 1px #FFFFFF; \
                          background-color: black; grid-column: ${x}; grid-row: ${y}`});
       var obj = _.find(objects, {'gridX' : x, 'gridY' : y});
       if(!_.isUndefined(obj)){
@@ -80,6 +83,7 @@ function initGrid(objects) {
 		       'display: none' : '');
 	div.append($('<img/>').attr({
 	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
+	  outline: '5px solid white',
 	  style : `margin-left: auto; margin-right: auto; \
                    vertical-align: middle; ${visible}`
 	}));
@@ -87,7 +91,7 @@ function initGrid(objects) {
       $("#context").append(div);
     });
   });
-
+  $("#context").fadeIn();
   // Unbind old click listeners if they exist
   $('#context img')
     .off('click');
@@ -104,118 +108,59 @@ var drawScreen = function(game, player) {
   if (player.message) {
     $('#waiting').html(player.message);
   } else {
+    console.log('initting');
     $('#waiting').html('');
+    game.confetti.reset();
     initGoals(game.goalSets, game.target);    
     initGrid(game.objects);
   }
 };
 
-// function drawSketcherFeedback(globalGame, scoreDiff, clickedObjNames) {
-//   var numTargets = _.filter(globalGame.objects, x => x.targetStatus == 'target').length;
-//   var targetWord = numTargets > 1 ? 'targets' : 'target';
-//   var clickedWord = clickedObjNames.length > 1 ? 'objects' : 'object';
-//   highlightCell('grey', x => x.targetStatus == 'target');
-//   if (scoreDiff > 0) {
-//     highlightCell('#19A319', x => _.includes(clickedObjNames, x.name));
-//     setTimeout(() => {
-//       $('#feedback').html('Great job! Your partner correctly identified the ' + targetWord + '.');
-//     }, globalGame.feedbackDelay);
-//   } else {
-//     highlightCell('#FFA500', x => _.includes(clickedObjNames, x.name));
-//     setTimeout(() => {
-//       $('#feedback').html('Too bad... Your partner clicked the ' + clickedWord + ' outlined in ' +
-// 			  'orange'.fontcolor('#FFA500') + '.');
-//     }, globalGame.feedbackDelay);
-//   }
-// };
+// Rain down confetti
+class Confetti {
+  constructor(count) {
+    this.count = count;
+  }
 
-// function drawViewerFeedback(globalGame, scoreDiff, clickedObjNames) {
-//   var numTargets = _.filter(globalGame.objects, x => x.targetStatus == 'target').length;
-//   var targetWord = numTargets > 1 ? 'targets' : 'target';
-//   var conjugation = numTargets > 1 ? 'are' : 'is';
+  pickColor(index) {
+    return (index == 1 ? '#faa040' : // yellow
+	    index == 2 ? '#e94a3f' : // blue
+	    "#e94a3f");              // red 
+  }
 
-//   highlightCell('grey', x => _.includes(clickedObjNames, x.name));
-//   if (scoreDiff > 0) {
-//     highlightCell('#19A319', x => x.targetStatus == 'target');
-//     setTimeout(() => {
-//       $('#feedback').html('Great job! You correctly identified the ' + targetWord + '!');
-//     }, globalGame.feedbackDelay);
-//   } else {
-//     highlightCell('#FFA500', x => x.targetStatus == 'target');
-//     setTimeout(() => {
-//       $('#feedback').html('Sorry... The ' + targetWord + ' ' + conjugation + ' outlined in '
-// 			  + 'orange'.fontcolor("#FFA500").bold() + '.');
-//     }, globalGame.feedbackDelay);
-//   }
-// };
+  // Initialize confetti particle
+  create(i) {
+    var width = Math.random() * 8;
+    var height = width * 0.4;
+    var colourIdx = Math.ceil(Math.random() * 3);
+    var colour = this.pickColor(colourIdx);
+    $(`<div style="position:fixed" id=confetti-${i} class="confetti"></div>`).css({
+      "width" : width+"px",
+      "height" : height+"px",
+      "top" : -Math.random()*20+"%",
+      "left" : Math.random()*100+"%",
+      "opacity" : Math.random()+0.5,
+      "background-color": colour,
+      "transform" : "rotate("+Math.random()*360+"deg)"
+    }).appendTo('#header');  
+  }
 
+  //Dropp all confetti
+  drop() {
+    for(var i = 0; i < this.count; i++) {
+      this.create(i);
+      $('#confetti-' + i).animate({
+	top: "100%",
+	left: "+="+Math.random()*15+"%"
+      }, {
+	duration: Math.random()*3000 + 3000
+      });
+    };
+  }
 
-// function disableLabels(game) {
-//   interact('p').unset();
-//   interact('#chatarea').unset();
-// }
-
-// function enableLabels(game) {
-//   var labels = document.querySelector('#message_panel');
-//   var startPos = null;
-//   var dropCenter = null;
-//   interact('p', {context: labels})
-//     .draggable({
-//       restrict: {
-//       	restriction: "parent",
-//       	endOnly: true,
-//       	elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-//       },
-//       onstart: function(event) {
-//       	var rect = interact.getElementRect(event.target);
-
-//       	// record center point when starting the very first a drag
-//       	startPos = {
-//           x: rect.left + rect.width  / 2,
-//           y: rect.top  + rect.height / 2
-//       	}
-
-//       	event.interactable.draggable({
-//           snap: {
-//             targets: [startPos]
-//           }
-//       	});
-//       },
-
-//       snap: {
-//         targets: [startPos],
-//         range: Infinity,
-//         relativePoints: [ { x: 0.5, y: 0.5 } ],
-//         endOnly: true
-//       },
-//       onmove: dragMoveListener
-//     });
-  
-//   interact('#chatarea')
-//     .dropzone({
-//       accept: '.draggable',
-//       overlap: .5,
-//       ondragenter: function (event) {
-// 	var draggableElement = event.relatedTarget,
-//             dropzoneElement  = event.target,
-//             dropRect         = interact.getElementRect(dropzoneElement);
-	
-//         dropCenter = {
-//           x: dropRect.left + dropRect.width  / 2,
-//           y: dropRect.top  + dropRect.height / 2
-//         };
-	
-//         event.draggable.draggable({
-//           snap: {
-//             targets: [dropCenter]
-//           }
-//         });
-//       },
-//       ondrop: function(event) {
-// 	$('#chatarea').css('background-color', '#32CD32');
-// 	var timeElapsed = new Date() - game.roundStartTime;
-// 	game.socket.send('drop.' + event.relatedTarget.innerHTML + '.' + timeElapsed);
-// 	interact('p', {context: labels}).draggable(false);
-//       }
-//     });
-// };
+  reset() {
+    for(var i = 0; i < this.count; i++) {
+      $('#confetti-' + i).remove();
+    }
+  }
+}
