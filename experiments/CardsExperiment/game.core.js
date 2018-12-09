@@ -200,7 +200,7 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
 				v => [v.name, overlappingGoal]));
   } else if(goalType == 'baseline') {
     var goal1 = _.map(_.sampleSize(hiddenCards, 2), 'name');
-    var others = _.filter(hiddenCards, v => !_.includes(v.name, goal1));
+    var others = _.filter(hiddenCards, v => !_.includes(goal1, v.name));
     var goal2 = _.map(_.sampleSize(others, 2), 'name');
     return makeGoalObject([goal1, goal2]);
   } else {
@@ -225,7 +225,7 @@ game_core.prototype.sampleTrial = function(trialInfo) {
   // Sample the goal sets and pick one to be the target
   var goalSets = this.sampleGoalSet(trialInfo.goalType, hiddenCards);
   var target = _.sample(_.keys(goalSets));
-
+  
   // Sample places to put cards
   var locs = this.sampleStimulusLocs(trialInfo.numCards);
   return _.extend({}, trialInfo, {
