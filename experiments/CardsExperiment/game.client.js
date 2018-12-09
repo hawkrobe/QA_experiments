@@ -71,14 +71,14 @@ var client_onserverupdate_received = function(data){
       $('#chatarea').show();      
       $('#instructs')
 	.empty()
-	.append("<p>Fill in the question</p>" +
-		"<p>so your partner can help you find the cards!</p>");
+	.append("<p>Fill in the question so your partner</p>" +
+		"<p>can help you find the cards in your goal!</p>");
     } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
       $('#chatarea').hide();
       $('#advance_button').show().attr('disabled', 'disabled');
       $('#instructs').empty().append(
-	"<p>After you see the speaker drag a word into the box,</p>" 
-	  + "<p>click <b>one</b> or <b>two</b> objects to fill the order.</p>");
+	"<p>After your partner types their question,</p>" 
+	  + "<p>select <b>one</b> or <b>two</b> cards to reveal!</p>");
     }
   }
     
