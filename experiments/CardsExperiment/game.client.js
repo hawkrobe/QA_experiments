@@ -158,15 +158,16 @@ var customSetup = function(game) {
     var numGoals = globalGame.goalSets[globalGame.targetGoal].length;
     var numRevealed = globalGame.revealedCards.length;
     var numQuestionsAsked = globalGame.numQuestionsAsked;
-    console.log('revealed ' + numRevealed);
-    console.log('num questions asked: ' + numQuestionsAsked);
-    var penalty = (numGoals - numRevealed) + (1 - numQuestionsAsked);
-    console.log('you revealed ' + penalty + ' more than required; \
-                you received ' + (3 + penalty) + ' of a possible bonus of 3 cents');
-    globalGame.data.subject_information.score += (3 + penalty);
+    var revealPenalty = (numRevealed - numGoals);
+    var questionPenalty = (numQuestionsAsked - 1);
+    var score = (3 - revealPenalty - questionPenalty);
+    globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
-    $('#score').empty().append('total bonus of $' + bonus_score);
+    $('#feedback').html('you revealed ' + revealPenalty + ' more cards than required\n \
+                 and asked ' + questionPenalty + ' more questions than required\n \
+                 so you received ' + score + '/3 cents');
+    $('#score').empty().append('total bonus: $' + bonus_score);
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});
     $("#goals").fadeOut(1000, function() {$(this).empty();});
