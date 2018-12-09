@@ -63,7 +63,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 2;
+  this.numRounds = 10;
   this.feedbackDelay = 300;
   this.revealedCards = [];
   
@@ -93,6 +93,7 @@ var game_core = function(options){
     this.server_send_update();
   } else {
     // If we're initializing a player's local game copy, create the player object
+    this.confetti = new Confetti(300);
     this.players = [{
       id: null,
       instance: null,
@@ -206,7 +207,7 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
 game_core.prototype.sampleGoalSequence = function() {
   return _.flattenDeep(_.map(_.range(this.numRounds), i => {
     return {
-      goalType: _.sample(['overlapping']),// Sample a goal type for this round
+      goalType: _.sample(['overlapping', 'filler']),// Sample a goal type for this round
       numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
     };
   }));

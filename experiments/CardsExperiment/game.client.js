@@ -68,7 +68,6 @@ var client_onserverupdate_received = function(data){
     $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
 
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
-      $('#advance_button').hide();
       $('#chatarea').show();      
       $('#instructs')
 	.empty()
@@ -84,6 +83,7 @@ var client_onserverupdate_received = function(data){
   }
     
   // Draw all this new stuff
+  console.log('drawing');
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 };
 
@@ -153,6 +153,21 @@ var checkCards = function() {
 }
 
 var customSetup = function(game) {
+  game.socket.on('updateScore', function(data) {
+    var overage = (globalGame.goalSets[globalGame.targetGoal].length
+		   - data.selections.length);
+    globalGame.data.subject_information.score += 1;
+    console.log(data);
+    var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
+		       .toFixed(2));
+    $('#score').empty().append('total bonus of $' + bonus_score);
+    $('#messages').empty();
+    $("#context").fadeOut(1000, function() {$(this).empty();});
+    $("#goals").fadeOut(1000, function() {$(this).empty();});
+    $('#advance_button').hide();
+    globalGame.confetti.drop();
+  });
+  
   game.socket.on('reveal', function(data) {
     globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
     // Fade in revealed cards
@@ -163,15 +178,13 @@ var customSetup = function(game) {
 	.css({opacity: 1, 'transition': 'opacity 2s linear'});
     });
     if(checkCards()) {
-      game.socket.send('allCardsFound');
+      game.socket.emit('allCardsFound', data);
     }
   });
   
   game.socket.on('newRoundUpdate', function(data){
     globalGame.messageSent = false;
-    $('#messages').empty();
-    $("#context").empty();
-    $('#goals').empty();
+    $('#scoreupdate').html(" ");
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
       $('#instructs').empty()
@@ -186,9 +199,7 @@ var customSetup = function(game) {
   game.socket.on('finishedGame', function(data) {
     $("#main").hide();
     $("#header").hide();
-    $("#dimScreen").show();
-    $("#post_test").show();
-    setupPostTest();
+    $("#exit_survey").show();    
   });  
 };
 
@@ -201,14 +212,14 @@ var client_onjoingame = function(num_players, role) {
   });
 
   if(num_players == 1) {
-    if(_.size(this.urlParams) == 4) {
-      this.submitted = true;
-      window.opener.turk.submit(this.data, true);
-      window.close();
-    } else {
-      console.log("would have submitted the following :");
-      console.log(this.data);
-    }
+  //   if(_.size(this.urlParams) == 4) {
+  //     this.submitted = true;
+  //     window.opener.turk.submit(this.data, true);
+  //     window.close();
+  //   } else {
+  //     console.log("would have submitted the following :");
+  //     console.log(this.data);
+  //   }
     globalGame.get_player(globalGame.my_id).message = ('<p>Waiting for another player...<br /> Please do not refresh the page!<br /> If wait exceeds 15 minutes, we recommend returning the HIT and trying again later.</p>');
   }
 };
@@ -217,29 +228,29 @@ var client_onjoingame = function(num_players, role) {
  MOUSE EVENT LISTENERS
  */
 
-function dragMoveListener (event) {
-  // Tell the server if this is a real drag event (as opposed to an update from partner)
-  var container = $('#message_panel')[0];
-  var width = parseInt(container.getBoundingClientRect().width);
-  var height = parseInt(container.getBoundingClientRect().height);
-  if(_.has(event, 'name')) {
-    event.target = $(`p:contains("${event.name}")`)[0];
-    event.dx = parseFloat(event.dx) / event.width * width;
-    event.dy = parseFloat(event.dy) / event.height * height;
-  }
+// function dragMoveListener (event) {
+//   // Tell the server if this is a real drag event (as opposed to an update from partner)
+//   var container = $('#message_panel')[0];
+//   var width = parseInt(container.getBoundingClientRect().width);
+//   var height = parseInt(container.getBoundingClientRect().height);
+//   if(_.has(event, 'name')) {
+//     event.target = $(`p:contains("${event.name}")`)[0];
+//     event.dx = parseFloat(event.dx) / event.width * width;
+//     event.dy = parseFloat(event.dy) / event.height * height;
+//   }
 
-  // keep the dragged position in the data-x/data-y attributes
-  var target = event.target,
-      x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
-      y = (parseFloat(target.getAttribute('data-y')) || 0) + parseFloat(event.dy);
+//   // keep the dragged position in the data-x/data-y attributes
+//   var target = event.target,
+//       x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
+//       y = (parseFloat(target.getAttribute('data-y')) || 0) + parseFloat(event.dy);
   
 
-  // translate the element
-  target.style.webkitTransform =
-    target.style.transform =
-    'translate(' + x + 'px, ' + y + 'px)';
+//   // translate the element
+//   target.style.webkitTransform =
+//     target.style.transform =
+//     'translate(' + x + 'px, ' + y + 'px)';
 
-  // update the posiion attributes
-  target.setAttribute('data-x', x);
-  target.setAttribute('data-y', y);
-}
+//   // update the posiion attributes
+//   target.setAttribute('data-x', x);
+//   target.setAttribute('data-y', y);
+// }

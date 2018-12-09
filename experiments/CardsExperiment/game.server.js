@@ -46,16 +46,6 @@ var onMessage = function(client,message) {
     }
     break;
 
-  case 'allCardsFound' :
-    gc.newRound(3000);
-    break;
-    
-  case 'drop' :
-    _.map(others, (p) => {
-      p.player.instance.emit('drop', {name: message_parts[1]});
-    });
-    break;
-
   case 'h' : // Receive message when browser focus shifts
     target.visible = message_parts[1];
     break;
@@ -63,8 +53,14 @@ var onMessage = function(client,message) {
 };
 
 var setCustomEvents = function(socket) {
+  socket.on('allCardsFound', function(data) {
+    var all = socket.game.get_active_players();
+    _.map(all, function(p){
+      p.player.instance.emit( 'updateScore', data);});
+    socket.game.newRound(4000);
+  });
+
   socket.on('reveal', function(data) {
-    console.log('revealed');
     var partner = socket.game.get_others(socket.userid)[0];
     partner.player.instance.emit('reveal', data);    
   });
