@@ -83,7 +83,6 @@ var client_onserverupdate_received = function(data){
   }
     
   // Draw all this new stuff
-  console.log('drawing');
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 };
 
@@ -91,7 +90,9 @@ var advanceRound = function() {
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(globalGame.selections);
+  globalGame.revealedCards = globalGame.revealedCards.concat(globalGame.selections);
   globalGame.socket.emit("reveal", {selections: globalGame.selections});
+  globalGame.numQuestionsAsked += 1;
   globalGame.messageSent = false;
   globalGame.selections = [];
 };
@@ -154,10 +155,15 @@ var checkCards = function() {
 
 var customSetup = function(game) {
   game.socket.on('updateScore', function(data) {
-    var overage = (globalGame.goalSets[globalGame.targetGoal].length
-		   - data.selections.length);
-    globalGame.data.subject_information.score += 1;
-    console.log(data);
+    var numGoals = globalGame.goalSets[globalGame.targetGoal].length;
+    var numRevealed = globalGame.revealedCards.length;
+    var numQuestionsAsked = globalGame.numQuestionsAsked;
+    console.log('revealed ' + numRevealed);
+    console.log('num questions asked: ' + numQuestionsAsked);
+    var penalty = (numGoals - numRevealed) + (1 - numQuestionsAsked);
+    console.log('you revealed ' + penalty + ' more than required; \
+                you received ' + (3 + penalty) + ' of a possible bonus of 3 cents');
+    globalGame.data.subject_information.score += (3 + penalty);
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
     $('#score').empty().append('total bonus of $' + bonus_score);
@@ -170,6 +176,7 @@ var customSetup = function(game) {
   
   game.socket.on('reveal', function(data) {
     globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
+    globalGame.numQuestionsAsked += 1;
     // Fade in revealed cards
     _.forEach(data.selections, name => {
       $(`img[data-name="${name}"]`)
@@ -184,6 +191,7 @@ var customSetup = function(game) {
   
   game.socket.on('newRoundUpdate', function(data){
     globalGame.messageSent = false;
+    globalGame.numQuestionsAsked = 0;
     $('#scoreupdate').html(" ");
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
