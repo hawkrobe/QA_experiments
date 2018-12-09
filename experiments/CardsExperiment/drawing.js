@@ -78,14 +78,22 @@ function initGrid(objects) {
 	  .attr({style: `border: solid 1px #FFFFFF; \
                          background-color: black; grid-column: ${x}; grid-row: ${y}`});
       var obj = _.find(objects, {'gridX' : x, 'gridY' : y});
+      // Put image in grid if it exists
       if(!_.isUndefined(obj)){
 	var visible = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
 		       'display: none' : '');
 	div.append($('<img/>').attr({
 	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
-	  outline: '5px solid white',
 	  style : `margin-left: auto; margin-right: auto; \
                    vertical-align: middle; ${visible}`
+	}));
+      }
+      // Put haze in questioner's grid
+      if(globalGame.my_role == globalGame.playerRoleNames.role1) {
+	div.append($('<img/>').attr({
+	  height: '100%', width: '100%', src: 'images/haze.jpg',
+	  style : `margin-left: auto; margin-right: auto; \
+                   vertical-align: middle;`
 	}));
       } 
       $("#context").append(div);
