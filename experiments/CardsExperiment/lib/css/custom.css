@@ -137,15 +137,41 @@ html , body {
 }
 
 #score {
-    text-align: left;
-    height: 5%;
-    width: 30%;
-    margin-left: auto;
-    margin-right: 0;
-    margin-bottom: auto ;
-    left:5%; right:auto; top:5%; bottom: 0;
+	height: 10%;
+	width: 20%;
+	text-align: center;
+	margin-left: 1%;
+	margin-top: 1%;
+	margin-right: auto;
+	margin-bottom: auto ;
+	left:0; right:0; top:0; bottom: 0;
+	position: absolute;
+	font-size: 2vh;
+	font-weight:lighter;
+}
+
+#scoreupdate {
+	height: 5%;
+	width: 20%;
+	text-align: center;
+	margin-left: 0;
+	margin-right: auto;
+	margin-bottom: auto;
+	left:auto; right:1%; top:30%; bottom: 0;
+	position: absolute;
+	font-size: 3vh;
+	font-weight:bolder;
+}
+
+.wrapper {
+  
+  max-height: 100%;
+  max-width: 100%;
+  display: inline;;
+}
+
+#confetti {
     position: absolute;
-    font-size: 3vh;
 }
 
 #submitbutton {
@@ -178,18 +204,17 @@ ALOT...don't understand how to adjust that.*/
     /* background: #000000; */
     float: top;
     /* border:solid 1px #333333; *\/ */
-    grid-template-columns: 14.625vh 14.625vh 14.625vh 14.625vh;
-    grid-template-rows: 14.625vh 14.625vh 14.625vh 14.625vh;
+    grid-template-columns: 15vh 15vh 15vh 15vh;
+    grid-template-rows: 15vh 15vh 15vh 15vh;
     height: 60vh;
     width: 60vh;
-    grid-gap: .5vh;
-    background-color: #222222;
+    grid-gap: 0vh;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: auto ;
     margin-top: 10%;
     /* margin-right: 5%; */
-    background: #383838;
+    background: #000000;
 }
 
 #advance_button {
@@ -271,18 +296,23 @@ ALOT...don't understand how to adjust that.*/
     float: left;
     border: 1px;
     border-color: white;
-   list-style-type: none;
+    list-style-type: none;
+}
+
+#goals {
+    top: 10%;
+    list-style-type: none;
 }
 
 #context_panel {
-	height: 90%;
-	width: 40%;
-
-	float: right;
-
-	margin-left: 5%;
-	margin-right: 5%;
-	list-style-type: none;
+    height: 90%;
+    width: 40%;
+    
+    float: right;
+    
+    margin-left: 5%;
+    margin-right: 5%;
+    list-style-type: none;
 }
 
 /* #labels { */
