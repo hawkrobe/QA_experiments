@@ -91,7 +91,7 @@ var advanceRound = function() {
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(globalGame.selections);
   globalGame.revealedCards = globalGame.revealedCards.concat(globalGame.selections);
-  globalGame.socket.emit("reveal", {selections: globalGame.selections});
+  globalGame.socket.send("reveal." + globalGame.selections.join('.'));
   globalGame.numQuestionsAsked += 1;
   globalGame.messageSent = false;
   globalGame.selections = [];
@@ -160,7 +160,7 @@ var customSetup = function(game) {
     var numQuestionsAsked = globalGame.numQuestionsAsked;
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
-    var score = (3 - revealPenalty - questionPenalty);
+    var score = Math.max(3 - revealPenalty - questionPenalty, 0);
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
@@ -180,6 +180,9 @@ var customSetup = function(game) {
     globalGame.numQuestionsAsked += 1;
     // Fade in revealed cards
     _.forEach(data.selections, name => {
+      var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
+      var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
+      $('#haze-' + col + row).hide();
       $(`img[data-name="${name}"]`)
 	.css({opacity: 0.0})
 	.show()
@@ -193,6 +196,7 @@ var customSetup = function(game) {
   game.socket.on('newRoundUpdate', function(data){
     globalGame.messageSent = false;
     globalGame.numQuestionsAsked = 0;
+    globalGame.revealedCards = [];
     $('#scoreupdate').html(" ");
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
@@ -229,7 +233,7 @@ var client_onjoingame = function(num_players, role) {
   //     console.log("would have submitted the following :");
   //     console.log(this.data);
   //   }
-    globalGame.get_player(globalGame.my_id).message = ('<p>Waiting for another player...<br /> Please do not refresh the page!<br /> If wait exceeds 15 minutes, we recommend returning the HIT and trying again later.</p>');
+    globalGame.get_player(globalGame.my_id).message = ('<p>Waiting for another player...<br /> Please do not refresh the page!<br /> If wait exceeds 5 minutes, we recommend returning the HIT and trying again later.</p>');
   }
 };
 

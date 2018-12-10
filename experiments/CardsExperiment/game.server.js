@@ -38,7 +38,7 @@ var onMessage = function(client,message) {
     });
     break;
 
-    case 'chatMessage' :
+  case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
       var msg = message_parts[1].replace(/~~~/g,'.');
       _.map(all, function(p){
@@ -46,6 +46,11 @@ var onMessage = function(client,message) {
     }
     break;
 
+  case 'reveal' :
+    var partner = others[0];
+    partner.player.instance.emit('reveal', {selections: message_parts.slice(1)});    
+    break;
+    
   case 'h' : // Receive message when browser focus shifts
     //target.visible = message_parts[1];
     break;
@@ -60,10 +65,6 @@ var setCustomEvents = function(socket) {
     socket.game.newRound(4000);
   });
 
-  socket.on('reveal', function(data) {
-    var partner = socket.game.get_others(socket.userid)[0];
-    partner.player.instance.emit('reveal', data);    
-  });
 }
 
 /*
@@ -74,15 +75,6 @@ var setCustomEvents = function(socket) {
   Note: If no function provided for an event, no data will be written
 */
 var dataOutput = function() {
-  function getIntendedTargetName(objects) {
-    var targetNames =  _.map(_.filter(objects, o => o.targetStatus === 'target'), 'name');
-    if(targetNames.length == 1) {
-      return targetNames[0];
-    } else {
-      return targetNames[0].slice(0,-1) + 's';
-    }
-  }
-
   function getObjectLocs(objects) {
     return _.flatten(_.map(objects, o => {
       return [o.name, o.speakerCoords.gridX, o.speakerCoords.gridY,
@@ -90,92 +82,56 @@ var dataOutput = function() {
     }));
   }
 
-  function getObjectLocHeaderArray() {
-    return _.flatten(_.map(_.range(1,5), i => {
-      return _.map(['name', 'speakerX', 'speakerY', 'listenerX', 'listenerY'], v => {
-	return 'object' + i + v;
-      });
-    }));
-  };
+  // function getObjectLocHeaderArray() {
+  //   return _.flatten(_.map(_.range(1,5), i => {
+  //     return _.map(['name', 'speakerX', 'speakerY', 'listenerX', 'listenerY'], v => {
+  // 	return 'object' + i + v;
+  //     });
+  //   }));
+  // };
   
   function commonOutput (client, message_data) {
+    var target = client.game.trialInfo.currStim.target;
+    var distractor = target == 'g1' ? 'g0' : 'g1';
     return {
       iterationName: client.game.iterationName,
       gameid: client.game.id,
       time: Date.now(),
       workerId: client.workerid,
       assignmentId: client.assignmentid,
-      stimulusHalf: client.game.stimulusHalf,
-      condition: client.game.condition
+      trialNum: client.game.roundNum,
+      trialType: client.game.trialInfo.currGoalType,
+      targetGoalSet: client.game.trialInfo.currStim.goalSets[target],
+      distractorGoalSet: client.game.trialInfo.currStim.goalSets[distractor]
     };
   };
 
-  var postTestWordOutput = function(client, message_data) {
-    var target = message_data[1];
-    var selections = message_data.slice(2);
-    var meaningHeader = _.map(client.game.objects, 'name');
-    var meaning = _.map(client.game.objects, obj => _.includes(selections, obj.name));
-    return _.extend(
-      commonOutput(client, message_data),
-      _.zipObject(meaningHeader, meaning), {
-	target,
-	finalRole: client.role
-      });	
-  };
-  
-  var postTestObjectOutput = function(client, message_data) {
-    var target = message_data[1];
-    var selections = message_data.slice(2);
-    var meaningHeader = client.game.trialInfo.labels;
-    var meaning = _.map(client.game.trialInfo.labels,
-			label => _.includes(selections, label));
-    return _.extend(
-      commonOutput(client, message_data),
-      _.zipObject(meaningHeader, meaning), {
-	target,
-	finalRole: client.role
-      });	
-  };
-
-  var clickedObjOutput = function(client, message_data) {
-    var clickedObjNames = message_data[1].split(',');
-    var objects = client.game.trialInfo.currStim;
-    var targetNames = _.map(_.filter(objects, x => x.targetStatus == 'target'), 'name');
-
-    var correct = _.isEqual(new Set(clickedObjNames), new Set(targetNames));
-    var intendedName = getIntendedTargetName(objects);
-    var objLocations = _.zipObject(getObjectLocHeaderArray(), getObjectLocs(objects));
-    return _.extend(
-      commonOutput(client, message_data),
-      objLocations, {
-	intendedName,
-	clickedName: message_data[1],
-	trialNum : client.game.state.roundNum + 1,	
-	correct: correct, //intendedName === message_data[1],
-	repetition: client.game.trialInfo.currRepetition,
-	contextType: client.game.trialInfo.currContextType
-      }
-    );
-  };
-
-  var dropOutput = function(client, message_data) {
-    var intendedName = getIntendedTargetName(client.game.trialInfo.currStim);
+  var revealOutput = function(client, message_data) {
+    var selections = message_data.slice(1);
+    var allObjs = client.game.trialInfo.currStim.hiddenCards;
     return _.extend(
       commonOutput(client, message_data), {
-	intendedName,
-	trialNum : client.game.state.roundNum + 1,	
+	revealedObjs : selections,
+	numRevealed : selections.length,
+	fullContext: JSON.stringify(_.map(allObjs, v => {
+	  return _.omit(v, ['rank', 'suit', 'url']);
+	}))
+      });
+  };
+  
+
+  var messageOutput = function(client, message_data) {
+    return _.extend(
+      commonOutput(client, message_data), {
 	text: message_data[1].replace(/~~~/g, '.'),
-	timeFromRoundStart: message_data[2],
-	repetition: client.game.trialInfo.currRepetition
+	timeFromRoundStart: message_data[2]
       }
     );
   };
 
   return {
-    'drop' : dropOutput,
-    'clickedObj' : clickedObjOutput,
-    'postTest_word' : postTestWordOutput,
-    'postTest_object' : postTestObjectOutput    
+    'chatMessage' : messageOutput,
+    'reveal' : revealOutput
   };
 }();
 
