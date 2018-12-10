@@ -91,7 +91,7 @@ var advanceRound = function() {
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(globalGame.selections);
   globalGame.revealedCards = globalGame.revealedCards.concat(globalGame.selections);
-  globalGame.socket.emit("reveal", {selections: globalGame.selections});
+  globalGame.socket.send("reveal." + globalGame.selections.join('.'));
   globalGame.numQuestionsAsked += 1;
   globalGame.messageSent = false;
   globalGame.selections = [];
