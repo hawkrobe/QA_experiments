@@ -160,7 +160,7 @@ var customSetup = function(game) {
     var numQuestionsAsked = globalGame.numQuestionsAsked;
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
-    var score = (3 - revealPenalty - questionPenalty);
+    var score = Math.max(3 - revealPenalty - questionPenalty, 0);
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
@@ -193,6 +193,7 @@ var customSetup = function(game) {
   game.socket.on('newRoundUpdate', function(data){
     globalGame.messageSent = false;
     globalGame.numQuestionsAsked = 0;
+    globalGame.revealedCards = [];
     $('#scoreupdate').html(" ");
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
