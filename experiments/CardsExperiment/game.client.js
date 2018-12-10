@@ -160,13 +160,13 @@ var customSetup = function(game) {
     var numQuestionsAsked = globalGame.numQuestionsAsked;
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
-    var score = Math.max(3 - revealPenalty - questionPenalty, 0);
+    var score = Math.max(game.bonusAmt - 2*revealPenalty - 2*questionPenalty, 0);
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
     $('#feedback').html('you revealed ' + revealPenalty + ' more cards than required\n \
                  and asked ' + questionPenalty + ' more questions than required\n \
-                 so you received ' + score + '/3 cents');
+                 so you received ' + score + '/5 possible cents');
     $('#score').empty().append('total bonus: $' + bonus_score);
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});

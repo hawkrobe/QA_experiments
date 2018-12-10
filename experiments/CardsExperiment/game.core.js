@@ -37,7 +37,7 @@ var game_core = function(options){
   this.experimentName = 'cards';
   this.iterationName = 'testing';
   this.anonymizeCSV = true;
-  this.bonusAmt = 10; // in cents
+  this.bonusAmt = 3; // in cents
   
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
