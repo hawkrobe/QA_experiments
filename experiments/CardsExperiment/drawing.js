@@ -92,6 +92,7 @@ function initGrid(objects) {
       if(globalGame.my_role == globalGame.playerRoleNames.role1) {
 	div.append($('<img/>').attr({
 	  height: '100%', width: '100%', src: 'images/haze.jpg',
+	  id: 'haze-' + x + y,
 	  style : `margin-left: auto; margin-right: auto; \
                    vertical-align: middle;`
 	}));

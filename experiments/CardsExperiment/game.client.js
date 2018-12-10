@@ -180,6 +180,9 @@ var customSetup = function(game) {
     globalGame.numQuestionsAsked += 1;
     // Fade in revealed cards
     _.forEach(data.selections, name => {
+      var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
+      var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
+      $('#haze-' + col + row).hide();
       $(`img[data-name="${name}"]`)
 	.css({opacity: 0.0})
 	.show()
