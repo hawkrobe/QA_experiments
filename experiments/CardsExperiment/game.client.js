@@ -233,7 +233,7 @@ var client_onjoingame = function(num_players, role) {
   //     console.log("would have submitted the following :");
   //     console.log(this.data);
   //   }
-    globalGame.get_player(globalGame.my_id).message = ('<p>Waiting for another player...<br /> Please do not refresh the page!<br /> If wait exceeds 15 minutes, we recommend returning the HIT and trying again later.</p>');
+    globalGame.get_player(globalGame.my_id).message = ('<p>Waiting for another player...<br /> Please do not refresh the page!<br /> If wait exceeds 5 minutes, we recommend returning the HIT and trying again later.</p>');
   }
 };
 
