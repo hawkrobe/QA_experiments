@@ -47,7 +47,7 @@ var onMessage = function(client,message) {
     break;
 
   case 'h' : // Receive message when browser focus shifts
-    target.visible = message_parts[1];
+    //target.visible = message_parts[1];
     break;
   }
 };
