@@ -209,8 +209,13 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
 };
 
 game_core.prototype.sampleGoalSequence = function() {
-  var typeSeq = ['overlap', 'overlap', 'catch', 'catch', 'baseline', 'baseline'];
-  return _.flattenDeep(_.map(_.shuffle(typeSeq), type => {
+  var types = ['overlap', 'catch', 'baseline'];
+  var player1trials = _.shuffle(types)
+  var player2trials = _.shuffle(types)
+  var result = _.reduce(player1trials, (arr, v, i) => {
+    return arr.concat(v, player2trials[i]); 
+  }, []);
+  return _.flattenDeep(_.map(result, type => {
     return {
       goalType: type,// Sample a goal type for this round
       numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
