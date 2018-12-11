@@ -1,0 +1,11 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432742330	0	baseline	KH,JC	7S,3S	Where is the king of hearts?	1903	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432753067	0	baseline	KH,JC	7S,3S	Where is the jack of clubs?	1541	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432767539	1	baseline	8C,2C	QD,4C	Where is the two of clubs?	1434	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432783221	2	catch	3S	AD	Where is the three of spades?	1783	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432796096	3	catch	9D	QC	Where is the 9 of diamonds?	2625	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432809961	4	overlap	10C,KH	3S,KH	Where is the 10 of clubs?	1485	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432822738	5	overlap	4C,9S	6S,9S	Where is the four of clubs?	2878	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432832337	5	overlap	4C,9S	6S,9S	Where is the four of clubs?	1375	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432838739	5	overlap	4C,9S	6S,9S	Where is the four of clubs?	1163	chatMessage
+testing	8405-ed5eedc5-a84a-434f-8e52-77e9f6701945	1544432849484	5	overlap	4C,9S	6S,9S	Where is the four of clubs?	1304	chatMessage

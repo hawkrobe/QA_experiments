@@ -1,0 +1,13 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485173514	0	catch	10H	2C	Where is the ten of hearts?	6414	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485188878	0	catch	10H	2C	Where is the two of clubs?	4493	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485273082	1	baseline	7S,7H	3S,5S	Where is the seven of club?	59347	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485283300	1	baseline	7S,7H	3S,5S	Where is the seven of hearts?	7258	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485309589	1	baseline	7S,7H	3S,5S	Where is the seven of spade?	5576	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485340187	2	baseline	6C,9C	5D,AH	Where is the where is the six of clubs?	4727	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485395094	3	overlap	5H,7S	8H,7S	Where is the five of hearts?	5334	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485468211	3	overlap	5H,7S	8H,7S	Where is the seven of spade?	19157	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485491739	4	overlap	AD,5D	8H,5D	Where is the where is the eight s?	4452	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485535686	4	overlap	AD,5D	8H,5D	Where is the where is the five of diamonds?	6580	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485563295	4	overlap	AD,5D	8H,5D	Where is the ace of diamonds?	3226	chatMessage
+pilot0	4088-9de6a0f7-018a-4f82-8776-cc0812be7927	1544485590510	5	catch	9C	4H	Where is the nine of clubs?	4164	chatMessage

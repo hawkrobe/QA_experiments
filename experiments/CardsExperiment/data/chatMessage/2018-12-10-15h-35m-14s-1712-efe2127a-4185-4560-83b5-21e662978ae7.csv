@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544484914337	0	catch	QS	10S	Where is the where is the queen of spades?	6589	chatMessage
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544484931572	1	overlap	5C,2D	4C,2D	Where is the Where is the 5 of clubs??	3760	chatMessage
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544484953144	1	overlap	5C,2D	4C,2D	Where is the Where is the 2 of diamonds??	3738	chatMessage
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544484968579	2	baseline	10D,9H	QC,KS	Where is the nine of hearts?	1984	chatMessage
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544484985988	3	catch	QS	4C	Where is the where is the queen of spades?	4259	chatMessage
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544485005020	4	overlap	QS,2H	8D,2H	Where is the queen of spades?	3074	chatMessage
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544485016987	4	overlap	QS,2H	8D,2H	Where is the two of hearts?	2832	chatMessage
+pilot0	1712-efe2127a-4185-4560-83b5-21e662978ae7	1544485034990	5	baseline	5D,KS	7S,3S	Where is the where is the 5 of diamonds?	8245	chatMessage
