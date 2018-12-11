@@ -35,9 +35,9 @@ var game_core = function(options){
   this.email = 'rxdh@stanford.edu';
   this.projectName = 'QA';
   this.experimentName = 'cards';
-  this.iterationName = 'testing';
+  this.iterationName = 'pilot0';
   this.anonymizeCSV = true;
-  this.bonusAmt = 3; // in cents
+  this.bonusAmt = 5; // in cents
   
   // save data to the following locations (allowed: 'csv', 'mongo')
   this.dataStore = ['csv', 'mongo'];
