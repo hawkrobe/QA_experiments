@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546666395	0	overlap	3S,9H	9D,9H	Where is the Nine of hearts?	4870	chatMessage
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546711624	0	overlap	3S,9H	9D,9H	Where is the three of spades?	3240	chatMessage
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546739089	1	overlap	JD,7H	6S,7H	Where is the Where is the Jack of Diamonds??	11622	chatMessage
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546774843	1	overlap	JD,7H	6S,7H	Where is the 7 of hearts?	4815	chatMessage
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546803278	2	baseline	9H,8S	7C,5D	Where is the Nine of hearts?	6944	chatMessage
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546839459	3	baseline	7D,4S	JC,QD	Where is the 7 of diamonds?	4410	chatMessage
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546865225	4	catch	4D	3H	Where is the four of diamonds?	4600	chatMessage
+pilot0	1709-20f1d731-c5fc-47b4-91b1-ad1f51c1db9d	1544546880873	5	catch	4C	QS	Where is the 4 of clubs?	3861	chatMessage

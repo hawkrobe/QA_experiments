@@ -1,0 +1,8 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+pilot0	3211-507fe450-8a58-41df-9bf0-d1413abf4bfe	1544546032567	0	catch	AH	3C	Where is the 3 of clubs?	3702	chatMessage
+pilot0	3211-507fe450-8a58-41df-9bf0-d1413abf4bfe	1544546056428	0	catch	AH	3C	Where is the ace of hearts?	4271	chatMessage
+pilot0	3211-507fe450-8a58-41df-9bf0-d1413abf4bfe	1544546089287	1	catch	QD	7S	Where is the queen of diamonds?	8480	chatMessage
+pilot0	3211-507fe450-8a58-41df-9bf0-d1413abf4bfe	1544546125852	2	overlap	JD,4C	3C,4C	Where is the jack of diamonds?	8286	chatMessage
+pilot0	3211-507fe450-8a58-41df-9bf0-d1413abf4bfe	1544546152671	3	baseline	5C,10C	AS,8D	Where is the 5 of clubs?	7048	chatMessage
+pilot0	3211-507fe450-8a58-41df-9bf0-d1413abf4bfe	1544546173026	4	baseline	KC,AC	AD,10H	Where is the ace of clubs?	2949	chatMessage
+pilot0	3211-507fe450-8a58-41df-9bf0-d1413abf4bfe	1544546199530	5	overlap	7C,5H	QH,5H	Where is the 7 of clubs?	3791	chatMessage
