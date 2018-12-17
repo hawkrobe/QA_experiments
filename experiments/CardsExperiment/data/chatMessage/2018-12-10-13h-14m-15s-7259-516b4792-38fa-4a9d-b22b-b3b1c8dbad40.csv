@@ -1,9 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476455527	0	overlap	8H,KC	6H,KC	Where is the asdf?	175	chatMessage
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476469591	1	catch	JC	10C	Where is the jack of clubs?	1047	chatMessage
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476484783	2	baseline	5H,AH	9H,6C	Where is the ace of hearts?	1019	chatMessage
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476501904	3	overlap	6D,3C	AD,3C	Where is the six of diamonds?	1427	chatMessage
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476516137	4	catch	8H	2C	Where is the eight of hearts?	2668	chatMessage
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476524740	4	catch	8H	2C	Where is the eight of hearts?	2965	chatMessage
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476540914	5	baseline	3S,4D	7S,3H	Where is the four of diamonds?	2913	chatMessage
-testing	7259-516b4792-38fa-4a9d-b22b-b3b1c8dbad40	1544476551225	5	baseline	3S,4D	7S,3H	Where is the three of spades?	1357	chatMessage

@@ -1,2 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	revealedObjs	numRevealed	fullContext	eventType
-testing	0435-e95213a1-ce03-4291-b30c-0ebb70f018fa	1544476337775	0	catch	3H	4C	3H	1	[{"name":"6S","gridX":4,"gridY":1},{"name":"2C","gridX":1,"gridY":2},{"name":"3H","gridX":3,"gridY":2},{"name":"JC","gridX":4,"gridY":3},{"name":"8H","gridX":4,"gridY":2},{"name":"4C","gridX":2,"gridY":3},{"name":"JS","gridX":1,"gridY":3},{"name":"4H","gridX":4,"gridY":4}]	reveal
