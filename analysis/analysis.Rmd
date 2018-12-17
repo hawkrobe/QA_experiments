@@ -9,7 +9,7 @@ output: html_notebook
 library(tidyverse)
 
 library(ggthemes)
-library(GGally)
+#library(GGally)
 # library(coda)
 # library(boot)
 # library(cowplot)
@@ -731,4 +731,126 @@ ggplot(aes(x = x, y = y)) +
         axis.text.y = element_text(size=12),
         axis.text.x = element_text(size=12)) 
 ggsave('../writing/2016/journal-manuscript/figures/answererOutput.pdf', height = 4.51, width = 7.29)
+```
+
+# Cards experiment
+
+## Questioner behavior
+
+Pre-processing
+
+```{r}
+combined <- read_tsv('../experiments/CardsExperiment/data/reveal/reveals.csv') %>% group_by(gameid, trialNum) %>% mutate(i = row_number()) %>% ungroup() %>%
+  inner_join(read_tsv('../experiments/CardsExperiment/data/chatMessage/chatMessages.csv')  %>% group_by(gameid, trialNum) %>% mutate(i = row_number()) %>% ungroup(),
+            by = c('i', 'gameid', 'trialNum', 'trialType', 'targetGoalSet', 'distractorGoalSet')) %>%
+  group_by(gameid) %>%
+  mutate(participantID = paste(gameid, trialNum %% 2, sep = '-')) %>%
+  select(-fullContext, -eventType.x, -eventType.y) %>%
+  mutate(trialsComplete = max(trialNum) + 1) %>%
+  filter(trialsComplete == 6) %>%
+  mutate(trialType = factor(trialType, levels = c('catch', 'baseline', 'overlap'), labels = c('catch', 'baseline', 'overlap'))) %>%
+  separate(targetGoalSet, into = c('target1', 'target2'), by = ',', remove = F) %>%
+  separate(revealedObjs, into = c('revealed1', 'revealed2'), by = ',') %>%
+  ungroup() %>%
+  mutate(participantID = as.numeric(factor(participantID)))
+
+```
+
+```{r}
+combined %>%
+  group_by(gameid, trialNum, trialType) %>%
+  summarize(firstAskedAbout = sum(first(cardAskedAbout) == first(target1))) %>%
+  group_by(trialType) %>%
+  tidyboot_mean(firstAskedAbout) %>%
+  ggplot(aes(x = trialType, y = empirical_stat)) +
+    geom_bar(position = 'dodge', stat = 'identity') +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_bw() +
+    xlab('trial type') +
+    ylab('% questions about target card')
+  
+ggsave('questionerResults.pdf')
+```
+
+## Answerer behavior
+
+```{r}
+combined %>%
+  rowwise() %>%
+  mutate(completeAnswer = (target1 %in% c(revealed1, revealed2) &&
+                        ifelse(!is.na(target2), target2 %in% c(revealed1, revealed2), is.na(revealed2)))) %>%
+  mutate(literalAnswer = (cardAskedAbout == revealed1 && numRevealed == 1)) %>%
+  group_by(gameid, trialNum, trialType) %>%
+  summarize(pragmaticAnswerFirst = !first(literalAnswer) && first(completeAnswer), 
+            literalAnswerFirst = first(literalAnswer),
+            cardAskedAbout = first(cardAskedAbout), revealed1 = first(revealed1), revealed2 = first(revealed2)) %>%
+  group_by(trialType) %>%
+  tidyboot_mean(literalAnswerFirst) %>%
+  ggplot(aes(x = trialType, y = empirical_stat)) +
+    geom_bar(position = 'dodge', stat = 'identity') +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_bw() +
+    ylim(0,1) +
+    xlab('trial type') +
+    ylab('% pragmatic answer (i.e. completing goal beyond literal card)')
+```
+
+Learning?
+
+```{r}
+combined %>%
+  group_by(gameid, trialNum, trialType) %>%
+  tally() %>%
+  rename(numAttempts = n) %>%
+  group_by(trialNum) %>%
+  tidyboot_mean(numAttempts) %>%
+  ggplot(aes(x = trialNum, y = empirical_stat)) +
+    geom_line() +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_bw() +
+    ylab('# attempts')
+```
+
+Number of exchanges taken on average to complete the goal
+
+```{r}
+combined %>%
+  group_by(gameid, trialNum, trialType) %>%
+  tally() %>%
+  rename(numExchanges = n) %>%
+  group_by(trialType) %>%
+  tidyboot_mean(numExchanges) %>%
+  ggplot(aes(x = trialType, y = empirical_stat)) +
+    geom_bar(stat = 'identity') +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_bw() +
+    coord_cartesian(ylim = c(1, 2)) +
+    #ylim(.9, 2) +
+    ylab('# exchanges taken to complete goal')
+```
+
+```{r}
+combined %>%
+  group_by(gameid, trialNum, trialType) %>%
+  tally() %>%
+  rename(numExchanges = n) %>%
+  group_by(trialType) %>%
+  tidyboot_mean(numExchanges) %>%
+  ggplot(aes(x = trialType, y = empirical_stat)) +
+    geom_bar(stat = 'identity') +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_bw() +
+    coord_cartesian(ylim = c(1, 2)) +
+    #ylim(.9, 2) +
+    ylab('# attempts')
+```
+
+```{r}
+library(lme4)
+summary(lmer(numExchanges ~ trialType + (1 | gameid) + (1 | participantID), data = combined %>%
+  group_by(gameid, trialNum, trialType, participantID) %>%
+  tally() %>%
+  rename(numExchanges = n)
+))
+contrasts(combined$trialType)
 ```
