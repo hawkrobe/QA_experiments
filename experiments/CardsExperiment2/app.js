@@ -28,7 +28,7 @@ if(argv.gameport) {
   console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
 }
 
-var gameServer = new Server('../CardsExperiment/');  
+var gameServer = new Server('../CardsExperiment2/');  
 
 try {
   var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
