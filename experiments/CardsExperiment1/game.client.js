@@ -160,8 +160,7 @@ var customSetup = function(game) {
     var numQuestionsAsked = globalGame.numQuestionsAsked;
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
-    console.log(globalGame.bonusAmt);
-    var score = Math.max(globalGame.bonusAmt - 2*revealPenalty - 2*questionPenalty, 0);
+    var score = (revealPenalty + questionPenalty) > 0 ? 0 : globalGame.bonusAmt;
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
