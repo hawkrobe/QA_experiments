@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544545993859	0	baseline	8S,JS	QD,2H	Where is the Where is the jack of spades?	6872	chatMessage
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544546010634	1	catch	9S	JS	Where is the nine of spades?	2957	chatMessage
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544546031997	2	overlap	10C,9D	QC,9D	Where is the where is the 10 of clubs?	8183	chatMessage
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544546045755	3	overlap	JD,AD	4C,AD	Where is the jack of diamonds?	2217	chatMessage
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544546060330	3	overlap	JD,AD	4C,AD	Where is the ace of diamonds?	2565	chatMessage
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544546078427	4	catch	7H	7D	Where is the where is the 7 of hearts?	5902	chatMessage
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544546093222	5	baseline	6S,9S	10D,5D	Where is the 6 of spades?	2179	chatMessage
+pilot0	1813-5354035c-6c03-436e-a5af-65bd562767b4	1544546102350	5	baseline	6S,9S	10D,5D	Where is the nine of spades?	1761	chatMessage

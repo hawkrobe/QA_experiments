@@ -1,0 +1,314 @@
+[
+  {
+    "name": "10C",
+    "rank": "10",
+    "suit": "C",
+    "url": "./images/10C.png"
+  },
+  {
+    "name": "10D",
+    "rank": "10",
+    "suit": "D",
+    "url": "./images/10D.png"
+  },
+  {
+    "name": "10H",
+    "rank": "10",
+    "suit": "H",
+    "url": "./images/10H.png"
+  },
+  {
+    "name": "10S",
+    "rank": "10",
+    "suit": "S",
+    "url": "./images/10S.png"
+  },
+  {
+    "name": "2C",
+    "rank": "2",
+    "suit": "C",
+    "url": "./images/2C.png"
+  },
+  {
+    "name": "2D",
+    "rank": "2",
+    "suit": "D",
+    "url": "./images/2D.png"
+  },
+  {
+    "name": "2H",
+    "rank": "2",
+    "suit": "H",
+    "url": "./images/2H.png"
+  },
+  {
+    "name": "2S",
+    "rank": "2",
+    "suit": "S",
+    "url": "./images/2S.png"
+  },
+  {
+    "name": "3C",
+    "rank": "3",
+    "suit": "C",
+    "url": "./images/3C.png"
+  },
+  {
+    "name": "3D",
+    "rank": "3",
+    "suit": "D",
+    "url": "./images/3D.png"
+  },
+  {
+    "name": "3H",
+    "rank": "3",
+    "suit": "H",
+    "url": "./images/3H.png"
+  },
+  {
+    "name": "3S",
+    "rank": "3",
+    "suit": "S",
+    "url": "./images/3S.png"
+  },
+  {
+    "name": "4C",
+    "rank": "4",
+    "suit": "C",
+    "url": "./images/4C.png"
+  },
+  {
+    "name": "4D",
+    "rank": "4",
+    "suit": "D",
+    "url": "./images/4D.png"
+  },
+  {
+    "name": "4H",
+    "rank": "4",
+    "suit": "H",
+    "url": "./images/4H.png"
+  },
+  {
+    "name": "4S",
+    "rank": "4",
+    "suit": "S",
+    "url": "./images/4S.png"
+  },
+  {
+    "name": "5C",
+    "rank": "5",
+    "suit": "C",
+    "url": "./images/5C.png"
+  },
+  {
+    "name": "5D",
+    "rank": "5",
+    "suit": "D",
+    "url": "./images/5D.png"
+  },
+  {
+    "name": "5H",
+    "rank": "5",
+    "suit": "H",
+    "url": "./images/5H.png"
+  },
+  {
+    "name": "5S",
+    "rank": "5",
+    "suit": "S",
+    "url": "./images/5S.png"
+  },
+  {
+    "name": "6C",
+    "rank": "6",
+    "suit": "C",
+    "url": "./images/6C.png"
+  },
+  {
+    "name": "6D",
+    "rank": "6",
+    "suit": "D",
+    "url": "./images/6D.png"
+  },
+  {
+    "name": "6H",
+    "rank": "6",
+    "suit": "H",
+    "url": "./images/6H.png"
+  },
+  {
+    "name": "6S",
+    "rank": "6",
+    "suit": "S",
+    "url": "./images/6S.png"
+  },
+  {
+    "name": "7C",
+    "rank": "7",
+    "suit": "C",
+    "url": "./images/7C.png"
+  },
+  {
+    "name": "7D",
+    "rank": "7",
+    "suit": "D",
+    "url": "./images/7D.png"
+  },
+  {
+    "name": "7H",
+    "rank": "7",
+    "suit": "H",
+    "url": "./images/7H.png"
+  },
+  {
+    "name": "7S",
+    "rank": "7",
+    "suit": "S",
+    "url": "./images/7S.png"
+  },
+  {
+    "name": "8C",
+    "rank": "8",
+    "suit": "C",
+    "url": "./images/8C.png"
+  },
+  {
+    "name": "8D",
+    "rank": "8",
+    "suit": "D",
+    "url": "./images/8D.png"
+  },
+  {
+    "name": "8H",
+    "rank": "8",
+    "suit": "H",
+    "url": "./images/8H.png"
+  },
+  {
+    "name": "8S",
+    "rank": "8",
+    "suit": "S",
+    "url": "./images/8S.png"
+  },
+  {
+    "name": "9C",
+    "rank": "9",
+    "suit": "C",
+    "url": "./images/9C.png"
+  },
+  {
+    "name": "9D",
+    "rank": "9",
+    "suit": "D",
+    "url": "./images/9D.png"
+  },
+  {
+    "name": "9H",
+    "rank": "9",
+    "suit": "H",
+    "url": "./images/9H.png"
+  },
+  {
+    "name": "9S",
+    "rank": "9",
+    "suit": "S",
+    "url": "./images/9S.png"
+  },
+  {
+    "name": "AC",
+    "rank": "A",
+    "suit": "C",
+    "url": "./images/AC.png"
+  },
+  {
+    "name": "AD",
+    "rank": "A",
+    "suit": "D",
+    "url": "./images/AD.png"
+  },
+  {
+    "name": "AH",
+    "rank": "A",
+    "suit": "H",
+    "url": "./images/AH.png"
+  },
+  {
+    "name": "AS",
+    "rank": "A",
+    "suit": "S",
+    "url": "./images/AS.png"
+  },
+  {
+    "name": "JC",
+    "rank": "J",
+    "suit": "C",
+    "url": "./images/JC.png"
+  },
+  {
+    "name": "JD",
+    "rank": "J",
+    "suit": "D",
+    "url": "./images/JD.png"
+  },
+  {
+    "name": "JH",
+    "rank": "J",
+    "suit": "H",
+    "url": "./images/JH.png"
+  },
+  {
+    "name": "JS",
+    "rank": "J",
+    "suit": "S",
+    "url": "./images/JS.png"
+  },
+  {
+    "name": "KC",
+    "rank": "K",
+    "suit": "C",
+    "url": "./images/KC.png"
+  },
+  {
+    "name": "KD",
+    "rank": "K",
+    "suit": "D",
+    "url": "./images/KD.png"
+  },
+  {
+    "name": "KH",
+    "rank": "K",
+    "suit": "H",
+    "url": "./images/KH.png"
+  },
+  {
+    "name": "KS",
+    "rank": "K",
+    "suit": "S",
+    "url": "./images/KS.png"
+  },
+  {
+    "name": "QC",
+    "rank": "Q",
+    "suit": "C",
+    "url": "./images/QC.png"
+  },
+  {
+    "name": "QD",
+    "rank": "Q",
+    "suit": "D",
+    "url": "./images/QD.png"
+  },
+  {
+    "name": "QH",
+    "rank": "Q",
+    "suit": "H",
+    "url": "./images/QH.png"
+  },
+  {
+    "name": "QS",
+    "rank": "Q",
+    "suit": "S",
+    "url": "./images/QS.png"
+  }
+]
