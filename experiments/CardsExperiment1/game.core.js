@@ -144,7 +144,11 @@ game_core.prototype.newRound = function(delay) {
     // If you've reached the planned number of rounds, end the game
     if(localThis.roundNum == localThis.numRounds - 1) {
       localThis.active = false;
-      _.forEach(players, p => p.player.instance.emit( 'finishedGame' ));
+      try {
+	_.forEach(players, p => p.player.instance.disconnect());
+      } catch(err) {
+	console.log('player did not exist to disconnect');
+      }
     } else {
       // Tell players
       _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate'));
@@ -271,7 +275,6 @@ game_core.prototype.server_send_update = function(){
             player: null};
   });
 
-//  console.log(this.trialInfo.currStim);
 
   var state = {
     gs : this.game_started,   // true when game's started
