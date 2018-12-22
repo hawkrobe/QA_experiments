@@ -35,7 +35,7 @@ var game_core = function(options){
   this.email = 'rxdh@stanford.edu';
   this.projectName = 'QA';
   this.experimentName = 'cards';
-  this.iterationName = 'pilot0';
+  this.iterationName = 'cards_sample';
   this.anonymizeCSV = true;
   this.bonusAmt = 5; // in cents
   
@@ -63,7 +63,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 8;
+  this.numRounds = 6;
   this.feedbackDelay = 300;
   this.revealedCards = [];
   
@@ -212,8 +212,8 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
 
 game_core.prototype.sampleGoalSequence = function() {
   var types = ['overlap', 'catch', 'baseline'];
-  var player1trials = ['practice'].concat(_.shuffle(types));
-  var player2trials = ['practice'].concat(_.shuffle(types));
+  var player1trials = _.shuffle(types);
+  var player2trials = _.shuffle(types);
   // This interleaves the trials (i.e. 'zips' together, so roles alternate)
   var result = _.reduce(player1trials, (arr, v, i) => {
     return arr.concat(v, player2trials[i]); 
