@@ -21,6 +21,7 @@ function handleHighlighting(imgSelector, name) {
     globalGame.selections.push(name);
     cellSelector.css({'border-color' : '#32CD32', 'border-width' : '5px'});
   }
+  $('#feedback').empty().append(globalGame.selections.length + '/2 possible cards selected');
 }
 
 function disableCards(cards) {
