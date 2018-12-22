@@ -96,7 +96,6 @@ var valid_id = function(id) {
 var initialize = function(query, client, id) {
   // Assign properties to client
   client.userid = id;
-  client.quizFailCounter = query.counter;  
   client.workerid = query.workerId ? query.workerId : '';
   client.assignmentid = query.assignmentId ? query.assignmentId : '';
 

@@ -83,7 +83,6 @@ var dataOutput = function() {
       gameid: client.game.id,
       time: Date.now(),
       workerId: client.workerid,
-      counter: client.quizFailCounter,      
       assignmentId: client.assignmentid,
       trialNum: client.game.roundNum,
       trialType: client.game.trialInfo.currGoalType,

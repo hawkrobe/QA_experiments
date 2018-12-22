@@ -59,6 +59,7 @@ var onconnect = function(data) {
   this.my_id = data.id;
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
+  this.counter = data.counter;  
   drawScreen(this, this.get_player(this.my_id));
 };
 

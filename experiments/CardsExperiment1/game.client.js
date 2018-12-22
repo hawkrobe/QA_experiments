@@ -52,9 +52,9 @@ var client_onserverupdate_received = function(data){
   globalGame.roundNum = data.roundNum;
   globalGame.roundStartTime = new Date();
   globalGame.allObjects = data.allObjects;
-
   if(!_.has(globalGame, 'data')) {
     globalGame.data = data.dataObj;
+    globalGame.data.subject_information.quizFailCounter = globalGame.counter;    
   }
 
   // Get rid of "waiting" screen if there are multiple players
@@ -70,21 +70,16 @@ var client_onserverupdate_received = function(data){
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
       $('#chatarea').show();      
       $('#instructs')
-	.append("<p>Fill in the question so your partner " +
-		"can help you find the cards in your goal!</p>");
+	.append("<p>Type a question so your partner</p> " +
+		"<p>can help you complete the highlighted combo!</p>");
     } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
       $('#chatarea').hide();
+      $('#feedback').append('0/2 possible cards selected');
       $('#advance_button').show().attr('disabled', 'disabled');
       $('#instructs')
-	.append("<p>After your partner types their question, " 
-		+ "select <b>one</b> or <b>two</b> cards to reveal!</p>");
+	.append("<p>After your partner types their question, </p>" 
+		+ "<p>select <b>one</b> or <b>two</b> cards to complete their combo!</p>");
     }
-    if(data.trialInfo.currStim.goalType == 'practice') {
-      $('#instructs').append('<p> This is a <b>practice round</b> with only one possible goal -- try to reveal <b>both</b> goal cards at once!');
-    } else {
-      $('#instructs').append('<p> Now there is a second possible goal -- !');
-    }
-
   }
     
   // Draw all this new stuff
@@ -169,9 +164,9 @@ var customSetup = function(game) {
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
-    $('#feedback').html('you revealed ' + revealPenalty + ' more cards than required\n \
-                 and asked ' + questionPenalty + ' more questions than required\n \
-                 so you received ' + score + '/5 possible cents');
+    $('#feedback').html('you revealed ' + revealPenalty + ' unnecessary cards\n \
+                 and asked ' + questionPenalty + ' unnecessary questions\n \
+                 so you received a bonus of $0.0' + score);
     $('#score').empty().append('total bonus: $' + bonus_score);
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});
@@ -206,6 +201,7 @@ var customSetup = function(game) {
     globalGame.messageSent = false;
     globalGame.numQuestionsAsked = 0;
     globalGame.revealedCards = [];
+    $('#chatbox').removeAttr('disabled');    
     $('#scoreupdate').html(" ");
     if(game.roundNum + 2 > game.numRounds) {
       $('#roundnumber').empty();
@@ -217,12 +213,6 @@ var customSetup = function(game) {
         .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
     }
   });
-
-  game.socket.on('finishedGame', function(data) {
-    $("#main").hide();
-    $("#header").hide();
-    $("#exit_survey").show();    
-  });  
 };
 
 var client_onjoingame = function(num_players, role) {
@@ -234,14 +224,6 @@ var client_onjoingame = function(num_players, role) {
   });
 
   if(num_players == 1) {
-  //   if(_.size(this.urlParams) == 4) {
-  //     this.submitted = true;
-  //     window.opener.turk.submit(this.data, true);
-  //     window.close();
-  //   } else {
-  //     console.log("would have submitted the following :");
-  //     console.log(this.data);
-  //   }
     globalGame.get_player(globalGame.my_id).message = ('<p>Waiting for another player...<br /> Please do not refresh the page!<br /> If wait exceeds 5 minutes, we recommend returning the HIT and trying again later.</p>');
   }
 };
