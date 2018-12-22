@@ -90,6 +90,7 @@ var sharedSetup = function(game) {
       game.socket.send(msg);
       globalGame.sentTyping = false;
       $('#chatbox').val('');
+      $('#chatbox').attr('disabled', 'disabled');      
     }
     return false;   
   });
