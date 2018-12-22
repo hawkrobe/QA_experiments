@@ -75,21 +75,6 @@ var setCustomEvents = function(socket) {
   Note: If no function provided for an event, no data will be written
 */
 var dataOutput = function() {
-  function getObjectLocs(objects) {
-    return _.flatten(_.map(objects, o => {
-      return [o.name, o.speakerCoords.gridX, o.speakerCoords.gridY,
-	      o.listenerCoords.gridX, o.listenerCoords.gridY];
-    }));
-  }
-
-  // function getObjectLocHeaderArray() {
-  //   return _.flatten(_.map(_.range(1,5), i => {
-  //     return _.map(['name', 'speakerX', 'speakerY', 'listenerX', 'listenerY'], v => {
-  // 	return 'object' + i + v;
-  //     });
-  //   }));
-  // };
-  
   function commonOutput (client, message_data) {
     var target = client.game.trialInfo.currStim.target;
     var distractor = target == 'g1' ? 'g0' : 'g1';
@@ -98,6 +83,7 @@ var dataOutput = function() {
       gameid: client.game.id,
       time: Date.now(),
       workerId: client.workerid,
+      counter: client.quizFailCounter,      
       assignmentId: client.assignmentid,
       trialNum: client.game.roundNum,
       trialType: client.game.trialInfo.currGoalType,
