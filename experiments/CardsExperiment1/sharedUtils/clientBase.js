@@ -205,7 +205,7 @@ function dropdownTip(data){
     globalGame.submitted = true;
     console.log("data is...");
     console.log(globalGame.data);
-    if(_.size(globalGame.urlParams) == 4) {
+    if(_.size(globalGame.urlParams) >= 4) {
       window.opener.turk.submit(globalGame.data, true);
       window.close(); 
     } else {
