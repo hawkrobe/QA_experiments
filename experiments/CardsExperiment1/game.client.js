@@ -66,20 +66,25 @@ var client_onserverupdate_received = function(data){
     // reset labels
     // Update w/ role (can only move stuff if agent)
     $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
-
+    $('#instructs').empty();
     if(globalGame.my_role === globalGame.playerRoleNames.role1) {
       $('#chatarea').show();      
       $('#instructs')
-	.empty()
-	.append("<p>Fill in the question so your partner</p>" +
-		"<p>can help you find the cards in your goal!</p>");
+	.append("<p>Fill in the question so your partner " +
+		"can help you find the cards in your goal!</p>");
     } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
       $('#chatarea').hide();
       $('#advance_button').show().attr('disabled', 'disabled');
-      $('#instructs').empty().append(
-	"<p>After your partner types their question,</p>" 
-	  + "<p>select <b>one</b> or <b>two</b> cards to reveal!</p>");
+      $('#instructs')
+	.append("<p>After your partner types their question, " 
+		+ "select <b>one</b> or <b>two</b> cards to reveal!</p>");
     }
+    if(data.trialInfo.currStim.goalType == 'practice') {
+      $('#instructs').append('<p> This is a <b>practice round</b> with only one possible goal -- try to reveal <b>both</b> goal cards at once!');
+    } else {
+      $('#instructs').append('<p> Now there is a second possible goal -- !');
+    }
+
   }
     
   // Draw all this new stuff
@@ -178,6 +183,7 @@ var customSetup = function(game) {
   game.socket.on('reveal', function(data) {
     globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
     globalGame.numQuestionsAsked += 1;
+
     // Fade in revealed cards
     _.forEach(data.selections, name => {
       var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
@@ -190,6 +196,9 @@ var customSetup = function(game) {
     });
     if(checkCards()) {
       game.socket.emit('allCardsFound', data);
+    } else {
+      $('#chatbox').removeAttr('disabled');
+      globalGame.messageSent = false;
     }
   });
   

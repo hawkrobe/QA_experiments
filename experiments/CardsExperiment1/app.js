@@ -96,11 +96,12 @@ var valid_id = function(id) {
 var initialize = function(query, client, id) {
   // Assign properties to client
   client.userid = id;
+  client.quizFailCounter = query.counter;  
   client.workerid = query.workerId ? query.workerId : '';
   client.assignmentid = query.assignmentId ? query.assignmentId : '';
 
   // Make contact with client
-  client.emit('onconnected', { id: client.userid } );
+  client.emit('onconnected', { id: client.userid, counter: query.counter } );
   if(gameServer.setCustomEvents) {gameServer.setCustomEvents(client);};
   
   // Good to know when they connected

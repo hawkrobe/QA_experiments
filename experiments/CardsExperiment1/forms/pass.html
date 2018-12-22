@@ -103,10 +103,12 @@
         var workerId = urlParams.workerId;
         var assignmentId = urlParams.assignmentId;
         var hitId = urlParams.hitId;
+        var counter = urlParams.counter;	
         var turkSubmitTo = urlParams.turkSubmitTo;
         window.open("../index.html?workerId=" + workerId
                          + "&assignmentId=" + assignmentId
-                         + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo,
+                    + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo
+		    + "&counter=" + counter,
                          '_blank');
         $("#surveycode").show();
         $("#submitButton").show();      

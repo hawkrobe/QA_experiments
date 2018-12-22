@@ -63,7 +63,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 6;
+  this.numRounds = 8;
   this.feedbackDelay = 300;
   this.revealedCards = [];
   
@@ -203,21 +203,24 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
     var others = _.filter(hiddenCards, v => !_.includes(goal1, v.name));
     var goal2 = _.map(_.sampleSize(others, 2), 'name');
     return makeGoalObject([goal1, goal2]);
+  } else if(goalType == 'practice') {
+    return makeGoalObject([_.map(_.sampleSize(hiddenCards, 2), 'name')]);
   } else {
-    console.error('goal type ' + goalType + ' not yet implementetd');
+    console.error('goal type ' + goalType + ' not yet implemented');
   }
 };
 
 game_core.prototype.sampleGoalSequence = function() {
   var types = ['overlap', 'catch', 'baseline'];
-  var player1trials = _.shuffle(types)
-  var player2trials = _.shuffle(types)
+  var player1trials = ['practice'].concat(_.shuffle(types));
+  var player2trials = ['practice'].concat(_.shuffle(types));
+  // This interleaves the trials (i.e. 'zips' together, so roles alternate)
   var result = _.reduce(player1trials, (arr, v, i) => {
     return arr.concat(v, player2trials[i]); 
   }, []);
   return _.flattenDeep(_.map(result, type => {
     return {
-      goalType: type,// Sample a goal type for this round
+      goalType: type,
       numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
     };
   }));
