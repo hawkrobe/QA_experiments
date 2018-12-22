@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251742461	0	baseline	2S,6H	JH,7D	Where is the 6 of hears?	2041	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251765475	0	baseline	2S,6H	JH,7D	Where is the 2 of spades?	3086	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251790937	1	catch	7H	9S	Where is the 7 of hearts?	7026	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251803962	2	catch	QS	KD	Where is the queen of spades?	2762	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251829683	3	overlap	10C,5H	QH,5H	Where is the 10 of clubs?	3225	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251841684	3	overlap	10C,5H	QH,5H	Where is the 5 of hearts?	3447	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251861552	4	overlap	JD,3H	5D,3H	Where is the 3 of hearts?	6078	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251884860	5	baseline	3C,10D	JD,8D	Where is the 3 of clubs?	2852	chatMessage
+full_sample	7747-7880dfce-9ef5-41aa-9063-954c5c9c5604	1545251898433	5	baseline	3C,10D	JD,8D	Where is the 10 of diamonds?	4590	chatMessage
