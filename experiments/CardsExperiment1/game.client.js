@@ -163,9 +163,10 @@ var customSetup = function(game) {
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
-    $('#feedback').html('you revealed ' + revealPenalty + ' unnecessary cards\n \
-                 and asked ' + questionPenalty + ' unnecessary questions\n \
-                 so you received a bonus of $0.0' + score);
+    var feedbackMessage = (revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
+			   questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
+			   "Great job! You completed the combo in one exchange!");
+    $('#feedback').html(feedbackMessage + ' You earned $0.0' + score);
     $('#score').empty().append('total bonus: $' + bonus_score);
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});
