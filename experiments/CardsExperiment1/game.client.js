@@ -112,7 +112,6 @@ var client_onMessage = function(data) {
       // Redirect to exit survey
       console.log("received end message...");
       ondisconnect();
-      $('#context').hide();
       break;
 
       

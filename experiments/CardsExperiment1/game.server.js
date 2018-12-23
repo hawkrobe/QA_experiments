@@ -50,6 +50,10 @@ var onMessage = function(client,message) {
     var partner = others[0];
     partner.player.instance.emit('reveal', {selections: message_parts.slice(1)});    
     break;
+
+  case 'exitSurvey' :
+    console.log(message_parts.slice(1));
+    break;
     
   case 'h' : // Receive message when browser focus shifts
     //target.visible = message_parts[1];
@@ -64,7 +68,6 @@ var setCustomEvents = function(socket) {
       p.player.instance.emit( 'updateScore', data);});
     socket.game.newRound(4000);
   });
-
 }
 
 /*
@@ -105,6 +108,16 @@ var dataOutput = function() {
   };
   
 
+  var exitSurveyOutput = function(client, message_data) {
+    var subjectInformationObj = JSON.parse(message_data.slice(1))['subject_information'];
+    console.log(subjectInformationObj);
+    return _.extend(
+      _.omit(commonOutput(client, message_data),
+	     ['targetGoalSet', 'distractorGoalSet', 'trialType', 'trialNum']),
+      subjectInformationObj);
+  };
+  
+
   var messageOutput = function(client, message_data) {
     return _.extend(
       commonOutput(client, message_data), {
@@ -116,7 +129,8 @@ var dataOutput = function() {
 
   return {
     'chatMessage' : messageOutput,
-    'reveal' : revealOutput
+    'reveal' : revealOutput,
+    'exitSurvey' : exitSurveyOutput
   };
 }();
 

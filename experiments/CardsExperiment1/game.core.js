@@ -35,7 +35,7 @@ var game_core = function(options){
   this.email = 'rxdh@stanford.edu';
   this.projectName = 'QA';
   this.experimentName = 'cards';
-  this.iterationName = 'cards_sample';
+  this.iterationName = 'testing';
   this.anonymizeCSV = true;
   this.bonusAmt = 5; // in cents
   
@@ -145,7 +145,7 @@ game_core.prototype.newRound = function(delay) {
     if(localThis.roundNum == localThis.numRounds - 1) {
       localThis.active = false;
       try {
-	_.forEach(players, p => p.player.instance.disconnect());
+	_.forEach(players, p => p.player.instance.send('s.end'));
       } catch(err) {
 	console.log('player did not exist to disconnect');
       }

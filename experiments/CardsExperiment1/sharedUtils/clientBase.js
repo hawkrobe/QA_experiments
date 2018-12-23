@@ -16,7 +16,6 @@ var getURLParams = function() {
 
 var ondisconnect = function(data) {
   // Redirect to exit survey
-  console.log("server booted");
   if(this.viewport) {
     this.viewport.style.display="none";
   } else if (document.getElementById('viewport')) {
@@ -43,6 +42,7 @@ var ondisconnect = function(data) {
   $('#exit_survey').show();
   $('#main').hide();
   $('#header').hide();
+  $('#context').hide(); // from QA expt
   
   $('#message_panel').hide();
   $('#submitbutton').hide();
@@ -206,6 +206,7 @@ function dropdownTip(data){
     console.log("data is...");
     console.log(globalGame.data);
     if(_.size(globalGame.urlParams) >= 4) {
+      globalGame.socket.send("exitSurvey." + JSON.stringify(globalGame.data));
       window.opener.turk.submit(globalGame.data, true);
       window.close(); 
     } else {
