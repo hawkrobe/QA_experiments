@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545533890268	0	catch	10C	2H	Where is the 2 of hearts?	12147	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545533910642	0	catch	10C	2H	Where is the 10 of clubs?	9128	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545533937425	1	catch	AS	8C	Where is the Ace of spades?	8441	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545533952536	2	baseline	9D,3C	7S,6C	Where is the 3 of clubs?	2496	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545533969584	2	baseline	9D,3C	7S,6C	Where is the 7 of spades?	4513	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545533988167	2	baseline	9D,3C	7S,6C	Where is the 9 of diamonds?	2992	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545534009117	3	baseline	2C,4S	10C,5H	Where is the 4 of spades?	7944	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545534026795	4	overlap	7C,5H	8H,5H	Where is the 7 of clubs?	4471	chatMessage
+testing	1990-26a2622b-4525-40d3-900a-0964ef665f80	1545534047937	5	overlap	10D,9H	KH,9H	Where is the 9 of hearts?	4418	chatMessage

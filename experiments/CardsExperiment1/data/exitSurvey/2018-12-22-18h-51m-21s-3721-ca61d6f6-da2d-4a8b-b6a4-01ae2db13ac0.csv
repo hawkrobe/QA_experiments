@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533481472	15	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1	yes	yes	okay	confused	no	I tried to follow the directions but the term "unnecessary question" threw me off, 	helper	200181	exitSurvey
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533495827	15	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	2	no	yes	okay	yes	None	Try to find the card as quick as possible,	seeker	253795	exitSurvey

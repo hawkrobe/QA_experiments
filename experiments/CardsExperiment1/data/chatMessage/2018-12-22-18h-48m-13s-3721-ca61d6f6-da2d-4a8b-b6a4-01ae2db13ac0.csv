@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533293481	0	baseline	7D,2C	QS,AH	Where is the 2 of clubs?	1983	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533310537	0	baseline	7D,2C	QS,AH	Where is the 7 of diamonds?	1421	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533330046	1	baseline	6S,4S	2C,3C	Where is the 4 of spades?	3648	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533353247	1	baseline	6S,4S	2C,3C	Where is the 6 of spades?	4792	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533369857	2	catch	4H	3C	Where is the 4 of hearts?	2096	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533390171	3	catch	JS	QD	Where is the jack of spades?	4057	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533408792	4	overlap	10H,2S	2H,2S	Where is the Where is the 10 of hearts?	6382	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533425048	4	overlap	10H,2S	2H,2S	Where is the where is the 2 of spades?	4750	chatMessage
+testing	3721-ca61d6f6-da2d-4a8b-b6a4-01ae2db13ac0	1545533445143	5	overlap	2H,4H	10D,4H	Where is the 4 of hearts?	3221	chatMessage
