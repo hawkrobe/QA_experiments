@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	revealedObjs	numRevealed	fullContext	eventType
+cards_sample	1064-d032553d-1a4b-42b3-ae40-2e727474f4c0	1545512170039	0	baseline	8H,2C	KH,9D	8H	1	[{"name":"9D","gridX":4,"gridY":1},{"name":"8H","gridX":2,"gridY":1},{"name":"9S","gridX":4,"gridY":2},{"name":"5C","gridX":4,"gridY":4},{"name":"2C","gridX":4,"gridY":3},{"name":"KH","gridX":3,"gridY":2}]	reveal
+cards_sample	1064-d032553d-1a4b-42b3-ae40-2e727474f4c0	1545512222896	0	baseline	8H,2C	KH,9D	2C	1	[{"name":"9D","gridX":4,"gridY":1},{"name":"8H","gridX":2,"gridY":1},{"name":"9S","gridX":4,"gridY":2},{"name":"5C","gridX":4,"gridY":4},{"name":"2C","gridX":4,"gridY":3},{"name":"KH","gridX":3,"gridY":2}]	reveal

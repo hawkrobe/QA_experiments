@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511426203	0	catch	KD	8C	Where is the k of diamonds?	5371	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511468191	1	baseline	5S,8S	KC,AD	Where is the where is the 5 of hearts?	13653	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511513243	2	baseline	9S,2H	7D,9C	Where is the 7 of diamonds?	3594	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511534478	2	baseline	9S,2H	7D,9C	Where is the where is the 9 of clubs?	5789	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511551243	2	baseline	9S,2H	7D,9C	Where is the where is the 2 of hearts?	5358	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511572600	3	catch	9C	8D	Where is the where is the 9 of clubs?	4543	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511610364	4	overlap	5H,5S	AC,5S	Where is the where is the 5 of hearts?	5888	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511638780	4	overlap	5H,5S	AC,5S	Where is the where is the 5 of spades?	6751	chatMessage
+cards_sample	6195-ccb04c04-95fd-41ca-a8a5-ad702c372e34	1545511662904	5	overlap	9S,KD	8C,KD	Where is the where is the king of diamonds?	3710	chatMessage
