@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	3915-0138a19d-ea1f-44dc-ad1f-a8c55dbdc4be	1546231445057	15	3915-0138a19d-ea1f-44dc-ad1f-a8c55dbdc4be	0	yes	yes	liked	yes	no	select both cards, even though you only ask about one	seeker	217921	exitSurvey
+full_sample	3915-0138a19d-ea1f-44dc-ad1f-a8c55dbdc4be	1546231523171	15	3915-0138a19d-ea1f-44dc-ad1f-a8c55dbdc4be	0	yes	yes	okay	yes		Though I was a bit confused at first by the "combinations" that only consisted of 1 card, I quickly learned how to anticipate what my counterpart would need, and I would try to reveal both cards as soon as I was asked for one	helper	293163	exitSurvey

@@ -1,0 +1,5 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	3144-14101ad1-1fb1-481d-b4e5-c4c1497b3134	1546231433561	15	3144-14101ad1-1fb1-481d-b4e5-c4c1497b3134	0	yes	yes	okay	confused		I just took a look at the highlighted cards and asked questions based on what I saw in the green box,	helper	255430	exitSurvey
+full_sample	3144-14101ad1-1fb1-481d-b4e5-c4c1497b3134	1546231527427	15	3144-14101ad1-1fb1-481d-b4e5-c4c1497b3134	1	no	yes	not much	yes	partner didn't seem to understand that he could reveal two cards in a turn,	as a seeker, I asked to reveal the card that wasn't in both possible combos,
+
+for example if the winning combo was 9 of hearts/6 of clubs and the other combo was 9 of hearts/5 of clubs, I asked to reveal 6 of clubs because I assumed helper would realize that nine of hearts had to be revealed,	seeker	369982	exitSurvey

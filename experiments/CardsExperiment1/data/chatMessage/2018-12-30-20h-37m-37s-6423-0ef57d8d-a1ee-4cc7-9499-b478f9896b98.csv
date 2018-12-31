@@ -1,0 +1,8 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	6423-0ef57d8d-a1ee-4cc7-9499-b478f9896b98	1546231057146	0	catch	KH	4C	Where is the king of hearts?	4493	chatMessage
+full_sample	6423-0ef57d8d-a1ee-4cc7-9499-b478f9896b98	1546231081897	1	overlap	5D,3H	4D,3H	Where is the 5 of diamonds?	2013	chatMessage
+full_sample	6423-0ef57d8d-a1ee-4cc7-9499-b478f9896b98	1546231109588	1	overlap	5D,3H	4D,3H	Where is the 3 of hearts?	1424	chatMessage
+full_sample	6423-0ef57d8d-a1ee-4cc7-9499-b478f9896b98	1546231144510	2	baseline	7H,7D	7S,9S	Where is the 7 of hearts?	7340	chatMessage
+full_sample	6423-0ef57d8d-a1ee-4cc7-9499-b478f9896b98	1546231172763	3	baseline	AD,4H	3C,8C	Where is the 4 of hearts?	1328	chatMessage
+full_sample	6423-0ef57d8d-a1ee-4cc7-9499-b478f9896b98	1546231196397	4	overlap	5D,6D	7H,6D	Where is the 5 of diamonds?	4724	chatMessage
+full_sample	6423-0ef57d8d-a1ee-4cc7-9499-b478f9896b98	1546231211526	5	catch	2C	10C	Where is the 2 of clubs?	1976	chatMessage
