@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229020983	0	baseline	AD,2C	3H,10C	Where is the ace of diamons?	3589	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229089448	0	baseline	AD,2C	3H,10C	Where is the 2 of clubs?	1333	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229116706	1	overlap	6D,JC	5H,JC	Where is the J of clubs?	8897	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229158982	1	overlap	6D,JC	5H,JC	Where is the 6 of diamonds?	2748	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229196667	2	overlap	KS,8H	8S,8H	Where is the where is the king of spades?	6241	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229229218	2	overlap	KS,8H	8S,8H	Where is the eight of hearts?	3066	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229246821	3	catch	KS	8D	Where is the King of spades?	4628	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229290134	4	catch	8S	QC	Where is the 8 of spades?	4280	chatMessage
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229314567	5	baseline	JS,JH	KS,6S	Where is the J?	3652	chatMessage

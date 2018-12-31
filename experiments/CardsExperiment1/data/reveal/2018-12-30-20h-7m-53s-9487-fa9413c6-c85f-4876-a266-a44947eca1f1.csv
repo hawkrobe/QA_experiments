@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	revealedObjs	numRevealed	fullContext	eventType
+full_sample	9487-fa9413c6-c85f-4876-a266-a44947eca1f1	1546229273549	0	overlap	8H,2S	AC,2S	8H,2S	2	[{"name":"3C","gridX":2,"gridY":4},{"name":"2S","gridX":2,"gridY":1},{"name":"8H","gridX":2,"gridY":3},{"name":"AC","gridX":1,"gridY":1},{"name":"5H","gridX":4,"gridY":1},{"name":"6S","gridX":4,"gridY":4}]	reveal
+full_sample	9487-fa9413c6-c85f-4876-a266-a44947eca1f1	1546229296861	1	overlap	JH,3D	QD,3D	JH,3D	2	[{"name":"QC","gridX":4,"gridY":1},{"name":"3D","gridX":1,"gridY":3},{"name":"2S","gridX":3,"gridY":3},{"name":"JH","gridX":1,"gridY":2},{"name":"KC","gridX":1,"gridY":4},{"name":"3S","gridX":2,"gridY":4},{"name":"QD","gridX":2,"gridY":3}]	reveal

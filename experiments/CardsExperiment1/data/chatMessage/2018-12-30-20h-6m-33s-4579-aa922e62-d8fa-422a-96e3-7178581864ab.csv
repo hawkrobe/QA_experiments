@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229193600	0	baseline	KC,QD	JC,4S	Where is the King of clubs?	10068	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229224966	0	baseline	KC,QD	JC,4S	Where is the queen of diamonds?	4185	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229246950	1	catch	KC	5H	Where is the where is king of spades/.?	8339	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229281193	2	overlap	7D,5S	4D,5S	Where is the seven of diamonds?	8851	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229295710	2	overlap	7D,5S	4D,5S	Where is the five of spades?	4445	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229321778	3	overlap	JC,2H	8D,2H	Where is the where is 2 hearts??	3997	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229346469	3	overlap	JC,2H	8D,2H	Where is the where is jack spades?	8118	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229365329	4	catch	AC	7C	Where is the ace of clubs?	4303	chatMessage
+full_sample	4579-aa922e62-d8fa-422a-96e3-7178581864ab	1546229384473	5	baseline	6S,8C	7C,10H	Where is the where is 6 spades??	3168	chatMessage

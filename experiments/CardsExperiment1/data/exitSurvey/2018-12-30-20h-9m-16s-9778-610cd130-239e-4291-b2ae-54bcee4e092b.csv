@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229356034	15	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1	yes	yes	not much	confused		I didn't understand the game,	helper	346545	exitSurvey
+full_sample	9778-610cd130-239e-4291-b2ae-54bcee4e092b	1546229361624	15	9778-610cd130-239e-4291-b2ae-54bcee4e092b	0	yes	yes	okay	yes		To target one card at a time while asking questions,	seeker	430673	exitSurvey
