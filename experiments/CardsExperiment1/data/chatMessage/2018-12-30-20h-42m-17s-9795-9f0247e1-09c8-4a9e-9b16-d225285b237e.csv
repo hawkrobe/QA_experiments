@@ -1,0 +1,13 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231337461	0	baseline	KS,4D	5D,8C	Where is the king of aces?	5678	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231385199	0	baseline	KS,4D	5D,8C	Where is the where is the king of spades?	5795	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231401913	0	baseline	KS,4D	5D,8C	Where is the where is the four of diamonds?	6798	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231429712	1	catch	5D	AS	Where is the Where is the 5 of diamonds??	11547	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231448649	2	overlap	KH,2S	AD,2S	Where is the where is the king of hearts?	4938	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231463521	2	overlap	KH,2S	AD,2S	Where is the where is the two of spades?	4420	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231495446	3	overlap	2D,6S	KS,6S	Where is the Where is the king of spades?	13854	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231532470	3	overlap	2D,6S	KS,6S	Where is the where is the 2 of diamonds??	9079	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231574248	3	overlap	2D,6S	KS,6S	Where is the where is the 6 of spades??	13442	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231591917	4	catch	2H	4H	Where is the two of hearts?	3176	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231622109	5	baseline	8H,3D	AS,QS	Where is the Where is the ace of spades?	13761	chatMessage
+full_sample	9795-9f0247e1-09c8-4a9e-9b16-d225285b237e	1546231676882	5	baseline	8H,3D	AS,QS	Where is the wth can't move or select anything?	13041	chatMessage

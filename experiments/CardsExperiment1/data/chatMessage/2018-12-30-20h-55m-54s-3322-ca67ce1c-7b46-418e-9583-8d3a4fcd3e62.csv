@@ -1,0 +1,11 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232154515	0	baseline	6D,7D	9C,10D	Where is the where is the 7 of diamonds?	12144	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232208908	1	overlap	9S,QD	KS,QD	Where is the where is the King of spades?	6348	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232249791	1	overlap	9S,QD	KS,QD	Where is the where is the 9 of spades?	19118	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232284896	2	overlap	9C,2C	7H,2C	Where is the where is the 7 of hearts??	9642	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232315672	2	overlap	9C,2C	7H,2C	Where is the where is the 9 of clubs?	10009	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232335895	3	catch	8S	2H	Where is the where is the 8 of spades?	4431	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232361280	4	catch	9C	3C	Where is the where is the 3 of clubs??	7623	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232382395	4	catch	9C	3C	Where is the where is the 9 of clubs??	7695	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232399869	5	baseline	8S,10D	6C,QH	Where is the where is the queen of hearts?	5683	chatMessage
+full_sample	3322-ca67ce1c-7b46-418e-9583-8d3a4fcd3e62	1546232425120	5	baseline	8S,10D	6C,QH	Where is the where is the 10 of diamonds?	6690	chatMessage
