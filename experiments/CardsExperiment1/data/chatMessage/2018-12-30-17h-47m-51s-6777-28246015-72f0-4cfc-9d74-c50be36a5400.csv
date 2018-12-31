@@ -1,0 +1,12 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546220871805	0	overlap	3C,9D	7H,9D	Where is the 3 of clubs?	5080	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546220890253	0	overlap	3C,9D	7H,9D	Where is the 9 of diamonds?	4021	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546220920234	1	baseline	9C,2C	2H,10C	Where is the Where is a 2 of spades?	5650	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546220938890	1	baseline	9C,2C	2H,10C	Where is the where is 9 of spades?	2886	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546220957786	2	catch	10S	KH	Where is the 10 of spades?	5538	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546220981556	3	catch	JC	9H	Where is the 9 of hearts?	1825	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546220998228	3	catch	JC	9H	Where is the jack of spades?	1882	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546221021908	4	baseline	6C,9H	3D,5C	Where is the 9 of hearts?	5064	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546221042330	4	baseline	6C,9H	3D,5C	Where is the 6 of clubs?	4239	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546221071510	5	overlap	AH,AC	10S,AC	Where is the where is the ace of hearts, i think this hit is broken btw?	11633	chatMessage
+full_sample	6777-28246015-72f0-4cfc-9d74-c50be36a5400	1546221092816	5	overlap	AH,AC	10S,AC	Where is the where is ace of spades?	2445	chatMessage

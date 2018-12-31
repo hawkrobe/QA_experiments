@@ -1,0 +1,2 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	revealedObjs	numRevealed	fullContext	eventType
+full_sample	2696-613404f0-4409-43e0-bf31-3655eb4c1a40	1546220773327	0	baseline	5S,AC	4D,JC	AC	1	[{"name":"AC","gridX":2,"gridY":2},{"name":"JC","gridX":3,"gridY":1},{"name":"8H","gridX":1,"gridY":1},{"name":"4D","gridX":1,"gridY":2},{"name":"5S","gridX":1,"gridY":4}]	reveal

@@ -1,0 +1,7 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	2035-844d20ce-001f-490f-8a39-b40f745265e7	1546220737600	0	catch	10C	8S	Where is the ten of clubs?	5481	chatMessage
+full_sample	2035-844d20ce-001f-490f-8a39-b40f745265e7	1546220759430	1	catch	AC	7D	Where is the Ace of Spades?	4732	chatMessage
+full_sample	2035-844d20ce-001f-490f-8a39-b40f745265e7	1546220794504	2	baseline	5H,2C	6H,QH	Where is the two club and five heart?	12788	chatMessage
+full_sample	2035-844d20ce-001f-490f-8a39-b40f745265e7	1546220826106	3	overlap	5H,2C	QD,2C	Where is the Five of Hearts?	6270	chatMessage
+full_sample	2035-844d20ce-001f-490f-8a39-b40f745265e7	1546220849808	4	overlap	4H,7H	QH,7H	Where is the four of hearts?	3864	chatMessage
+full_sample	2035-844d20ce-001f-490f-8a39-b40f745265e7	1546220870108	5	baseline	KC,6D	5D,KD	Where is the King of Spades?	3997	chatMessage

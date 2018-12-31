@@ -1,0 +1,6 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	6484-7dcef059-2565-48cd-b22d-17f2a03e942e	1546220723997	0	catch	2C	AS	Where is the ace of spades?	7426	chatMessage
+full_sample	6484-7dcef059-2565-48cd-b22d-17f2a03e942e	1546220743827	1	overlap	2S,AD	KS,AD	Where is the where is the 2 of spades?	5839	chatMessage
+full_sample	6484-7dcef059-2565-48cd-b22d-17f2a03e942e	1546220764375	1	overlap	2S,AD	KS,AD	Where is the ace of diamonds?	5654	chatMessage
+full_sample	6484-7dcef059-2565-48cd-b22d-17f2a03e942e	1546220792112	1	overlap	2S,AD	KS,AD	Where is the where is the ace of diamonds?	7146	chatMessage
+full_sample	6484-7dcef059-2565-48cd-b22d-17f2a03e942e	1546220805529	1	overlap	2S,AD	KS,AD	Where is the ace of diamonds?	2353	chatMessage

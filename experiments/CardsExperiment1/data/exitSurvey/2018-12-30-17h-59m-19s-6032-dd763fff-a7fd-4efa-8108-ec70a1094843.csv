@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	6032-dd763fff-a7fd-4efa-8108-ec70a1094843	1546221559552	15	6032-dd763fff-a7fd-4efa-8108-ec70a1094843	0	yes	yes	okay	yes		I did not have a strategy,	helper	164937	exitSurvey
+full_sample	6032-dd763fff-a7fd-4efa-8108-ec70a1094843	1546221576292	15	6032-dd763fff-a7fd-4efa-8108-ec70a1094843	0	yes	yes	okay	yes	No comments	state the obvious	seeker	191791	exitSurvey

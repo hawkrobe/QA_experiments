@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	2696-613404f0-4409-43e0-bf31-3655eb4c1a40	1546220768708	0	baseline	5S,AC	4D,JC	Where is the ace of clubs?	8281	chatMessage
+full_sample	2696-613404f0-4409-43e0-bf31-3655eb4c1a40	1546220854763	0	baseline	5S,AC	4D,JC	Where is the other card you should select if you read the instructions?	6168	chatMessage

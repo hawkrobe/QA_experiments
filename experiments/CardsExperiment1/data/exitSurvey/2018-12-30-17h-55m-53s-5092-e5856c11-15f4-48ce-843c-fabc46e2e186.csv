@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221353501	25	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1	yes	yes	liked	yes	no	none	seeker	260817	exitSurvey
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221384256	25	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	0	yes	yes	not much	yes	I don't think that my partner was very strategic	If the combo had two cards, I made sure to ask about the one that wasn't common between them	helper	290159	exitSurvey
