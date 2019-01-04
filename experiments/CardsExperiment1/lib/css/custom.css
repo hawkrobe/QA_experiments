@@ -237,22 +237,16 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #messages {
-	height:80%;
+	height:30%;
 	text-align: left;
 	font-size: 200%;
 	overflow-y: scroll;
 }
 
-/* #chatarea form { */
-/* 	padding: 3px;  */
-/* 	height: 5vh; */
-/* 	width: 100vh;  */
-/* } */
-
 #chatarea input {
     border: 0; 
     height: 50%;
-    font-size: 125%;
+    font-size: 150%;
     border-radius: 5px;
     width: 50%;
     padding: 5px;
@@ -260,19 +254,6 @@ ALOT...don't understand how to adjust that.*/
     margin-right: .5%;
     margin-top: .5%;
     margin-bottom: .5%;
-}
-
-#chatarea button {
-	width: 25%; 
-	height: 50%;
-	border-radius: 5px;
-	font-size: 150%;
-	background: rgb(130, 224, 255); 
-	border: none; 
-	padding: 10px;
-	margin-left: .5%;
-	margin-right: .5%;
-	float:bottom;
 }
 
 #exit_survey {
