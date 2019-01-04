@@ -45,15 +45,15 @@ function setupHandlers() {
   });
 }
 
-function initGoals(goalSets, target) {
+function initGoals(goalSets, targetGoal) {
   _.forEach(_.shuffle(_.values(goalSets)), function(goals, i) {
-    var border = (_.isEqual(goals, goalSets[globalGame.targetGoal]) &&
+    var border = (_.isEqual(goals, goalSets[targetGoal]) &&
 		  globalGame.my_role == globalGame.playerRoleNames.role1 ?
 		  'green' : 'black');
     var cell = $('<div/>').attr({
       height: '10%',
       class : 'grid',
-      style: `border-style: solid; border-color: ${border}`
+      style: `border-width: thick; border-style: solid; border-color: ${border}`
     });
     cell.append($('<p/>').append(`#${i+1}`))
     _.forEach(_.shuffle(goals), function(goalCard, j) {
@@ -118,10 +118,9 @@ var drawScreen = function(game, player) {
   if (player.message) {
     $('#waiting').html(player.message);
   } else {
-    console.log('initting');
     $('#waiting').html('');
     game.confetti.reset();
-    initGoals(game.goalSets, game.target);    
+    initGoals(game.goalSets, game.targetGoal);    
     initGrid(game.objects);
   }
 };
