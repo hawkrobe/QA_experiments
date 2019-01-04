@@ -47,8 +47,9 @@ class ReferenceGameServer {
   findGame (player) {
     this.log('looking for a game. We have : ' + this.game_count);
     var joined_a_game = false;
+    var game;
     for (var gameid in this.games) {
-      var game = this.games[gameid];
+      game = this.games[gameid];
       if(game.player_count < game.players_threshold) {
 	// End search
 	joined_a_game = true;
@@ -70,15 +71,17 @@ class ReferenceGameServer {
 	_.map(game.get_others(player.userid), function(p){
 	  p.player.instance.send( 's.add_player.' + player.userid);
 	});
-	
-	// Start game
-	this.startGame(game);
       }
     }
     
     // If you couldn't find a game to join, create a new one
     if(!joined_a_game) {
-      this.createGame(player);
+      game = this.createGame(player);
+    }
+
+    // Start game
+    if(game.players_threshold == game.player_count) {
+      this.startGame(game);
     }
   };
 
@@ -106,6 +109,7 @@ class ReferenceGameServer {
     this.game_count++;
     
     game.server_send_update();
+
     return game;
   }; 
 

@@ -43,7 +43,7 @@ var game_core = function(options){
   this.dataStore = ['csv', 'mongo'];
 
   // How many players in the game?
-  this.players_threshold = 2;
+  this.players_threshold = 1;
   this.playerRoleNames = {
     role1 : 'seeker',
     role2 : 'helper'
@@ -63,17 +63,18 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 6;
+  this.numRounds = 3;
   this.feedbackDelay = 300;
   this.revealedCards = [];
   
   // This will be populated with the objectst
-  this.trialInfo = {roles: _.values(this.playerRoleNames)};
+  this.trialInfo = {};
 
   if(this.server) {
     this.id = options.id; 
     this.expName = options.expName;
     this.active = false;
+    this.condition = _.sample(['seeker', 'helper']);
     this.player_count = options.player_count;
     this.objects = require('./images/objects.json');
     this.trialList = this.makeTrialList();
@@ -159,8 +160,7 @@ game_core.prototype.newRound = function(delay) {
       localThis.trialInfo = {
 	currStim: localThis.trialList[localThis.roundNum],
 	currGoalType: localThis.contextTypeList[localThis.roundNum],
-	roles: _.zipObject(_.map(localThis.players, p =>p.id),
-			   _.reverse(_.values(localThis.trialInfo.roles)))
+	role: localThis.condition
       };
       localThis.server_send_update();
     }
@@ -177,6 +177,7 @@ game_core.prototype.makeTrialList = function () {
   
   // Keep sampling until we get a suitable sequence
   var sequence = this.sampleGoalSequence();
+  console.log(sequence);
   // Construct trial list (in sets of complete rounds)
   for (var i = 0; i < this.numRounds; i++) {
     var trialInfo = sequence[i];
@@ -216,12 +217,12 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
 
 game_core.prototype.sampleGoalSequence = function() {
   var types = ['overlap', 'catch', 'baseline'];
-  var player1trials = _.shuffle(types);
-  var player2trials = _.shuffle(types);
+  var result = _.shuffle(types);
+  // var player2trials = _.shuffle(types);
   // This interleaves the trials (i.e. 'zips' together, so roles alternate)
-  var result = _.reduce(player1trials, (arr, v, i) => {
-    return arr.concat(v, player2trials[i]); 
-  }, []);
+  // var result = _.reduce(player1trials, (arr, v, i) => {
+  //   return arr.concat(v, player2trials[i]); 
+  // }, []);
   return _.flattenDeep(_.map(result, type => {
     return {
       goalType: type,
@@ -277,14 +278,11 @@ game_core.prototype.server_send_update = function(){
 
 
   var state = {
-    gs : this.game_started,   // true when game's started
-    pt : this.players_threshold,
-    pc : this.player_count,
+    active : this.active,
     dataObj  : this.data,
     roundNum : this.roundNum,
     trialInfo: this.trialInfo,
-    allObjects: this.objects,
-    stimulusHalf : this.stimulusHalf
+    allObjects: this.objects
   };
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
