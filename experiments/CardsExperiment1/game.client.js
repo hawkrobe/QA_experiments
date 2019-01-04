@@ -50,7 +50,7 @@ var client_onserverupdate_received = function(data){
   globalGame.players_threshold = data.pt;
   globalGame.player_count = data.pc;
   globalGame.roundNum = data.roundNum;
-  globalGame.roundStartTime = new Date();
+  globalGame.roundStartTime = Date.now();
   globalGame.allObjects = data.allObjects;
   if(!_.has(globalGame, 'data')) {
     globalGame.data = data.dataObj;
@@ -192,7 +192,7 @@ var customSetup = function(game) {
     if(checkCards()) {
       game.socket.emit('allCardsFound', data);
     } else {
-      $('#chatbox').removeAttr('disabled');
+      $('#chatbutton').removeAttr('disabled');
       globalGame.messageSent = false;
     }
   });

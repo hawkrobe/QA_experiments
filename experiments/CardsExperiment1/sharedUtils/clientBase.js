@@ -60,7 +60,6 @@ var onconnect = function(data) {
   this.players[0].id = this.my_id;
   this.urlParams = getURLParams();
   this.counter = data.counter;  
-  drawScreen(this, this.get_player(this.my_id));
 };
 
 // Associates callback functions corresponding to different socket messages
@@ -71,9 +70,8 @@ var sharedSetup = function(game) {
   // Tell other player if someone is typing...
   $('#chatbox').on('input', function() {
     console.log("inputting...");
-    if($('#chatbox').val() != "" && !globalGame.sentTyping) {
+    if($('#chatbox_rank').val() != "" && !globalGame.sentTyping) {
       game.socket.send('playerTyping.true');
-      globalGame.typingStartTime = Date.now();
       globalGame.sentTyping = true;
     } else if($("#chatbox").val() == "") {
       game.socket.send('playerTyping.false');
@@ -84,14 +82,19 @@ var sharedSetup = function(game) {
   
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
-    var origMsg = "Where is the " + $('#chatbox').val() + "?";
-    var timeElapsed = Date.now() - globalGame.typingStartTime;
-    var msg = ['chatMessage', origMsg.replace(/\./g, '~~~'), timeElapsed].join('.');
-    if($('#chatbox').val() != '') {
+    var code = $('#chatbox_rank').val() +  $('#chatbox_suit').val();
+    var rankText = $('#chatbox_rank').find('option:selected').text();
+    var suitText = $('#chatbox_suit').find('option:selected').text();    
+    var origMsg = ("Where is the " + rankText + " of " + suitText + "?");
+    var timeElapsed = Date.now() - globalGame.roundStartTime;
+    var msg = ['chatMessage', code, origMsg.replace(/\./g, '~~~'), timeElapsed]
+	  .join('.');
+    if(rankText != '' && suitText != '') {
       game.socket.send(msg);
       globalGame.sentTyping = false;
-      $('#chatbox').val('');
-      $('#chatbox').attr('disabled', 'disabled');      
+      $("#chatbox_rank").val('');
+      $("#chatbox_suit").val('');
+      $('#chatbutton').attr('disabled', 'disabled');                  
     }
     return false;   
   });

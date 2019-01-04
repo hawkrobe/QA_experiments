@@ -40,7 +40,8 @@ var onMessage = function(client,message) {
 
   case 'chatMessage' :
     if(client.game.player_count == 2 && !gc.paused) {
-      var msg = message_parts[1].replace(/~~~/g,'.');
+      console.log(message_parts);
+      var msg = message_parts[2].replace(/~~~/g,'.');
       _.map(all, function(p){
 	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
     }
@@ -121,8 +122,8 @@ var dataOutput = function() {
   var messageOutput = function(client, message_data) {
     return _.extend(
       commonOutput(client, message_data), {
-	text: message_data[1].replace(/~~~/g, '.'),
-	timeFromRoundStart: message_data[2]
+	cardAskedAbout: message_data[1],
+	timeFromRoundStart: message_data[3]
       }
     );
   };
