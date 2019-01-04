@@ -55,11 +55,32 @@
           <div id="chatarea">
             <form action="">
               <p style='padding: 10px; text-align: left; vertical-align: center; display:inline-block; font-size: 150%;'>
-		Where is the
-		<input id="chatbox" autocomplete="off" />
+		Where is the	
+		<select id="chatbox_rank">
+		  <option value="2">2</option>
+		  <option value="3">3</option>
+		  <option value="4">4</option>
+		  <option value="5">5</option>
+		  <option value="6">6</option>
+		  <option value="7">7</option>
+		  <option value="8">8</option>
+		  <option value="9">9</option>
+		  <option value="10">10</option>
+		  <option value="J">jack</option>
+		  <option value="Q">queen</option>
+		  <option value="K">king</option>
+		  <option value="A">ace</option>
+		</select>
+		of
+		<select id="chatbox_suit">
+		  <option value="D">diamonds &diams;</option>
+		  <option value="H">hearts &hearts;</option>
+		  <option value="C">clubs &clubs;</option>
+		  <option value="S">spades &spades;</option>
+		</select>
 		?
 	      </p>
-              <button id="chatbutton">Send</button>
+              <input type="submit" id="chatbutton" value="Send"></input>
             </form>
           </div>
         </div>
