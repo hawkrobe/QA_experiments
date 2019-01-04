@@ -25,7 +25,7 @@ var waiting;
 var selecting;
 
 var client_onserverupdate_received = function(data){
-  globalGame.my_role = data.trialInfo.roles[globalGame.my_id];
+  globalGame.my_role = data.trialInfo.role;
 
   // Update client versions of variables with data received from
   // server_send_update function in game.core.js
@@ -45,10 +45,8 @@ var client_onserverupdate_received = function(data){
       return _.extend(obj, {img: imgObj});
     });
   };
-  
-  globalGame.game_started = data.gs;
-  globalGame.players_threshold = data.pt;
-  globalGame.player_count = data.pc;
+
+  globalGame.active = data.active;
   globalGame.roundNum = data.roundNum;
   globalGame.roundStartTime = Date.now();
   globalGame.allObjects = data.allObjects;
@@ -57,8 +55,8 @@ var client_onserverupdate_received = function(data){
     globalGame.data.subject_information.quizFailCounter = globalGame.counter;    
   }
 
-  // Get rid of "waiting" screen if there are multiple players
-  if(data.players.length > 1) {
+  // Get rid of "waiting" screen after game starts
+  if(data.active) {
     $('#main').show();
 
     globalGame.get_player(globalGame.my_id).message = "";
