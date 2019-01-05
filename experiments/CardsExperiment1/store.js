@@ -104,7 +104,8 @@ function serve() {
       }
 
       // Always let the requester test ;) 
-      if(query.workerId == 'A1BOIDKD33QSDK') {
+      if(_.includes(['A1BOIDKD33QSDK', 'A4SSYO0HDVD4E', 'A1MMCS8S8CTWKU'],
+		    query.workerId)) {
 	response.json(false);
       } else {
 	checkEach(collectionList, checkCollectionForHits, query, projection, evaluateTally);
