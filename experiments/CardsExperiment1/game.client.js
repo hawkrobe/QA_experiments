@@ -35,15 +35,13 @@ function updateState (data){
     });
   }
 
-  if (globalGame.roundNum != data.roundNum) {
-    globalGame.goalSets = data.trialInfo.currStim.goalSets;
-    globalGame.targetGoal = data.trialInfo.currStim.target;
-    globalGame.objects = _.map(data.trialInfo.currStim.hiddenCards, function(obj) {
-      var imgObj = new Image(); //initialize object as an image (from HTML5)
-      imgObj.src = obj.url; // tell client where to find it
-      return _.extend(obj, {img: imgObj});
-    });
-  };
+  globalGame.goalSets = data.trialInfo.currStim.goalSets;
+  globalGame.targetGoal = data.trialInfo.currStim.target;
+  globalGame.objects = _.map(data.trialInfo.currStim.hiddenCards, function(obj) {
+    var imgObj = new Image(); //initialize object as an image (from HTML5)
+    imgObj.src = obj.url; // tell client where to find it
+    return _.extend(obj, {img: imgObj});
+  });
 
   globalGame.active = data.active;
   globalGame.roundNum = data.roundNum;
@@ -59,7 +57,6 @@ function resetUI(data) {
   globalGame.messageSent = false;
   globalGame.numQuestionsAsked = 0;
   globalGame.revealedCards = [];
-  $('#chatbox').removeAttr('disabled');    
   $('#scoreupdate').html(" ");
   if(globalGame.roundNum + 1 > globalGame.numRounds) {
     $('#roundnumber').empty();
@@ -72,7 +69,6 @@ function resetUI(data) {
   }
 
   $('#main').show();
-
   globalGame.get_player(globalGame.my_id).message = "";
 
   // reset labels
@@ -92,8 +88,6 @@ function resetUI(data) {
       .append("<p>After your partner types their question, </p>" 
 	      + "<p>select <b>one</b> or <b>two</b> cards to complete their combo!</p>");
   }
-  // Draw all this new stuff
-  drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 }
 
 var advanceRound = function() {
@@ -189,6 +183,7 @@ var customSetup = function(game) {
     var numGoals = globalGame.goalSets[globalGame.targetGoal].length;
     var numRevealed = globalGame.revealedCards.length;
     var numQuestionsAsked = globalGame.numQuestionsAsked;
+    console.log('numGoals' + numGoals);
     console.log('numRevealed' + numRevealed);
     console.log('numQuestionsAsked' + numQuestionsAsked);
     var revealPenalty = (numRevealed - numGoals);
@@ -222,6 +217,8 @@ var customSetup = function(game) {
     });
     if(checkCards()) {
       game.socket.emit('allCardsFound', data);
+    } else if (globalGame.bot.role == 'seeker') {
+      globalGame.bot.showQuestion();
     } else {
       $('#chatbutton').removeAttr('disabled');
       globalGame.messageSent = false;
@@ -233,10 +230,12 @@ var customSetup = function(game) {
     updateState(data);
     if(data.active) {
       resetUI(data);
+      drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
     }
 
+    // Kick things off by asking a question 
     if(globalGame.bot.role == 'seeker') {
-      globalGame.bot.showQuestion(data);
+      globalGame.bot.showQuestion();
     }
   });
 };
@@ -250,8 +249,10 @@ class Bot {
 
   // Always asks about first card (TODO: randomize which it asks about)
   showQuestion() {
-    console.log(this.trialInfo);
-    var goalSet = this.goalSets[this.targetSet];
+    // remove revealed cards from goal set
+    var goalSet = _.difference(this.goalSets[this.targetSet], globalGame.revealedCards);
+    console.log('revealed', globalGame.revealedCards);
+    console.log('goal set', goalSet);
     var code = goalSet[0];
     var rank = code.slice(0,-1);
     var suit = code.slice(-1);    
@@ -269,7 +270,7 @@ class Bot {
       globalGame.socket.send("chatMessage." + code + '.' + msg);
     }, 4000);
   }
-
+  
   // Reveals target set
   // TODO: only reveals both if seeker asks pragmatic question;
   // otherwise respond literally
