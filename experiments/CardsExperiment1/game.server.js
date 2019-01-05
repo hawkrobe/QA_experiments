@@ -42,7 +42,9 @@ var onMessage = function(client,message) {
     if(client.game.player_count == gc.players_threshold && !gc.paused) {
       var msg = message_parts[2].replace(/~~~/g,'.');
       _.map(all, function(p){
-	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});
+	p.player.instance.emit( 'chatMessage', {
+	  user: client.userid, msg: msg, code: message_parts[1]
+	});
       });
     }
     break;
