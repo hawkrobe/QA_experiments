@@ -27,7 +27,7 @@ var selecting;
 // server_send_update function in game.core.js
 // -- data: packet send by server
 function updateState (data){
-  globalGame.my_role = data.trialInfo.role;
+  globalGame.my_role = data.trialInfo.currStim.role;
   
   if(data.players) {
     _.map(_.zip(data.players, globalGame.players),function(z){
@@ -81,7 +81,7 @@ function resetUI(data) {
   if(globalGame.my_role === globalGame.playerRoleNames.role1) {
     $('#chatarea').show();      
     $('#instructs')
-      .append("<p>Type a question so your partner</p> " +
+      .append("<p>Fill in the question so your partner</p> " +
 	      "<p>can help you complete the highlighted combo!</p>");
   } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
     $('#chatarea').hide();
@@ -89,7 +89,7 @@ function resetUI(data) {
     $('#advance_button').show().attr('disabled', 'disabled');
     $('#instructs')
       .append("<p>After your partner types their question, </p>" 
-	      + "<p>select <b>one</b> or <b>two</b> cards to complete their combo!</p>");
+	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
   }
 }
 
@@ -98,7 +98,7 @@ var advanceRound = function() {
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(globalGame.selections);
   globalGame.revealedCards = globalGame.revealedCards.concat(globalGame.selections);
-  globalGame.socket.send("reveal." + globalGame.selections.join('.'));
+  globalGame.socket.send("reveal.human." + globalGame.selections.join('.'));
   globalGame.numQuestionsAsked += 1;
   globalGame.messageSent = false;
   globalGame.selections = [];
@@ -191,8 +191,8 @@ var customSetup = function(game) {
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
-    var feedbackMessage = (revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
-			   questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
+    var feedbackMessage = (questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
+			   revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
 			   "Great job! You completed the combo in one exchange!");
     $('#feedback').html(feedbackMessage + ' You earned $0.0' + score);
     $('#score').empty().append('total bonus: $' + bonus_score);
@@ -205,17 +205,10 @@ var customSetup = function(game) {
   
   game.socket.on('reveal', function(data) {    
     // Fade in revealed cards
-    _.forEach(data.selections, name => {
-      var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
-      var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
-      $('#haze-' + col + row).hide();
-      $(`img[data-name="${name}"]`)
-	.css({opacity: 0.0})
-	.show()
-	.css({opacity: 1, 'transition': 'opacity 2s linear'});
-    });
+    if(globalGame.my_role == 'seeker') {
+      fadeInSelections(data.selections);
+    }
     if(checkCards()) {
-      console.log('check!');
       game.socket.emit('allCardsFound', data);
     } else if (globalGame.bot.role == 'seeker') {
       globalGame.bot.showQuestion();
@@ -242,7 +235,7 @@ var customSetup = function(game) {
 
 class Bot {
   constructor(data) {
-    this.role = data.trialInfo.role == 'helper' ? 'seeker' : 'helper';
+    this.role = data.trialInfo.currStim.role == 'helper' ? 'seeker' : 'helper';
     this.goalSets = data.trialInfo.currStim.goalSets;
     this.targetSet = data.trialInfo.currStim.target;
   }
@@ -258,14 +251,14 @@ class Bot {
     var suitText = $(`#chatbox_suit option[value='${suit}']`).text();    
     var msg = "Where is the " + rankText + ' of ' + suitText + '?';
     $('#messages')
-      .append('<span class="typing-msg">Other player is typing... Study the possible goals!</span>')
+      .append('<span class="typing-msg">Other player is typing... Study the possible combos!</span>')
       .stop(true,true)
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
 
     setTimeout(function() {
-      globalGame.socket.send("chatMessage." + code + '.' + msg);
+      globalGame.socket.send("chatMessage." + code + '.' + msg + '.5000.bot');
     }, 5000);
   }
   
@@ -288,7 +281,7 @@ class Bot {
 
     globalGame.revealedCards = _.concat(globalGame.revealedCards, selections);
     setTimeout(function() {
-      globalGame.socket.send("reveal." + selections.join('.'));      
+      globalGame.socket.send("reveal.bot." + selections.join('.'));      
     }, 2500);
   }
 }
