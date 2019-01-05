@@ -91,7 +91,6 @@ var game_core = function(options){
       player: new game_player(this,options.player_instances[0].player)
     }];
     this.streams = {};
-    this.server_send_update();
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.confetti = new Confetti(300);
@@ -151,9 +150,6 @@ game_core.prototype.newRound = function(delay) {
 	console.log('player did not exist to disconnect');
       }
     } else {
-      // Tell players
-      _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate'));
-
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
 
@@ -162,8 +158,11 @@ game_core.prototype.newRound = function(delay) {
 	currGoalType: localThis.contextTypeList[localThis.roundNum],
 	role: localThis.condition
       };
-      localThis.server_send_update();
+
+      var state = localThis.makeSnapshot();
+      _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate', state));
     }
+    console.log('round ' + this.roundNum);
   }, delay);
 };
 
@@ -218,10 +217,9 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
 game_core.prototype.sampleGoalSequence = function() {
   var types = ['overlap', 'catch', 'baseline'];
   var result = _.shuffle(types);
-  // var player2trials = _.shuffle(types);
   // This interleaves the trials (i.e. 'zips' together, so roles alternate)
-  // var result = _.reduce(player1trials, (arr, v, i) => {
-  //   return arr.concat(v, player2trials[i]); 
+  // var result = _.reduce(Q1trials, (arr, v, i) => {
+  //   return arr.concat(v, {goalType: Q2trials[i], question: ); 
   // }, []);
   return _.flattenDeep(_.map(result, type => {
     return {
@@ -266,7 +264,7 @@ game_core.prototype.sampleStimulusLocs = function(numObjects) {
   return _.sampleSize(locs, numObjects);
 };
 
-game_core.prototype.server_send_update = function(){
+game_core.prototype.makeSnapshot = function(){
   //Make a snapshot of the current state, for updating the clients
   var local_game = this;
 
@@ -276,7 +274,6 @@ game_core.prototype.server_send_update = function(){
             player: null};
   });
 
-
   var state = {
     active : this.active,
     dataObj  : this.data,
@@ -284,11 +281,9 @@ game_core.prototype.server_send_update = function(){
     trialInfo: this.trialInfo,
     allObjects: this.objects
   };
+
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
 
-  //Send the snapshot to the players
-  this.state = state;
-  _.map(local_game.get_active_players(), function(p){
-    p.player.instance.emit( 'onserverupdate', state);});
+  return state;
 };
