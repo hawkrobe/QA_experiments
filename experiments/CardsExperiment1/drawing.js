@@ -66,7 +66,7 @@ function initGoals(goalSets, targetGoal) {
     var cell = $('<div/>').attr({
       height: '10%',
       class : 'grid',
-      style: `border-width: thick; border-style: solid; border-color: ${border}`
+      style: `border-width: 15px; border-style: solid; border-color: ${border}`
     });
     _.forEach(_.shuffle(goals), function(goalCard, j) {
       var card = $('<img/>').attr({
