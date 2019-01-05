@@ -161,7 +161,6 @@ game_core.prototype.newRound = function(delay) {
       var state = localThis.makeSnapshot();
       _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate', state));
     }
-    console.log('round ' + this.roundNum);
   }, delay);
 };
 
@@ -175,7 +174,7 @@ game_core.prototype.makeTrialList = function () {
   
   // Keep sampling until we get a suitable sequence
   var sequence = this.sampleGoalSequence();
-  console.log(sequence);
+
   // Construct trial list (in sets of complete rounds)
   for (var i = 0; i < this.numRounds; i++) {
     var trialInfo = sequence[i];
