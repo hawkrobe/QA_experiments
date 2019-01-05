@@ -15,21 +15,20 @@
 
 // A window global for our game root variable.
 var globalGame = {};
-// Keeps track of whether player is paying attention...
+
 var incorrect;
-var dragging;
 var waiting;
 
-//test: let's try a variable selecting, for when the listener selects an object
+// test: let's try a variable selecting, for when the listener selects an object
 // we don't need the dragging.
 var selecting;
 
-var client_onserverupdate_received = function(data){
+// Update client versions of variables with data received from
+// server_send_update function in game.core.js
+// -- data: packet send by server
+function updateState (data){
   globalGame.my_role = data.trialInfo.role;
-
-  // Update client versions of variables with data received from
-  // server_send_update function in game.core.js
-  //data refers to server information
+  
   if(data.players) {
     _.map(_.zip(data.players, globalGame.players),function(z){
       z[1].id = z[0].id;
@@ -54,35 +53,48 @@ var client_onserverupdate_received = function(data){
     globalGame.data = data.dataObj;
     globalGame.data.subject_information.quizFailCounter = globalGame.counter;    
   }
+};
 
-  // Get rid of "waiting" screen after game starts
-  if(data.active) {
-    $('#main').show();
-
-    globalGame.get_player(globalGame.my_id).message = "";
-
-    // reset labels
-    // Update w/ role (can only move stuff if agent)
-    $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
-    $('#instructs').empty();
-    if(globalGame.my_role === globalGame.playerRoleNames.role1) {
-      $('#chatarea').show();      
-      $('#instructs')
-	.append("<p>Type a question so your partner</p> " +
-		"<p>can help you complete the highlighted combo!</p>");
-    } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
-      $('#chatarea').hide();
-      $('#feedback').append('0/2 possible cards selected');
-      $('#advance_button').show().attr('disabled', 'disabled');
-      $('#instructs')
-	.append("<p>After your partner types their question, </p>" 
-		+ "<p>select <b>one</b> or <b>two</b> cards to complete their combo!</p>");
-    }
+function resetUI(data) {
+  globalGame.messageSent = false;
+  globalGame.numQuestionsAsked = 0;
+  globalGame.revealedCards = [];
+  $('#chatbox').removeAttr('disabled');    
+  $('#scoreupdate').html(" ");
+  if(globalGame.roundNum + 1 > globalGame.numRounds) {
+    $('#roundnumber').empty();
+    $('#instructs').empty()
+      .append("Round\n" + (globalGame.roundNum + 1) + "/" + globalGame.numRounds);
+  } else {
+    $('#feedback').empty();
+    $('#roundnumber').empty()
+      .append("Round\n" + (globalGame.roundNum + 1) + "/" + globalGame.numRounds);
   }
-    
+
+  $('#main').show();
+
+  globalGame.get_player(globalGame.my_id).message = "";
+
+  // reset labels
+  // Update w/ role (can only move stuff if agent)
+  $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
+  $('#instructs').empty();
+  if(globalGame.my_role === globalGame.playerRoleNames.role1) {
+    $('#chatarea').show();      
+    $('#instructs')
+      .append("<p>Type a question so your partner</p> " +
+	      "<p>can help you complete the highlighted combo!</p>");
+  } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
+    $('#chatarea').hide();
+    $('#feedback').append('0/2 possible cards selected');
+    $('#advance_button').show().attr('disabled', 'disabled');
+    $('#instructs')
+      .append("<p>After your partner types their question, </p>" 
+	      + "<p>select <b>one</b> or <b>two</b> cards to complete their combo!</p>");
+  }
   // Draw all this new stuff
   drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
-};
+}
 
 var advanceRound = function() {
   // Stop letting people click stuff
@@ -151,10 +163,34 @@ var checkCards = function() {
 }
 
 var customSetup = function(game) {
+  // Update messages log when other players send chat
+  game.socket.on('chatMessage', function(data){
+    var source = "seeker";
+    // To bar responses until speaker has uttered at least one message
+    if(source !== "You"){
+      globalGame.messageSent = true;
+    }
+    var col = source === "You" ? "#363636" : "#707070";
+    $('.typing-msg').remove();
+    $('#messages')
+      .append($('<li style="padding: 5px 10px; background: ' + col + '">')
+    	      .text(source + ": " + data.msg))
+      .stop(true,true)
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
+    if(globalGame.bot.role == 'helper') {
+      globalGame.bot.revealAnswer();
+    }
+  });
+
   game.socket.on('updateScore', function(data) {
+    console.log('updating score');
     var numGoals = globalGame.goalSets[globalGame.targetGoal].length;
     var numRevealed = globalGame.revealedCards.length;
     var numQuestionsAsked = globalGame.numQuestionsAsked;
+    console.log('numRevealed' + numRevealed);
+    console.log('numQuestionsAsked' + numQuestionsAsked);
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
     var score = (revealPenalty + questionPenalty) > 0 ? 0 : globalGame.bonusAmt;
@@ -173,10 +209,7 @@ var customSetup = function(game) {
     globalGame.confetti.drop();
   });
   
-  game.socket.on('reveal', function(data) {
-    globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
-    globalGame.numQuestionsAsked += 1;
-
+  game.socket.on('reveal', function(data) {    
     // Fade in revealed cards
     _.forEach(data.selections, name => {
       var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
@@ -196,22 +229,56 @@ var customSetup = function(game) {
   });
   
   game.socket.on('newRoundUpdate', function(data){
-    globalGame.messageSent = false;
-    globalGame.numQuestionsAsked = 0;
-    globalGame.revealedCards = [];
-    $('#chatbox').removeAttr('disabled');    
-    $('#scoreupdate').html(" ");
-    if(game.roundNum + 2 > game.numRounds) {
-      $('#roundnumber').empty();
-      $('#instructs').empty()
-        .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
-    } else {
-      $('#feedback').empty();
-      $('#roundnumber').empty()
-        .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
+    globalGame.bot = new Bot(data);
+    updateState(data);
+    if(data.active) {
+      resetUI(data);
+    }
+
+    if(globalGame.bot.role == 'seeker') {
+      globalGame.bot.showQuestion(data);
     }
   });
 };
+
+class Bot {
+  constructor(data) {
+    this.role = data.trialInfo.role == 'helper' ? 'seeker' : 'helper';
+    this.goalSets = data.trialInfo.currStim.goalSets;
+    this.targetSet = data.trialInfo.currStim.target;
+  }
+
+  // Always asks about first card (TODO: randomize which it asks about)
+  showQuestion() {
+    console.log(this.trialInfo);
+    var goalSet = this.goalSets[this.targetSet];
+    var code = goalSet[0];
+    var rank = code.slice(0,-1);
+    var suit = code.slice(-1);    
+    var rankText = $(`#chatbox_rank option[value='${rank}']`).text();
+    var suitText = $(`#chatbox_suit option[value='${suit}']`).text();    
+    var msg = "Where is the " + rankText + ' of ' + suitText + '?';
+    $('#messages')
+      .append('<span class="typing-msg">Other player is typing...</span>')
+      .stop(true,true)
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
+
+    setTimeout(function() {
+      globalGame.socket.send("chatMessage." + code + '.' + msg);
+    }, 4000);
+  }
+
+  // Reveals target set
+  // TODO: only reveals both if seeker asks pragmatic question;
+  // otherwise respond literally
+  revealAnswer() {
+    var goalSet = this.goalSets[this.targetSet];
+    console.log(this.trialInfo);
+//    globalGame.socket.send("reveal." + globalGame.selections.join('.'));
+  }
+}
 
 var client_onjoingame = function(num_players, role) {
   // set role locally
@@ -226,33 +293,3 @@ var client_onjoingame = function(num_players, role) {
   }
 };
 
-/*
- MOUSE EVENT LISTENERS
- */
-
-// function dragMoveListener (event) {
-//   // Tell the server if this is a real drag event (as opposed to an update from partner)
-//   var container = $('#message_panel')[0];
-//   var width = parseInt(container.getBoundingClientRect().width);
-//   var height = parseInt(container.getBoundingClientRect().height);
-//   if(_.has(event, 'name')) {
-//     event.target = $(`p:contains("${event.name}")`)[0];
-//     event.dx = parseFloat(event.dx) / event.width * width;
-//     event.dy = parseFloat(event.dy) / event.height * height;
-//   }
-
-//   // keep the dragged position in the data-x/data-y attributes
-//   var target = event.target,
-//       x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
-//       y = (parseFloat(target.getAttribute('data-y')) || 0) + parseFloat(event.dy);
-  
-
-//   // translate the element
-//   target.style.webkitTransform =
-//     target.style.transform =
-//     'translate(' + x + 'px, ' + y + 'px)';
-
-//   // update the posiion attributes
-//   target.setAttribute('data-x', x);
-//   target.setAttribute('data-y', y);
-// }
