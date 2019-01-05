@@ -63,7 +63,7 @@ var game_core = function(options){
   this.roundNum = -1;
 
   // How many rounds do we want people to complete?
-  this.numRounds = 3;
+  this.numRounds = 6;
   this.feedbackDelay = 300;
   this.revealedCards = [];
   
@@ -74,7 +74,7 @@ var game_core = function(options){
     this.id = options.id; 
     this.expName = options.expName;
     this.active = false;
-    this.condition = _.sample(['seeker', 'helper']);
+    this.firstRole = _.sample(['seeker', 'helper']);
     this.player_count = options.player_count;
     this.objects = require('./images/objects.json');
     this.trialList = this.makeTrialList();
@@ -155,8 +155,7 @@ game_core.prototype.newRound = function(delay) {
 
       localThis.trialInfo = {
 	currStim: localThis.trialList[localThis.roundNum],
-	currGoalType: localThis.contextTypeList[localThis.roundNum],
-	role: localThis.condition
+	currGoalType: localThis.contextTypeList[localThis.roundNum]
       };
 
       var state = localThis.makeSnapshot();
@@ -214,19 +213,21 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
   }
 };
 
+// 3 trials of each row, counterbalanced
 game_core.prototype.sampleGoalSequence = function() {
   var types = ['overlap', 'catch', 'baseline'];
-  var result = _.shuffle(types);
-  // This interleaves the trials (i.e. 'zips' together, so roles alternate)
-  // var result = _.reduce(Q1trials, (arr, v, i) => {
-  //   return arr.concat(v, {goalType: Q2trials[i], question: ); 
-  // }, []);
-  return _.flattenDeep(_.map(result, type => {
-    return {
-      goalType: type,
-      numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
-    };
-  }));
+  var batch1 = _.map(_.shuffle(types), type => {
+    return {goalType: type,
+	    numCards: _.sample(_.range(5, 9)),
+	    role: this.firstRole};
+  });
+  var batch2 = _.map(_.shuffle(types), type => {
+    return {goalType: type,
+	    numCards: _.sample(_.range(5, 9)),
+	    role: this.firstRole == 'seeker' ? 'helper' : 'seeker'};
+  });
+  
+  return _.concat(batch1, batch2);
 };
 
 game_core.prototype.sampleTrial = function(trialInfo) {
