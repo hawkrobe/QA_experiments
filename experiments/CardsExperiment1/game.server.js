@@ -39,16 +39,20 @@ var onMessage = function(client,message) {
     break;
 
   case 'chatMessage' :
-    if(client.game.player_count == 2 && !gc.paused) {
-      var msg = message_parts[1].replace(/~~~/g,'.');
+    if(client.game.player_count == gc.players_threshold && !gc.paused) {
+      var msg = message_parts[2].replace(/~~~/g,'.');
       _.map(all, function(p){
-	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+	p.player.instance.emit( 'chatMessage', {
+	  user: client.userid, msg: msg, code: message_parts[1]
+	});
+      });
     }
     break;
 
   case 'reveal' :
-    var partner = others[0];
-    partner.player.instance.emit('reveal', {selections: message_parts.slice(1)});    
+    _.map(all, function(p){
+      p.player.instance.emit('reveal', {selections: message_parts.slice(2)});
+    });
     break;
 
   case 'exitSurvey' :
@@ -64,8 +68,11 @@ var onMessage = function(client,message) {
 var setCustomEvents = function(socket) {
   socket.on('allCardsFound', function(data) {
     var all = socket.game.get_active_players();
-    _.map(all, function(p){
-      p.player.instance.emit( 'updateScore', data);});
+    setTimeout(function() {
+      _.map(all, function(p){
+	p.player.instance.emit( 'updateScore', data);
+      });
+    }, 1000);
     socket.game.newRound(4000);
   });
 }
@@ -90,15 +97,17 @@ var dataOutput = function() {
       trialNum: client.game.roundNum,
       trialType: client.game.trialInfo.currGoalType,
       targetGoalSet: client.game.trialInfo.currStim.goalSets[target],
-      distractorGoalSet: client.game.trialInfo.currStim.goalSets[distractor]
+      distractorGoalSet: client.game.trialInfo.currStim.goalSets[distractor],
+      firstRole: client.game.firstRole
     };
   };
-
+  
   var revealOutput = function(client, message_data) {
-    var selections = message_data.slice(1);
+    var selections = message_data.slice(2);
     var allObjs = client.game.trialInfo.currStim.hiddenCards;
     return _.extend(
       commonOutput(client, message_data), {
+	sender: message_data[1],
 	revealedObjs : selections,
 	numRevealed : selections.length,
 	fullContext: JSON.stringify(_.map(allObjs, v => {
@@ -110,7 +119,6 @@ var dataOutput = function() {
 
   var exitSurveyOutput = function(client, message_data) {
     var subjectInformationObj = JSON.parse(message_data.slice(1))['subject_information'];
-    console.log(subjectInformationObj);
     return _.extend(
       _.omit(commonOutput(client, message_data),
 	     ['targetGoalSet', 'distractorGoalSet', 'trialType', 'trialNum']),
@@ -121,8 +129,9 @@ var dataOutput = function() {
   var messageOutput = function(client, message_data) {
     return _.extend(
       commonOutput(client, message_data), {
-	text: message_data[1].replace(/~~~/g, '.'),
-	timeFromRoundStart: message_data[2]
+	cardAskedAbout: message_data[1],
+	sender: message_data[4],
+	timeFromRoundStart: message_data[3]
       }
     );
   };

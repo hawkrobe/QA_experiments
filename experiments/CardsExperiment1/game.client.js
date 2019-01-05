@@ -15,83 +15,90 @@
 
 // A window global for our game root variable.
 var globalGame = {};
-// Keeps track of whether player is paying attention...
+
 var incorrect;
-var dragging;
 var waiting;
 
-//test: let's try a variable selecting, for when the listener selects an object
+// test: let's try a variable selecting, for when the listener selects an object
 // we don't need the dragging.
 var selecting;
 
-var client_onserverupdate_received = function(data){
-  globalGame.my_role = data.trialInfo.roles[globalGame.my_id];
-
-  // Update client versions of variables with data received from
-  // server_send_update function in game.core.js
-  //data refers to server information
+// Update client versions of variables with data received from
+// server_send_update function in game.core.js
+// -- data: packet send by server
+function updateState (data){
+  globalGame.my_role = data.trialInfo.currStim.role;
+  
   if(data.players) {
     _.map(_.zip(data.players, globalGame.players),function(z){
       z[1].id = z[0].id;
     });
   }
 
-  if (globalGame.roundNum != data.roundNum) {
-    globalGame.goalSets = data.trialInfo.currStim.goalSets;
-    globalGame.targetGoal = data.trialInfo.currStim.target;
-    globalGame.objects = _.map(data.trialInfo.currStim.hiddenCards, function(obj) {
-      var imgObj = new Image(); //initialize object as an image (from HTML5)
-      imgObj.src = obj.url; // tell client where to find it
-      return _.extend(obj, {img: imgObj});
-    });
-  };
-  
-  globalGame.game_started = data.gs;
-  globalGame.players_threshold = data.pt;
-  globalGame.player_count = data.pc;
+  globalGame.goalSets = data.trialInfo.currStim.goalSets;
+  globalGame.targetGoal = data.trialInfo.currStim.target;
+  globalGame.objects = _.map(data.trialInfo.currStim.hiddenCards, function(obj) {
+    var imgObj = new Image(); //initialize object as an image (from HTML5)
+    imgObj.src = obj.url; // tell client where to find it
+    return _.extend(obj, {img: imgObj});
+  });
+
+  globalGame.active = data.active;
   globalGame.roundNum = data.roundNum;
-  globalGame.roundStartTime = new Date();
+  globalGame.roundStartTime = Date.now();
   globalGame.allObjects = data.allObjects;
   if(!_.has(globalGame, 'data')) {
     globalGame.data = data.dataObj;
     globalGame.data.subject_information.quizFailCounter = globalGame.counter;    
   }
-
-  // Get rid of "waiting" screen if there are multiple players
-  if(data.players.length > 1) {
-    $('#main').show();
-
-    globalGame.get_player(globalGame.my_id).message = "";
-
-    // reset labels
-    // Update w/ role (can only move stuff if agent)
-    $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
-    $('#instructs').empty();
-    if(globalGame.my_role === globalGame.playerRoleNames.role1) {
-      $('#chatarea').show();      
-      $('#instructs')
-	.append("<p>Type a question so your partner</p> " +
-		"<p>can help you complete the highlighted combo!</p>");
-    } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
-      $('#chatarea').hide();
-      $('#feedback').append('0/2 possible cards selected');
-      $('#advance_button').show().attr('disabled', 'disabled');
-      $('#instructs')
-	.append("<p>After your partner types their question, </p>" 
-		+ "<p>select <b>one</b> or <b>two</b> cards to complete their combo!</p>");
-    }
-  }
-    
-  // Draw all this new stuff
-  drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
 };
+
+function resetUI(data) {
+  globalGame.messageSent = false;
+  globalGame.numQuestionsAsked = 0;
+  globalGame.revealedCards = [];
+  $('#chatbutton').removeAttr('disabled');
+  globalGame.messageSent = false;
+  
+  $('#scoreupdate').html(" ");
+  if(globalGame.roundNum + 1 > globalGame.numRounds) {
+    $('#roundnumber').empty();
+    $('#instructs').empty()
+      .append("Round\n" + (globalGame.roundNum + 1) + "/" + globalGame.numRounds);
+  } else {
+    $('#feedback').empty();
+    $('#roundnumber').empty()
+      .append("Round\n" + (globalGame.roundNum + 1) + "/" + globalGame.numRounds);
+  }
+
+  $('#main').show();
+  globalGame.get_player(globalGame.my_id).message = "";
+
+  // reset labels
+  // Update w/ role (can only move stuff if agent)
+  $('#roleLabel').empty().append("You are the " + globalGame.my_role + '.');
+  $('#instructs').empty();
+  if(globalGame.my_role === globalGame.playerRoleNames.role1) {
+    $('#chatarea').show();      
+    $('#instructs')
+      .append("<p>Fill in the question so your partner</p> " +
+	      "<p>can help you complete the highlighted combo!</p>");
+  } else if(globalGame.my_role === globalGame.playerRoleNames.role2) {
+    $('#chatarea').hide();
+    $('#feedback').append('0/2 possible cards selected');
+    $('#advance_button').show().attr('disabled', 'disabled');
+    $('#instructs')
+      .append("<p>After your partner types their question, </p>" 
+	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
+  }
+}
 
 var advanceRound = function() {
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(globalGame.selections);
   globalGame.revealedCards = globalGame.revealedCards.concat(globalGame.selections);
-  globalGame.socket.send("reveal." + globalGame.selections.join('.'));
+  globalGame.socket.send("reveal.human." + globalGame.selections.join('.'));
   globalGame.numQuestionsAsked += 1;
   globalGame.messageSent = false;
   globalGame.selections = [];
@@ -153,6 +160,27 @@ var checkCards = function() {
 }
 
 var customSetup = function(game) {
+  // Update messages log when other players send chat
+  game.socket.on('chatMessage', function(data){
+    var source = globalGame.my_role == "seeker" ? 'You' : "Seeker";
+    // To bar responses until speaker has uttered at least one message
+    if(source !== "You"){
+      globalGame.messageSent = true;
+    }
+    var col = source === "You" ? "#363636" : "#707070";
+    $('.typing-msg').remove();
+    $('#messages')
+      .append($('<li style="padding: 5px 10px; background: ' + col + '">')
+    	      .text(source + ": " + data.msg))
+      .stop(true,true)
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
+    if(globalGame.bot.role == 'helper') {
+      globalGame.bot.revealAnswer(data.code);
+    }
+  });
+
   game.socket.on('updateScore', function(data) {
     var numGoals = globalGame.goalSets[globalGame.targetGoal].length;
     var numRevealed = globalGame.revealedCards.length;
@@ -163,8 +191,8 @@ var customSetup = function(game) {
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
-    var feedbackMessage = (revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
-			   questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
+    var feedbackMessage = (questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
+			   revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
 			   "Great job! You completed the combo in one exchange!");
     $('#feedback').html(feedbackMessage + ' You earned $0.0' + score);
     $('#score').empty().append('total bonus: $' + bonus_score);
@@ -175,45 +203,88 @@ var customSetup = function(game) {
     globalGame.confetti.drop();
   });
   
-  game.socket.on('reveal', function(data) {
-    globalGame.revealedCards = globalGame.revealedCards.concat(data.selections);
-    globalGame.numQuestionsAsked += 1;
-
+  game.socket.on('reveal', function(data) {    
     // Fade in revealed cards
-    _.forEach(data.selections, name => {
-      var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
-      var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
-      $('#haze-' + col + row).hide();
-      $(`img[data-name="${name}"]`)
-	.css({opacity: 0.0})
-	.show()
-	.css({opacity: 1, 'transition': 'opacity 2s linear'});
-    });
+    if(globalGame.my_role == 'seeker') {
+      fadeInSelections(data.selections);
+    }
     if(checkCards()) {
       game.socket.emit('allCardsFound', data);
+    } else if (globalGame.bot.role == 'seeker') {
+      globalGame.bot.showQuestion();
     } else {
-      $('#chatbox').removeAttr('disabled');
+      $('#chatbutton').removeAttr('disabled');
       globalGame.messageSent = false;
     }
   });
   
   game.socket.on('newRoundUpdate', function(data){
-    globalGame.messageSent = false;
-    globalGame.numQuestionsAsked = 0;
-    globalGame.revealedCards = [];
-    $('#chatbox').removeAttr('disabled');    
-    $('#scoreupdate').html(" ");
-    if(game.roundNum + 2 > game.numRounds) {
-      $('#roundnumber').empty();
-      $('#instructs').empty()
-        .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
-    } else {
-      $('#feedback').empty();
-      $('#roundnumber').empty()
-        .append("Round\n" + (game.roundNum + 2) + "/" + game.numRounds);
+    globalGame.bot = new Bot(data);
+    updateState(data);
+    if(data.active) {
+      resetUI(data);
+      drawScreen(globalGame, globalGame.get_player(globalGame.my_id));
+    }
+
+    // Kick things off by asking a question 
+    if(globalGame.bot.role == 'seeker') {
+      globalGame.bot.showQuestion();
     }
   });
 };
+
+class Bot {
+  constructor(data) {
+    this.role = data.trialInfo.currStim.role == 'helper' ? 'seeker' : 'helper';
+    this.goalSets = data.trialInfo.currStim.goalSets;
+    this.targetSet = data.trialInfo.currStim.target;
+  }
+
+  // Always asks about non-overlapping card
+  showQuestion() {
+    // remove revealed cards from goal set, so it won't keep asking about same card
+    var goalSet = _.difference(this.goalSets[this.targetSet], globalGame.revealedCards);
+    var code = goalSet[0];
+    var rank = code.slice(0,-1);
+    var suit = code.slice(-1);    
+    var rankText = $(`#chatbox_rank option[value='${rank}']`).text();
+    var suitText = $(`#chatbox_suit option[value='${suit}']`).text();    
+    var msg = "Where is the " + rankText + ' of ' + suitText + '?';
+    $('#messages')
+      .append('<span class="typing-msg">Other player is typing... Study the possible combos!</span>')
+      .stop(true,true)
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
+
+    setTimeout(function() {
+      globalGame.socket.send("chatMessage." + code + '.' + msg + '.5000.bot');
+    }, 5000);
+  }
+  
+  revealAnswer(cardAskedAbout) {
+    var goalSet = this.goalSets[this.targetSet];
+    var overlap = _.intersection(this.goalSets['g0'], this.goalSets['g1']);
+    var inGoal = _.includes(goalSet, cardAskedAbout);
+    var remainingCards = _.difference(_.map(globalGame.objects, 'name'),
+			     globalGame.revealedCards);
+    var cardExists = _.includes(remainingCards, cardAskedAbout);
+
+    // only reveal full set if seeker asks 'pragmatic' question;
+    // otherwise respond literally. 
+    // if card doesn't exist, pick a random one from goal sets...?
+    var selections = (
+      cardExists ?
+	(cardAskedAbout == overlap || !inGoal ? [cardAskedAbout] : goalSet) :
+      [_.sample(_.sample(this.goalSets))]
+    );
+
+    globalGame.revealedCards = _.concat(globalGame.revealedCards, selections);
+    setTimeout(function() {
+      globalGame.socket.send("reveal.bot." + selections.join('.'));      
+    }, 2500);
+  }
+}
 
 var client_onjoingame = function(num_players, role) {
   // set role locally
@@ -228,33 +299,3 @@ var client_onjoingame = function(num_players, role) {
   }
 };
 
-/*
- MOUSE EVENT LISTENERS
- */
-
-// function dragMoveListener (event) {
-//   // Tell the server if this is a real drag event (as opposed to an update from partner)
-//   var container = $('#message_panel')[0];
-//   var width = parseInt(container.getBoundingClientRect().width);
-//   var height = parseInt(container.getBoundingClientRect().height);
-//   if(_.has(event, 'name')) {
-//     event.target = $(`p:contains("${event.name}")`)[0];
-//     event.dx = parseFloat(event.dx) / event.width * width;
-//     event.dy = parseFloat(event.dy) / event.height * height;
-//   }
-
-//   // keep the dragged position in the data-x/data-y attributes
-//   var target = event.target,
-//       x = (parseFloat(target.getAttribute('data-x')) || 0) + parseFloat(event.dx),
-//       y = (parseFloat(target.getAttribute('data-y')) || 0) + parseFloat(event.dy);
-  
-
-//   // translate the element
-//   target.style.webkitTransform =
-//     target.style.transform =
-//     'translate(' + x + 'px, ' + y + 'px)';
-
-//   // update the posiion attributes
-//   target.setAttribute('data-x', x);
-//   target.setAttribute('data-y', y);
-// }
