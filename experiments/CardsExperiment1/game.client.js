@@ -57,6 +57,9 @@ function resetUI(data) {
   globalGame.messageSent = false;
   globalGame.numQuestionsAsked = 0;
   globalGame.revealedCards = [];
+  $('#chatbutton').removeAttr('disabled');
+  globalGame.messageSent = false;
+  
   $('#scoreupdate').html(" ");
   if(globalGame.roundNum + 1 > globalGame.numRounds) {
     $('#roundnumber').empty();
@@ -159,7 +162,7 @@ var checkCards = function() {
 var customSetup = function(game) {
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
-    var source = "seeker";
+    var source = globalGame.my_role == "seeker" ? 'You' : "Seeker";
     // To bar responses until speaker has uttered at least one message
     if(source !== "You"){
       globalGame.messageSent = true;
@@ -174,18 +177,14 @@ var customSetup = function(game) {
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
     if(globalGame.bot.role == 'helper') {
-      globalGame.bot.revealAnswer();
+      globalGame.bot.revealAnswer(data.code);
     }
   });
 
   game.socket.on('updateScore', function(data) {
-    console.log('updating score');
     var numGoals = globalGame.goalSets[globalGame.targetGoal].length;
     var numRevealed = globalGame.revealedCards.length;
     var numQuestionsAsked = globalGame.numQuestionsAsked;
-    console.log('numGoals' + numGoals);
-    console.log('numRevealed' + numRevealed);
-    console.log('numQuestionsAsked' + numQuestionsAsked);
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
     var score = (revealPenalty + questionPenalty) > 0 ? 0 : globalGame.bonusAmt;
@@ -216,6 +215,7 @@ var customSetup = function(game) {
 	.css({opacity: 1, 'transition': 'opacity 2s linear'});
     });
     if(checkCards()) {
+      console.log('check!');
       game.socket.emit('allCardsFound', data);
     } else if (globalGame.bot.role == 'seeker') {
       globalGame.bot.showQuestion();
@@ -247,12 +247,10 @@ class Bot {
     this.targetSet = data.trialInfo.currStim.target;
   }
 
-  // Always asks about first card (TODO: randomize which it asks about)
+  // Always asks about non-overlapping card
   showQuestion() {
-    // remove revealed cards from goal set
+    // remove revealed cards from goal set, so it won't keep asking about same card
     var goalSet = _.difference(this.goalSets[this.targetSet], globalGame.revealedCards);
-    console.log('revealed', globalGame.revealedCards);
-    console.log('goal set', goalSet);
     var code = goalSet[0];
     var rank = code.slice(0,-1);
     var suit = code.slice(-1);    
@@ -260,7 +258,7 @@ class Bot {
     var suitText = $(`#chatbox_suit option[value='${suit}']`).text();    
     var msg = "Where is the " + rankText + ' of ' + suitText + '?';
     $('#messages')
-      .append('<span class="typing-msg">Other player is typing...</span>')
+      .append('<span class="typing-msg">Other player is typing... Study the possible goals!</span>')
       .stop(true,true)
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
@@ -268,16 +266,30 @@ class Bot {
 
     setTimeout(function() {
       globalGame.socket.send("chatMessage." + code + '.' + msg);
-    }, 4000);
+    }, 5000);
   }
   
-  // Reveals target set
-  // TODO: only reveals both if seeker asks pragmatic question;
-  // otherwise respond literally
-  revealAnswer() {
+  revealAnswer(cardAskedAbout) {
     var goalSet = this.goalSets[this.targetSet];
-    console.log(this.trialInfo);
-//    globalGame.socket.send("reveal." + globalGame.selections.join('.'));
+    var overlap = _.intersection(this.goalSets['g0'], this.goalSets['g1']);
+    var inGoal = _.includes(goalSet, cardAskedAbout);
+    var remainingCards = _.difference(_.map(globalGame.objects, 'name'),
+			     globalGame.revealedCards);
+    var cardExists = _.includes(remainingCards, cardAskedAbout);
+
+    // only reveal full set if seeker asks 'pragmatic' question;
+    // otherwise respond literally. 
+    // if card doesn't exist, pick a random one from goal sets...?
+    var selections = (
+      cardExists ?
+	(cardAskedAbout == overlap || !inGoal ? [cardAskedAbout] : goalSet) :
+      [_.sample(_.sample(this.goalSets))]
+    );
+
+    globalGame.revealedCards = _.concat(globalGame.revealedCards, selections);
+    setTimeout(function() {
+      globalGame.socket.send("reveal." + selections.join('.'));      
+    }, 2500);
   }
 }
 
