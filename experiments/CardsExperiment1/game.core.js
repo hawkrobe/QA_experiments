@@ -43,7 +43,7 @@ var game_core = function(options){
   this.dataStore = ['csv', 'mongo'];
 
   // How many players in the game?
-  this.players_threshold = 2;
+  this.players_threshold = 1;
   this.playerRoleNames = {
     role1 : 'seeker',
     role2 : 'helper'
@@ -68,12 +68,13 @@ var game_core = function(options){
   this.revealedCards = [];
   
   // This will be populated with the objectst
-  this.trialInfo = {roles: _.values(this.playerRoleNames)};
+  this.trialInfo = {};
 
   if(this.server) {
     this.id = options.id; 
     this.expName = options.expName;
     this.active = false;
+    this.firstRole = _.sample(['seeker', 'helper']);
     this.player_count = options.player_count;
     this.objects = require('./images/objects.json');
     this.trialList = this.makeTrialList();
@@ -90,7 +91,6 @@ var game_core = function(options){
       player: new game_player(this,options.player_instances[0].player)
     }];
     this.streams = {};
-    this.server_send_update();
   } else {
     // If we're initializing a player's local game copy, create the player object
     this.confetti = new Confetti(300);
@@ -150,20 +150,18 @@ game_core.prototype.newRound = function(delay) {
 	console.log('player did not exist to disconnect');
       }
     } else {
-      // Tell players
-      _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate'));
-
       // Otherwise, get the preset list of tangrams for the new round
       localThis.roundNum += 1;
 
       localThis.trialInfo = {
 	currStim: localThis.trialList[localThis.roundNum],
-	currGoalType: localThis.contextTypeList[localThis.roundNum],
-	roles: _.zipObject(_.map(localThis.players, p =>p.id),
-			   _.reverse(_.values(localThis.trialInfo.roles)))
+	currGoalType: localThis.contextTypeList[localThis.roundNum]
       };
-      localThis.server_send_update();
+
+      var state = localThis.makeSnapshot();
+      _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate', state));
     }
+    console.log('round ' + this.roundNum);
   }, delay);
 };
 
@@ -177,6 +175,7 @@ game_core.prototype.makeTrialList = function () {
   
   // Keep sampling until we get a suitable sequence
   var sequence = this.sampleGoalSequence();
+  console.log(sequence);
   // Construct trial list (in sets of complete rounds)
   for (var i = 0; i < this.numRounds; i++) {
     var trialInfo = sequence[i];
@@ -214,20 +213,21 @@ game_core.prototype.sampleGoalSet = function(goalType, hiddenCards) {
   }
 };
 
+// 3 trials of each row, counterbalanced
 game_core.prototype.sampleGoalSequence = function() {
   var types = ['overlap', 'catch', 'baseline'];
-  var player1trials = _.shuffle(types);
-  var player2trials = _.shuffle(types);
-  // This interleaves the trials (i.e. 'zips' together, so roles alternate)
-  var result = _.reduce(player1trials, (arr, v, i) => {
-    return arr.concat(v, player2trials[i]); 
-  }, []);
-  return _.flattenDeep(_.map(result, type => {
-    return {
-      goalType: type,
-      numCards: _.sample(_.range(5, 9))  // Sample a random set of cards to be hidden this round
-    };
-  }));
+  var batch1 = _.map(_.shuffle(types), type => {
+    return {goalType: type,
+	    numCards: _.sample(_.range(5, 9)),
+	    role: this.firstRole};
+  });
+  var batch2 = _.map(_.shuffle(types), type => {
+    return {goalType: type,
+	    numCards: _.sample(_.range(5, 9)),
+	    role: this.firstRole == 'seeker' ? 'helper' : 'seeker'};
+  });
+  
+  return _.concat(batch1, batch2);
 };
 
 game_core.prototype.sampleTrial = function(trialInfo) {
@@ -265,7 +265,7 @@ game_core.prototype.sampleStimulusLocs = function(numObjects) {
   return _.sampleSize(locs, numObjects);
 };
 
-game_core.prototype.server_send_update = function(){
+game_core.prototype.makeSnapshot = function(){
   //Make a snapshot of the current state, for updating the clients
   var local_game = this;
 
@@ -275,22 +275,16 @@ game_core.prototype.server_send_update = function(){
             player: null};
   });
 
-
   var state = {
-    gs : this.game_started,   // true when game's started
-    pt : this.players_threshold,
-    pc : this.player_count,
+    active : this.active,
     dataObj  : this.data,
     roundNum : this.roundNum,
     trialInfo: this.trialInfo,
-    allObjects: this.objects,
-    stimulusHalf : this.stimulusHalf
+    allObjects: this.objects
   };
+
   _.extend(state, {players: player_packet});
   _.extend(state, {instructions: this.instructions});
 
-  //Send the snapshot to the players
-  this.state = state;
-  _.map(local_game.get_active_players(), function(p){
-    p.player.instance.emit( 'onserverupdate', state);});
+  return state;
 };

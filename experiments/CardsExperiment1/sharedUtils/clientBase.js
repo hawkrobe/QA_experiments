@@ -69,7 +69,6 @@ var sharedSetup = function(game) {
 
   // Tell other player if someone is typing...
   $('#chatbox').on('input', function() {
-    console.log("inputting...");
     if($('#chatbox_rank').val() != "" && !globalGame.sentTyping) {
       game.socket.send('playerTyping.true');
       globalGame.sentTyping = true;
@@ -112,27 +111,6 @@ var sharedSetup = function(game) {
     }
   });
   
-  // Update messages log when other players send chat
-  game.socket.on('chatMessage', function(data){
-
-    var otherRole = (globalGame.my_role === game.playerRoleNames.role1 ?
-		     game.playerRoleNames.role2 : game.playerRoleNames.role1);
-    var source = data.user === globalGame.my_id ? "You" : otherRole;
-    // To bar responses until speaker has uttered at least one message
-    if(source !== "You"){
-      globalGame.messageSent = true;
-    }
-    var col = source === "You" ? "#363636" : "#707070";
-    $('.typing-msg').remove();
-    $('#messages')
-      .append($('<li style="padding: 5px 10px; background: ' + col + '">')
-    	      .text(source + ": " + data.msg))
-      .stop(true,true)
-      .animate({
-	scrollTop: $("#messages").prop("scrollHeight")
-      }, 800);
-  });
-
   //so that we can measure the duration of the game
   game.startTime = Date.now();
   
@@ -141,8 +119,6 @@ var sharedSetup = function(game) {
   game.socket.on('connect', function(){}.bind(game));
   //Sent when we are disconnected (network, server down, etc)
   game.socket.on('disconnect', ondisconnect.bind(game));
-  //Sent each tick of the server simulation. This is our authoritive update
-  game.socket.on('onserverupdate', client_onserverupdate_received.bind(game));
   //Handle when we connect to the server, showing state and storing id's.
   game.socket.on('onconnected', onconnect.bind(game));
   //On message from the server, we parse the commands and send it to the handlers
@@ -183,7 +159,6 @@ window.onload = function(){
 // This gets called when someone selects something in the menu during the exit survey...
 // collects data from drop-down menus and submits using mmturkey
 function dropdownTip(data){
-  console.log(globalGame);
   var commands = data.split('::');
   switch(commands[0]) {
   case 'human' :
@@ -272,9 +247,6 @@ function onchange (evt) {
   } else {
     document.body.className = evt.target.hidden ? "hidden" : "visible";
   }
-  // console.log(evt);
-  // console.log(document.body.className);
-  // console.log(globalGame);
   visible = document.body.className;
   globalGame.socket.send("h." + document.body.className);  
 
