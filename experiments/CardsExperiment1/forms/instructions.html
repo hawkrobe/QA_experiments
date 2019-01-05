@@ -51,20 +51,18 @@
 	<h2><center>Complete the combo!</center>  </h2>
 
 	<p>
-	  In this experiment you will play a communication game with
-	  another turker! 
+	  In this experiment you will play a communication game with a robot partner! 
 	</p>
 
 	<p>
-	  You will both see a 4 x 4 grid containing cards and will
-	  take turns playing the roles of 'seeker' and 'helper.' In
-	  every round of the game, the seeker will be given a goal: to
-	  find a specific combination of cards in the grid. There will
-	  either be 1 or 2 cards in this combo.  However, the seeker
-	  is trapped in a fog and cannot see where <b>any</b> of the
-	  cards are! The helper, on the other hand, knows where all
-	  the cards are but does not know which ones the seeker is
-	  trying to find.
+	  You will both see a 4 x 4 grid containing cards. For every
+	  round of the game, one player (the "seeker") will be given a
+	  goal: to find a specific combination of cards in the
+	  grid. There will either be 1 or 2 cards in this combo.
+	  However, the seeker is trapped in a fog and cannot see
+	  where <b>any</b> of the cards are! Thankfully, the other
+	  player (the "helper") knows where all the cards are but does 
+	  not know which ones the seeker is trying to find.
 	</p>
 
 	<p>
@@ -96,10 +94,10 @@
 	</p>
 	<ol start="2">
 	  <li>
-	    The seeker is able to <b>ask the helper a
-	    question</b> about the location of a card. The
-	    seeker must choose a card to ask about and type its full
-	    name to complete the question: "Where is the ...?"
+	    The seeker is able to <b>ask the helper a question</b>
+	      about the location of a card. The seeker must use
+	      dropdown menus to complete the question: "Where is the
+	      ...?"
 	    <p>
 	      <center>
 		<img src="images/message.png" alt="Example objects"
@@ -108,11 +106,11 @@
 	    </p>
 
 	    <p>
-	      The helper will then see this question and select <b>one or
-		two</b> cards to reveal to complete the target combo (by clicking on
-	      the cards, and then on the 'REVEAL' button when
-	      ready). They will need to wait until the seeker has sent
-	      a question before being able to click anything.
+	      The helper will then see this question and select up
+	      to <b>two</b> cards to reveal by clicking on cards, and
+	      then on the 'REVEAL' button when ready. They will need
+	      to wait until the seeker has sent a question before
+	      being able to click anything.
 	    </p>
 	    <p>
 	      <center>
@@ -128,35 +126,11 @@
 	  helper carefully reveals the right cards, it is possible to
 	  complete the combo in a single exchange. This is how you get
 	  the <b>bonus of $0.05 per round</b>. If the combo is not
-	  completed after the first question, or if other unnecessary cards
-	  are revealed, you will not receive the bonus, so pay
-	  attention to your choices! Once the combo is completed, you
-	  will <b>switch roles</b> and advance to the next round.
-	  There are a total of <b>6 rounds</b>. After the final round
+	  completed after the first question, or if other cards are
+	  revealed, you will not receive the bonus, so pay attention
+	  to your choices! There are a total of <b>6 rounds</b>, and
+	  you will switch roles halfway through. After the final round
 	  you will answer a few more questions and be on your way.
-	</p>
-	
-	<p>
-	  A few final notes: First, since you are playing with
-	  another player, you may see a screen like this before the game
-	  begins:
-	<p>
-	  <center><img src="images/waitScreen.png" alt="initial matcher's board"
-		       style="width:700px;height:150px">
-	  </center>
-	</p>
-	<p>
-	  Just hold tight. Another player should join the game within
-	  the next few minutes. If you're in the waiting room 5 minutes
-	  without another player joining, please return the HIT and try
-	  again later!
-	</p>
-
-	<p>
-	  Second, please be respectful of the worker you're playing
-	  with: their bonus payment depends on your performance as
-	  well, so please pay close attention and try to be as
-	  responsive and helpful as possible.
 	</p>
 	
 	<p>
@@ -168,8 +142,11 @@
 	</p>
 
 	<h3>
-	  Please fill out this short quiz below before getting started.
-	  Good luck and have fun!
+	  Please fill out this short quiz below before getting
+	  started. Be confident you understand the instructions before
+	  submitting the quiz -- if you answer incorrectly, you will
+	  not be able to proceed to the game.  Good luck, and have
+	  fun!
 	</h3>
 	
       </div>
@@ -205,7 +182,7 @@
 	<br>
 
 	<br>
-	The Seeker and Helper are both aware of all the <b>possible</b> combos on each round..
+	The Seeker and Helper are both aware of all the <b>possible</b> combos on each round.
 	<br>
 	<input type="radio" name="location" value="yes"> True
 	<br>
@@ -279,7 +256,7 @@
                             + "&assignmentId=" + assignmentId
                             + "&hitId=" + hitId + "&turkSubmitTo=" + turkSubmitTo
 			    + "&counter=" + counter);
-        } else if(counter == 3) {
+        } else if(counter == 2) {
           location.replace("./fail.html");
         } else {
           $('.error').show()
