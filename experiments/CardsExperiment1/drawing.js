@@ -24,13 +24,25 @@ function handleHighlighting(imgSelector, name) {
   $('#feedback').empty().append(globalGame.selections.length + '/2 possible cards selected');
 }
 
+function fadeInSelections(cards){
+  _.forEach(cards, name => {
+    var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
+    var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
+    $('#haze-' + col + row).hide();
+    $(`img[data-name="${name}"]`)
+      .css({opacity: 0.0})
+      .show()
+      .css({opacity: 1, 'transition': 'opacity 2s linear'});
+  });
+}
+
 function disableCards(cards) {
   _.forEach(cards, (name) => {
     // Disable card
+    console.log('disabling' + cards);
     var cardElement = $(`img[data-name="${name}"]`);
+    cardElement.css({'transition' : 'opacity 1s', opacity: 0.2});
     cardElement.off('click');
-    cardElement.css({'transition': 'opacity 1s',
-		     opacity: 0.2});
     cardElement.parent().css({'border-color' : 'white', 'border-width': '1px'});
   });
 }
@@ -46,6 +58,7 @@ function setupHandlers() {
 }
 
 function initGoals(goalSets, targetGoal) {
+  $('#goals').append('<br>');
   _.forEach(_.shuffle(_.values(goalSets)), function(goals, i) {
     var border = (_.isEqual(goals, goalSets[targetGoal]) &&
 		  globalGame.my_role == globalGame.playerRoleNames.role1 ?
@@ -55,7 +68,6 @@ function initGoals(goalSets, targetGoal) {
       class : 'grid',
       style: `border-width: thick; border-style: solid; border-color: ${border}`
     });
-    cell.append($('<p/>').append(`#${i+1}`))
     _.forEach(_.shuffle(goals), function(goalCard, j) {
       var card = $('<img/>').attr({
 	width: '33%',
@@ -65,8 +77,9 @@ function initGoals(goalSets, targetGoal) {
       });
       cell.append(card);
     });
+    $('#goals').append($('<p style="text-align:left; font-size: 125%"/>').text(`COMBO #${i+1}`));
     $('#goals').append(cell);
-    $('#goals').append('<hr>');
+    $('#goals').append('<br><br><hr><br><br>');
   });
   $('#goals').fadeIn();
 }
