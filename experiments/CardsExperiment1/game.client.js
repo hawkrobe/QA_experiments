@@ -99,7 +99,7 @@ var advanceRound = function() {
   disableCards(globalGame.selections);
   globalGame.revealedCards = globalGame.revealedCards.concat(globalGame.selections);
   globalGame.socket.send("reveal.human." + globalGame.selections.join('.'));
-  globalGame.numQuestionsAsked += 1;
+//  globalGame.numQuestionsAsked += 1;
   globalGame.messageSent = false;
   globalGame.selections = [];
 };
@@ -162,6 +162,7 @@ var checkCards = function() {
 var customSetup = function(game) {
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
+    globalGame.numQuestionsAsked += 1;
     var source = globalGame.my_role == "seeker" ? 'You' : "Seeker";
     // To bar responses until speaker has uttered at least one message
     if(source !== "You"){
@@ -187,7 +188,9 @@ var customSetup = function(game) {
     var numQuestionsAsked = globalGame.numQuestionsAsked;
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
-    var score = (revealPenalty + questionPenalty) > 0 ? 0 : globalGame.bonusAmt;
+    var score = (revealPenalty > 0 || questionPenalty > 0) ? 0 : globalGame.bonusAmt;
+    console.log(score);
+    console.log(questionPenalty);
     globalGame.data.subject_information.score += score;
     var bonus_score = (parseFloat(globalGame.data.subject_information.score) / 100
 		       .toFixed(2));
