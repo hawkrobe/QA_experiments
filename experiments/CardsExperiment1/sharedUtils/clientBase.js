@@ -69,7 +69,6 @@ var sharedSetup = function(game) {
 
   // Tell other player if someone is typing...
   $('#chatbox').on('input', function() {
-    console.log("inputting...");
     if($('#chatbox_rank').val() != "" && !globalGame.sentTyping) {
       game.socket.send('playerTyping.true');
       globalGame.sentTyping = true;
@@ -160,7 +159,6 @@ window.onload = function(){
 // This gets called when someone selects something in the menu during the exit survey...
 // collects data from drop-down menus and submits using mmturkey
 function dropdownTip(data){
-  console.log(globalGame);
   var commands = data.split('::');
   switch(commands[0]) {
   case 'human' :
@@ -249,9 +247,6 @@ function onchange (evt) {
   } else {
     document.body.className = evt.target.hidden ? "hidden" : "visible";
   }
-  // console.log(evt);
-  // console.log(document.body.className);
-  // console.log(globalGame);
   visible = document.body.className;
   globalGame.socket.send("h." + document.body.className);  
 
