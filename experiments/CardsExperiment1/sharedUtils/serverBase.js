@@ -107,8 +107,6 @@ class ReferenceGameServer {
     // add to game collection
     this.games[game.id] = game;
     this.game_count++;
-    
-    game.server_send_update();
 
     return game;
   }; 

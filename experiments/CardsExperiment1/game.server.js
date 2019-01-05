@@ -39,17 +39,18 @@ var onMessage = function(client,message) {
     break;
 
   case 'chatMessage' :
-    if(client.game.player_count == 2 && !gc.paused) {
-      console.log(message_parts);
+    if(client.game.player_count == gc.players_threshold && !gc.paused) {
       var msg = message_parts[2].replace(/~~~/g,'.');
       _.map(all, function(p){
-	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});});
+	p.player.instance.emit( 'chatMessage', {user: client.userid, msg: msg});
+      });
     }
     break;
 
   case 'reveal' :
-    var partner = others[0];
-    partner.player.instance.emit('reveal', {selections: message_parts.slice(1)});    
+    _.map(all, function(p){
+      p.player.instance.emit('reveal', {selections: message_parts.slice(1)});
+    });
     break;
 
   case 'exitSurvey' :
