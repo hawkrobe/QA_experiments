@@ -86,7 +86,7 @@ var sharedSetup = function(game) {
     var suitText = $('#chatbox_suit').find('option:selected').text();    
     var origMsg = ("Where is the " + rankText + " of " + suitText + "?");
     var timeElapsed = Date.now() - globalGame.roundStartTime;
-    var msg = ['chatMessage', code, origMsg.replace(/\./g, '~~~'), timeElapsed]
+    var msg = ['chatMessage', code, origMsg.replace(/\./g, '~~~'), timeElapsed, 'human']
 	  .join('.');
     if(rankText != '' && suitText != '') {
       game.socket.send(msg);
