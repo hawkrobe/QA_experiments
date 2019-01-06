@@ -98,7 +98,9 @@ var advanceRound = function() {
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(globalGame.selections);
   globalGame.revealedCards = globalGame.revealedCards.concat(globalGame.selections);
-  globalGame.socket.send("reveal.human." + globalGame.selections.join('.'));
+  var timeElapsed = Date.now() - globalGame.messageReceivedTime;
+  globalGame.socket.send("reveal.human." + timeElapsed + '.' +
+			 globalGame.selections.join('.'));
 //  globalGame.numQuestionsAsked += 1;
   globalGame.messageSent = false;
   globalGame.selections = [];
@@ -163,6 +165,7 @@ var customSetup = function(game) {
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
     globalGame.numQuestionsAsked += 1;
+    globalGame.messageReceivedTime = Date.now();
     var source = globalGame.my_role == "seeker" ? 'You' : "Seeker";
     // To bar responses until speaker has uttered at least one message
     if(source !== "You"){
@@ -284,7 +287,7 @@ class Bot {
 
     globalGame.revealedCards = _.concat(globalGame.revealedCards, selections);
     setTimeout(function() {
-      globalGame.socket.send("reveal.bot." + selections.join('.'));      
+      globalGame.socket.send("reveal.bot.2500." + selections.join('.'));      
     }, 2500);
   }
 }
