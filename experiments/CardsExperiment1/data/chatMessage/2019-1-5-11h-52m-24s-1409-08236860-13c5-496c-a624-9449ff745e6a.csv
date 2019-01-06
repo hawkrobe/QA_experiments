@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	firstRole	cardAskedAbout	sender	timeFromRoundStart	eventType
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546717944316	0	baseline	3H,5H	AH,2H	helper	3H	bot	5000	chatMessage
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546717963925	1	catch	6C	10S	helper	6C	bot	5000	chatMessage
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546717983322	2	overlap	9S,QH	9C,QH	helper	9S	bot	5000	chatMessage
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546717995941	2	overlap	9S,QH	9C,QH	helper	9S	bot	5000	chatMessage
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546718022526	3	baseline	2H,8D	4H,AH	helper	AH		15478	chatMessage
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546718040292	3	baseline	2H,8D	4H,AH	helper	4H		33243	chatMessage
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546718059461	3	baseline	2H,8D	4H,AH	helper	2H		52411	chatMessage
+single-player-pilot	1409-08236860-13c5-496c-a624-9449ff745e6a	1546718078530	4	catch	9C	4D	helper	8C		12238	chatMessage
