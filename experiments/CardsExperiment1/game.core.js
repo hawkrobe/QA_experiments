@@ -35,7 +35,7 @@ var game_core = function(options){
   this.email = 'rxdh@stanford.edu';
   this.projectName = 'QA';
   this.experimentName = 'cards';
-  this.iterationName = 'testing';
+  this.iterationName = 'single_player_sample';
   this.anonymizeCSV = true;
   this.bonusAmt = 5; // in cents
   
@@ -139,29 +139,29 @@ game_core.prototype.get_active_players = function() {
 
 game_core.prototype.newRound = function(delay) {
   var players = this.get_active_players();
-  var localThis = this;
-  setTimeout(function() {
-    // If you've reached the planned number of rounds, end the game
-    if(localThis.roundNum == localThis.numRounds - 1) {
-      localThis.active = false;
-      try {
+  if(this.roundNum == this.numRounds - 1) {
+    this.active = false;
+    try {
+      setTimeout(function() {   
 	_.forEach(players, p => p.player.instance.send('s.end'));
-      } catch(err) {
-	console.log('player did not exist to disconnect');
-      }
-    } else {
-      // Otherwise, get the preset list of tangrams for the new round
-      localThis.roundNum += 1;
-
-      localThis.trialInfo = {
-	currStim: localThis.trialList[localThis.roundNum],
-	currGoalType: localThis.contextTypeList[localThis.roundNum]
-      };
-
-      var state = localThis.makeSnapshot();
-      _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate', state));
+      }, delay);
+    } catch(err) {
+      console.log('player did not exist to disconnect');
     }
-  }, delay);
+  } else {
+    // Otherwise, get the preset list of tangrams for the new round
+    this.roundNum += 1;
+
+    this.trialInfo = {
+      currStim: this.trialList[this.roundNum],
+      currGoalType: this.contextTypeList[this.roundNum]
+    };
+
+    var state = this.makeSnapshot();
+    setTimeout(function() {
+      _.forEach(players, p => p.player.instance.emit( 'newRoundUpdate', state));
+    }, delay);
+  }
 };
 
 // Take condition as argument
@@ -265,15 +265,11 @@ game_core.prototype.sampleStimulusLocs = function(numObjects) {
 };
 
 game_core.prototype.makeSnapshot = function(){
-  //Make a snapshot of the current state, for updating the clients
-  var local_game = this;
-
   // Add info about all players
-  var player_packet = _.map(local_game.players, function(p){
-    return {id: p.id,
-            player: null};
+  var player_packet = _.map(this.players, function(p){
+    return {id: p.id, player: null};
   });
-
+  
   var state = {
     active : this.active,
     dataObj  : this.data,
