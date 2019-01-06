@@ -51,7 +51,7 @@ var onMessage = function(client,message) {
 
   case 'reveal' :
     _.map(all, function(p){
-      p.player.instance.emit('reveal', {selections: message_parts.slice(2)});
+      p.player.instance.emit('reveal', {selections: message_parts.slice(3)});
     });
     break;
 
@@ -103,11 +103,12 @@ var dataOutput = function() {
   };
   
   var revealOutput = function(client, message_data) {
-    var selections = message_data.slice(2);
+    var selections = message_data.slice(3);
     var allObjs = client.game.trialInfo.currStim.hiddenCards;
     return _.extend(
       commonOutput(client, message_data), {
 	sender: message_data[1],
+	timeFromMessage: message_data[2],
 	revealedObjs : selections,
 	numRevealed : selections.length,
 	fullContext: JSON.stringify(_.map(allObjs, v => {
