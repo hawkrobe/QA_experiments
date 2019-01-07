@@ -2,6 +2,9 @@
   "name": "couzin_replication",
   "description": "Unofficial fork of MWERT, adapted to replicate sensing experiment",
   "version": "0.0.0",
+  "scripts": {
+    "build": "webpack --mode development ./src/client.js --output ./bundle.js; node app.js"
+  },
   "private": true,
   "dependencies": {
     "body-parser": "^1.18.3",
@@ -19,6 +22,10 @@
     "request": "^2.87.0",
     "socket.io": "^2.1.1",
     "underscore": "~1.7.0",
+    "webpack": "^4.28.3",
     "xmldom": "^0.1.27"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.2.0"
   }
 }

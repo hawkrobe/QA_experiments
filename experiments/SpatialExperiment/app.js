@@ -16,7 +16,7 @@ var
     fs            = require('fs'),
     app           = require('express')(),
     _             = require('underscore'),
-    Server        = require('./sharedUtils/serverBase.js');
+    RefGameServer = require('./src/server.js');
 
 var gameport;
 
@@ -28,7 +28,7 @@ if(argv.gameport) {
   console.log('no gameport specified: using 8888\nUse the --gameport flag to change');
 }
 
-var gameServer = new Server('../SpatialExperiment/');  
+var refGameServer = new RefGameServer('../SpatialExperiment/');  
 
 try {
   var privateKey  = fs.readFileSync('/etc/apache2/ssl/rxdhawkins.me.key'),
@@ -43,7 +43,7 @@ try {
       io          = require('socket.io')(server);
 }
 
-var utils = require('./sharedUtils/sharedUtils.js');
+var utils = require('./src/sharedUtils.js');
 
 var global_player_set = {};
 
@@ -101,18 +101,18 @@ var initialize = function(query, client, id) {
 
   // Make contact with client
   client.emit('onconnected', { id: client.userid, counter: query.counter } );
-  if(gameServer.setCustomEvents) {gameServer.setCustomEvents(client);};
+  if(_.has(refGameServer, 'setCustomEvents')) {refGameServer.setCustomEvents(client);};
   
   // Good to know when they connected
   console.log('\t socket.io:: player ' + client.userid + ' connected');
 
   //Pass off to game.server.js code
-  gameServer.findGame(client);
+  refGameServer.findGame(client);
   
   // Now we want set up some callbacks to handle messages that clients will send.
   // We'll just pass messages off to the server_onMessage function for now.
   client.on('message', function(m) {
-    gameServer.onMessage(client, m);
+    refGameServer.onMessage(client, m);
   });
   
   // When this client disconnects, we want to tell the game server
@@ -121,11 +121,7 @@ var initialize = function(query, client, id) {
   client.on('disconnect', function () {            
     console.log('\t socket.io:: client id ' + client.userid 
                 + ' disconnected from game id ' + client.game.id);
-
-    //If the client was in a game set by gameServer.findGame,
-    //we can tell the game server to update that game state.
     if(client.userid && client.game && client.game.id) 
-      gameServer.endGame(client.game.id, client.userid);            
+      refGameServer.endGame(client.game.id, client.userid);            
   });
 };
-

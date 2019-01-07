@@ -1,17 +1,3 @@
-//   Copyright (c) 2012 Sven "FuzzYspo0N" Bergström,
-//                   2013 Robert XD Hawkins
-
-//     written by : http://underscorediscovery.com
-//     written for : http://buildnewgames.com/real-time-multiplayer/
-
-//     modified for collective behavior experiments on Amazon Mechanical Turk
-
-//     MIT Licensed.
-
-
-// /*
-//    THE FOLLOWING FUNCTIONS MAY NEED TO BE CHANGED
-// */
 
 // A window global for our game root variable.
 var globalGame = {};
@@ -46,11 +32,6 @@ function updateState (data){
   globalGame.active = data.active;
   globalGame.roundNum = data.roundNum;
   globalGame.roundStartTime = Date.now();
-  globalGame.allObjects = data.allObjects;
-  if(!_.has(globalGame, 'data')) {
-    globalGame.data = data.dataObj;
-    globalGame.data.subject_information.quizFailCounter = globalGame.counter;    
-  }
 };
 
 function resetUI(data) {
