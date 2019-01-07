@@ -100,8 +100,7 @@ var initialize = function(query, client, id) {
   client.assignmentid = query.assignmentId ? query.assignmentId : '';
 
   // Make contact with client
-  client.emit('onconnected', { id: client.userid, counter: query.counter } );
-  if(_.has(refGameServer, 'setCustomEvents')) {refGameServer.setCustomEvents(client);};
+  if(_.has(refGameServer, 'customEvents')) {refGameServer.customEvents(client);};
   
   // Good to know when they connected
   console.log('\t socket.io:: player ' + client.userid + ' connected');
