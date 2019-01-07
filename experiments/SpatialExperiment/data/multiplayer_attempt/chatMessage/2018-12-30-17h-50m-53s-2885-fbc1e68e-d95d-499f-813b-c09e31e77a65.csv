@@ -1,0 +1,5 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	2885-fbc1e68e-d95d-499f-813b-c09e31e77a65	1546221053468	0	overlap	2H,6S	JD,6S	Where is the 6 of spades?	9182	chatMessage
+full_sample	2885-fbc1e68e-d95d-499f-813b-c09e31e77a65	1546221088405	0	overlap	2H,6S	JD,6S	Where is the 2 of hearts?	3539	chatMessage
+full_sample	2885-fbc1e68e-d95d-499f-813b-c09e31e77a65	1546221115592	1	baseline	2D,KH	AH,AS	Where is the two of diamonds?	4133	chatMessage
+full_sample	2885-fbc1e68e-d95d-499f-813b-c09e31e77a65	1546221147808	2	baseline	KS,3H	AC,8S	Where is the king of spades?	5099	chatMessage

@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	9487-fa9413c6-c85f-4876-a266-a44947eca1f1	1546229262593	0	overlap	8H,2S	AC,2S	Where is the 8 of hearts?	6742	chatMessage
+full_sample	9487-fa9413c6-c85f-4876-a266-a44947eca1f1	1546229290470	1	overlap	JH,3D	QD,3D	Where is the jack of hearts?	3382	chatMessage

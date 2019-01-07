@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	3982-1e176564-3d30-4705-96be-fe7fb1299e98	1546222283520	10	3982-1e176564-3d30-4705-96be-fe7fb1299e98	0	no	yes	okay	yes	It seemed to take a little bit of time for everything to send through	Trying to pick a card that was more obvious than the other one,	seeker	687330	exitSurvey
+full_sample	3982-1e176564-3d30-4705-96be-fe7fb1299e98	1546222302500	10	3982-1e176564-3d30-4705-96be-fe7fb1299e98	1	yes	yes	liked	confused		To ask for the first card I needed,	helper	569062	exitSurvey

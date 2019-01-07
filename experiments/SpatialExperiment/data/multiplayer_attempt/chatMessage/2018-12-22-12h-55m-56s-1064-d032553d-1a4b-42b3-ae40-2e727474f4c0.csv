@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+cards_sample	1064-d032553d-1a4b-42b3-ae40-2e727474f4c0	1545512156205	0	baseline	8H,2C	KH,9D	Where is the 8 of hearts?	7757	chatMessage
+cards_sample	1064-d032553d-1a4b-42b3-ae40-2e727474f4c0	1545512217973	0	baseline	8H,2C	KH,9D	Where is the 2 of clubs?	4388	chatMessage

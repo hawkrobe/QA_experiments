@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221013647	0	baseline	JC,QH	4S,4H	Where is the Jack Clubs?	5278	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221075215	0	baseline	JC,QH	4S,4H	Where is the Queen Hearts?	3203	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221096294	1	baseline	JC,7H	QC,10S	Where is the 7 of hearts?	3564	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221118787	1	baseline	JC,7H	QC,10S	Where is the where is the jack of clubs?	10763	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221154659	2	overlap	10S,KD	3C,KD	Where is the 10 Spades and King Diamonds?	11318	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221192884	2	overlap	10S,KD	3C,KD	Where is the 10 Spades?	4816	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221211017	3	overlap	2C,AC	9D,AC	Where is the 2 of aces?	4147	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221249491	4	catch	KS	2H	Where is the King Spades 2 hearts?	8003	chatMessage
+full_sample	3377-a5e642f8-c188-4460-839c-40af1504b1f2	1546221272799	5	catch	8D	JS	Where is the 8 of diamonds?	3289	chatMessage

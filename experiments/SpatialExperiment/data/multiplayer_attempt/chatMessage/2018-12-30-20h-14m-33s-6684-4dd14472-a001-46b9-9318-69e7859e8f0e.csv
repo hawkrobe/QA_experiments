@@ -1,0 +1,8 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	6684-4dd14472-a001-46b9-9318-69e7859e8f0e	1546229673326	0	baseline	AC,10D	5D,KH	Where is the Ace of clubs??	8075	chatMessage
+full_sample	6684-4dd14472-a001-46b9-9318-69e7859e8f0e	1546229719432	1	overlap	2D,7H	2S,7H	Where is the where is the 2 of diamonds?	9949	chatMessage
+full_sample	6684-4dd14472-a001-46b9-9318-69e7859e8f0e	1546229746410	2	catch	JS	2S	Where is the Jack of spades??	4397	chatMessage
+full_sample	6684-4dd14472-a001-46b9-9318-69e7859e8f0e	1546229777705	3	catch	JS	2C	Where is the Where is the Jack of Spades?	10067	chatMessage
+full_sample	6684-4dd14472-a001-46b9-9318-69e7859e8f0e	1546229797335	4	overlap	2C,QH	7H,QH	Where is the two of clubs?	5026	chatMessage
+full_sample	6684-4dd14472-a001-46b9-9318-69e7859e8f0e	1546229876586	4	overlap	2C,QH	7H,QH	Where is the hello... queen of hearts?	8057	chatMessage
+full_sample	6684-4dd14472-a001-46b9-9318-69e7859e8f0e	1546229906257	5	baseline	2C,9H	JH,KC	Where is the two of clubs?	9407	chatMessage

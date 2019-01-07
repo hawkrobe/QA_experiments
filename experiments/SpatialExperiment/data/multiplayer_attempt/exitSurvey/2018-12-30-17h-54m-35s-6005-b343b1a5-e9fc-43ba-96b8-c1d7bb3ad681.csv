@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	6005-b343b1a5-e9fc-43ba-96b8-c1d7bb3ad681	1546221275099	10	6005-b343b1a5-e9fc-43ba-96b8-c1d7bb3ad681	2	yes	yes	okay	confused	none	Just asking the questions 	seeker	394490	exitSurvey
+full_sample	6005-b343b1a5-e9fc-43ba-96b8-c1d7bb3ad681	1546221371671	10	6005-b343b1a5-e9fc-43ba-96b8-c1d7bb3ad681	0	yes	yes	loved	yes	Itwas fun	Quickly following directions	helper	479496	exitSurvey

@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217619764	0	overlap	5C,AS	5S,AS	Where is the five of clubs?	6874	chatMessage
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217636937	1	catch	8S	JS	Where is the eight of spades?	2911	chatMessage
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217657707	2	catch	QS	AC	Where is the queen of clubs?	4330	chatMessage
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217673580	3	baseline	2H,8D	AD,KS	Where is the eight of diamonds?	2775	chatMessage
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217696943	3	baseline	2H,8D	AD,KS	Where is the two of hearts...?	2736	chatMessage
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217716891	4	baseline	QS,2D	KC,6S	Where is the queen of clubs?	4425	chatMessage
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217732490	5	overlap	2C,6H	5D,6H	Where is the two of clubs?	2904	chatMessage
+full_sample	3946-93562776-a60f-4980-a72e-136ab4c5d513	1546217743859	5	overlap	2C,6H	5D,6H	Where is the six of hearts..........?	2800	chatMessage

@@ -1,0 +1,7 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546217866526	0	overlap	6S,2H	2D,2H	Where is the 2 and 6?	13187	chatMessage
+full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546217930566	1	catch	AS	QD	Where is the Where is the Ace Spade and Queen Diamond?	29285	chatMessage
+full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546217972842	2	baseline	JH,4C	3H,JC	Where is the 4 clubs and jack heartr?	6514	chatMessage
+full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546218020105	3	baseline	9C,4D	5S,8D	Where is the 9 club and 4 diamond?	15886	chatMessage
+full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546218052130	4	catch	8H	3C	Where is the 8 hearts?	8870	chatMessage
+full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546218118730	5	overlap	JC,2H	4C,2H	Where is the 2 of hearts and Jack club?	21837	chatMessage

@@ -1,0 +1,11 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533565672	0	overlap	4S,AS	8D,AS	Where is the ace of spades??	3335	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533585413	0	overlap	4S,AS	8D,AS	Where is the 4 of spades?	2362	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533613189	1	baseline	KS,AH	QS,3S	Where is the Where is the king of spades?	9481	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533634859	1	baseline	KS,AH	QS,3S	Where is the Where is the ace of hearts?	9626	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533650503	2	baseline	5H,QC	AS,4H	Where is the 5 of hearts?	2355	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533663151	2	baseline	5H,QC	AS,4H	Where is the queen of clubs?	2504	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533686289	3	catch	2D	5C	Where is the Where is the 2 of diamonds?	8441	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533702647	4	catch	10H	2S	Where is the 10 of hearts?	2448	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533725048	5	overlap	JD,8D	4D,8D	Where is the Where is the 8 of diamonds?	7885	chatMessage
+testing	6584-ed23f228-cf85-41ac-84ba-1a63b5d2e15b	1545533745266	5	overlap	JD,8D	4D,8D	Where is the Where is the J of diamonds?	11354	chatMessage

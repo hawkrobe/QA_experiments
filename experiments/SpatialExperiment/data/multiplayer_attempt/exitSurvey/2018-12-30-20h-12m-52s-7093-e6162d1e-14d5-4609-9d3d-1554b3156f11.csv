@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	nativeEnglish	thinksHuman	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229572287	30	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	0	yes	yes	loved	yes	I had fun	Just pay attention,	seeker	357379	exitSurvey
+full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229584320	30	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	2	no	yes	loved	yes		I was watching the possible outcome from the given question	helper	363438	exitSurvey

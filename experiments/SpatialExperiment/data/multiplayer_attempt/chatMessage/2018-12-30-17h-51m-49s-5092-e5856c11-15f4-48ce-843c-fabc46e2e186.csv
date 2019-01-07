@@ -1,0 +1,8 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221109594	0	baseline	7C,QH	4S,10D	Where is the Queen of Hearts?	4715	chatMessage
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221138542	0	baseline	7C,QH	4S,10D	Where is the seven of clubs?	5318	chatMessage
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221168654	1	catch	KS	6S	Where is the where is the king of spades?	7917	chatMessage
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221206042	2	overlap	2D,AD	3C,AD	Where is the two of diamonds AND the other card in the combo?	20678	chatMessage
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221254309	3	baseline	10D,3S	7D,2C	Where is the where is the 10 of diamond?	9405	chatMessage
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221276941	4	catch	9D	7H	Where is the nine of diamonds?	5367	chatMessage
+full_sample	5092-e5856c11-15f4-48ce-843c-fabc46e2e186	1546221305420	5	overlap	KD,9S	JD,9S	Where is the where is the nine of spade?	7787	chatMessage

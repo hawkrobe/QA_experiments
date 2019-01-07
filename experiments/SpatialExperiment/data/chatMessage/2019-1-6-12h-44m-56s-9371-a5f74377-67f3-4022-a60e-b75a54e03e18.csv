@@ -1,0 +1,13 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	firstRole	cardAskedAbout	sender	timeFromRoundStart	eventType
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807496269	0	overlap	AH,QH	2H,QH	seeker	QH	human	30277	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807510512	0	overlap	AH,QH	2H,QH	seeker	AH	human	44527	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807527647	1	baseline	10H,AH	7C,QC	seeker	7C	human	10258	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807540438	1	baseline	10H,AH	7C,QC	seeker	QC	human	23096	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807553748	1	baseline	10H,AH	7C,QC	seeker	QH	human	36408	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807565962	1	baseline	10H,AH	7C,QC	seeker	AH	human	48624	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807582486	2	catch	10D	10H	seeker	10D	human	9651	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807594392	3	catch	2H	KH	seeker	2H	bot	5000	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807617321	4	overlap	5C,9D	2D,9D	seeker	5C	bot	5000	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807627724	4	overlap	5C,9D	2D,9D	seeker	9D	bot	5000	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807641737	5	baseline	KC,8H	8C,10C	seeker	KC	bot	5000	chatMessage
+single_player_sample	9371-a5f74377-67f3-4022-a60e-b75a54e03e18	1546807651258	5	baseline	KC,8H	8C,10C	seeker	8H	bot	5000	chatMessage

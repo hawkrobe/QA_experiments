@@ -1,0 +1,2 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	revealedObjs	numRevealed	fullContext	eventType
+full_sample	6407-0246614d-6c47-496c-b4c5-0c7845a7fb09	1546221157281	0	baseline	2S,3C	JS,QS	JS	1	[{"name":"JS","gridX":1,"gridY":3},{"name":"2S","gridX":3,"gridY":1},{"name":"QS","gridX":2,"gridY":4},{"name":"10C","gridX":4,"gridY":3},{"name":"3C","gridX":2,"gridY":1},{"name":"4H","gridX":1,"gridY":2}]	reveal

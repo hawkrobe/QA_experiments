@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533363376	0	baseline	10C,AD	9D,9S	Where is the Ace of diamons?	3929	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533380460	0	baseline	10C,AD	9D,9S	Where is the 10 of clubs?	2221	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533402276	1	catch	2H	3H	Where is the where is the 2 of hearts?	5778	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533421774	2	catch	9H	10S	Where is the Where is the 9 of hearts?	4431	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533444653	3	overlap	6D,8H	JD,8H	Where is the the 8 of hearts?	7918	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533461773	3	overlap	6D,8H	JD,8H	Where is the the 6 of diamonds?	5474	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533484719	4	overlap	QH,7C	7S,7C	Where is the queen of hearts?	4896	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533501908	4	overlap	QH,7C	7S,7C	Where is the seven of clubs?	2911	chatMessage
+testing	3281-178b71b1-5a49-4fcf-b8a9-e3278585cc08	1545533521719	5	baseline	KS,QH	5S,JH	Where is the queen of hearts?	4536	chatMessage

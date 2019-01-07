@@ -1,0 +1,8 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	8488-6e84c0b5-dd03-4b89-ad3e-a07b88ae6951	1546220810947	0	overlap	JH,9H	JC,9H	Where is the Jack of hearts?	5558	chatMessage
+full_sample	8488-6e84c0b5-dd03-4b89-ad3e-a07b88ae6951	1546220834975	1	baseline	QD,2H	8C,QC	Where is the where is the 2 of hearts?	4468	chatMessage
+full_sample	8488-6e84c0b5-dd03-4b89-ad3e-a07b88ae6951	1546220852075	1	baseline	QD,2H	8C,QC	Where is the where is the queen of diamonds?	4586	chatMessage
+full_sample	8488-6e84c0b5-dd03-4b89-ad3e-a07b88ae6951	1546220866233	2	catch	AC	6D	Where is the ace of clubs?	3848	chatMessage
+full_sample	8488-6e84c0b5-dd03-4b89-ad3e-a07b88ae6951	1546220880638	3	catch	10C	JC	Where is the where is the 10 of clubs?	3615	chatMessage
+full_sample	8488-6e84c0b5-dd03-4b89-ad3e-a07b88ae6951	1546220897728	4	baseline	6S,5D	AH,6C	Where is the five of diamonds?	4890	chatMessage
+full_sample	8488-6e84c0b5-dd03-4b89-ad3e-a07b88ae6951	1546220914365	5	overlap	8H,QH	4C,QH	Where is the queen of hearts and 8 of hearts?	5519	chatMessage

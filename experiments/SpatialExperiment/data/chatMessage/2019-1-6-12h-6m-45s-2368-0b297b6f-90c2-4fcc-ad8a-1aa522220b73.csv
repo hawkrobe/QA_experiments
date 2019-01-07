@@ -1,0 +1,4 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	firstRole	cardAskedAbout	sender	timeFromRoundStart	eventType
+single_player_sample	2368-0b297b6f-90c2-4fcc-ad8a-1aa522220b73	1546805205386	0	baseline	KH,AH	7C,5D	helper	KH	bot	5000	chatMessage
+single_player_sample	2368-0b297b6f-90c2-4fcc-ad8a-1aa522220b73	1546805225833	1	catch	10D	4C	helper	10D	bot	5000	chatMessage
+single_player_sample	2368-0b297b6f-90c2-4fcc-ad8a-1aa522220b73	1546805242848	2	overlap	QD,5S	AH,5S	helper	QD	bot	5000	chatMessage

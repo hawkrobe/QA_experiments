@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	3753-406f759b-0e1c-4807-962c-d9cfb79c6a77	1546229406536	15	3753-406f759b-0e1c-4807-962c-d9cfb79c6a77	3	yes	yes	okay	yes	no	After I got the hang of it, to be as accurate as possible	seeker	298054	exitSurvey
+full_sample	3753-406f759b-0e1c-4807-962c-d9cfb79c6a77	1546229459471	15	3753-406f759b-0e1c-4807-962c-d9cfb79c6a77	0	yes	yes	okay	confused		I did not ask about a card if it appeared in more than one option, When I was a helper, I generally revealed 2 cards, 	helper	349127	exitSurvey

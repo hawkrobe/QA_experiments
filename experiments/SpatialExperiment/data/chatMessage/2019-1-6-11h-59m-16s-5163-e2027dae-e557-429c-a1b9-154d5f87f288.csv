@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	firstRole	cardAskedAbout	sender	timeFromRoundStart	eventType
+single_player_sample	5163-e2027dae-e557-429c-a1b9-154d5f87f288	1546804756925	0	baseline	2S,7D	JS,5C	seeker	7D	human	21053	chatMessage
+single_player_sample	5163-e2027dae-e557-429c-a1b9-154d5f87f288	1546804810121	1	overlap	3D,QD	8C,QD	seeker	4H	human	43567	chatMessage

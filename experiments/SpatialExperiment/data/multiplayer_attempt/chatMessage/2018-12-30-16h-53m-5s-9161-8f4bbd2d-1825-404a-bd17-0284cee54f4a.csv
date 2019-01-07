@@ -1,0 +1,8 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	9161-8f4bbd2d-1825-404a-bd17-0284cee54f4a	1546217585287	0	baseline	5C,5H	JC,10H	Where is the 5 of hearts?	2246	chatMessage
+full_sample	9161-8f4bbd2d-1825-404a-bd17-0284cee54f4a	1546217617664	1	overlap	8H,3D	6S,3D	Where is the 8 of hearts?	9240	chatMessage
+full_sample	9161-8f4bbd2d-1825-404a-bd17-0284cee54f4a	1546217670329	1	overlap	8H,3D	6S,3D	Where is the 3 of diamonds?	2646	chatMessage
+full_sample	9161-8f4bbd2d-1825-404a-bd17-0284cee54f4a	1546217691432	2	overlap	AC,7S	4D,7S	Where is the ace of clovers?	3233	chatMessage
+full_sample	9161-8f4bbd2d-1825-404a-bd17-0284cee54f4a	1546217737064	3	baseline	6D,QH	8C,6H	Where is the Queen of hearts?	17599	chatMessage
+full_sample	9161-8f4bbd2d-1825-404a-bd17-0284cee54f4a	1546217756681	4	catch	3C	JS	Where is the 3 of clovers?	2246	chatMessage
+full_sample	9161-8f4bbd2d-1825-404a-bd17-0284cee54f4a	1546217775432	5	catch	9H	4H	Where is the 9 of hearts?	2627	chatMessage

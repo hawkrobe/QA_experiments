@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	revealedObjs	numRevealed	fullContext	eventType
+full_sample	9519-1487205d-b2e3-4d23-9784-0fb7c1ad347f	1546220813949	0	baseline	3C,10C	2D,6D	10C	1	[{"name":"10C","gridX":1,"gridY":3},{"name":"3C","gridX":2,"gridY":4},{"name":"3D","gridX":4,"gridY":4},{"name":"6D","gridX":1,"gridY":2},{"name":"2D","gridX":3,"gridY":4}]	reveal
+full_sample	9519-1487205d-b2e3-4d23-9784-0fb7c1ad347f	1546220832555	0	baseline	3C,10C	2D,6D	3C	1	[{"name":"10C","gridX":1,"gridY":3},{"name":"3C","gridX":2,"gridY":4},{"name":"3D","gridX":4,"gridY":4},{"name":"6D","gridX":1,"gridY":2},{"name":"2D","gridX":3,"gridY":4}]	reveal

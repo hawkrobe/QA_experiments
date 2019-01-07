@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229121450	0	baseline	AD,8H	5D,AC	Where is the Where is the eight of hearts?	16283	chatMessage
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229150616	1	baseline	10C,4H	KS,9H	Where is the four of hearts?	3959	chatMessage
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229185613	2	overlap	7C,8C	6C,8C	Where is the Where is the six of clubs?	11486	chatMessage
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229223038	2	overlap	7C,8C	6C,8C	Where is the Where is the seven of clubs?	17958	chatMessage
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229242014	3	catch	8C	4D	Where is the 8 of clubs?	3921	chatMessage
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229268492	4	catch	9H	QC	Where is the where is the nine of hearts?	7507	chatMessage
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229285617	5	overlap	KC,8D	8H,8D	Where is the where is the king of clubs?	5326	chatMessage
+full_sample	6046-5000ac89-95f9-4e3f-9c50-e5fa11256384	1546229305526	5	overlap	KC,8D	8H,8D	Where is the where is the 8 of diamonds?	6084	chatMessage

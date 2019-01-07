@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	firstRole	cardAskedAbout	sender	timeFromRoundStart	eventType
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804677816	0	baseline	6D,4H	4D,7C	helper	6D	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804706820	0	baseline	6D,4H	4D,7C	helper	4H	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804721350	1	catch	2H	QS	helper	2H	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804732111	1	catch	2H	QS	helper	2H	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804746054	2	overlap	5S,AD	QH,AD	helper	5S	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804755980	2	overlap	5S,AD	QH,AD	helper	AD	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804771096	2	overlap	5S,AD	QH,AD	helper	AD	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804782460	2	overlap	5S,AD	QH,AD	helper	AD	bot	5000	chatMessage
+single_player_sample	4141-27a93b73-be78-40f5-83eb-5816e48ddab8	1546804793270	2	overlap	5S,AD	QH,AD	helper	AD	bot	5000	chatMessage

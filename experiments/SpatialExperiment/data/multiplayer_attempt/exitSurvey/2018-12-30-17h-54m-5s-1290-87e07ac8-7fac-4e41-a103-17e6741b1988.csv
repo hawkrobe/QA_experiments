@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	1290-87e07ac8-7fac-4e41-a103-17e6741b1988	1546221245631	20	1290-87e07ac8-7fac-4e41-a103-17e6741b1988	3	yes	yes	loved	yes	Thank you!	My strategy was to eliminate the choice that wasn't given as a question from my partner,	seeker	312237	exitSurvey
+full_sample	1290-87e07ac8-7fac-4e41-a103-17e6741b1988	1546221257906	20	1290-87e07ac8-7fac-4e41-a103-17e6741b1988	0	yes	yes	liked	yes	fun HIT	stating the card that was different in the combo	helper	323773	exitSurvey

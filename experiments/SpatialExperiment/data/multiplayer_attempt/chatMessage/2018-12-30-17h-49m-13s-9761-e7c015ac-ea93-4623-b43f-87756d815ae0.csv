@@ -1,0 +1,13 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546220953859	0	catch	KD	2H	Where is the king of diamonds?	9436	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546220985230	1	catch	AC	7C	Where is the ace of clubs?	6597	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221017921	2	baseline	8D,3C	6S,4S	Where is the 8 of diamonds?	7949	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221051619	2	baseline	8D,3C	6S,4S	Where is the 3 of clubs?	5837	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221077261	2	baseline	8D,3C	6S,4S	Where is the 6 of spades?	8432	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221098317	2	baseline	8D,3C	6S,4S	Where is the 4 of spades?	4395	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221124029	3	baseline	KD,2C	10H,7D	Where is the king of diamonds ?	5387	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221149238	3	baseline	KD,2C	10H,7D	Where is the 2 of clubs?	2556	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221176872	4	overlap	2S,QH	9H,QH	Where is the Q of hearts?	6120	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221199871	4	overlap	2S,QH	9H,QH	Where is the 2 of spades?	5014	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221219608	5	overlap	5H,JH	KC,JH	Where is the jack of hearts?	2811	chatMessage
+full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221232906	5	overlap	5H,JH	KC,JH	Where is the 5 of hearts?	2941	chatMessage

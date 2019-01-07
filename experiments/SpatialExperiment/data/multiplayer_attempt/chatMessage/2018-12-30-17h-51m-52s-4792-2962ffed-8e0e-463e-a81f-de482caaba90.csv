@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221112091	0	baseline	JS,2H	6H,9S	Where is the the jack of spade?	8132	chatMessage
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221130630	1	baseline	AS,3H	7S,5D	Where is the ace of spades?	3561	chatMessage
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221160174	1	baseline	AS,3H	7S,5D	Where is the where is the three of hearts?	3421	chatMessage
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221195399	1	baseline	AS,3H	7S,5D	Where is the ace of spades?	2356	chatMessage
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221216223	2	catch	JH	8D	Where is the the jack of heart?	6068	chatMessage
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221233210	3	catch	3D	4D	Where is the 3 of diamonds?	4807	chatMessage
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221266566	4	overlap	9D,4H	KS,4H	Where is the where is the four of heart?	9617	chatMessage
+full_sample	4792-2962ffed-8e0e-463e-a81f-de482caaba90	1546221299995	5	overlap	7H,3C	7C,3C	Where is the 7 of hearts?	3801	chatMessage

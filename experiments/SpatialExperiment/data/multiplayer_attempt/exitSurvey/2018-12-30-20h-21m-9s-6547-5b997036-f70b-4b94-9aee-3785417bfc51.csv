@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	6547-5b997036-f70b-4b94-9aee-3785417bfc51	1546230069713	10	6547-5b997036-f70b-4b94-9aee-3785417bfc51	0	yes	yes	okay	yes	I enjoyed this game	4/5	seeker	363132	exitSurvey
+full_sample	6547-5b997036-f70b-4b94-9aee-3785417bfc51	1546230095027	10	6547-5b997036-f70b-4b94-9aee-3785417bfc51	0	no	yes	okay	yes	None	I tried to follow instructions	helper	356323	exitSurvey

@@ -1,0 +1,10 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221351700	0	catch	7C	9S	Where is the 7 of clubs?	7164	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221401464	1	baseline	10C,AD	4D,8H	Where is the Where is the ten of clubs?	6861	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221438584	1	baseline	10C,AD	4D,8H	Where is the ace of diamonds?	7036	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221466811	2	overlap	5H,4H	4D,4H	Where is the 5 of hearts?	8251	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221533224	2	overlap	5H,4H	4D,4H	Where is the 4 of hearts?	10335	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221570447	3	overlap	JC,5H	QC,5H	Where is the jack of clubs?	3226	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221607674	4	baseline	10H,AS	KS,9C	Where is the ace of spades?	8554	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221630355	4	baseline	10H,AS	KS,9C	Where is the 10 of hearts?	3876	chatMessage
+full_sample	0119-a207bc19-dc29-472c-bda0-a600efcd1482	1546221649072	5	catch	4H	3C	Where is the four of hearts?	3923	chatMessage

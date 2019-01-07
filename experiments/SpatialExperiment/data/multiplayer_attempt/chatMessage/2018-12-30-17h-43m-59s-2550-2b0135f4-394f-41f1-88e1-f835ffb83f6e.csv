@@ -1,0 +1,9 @@
+iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220639876	0	overlap	10H,5S	7H,5S	Where is the where is the 5 of clubs??	5547	chatMessage
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220691634	0	overlap	10H,5S	7H,5S	Where is the where is the 10 of hearts??	5126	chatMessage
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220710410	1	catch	9D	10S	Where is the 9 of diamonds??	2032	chatMessage
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220727450	2	catch	8C	JC	Where is the where is the 8 of clubs??	5054	chatMessage
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220744783	3	overlap	QH,6S	10D,6S	Where is the queen of hearts?	1849	chatMessage
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220754812	3	overlap	QH,6S	10D,6S	Where is the 6 of spades?	2003	chatMessage
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220773306	4	baseline	6C,AH	5D,8S	Where is the where is the ace of hearts??	4757	chatMessage
+full_sample	2550-2b0135f4-394f-41f1-88e1-f835ffb83f6e	1546220790418	5	baseline	JS,5H	2D,5S	Where is the 5 of hearts?	3657	chatMessage

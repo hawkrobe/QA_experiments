@@ -1,0 +1,3 @@
+iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
+full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217684022	25	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	0	yes	yes	okay	yes	All good!	Originally I thought you could only reveal one card at a time, but when my partner revealed both, I decided to do that as well,	helper	176267	exitSurvey
+full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217742280	25	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1	yes	yes	liked	yes	none	I hoped the other person understood the rules, and completed a round by example when the other person didn't, i also first chose a card that was unique for a combo,	seeker	516588	exitSurvey
