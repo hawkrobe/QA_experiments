@@ -1,15 +1,5 @@
-/*  Copyright (c) 2012 Sven "FuzzYspo0N" Bergström, 2013 Robert XD Hawkins
-
-    written by : http://underscorediscovery.com
-    written for : http://buildnewgames.com/real-time-multiplayer/
-
-    modified for collective behavior experiments on Amazon Mechanical Turk
-
-    MIT Licensed.
-*/
-    var
-        fs    = require('fs'),
-        utils = require(__base + '/sharedUtils/sharedUtils.js');
+var fs    = require('fs');
+var utils = require(__base + '/src/sharedUtils.js');
 
 // This is the function where the server parses and acts on messages
 // sent from 'clients' aka the browsers of people playing the

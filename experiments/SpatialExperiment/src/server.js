@@ -1,6 +1,7 @@
-var utils = require(__base + 'sharedUtils/sharedUtils.js');
-var game = require(__base + 'sharedUtils/game.js');
-var player = require(__base + 'sharedUtils/player.js');
+var _ = require('lodash');
+var utils = require('./sharedUtils.js');
+var ServerGame = require('./game.js')['ServerGame'];
+var player = require('./player.js');
 
 class ReferenceGameServer {
   constructor(expPath) {
@@ -54,8 +55,9 @@ class ReferenceGameServer {
       initPlayer : player,
       playerCount: 1
     });
-    
-    var game = new game.ServerGame(config, this.customGame);
+
+    console.log(this.customGame);
+    var game = new ServerGame(config, this.customGame);
     
     // assign role
     player.game = game;
