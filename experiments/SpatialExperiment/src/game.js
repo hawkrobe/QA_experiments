@@ -1,4 +1,4 @@
-var player = require(__base + 'sharedUtils/player.js');
+var player = require('./player.js');
 
 class Game {
   constructor(config){
@@ -19,7 +19,10 @@ class Game {
     this.numVerticalCells = config.numVerticalCells;
     this.cellDimensions = config.cellDimensions;
     this.cellPadding = config.cellPadding;
-    this.world = config.world;
+    this.world = {
+      height: this.cellDimensions.height * this.numVerticalCells,
+      width: this.cellDimensions.width * this.numHorizontalCells
+    },
     this.delay = config.delay;
   }
 
@@ -45,7 +48,7 @@ class Game {
 // Takes a more specific config as well as custom functions to construct
 // trial list and advance to next round
 class ServerGame extends Game {
-  constructor(config, customGame) {
+  constructor(config, experiment) {
     super(config);
     this.active = false;
     this.streams = {};
@@ -53,12 +56,12 @@ class ServerGame extends Game {
     this.gameid = config.gameid; 
     this.expPath = config.expPath;
     this.playerCount = config.playerCount;
-    this.trialList = customGame.makeTrialList();
-
+    this.trialList = experiment.makeTrialList();
+    
     this.players = [{
       id: config.initPlayer.userid,
       instance: config.initPlayer,
-      player: new player.GamePlayer(this, config.initPlayer)
+      player: new player(this, config.initPlayer)
     }];
   }
 
@@ -110,6 +113,8 @@ class ServerGame extends Game {
 
 class ClientGame extends Game {
   constructor (config) {
+    console.log(config);
+    super(config);
     this.confetti = new Confetti(300);
     this.data = {
       score: 0,
@@ -119,7 +124,7 @@ class ClientGame extends Game {
     this.players = [{
       id: null,
       instance: null,
-      player: new player.GamePlayer(this)
+      player: new player(this)
     }];
   }
 }
