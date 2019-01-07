@@ -129,7 +129,7 @@ var sharedSetup = function(game) {
 // drawing canvases, and initiate a game instance.
 window.onload = function(){
   //Create our game client instance.
-  globalGame = new game_core({server: false});
+  globalGame = new ClientGame({server: false});
   
   //Connect to the socket.io server!
   sharedSetup(globalGame);

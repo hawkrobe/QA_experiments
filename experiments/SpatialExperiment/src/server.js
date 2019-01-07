@@ -1,13 +1,13 @@
 var utils = require(__base + 'sharedUtils/sharedUtils.js');
-
-global.window = global.document = global;
+var game = require(__base + 'sharedUtils/game.js');
+var player = require(__base + 'sharedUtils/player.js');
 
 class ReferenceGameServer {
-  constructor(expName) {
-    this.expName = expName;
-    this.core = require([__base, expName, 'game.core.js'].join('/')).game_core;
-    this.player = require([__base, expName, 'game.core.js'].join('/')).game_player;
-    this.customServer = require([__base, expName, 'game.server.js'].join('/'));
+  constructor(expPath) {
+    this.expPath = expPath;
+    this.customConfig = require([__base, expPath, 'config.json'].join('/'));
+    this.customGame = require([__base, expPath, 'game.core.js'].join('/'));
+    this.customServer = require([__base, expPath, 'game.server.js'].join('/'));
     this.setCustomEvents = this.customServer.setCustomEvents;
     
     // Track ongoing games
@@ -44,18 +44,44 @@ class ReferenceGameServer {
     }
   }
 
+    // Will run when first player connects
+  createGame (player) {
+    //Create a new game instance
+    var config = _.extend({}, this.customConfig, {
+      expPath: this.expPath,
+      server: true,
+      gameid : utils.UUID(),
+      initPlayer : player,
+      playerCount: 1
+    });
+    
+    var game = new game.ServerGame(config, this.customGame);
+    
+    // assign role
+    player.game = game;
+    player.role = game.playerRoleNames.role1;
+    player.send('s.join.' + game.players.length + '.' + player.role);
+    this.log('player ' + player.userid + ' created a game with id ' + player.game.id);
+
+    // add to game collection
+    this.games[game.id] = game;
+    this.game_count++;
+
+    return game;
+  }; 
+
   findGame (player) {
     this.log('looking for a game. We have : ' + this.game_count);
     var joined_a_game = false;
     var game;
     for (var gameid in this.games) {
       game = this.games[gameid];
-      if(game.player_count < game.players_threshold) {
+      if(game.playerCount < game.players_threshold) {
 	// End search
 	joined_a_game = true;
 
 	// Add player to game
-	game.player_count++;
+	game.playerCount++;
 	game.players.push({
 	  id: player.userid,
 	  instance: player,
@@ -80,60 +106,32 @@ class ReferenceGameServer {
     }
 
     // Start game
-    if(game.players_threshold == game.player_count) {
+    if(game.players_threshold == game.playerCount) {
       this.startGame(game);
     }
   };
 
-  // Will run when first player connects
-  createGame (player) {
-    //Create a new game instance
-    var options = {
-      expName: this.expName,
-      server: true,
-      id : utils.UUID(),
-      player_instances: [{id: player.userid, player: player}],
-      player_count: 1
-    };
-    
-    var game = new this.core(options);
-    
-    // assign role
-    player.game = game;
-    player.role = game.playerRoleNames.role1;
-    player.send('s.join.' + game.players.length + '.' + player.role);
-    this.log('player ' + player.userid + ' created a game with id ' + player.game.id);
-
-    // add to game collection
-    this.games[game.id] = game;
-    this.game_count++;
-
-    return game;
-  }; 
-
   // we are requesting to kill a game in progress.
   // This gets called if someone disconnects
   endGame (gameid, userid) {
-    var thegame = this.games[gameid];
-    if(thegame) {
+    var game = this.games[gameid];
+    try {
       // Remove the person who dropped out
-      var i = _.indexOf(thegame.players, _.find(thegame.players, {id: userid}));
-      thegame.players[i].player = null;
+      var i = _.indexOf(game.players, _.find(game.players, {id: userid}));
+      game.players[i].player = null;
 
       // If game is ongoing and someone drops out, tell other players and end game
       // If game is over, remove game when last player drops out
-      console.log("active: " + thegame.active);
-      if(thegame.active || thegame.get_active_players().length < 1) {
-	_.map(thegame.get_others(userid),function(p) {
-	  p.player.instance.send('s.end');
-	});
+      console.log("active: " + game.active);
+      if(game.active || game.get_active_players().length < 1) {
+	game.endGame();
 	delete this.games[gameid];
 	this.game_count--;
 	this.log('game removed. there are now ' + this.game_count + ' games' );
       } 
-    } else {
-      this.log('that game was not found!');
-    }   
+    } catch (err) {
+      this.log('game ' + gameid + ' already ended');
+    }  
   }; 
   
   // A simple wrapper for logging so we can toggle it, and augment it for clarity.
