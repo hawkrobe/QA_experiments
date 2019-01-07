@@ -8,19 +8,10 @@
     <!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
-    <!-- Include some extra functional programming tools -->
-    <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
-
     <!-- Load jQuery, which lets us handle mouse events -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     
-    <!-- Load the common game code. -->
-    <script type="text/javascript" src="game.core.js"></script>
-    <script type="text/javascript" src="/lib/js/interact.min.js"></script>
-    <script type="text/javascript" src="/lib/js/curve.min.js"></script>    
-
-    <!-- Finally, Load the game client code. -->
-    <script type="text/javascript" src="/sharedUtils/clientBase.js"></script>    
+    <script type="text/javascript" src="bundle.js"></script>
     <script type="text/javascript" src="game.client.js"></script>
     <script type="text/javascript" src="drawing.js"></script>
 

@@ -1,3 +1,7 @@
+var game = require('./game.js');
+var config = require('../config.json');
+var _ = require('lodash');
+
 var visible;
 
 var getURLParams = function() {
@@ -129,7 +133,7 @@ var sharedSetup = function(game) {
 // drawing canvases, and initiate a game instance.
 window.onload = function(){
   //Create our game client instance.
-  globalGame = new ClientGame({server: false});
+  globalGame = new game.ClientGame(config);
   
   //Connect to the socket.io server!
   sharedSetup(globalGame);
