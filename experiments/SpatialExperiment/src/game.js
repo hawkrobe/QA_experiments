@@ -130,7 +130,7 @@ class ClientGame extends Game {
   constructor (config, customEvents) {
     super(config);
     this.submitted = false;
-    this.socket = io();
+    this.socket = io({reconnection: false});
     this.urlParams = getURLParams();
     this.customEvents = customEvents;
     this.startTime = Date.now();
