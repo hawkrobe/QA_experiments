@@ -67,10 +67,8 @@ var customEvents = function(game) {
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
     var score = (revealPenalty > 0 || questionPenalty > 0) ? 0 : game.bonusAmt;
-    console.log(score);
-    console.log(questionPenalty);
-    game.data.subject_information.score += score;
-    var bonus_score = (parseFloat(game.data.subject_information.score) / 100
+    game.data.score += score;
+    var bonus_score = (parseFloat(game.data.score) / 100
 		       .toFixed(2));
     var feedbackMessage = (questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
 			   revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
@@ -81,7 +79,7 @@ var customEvents = function(game) {
     $("#context").fadeOut(1000, function() {$(this).empty();});
     $("#goals").fadeOut(1000, function() {$(this).empty();});
     $('#advance_button').hide();
-    game.confetti.drop();
+    UI.confetti.drop();
   });
   
   game.socket.on('reveal', function(data) {    
@@ -126,10 +124,9 @@ var customEvents = function(game) {
     game.numQuestionsAsked = 0;
     game.revealedCards = [];
 
-    updateState(game, data);
     if(data.active) {
-      UI.reset();
-      UI.drawScreen(game.getPlayer(game.my_id));
+      updateState(game, data);
+      UI.reset(game, data);
     }
 
     // Kick things off by asking a question 
@@ -166,7 +163,7 @@ class Bot {
 
     setTimeout(function() {
       this.game.socket.send("chatMessage." + code + '.' + msg + '.5000.bot');
-    }, 5000);
+    }.bind(this), 5000);
   }
   
   revealAnswer(cardAskedAbout) {
@@ -189,7 +186,7 @@ class Bot {
     this.game.revealedCards = _.concat(this.game.revealedCards, selections);
     setTimeout(function() {
       this.game.socket.send("reveal.bot.2500." + selections.join('.'));      
-    }, 2500);
+    }.bind(this), 2500);
   }
 }
 

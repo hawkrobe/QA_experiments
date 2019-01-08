@@ -1,50 +1,52 @@
 var Confetti = require('./src/confetti.js');
+var confetti = new Confetti(300);
 
-// This gets called when someone selects something in the menu during the exit survey...
-// collects data from drop-down menus and submits using mmturkey
-// function dropdownTip(data){
-//   var commands = data.split('::');
-//   switch(commands[0]) {
-//   case 'human' :
-//     $('#humanResult').show();
-//     globalGame.data.subject_information = _.extend(globalGame.data.subject_information, 
-// 					     {'thinksHuman' : commands[1]}); break;
-//   case 'language' :
-//     globalGame.data.subject_information = _.extend(globalGame.data.subject_information, 
-// 					     {'nativeEnglish' : commands[1]}); break;
-//   case 'partner' :
-//     globalGame.data.subject_information = _.extend(globalGame.data.subject_information,
-// 						   {'ratePartner' : commands[1]}); break;
-//   case 'confused' :
-//     globalGame.data.subject_information = _.extend(globalGame.data.subject_information,
-// 						   {'confused' : commands[1]}); break;
-//   case 'submit' :
-//     globalGame.data.subject_information = _.extend(globalGame.data.subject_information, 
-// 						   {'comments' : $('#comments').val(),
-// 						    'strategy' : $('#strategy').val(),
-// 				    'role' : globalGame.my_role,
-// 				    'totalLength' : Date.now() - globalGame.startTime});
-//     globalGame.submitted = true;
-//     console.log("data is...");
-//     console.log(globalGame.data);
-//     if(_.size(globalGame.urlParams) >= 4) {
-//       globalGame.socket.send("exitSurvey." + JSON.stringify(globalGame.data));
-//       window.opener.turk.submit(globalGame.data, true);
-//       window.close(); 
-//     } else {
-//       console.log("would have submitted the following :")
-//       console.log(globalGame.data);
-//     }
-//     break;
-//   }
-// }
+// This gets called when someone selects something in the menu during the 
+// exit survey... collects data from drop-down menus and submits using mmturkey
+function dropdownTip(data){
+  var commands = data.split('::');
+  switch(commands[0]) {
+  case 'human' :
+    $('#humanResult').show();
+    globalGame.data = _.extend(globalGame.data, 
+			       {'thinksHuman' : commands[1]}); break;
+  case 'language' :
+    globalGame.data = _.extend(globalGame.data, 
+			       {'nativeEnglish' : commands[1]}); break;
+  case 'partner' :
+    globalGame.data = _.extend(globalGame.data,
+			       {'ratePartner' : commands[1]}); break;
+  case 'confused' :
+    globalGame.data = _.extend(globalGame.data,
+			       {'confused' : commands[1]}); break;
+  case 'submit' :
+    globalGame.data = _.extend(globalGame.data, 
+			       {'comments' : $('#comments').val(),
+				'strategy' : $('#strategy').val(),
+				'role' : globalGame.my_role,
+				'totalLength' : Date.now() - globalGame.startTime});
+    globalGame.submitted = true;
+    console.log("data is...");
+    console.log(globalGame.data);
+    if(_.size(globalGame.urlParams) >= 4) {
+      globalGame.socket.send("exitSurvey." + JSON.stringify(globalGame.data));
+      window.opener.turk.submit(globalGame.data, true);
+      window.close(); 
+    } else {
+      console.log("would have submitted the following :")
+      console.log(globalGame.data);
+    }
+    break;
+  }
+}
 
-var advanceRound = function(data) {
-  var game = data.game;
+var advanceRound = function(event) {
+  console.log(event.data);
+  var game = event.data.game;
 
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
-  UI.disableCards(game.selections);
+  disableCards(game.selections);
   game.revealedCards = game.revealedCards.concat(game.selections);
   var timeElapsed = Date.now() - game.messageReceivedTime;
   game.socket.send("reveal.human." + timeElapsed + '.' +
@@ -158,7 +160,7 @@ function initGrid(game) {
   }
 }
 
-  fadeInSelections(cards){
+function fadeInSelections(cards){
     _.forEach(cards, name => {
       var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
       var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
@@ -170,7 +172,7 @@ function initGrid(game) {
     });
   }
 
-  disableCards(cards) {
+function disableCards(cards) {
     _.forEach(cards, (name) => {
       // Disable card
       console.log('disabling' + cards);
@@ -181,53 +183,59 @@ function initGrid(game) {
     });
   }
 
-  drawScreen () {
-    if (this.player.message) {
-      $('#waiting').html(this.player.message);
-    } else {
-      $('#waiting').html('');
-      this.confetti.reset();
-      initGoals();    
-      initGrid();
-    }
-  };
-
-  reset (game, data) {
-    $('#chatbutton').removeAttr('disabled');
-    $('#scoreupdate').html(" ");
-    if(game.roundNum + 1 > game.numRounds) {
-      $('#roundnumber').empty();
-      $('#instructs').empty()
-	.append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
-    } else {
-      $('#feedback').empty();
-      $('#roundnumber').empty()
-	.append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
-    }
-
-    $('#main').show();
-
-    // reset labels
-    // Update w/ role (can only move stuff if agent)
-    $('#roleLabel').empty().append("You are the " + game.my_role + '.');
-    $('#instructs').empty();
-    if(game.my_role === game.playerRoleNames.role1) {
-      $('#chatarea').show();      
-      $('#instructs')
-	.append("<p>Fill in the question so your partner</p> " +
-		"<p>can help you complete the highlighted combo!</p>");
-    } else if(game.my_role === game.playerRoleNames.role2) {
-      $('#chatarea').hide();
-      $('#feedback').append('0/2 possible cards selected');
-      $('#advance_button').show()
-	.attr('disabled', 'disabled')
-	.click({game: game}, advanceRound);
-      $('#instructs')
-	.append("<p>After your partner types their question, </p>" 
-		+ "<p>select up to <b>two</b> cards to complete their combo!</p>");
-    }
-    this.drawScreen();
+function drawScreen (game) {
+  var player = game.getPlayer(game.my_id);
+  if (player.message) {
+    $('#waiting').html(this.player.message);
+  } else {
+    $('#waiting').html('');
+    confetti.reset();
+    initGoals(game);    
+    initGrid(game);
   }
+};
+
+function reset (game, data) {
+  $('#chatbutton').removeAttr('disabled');
+  $('#scoreupdate').html(" ");
+  if(game.roundNum + 1 > game.numRounds) {
+    $('#roundnumber').empty();
+    $('#instructs').empty()
+      .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+  } else {
+    $('#feedback').empty();
+    $('#roundnumber').empty()
+      .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+  }
+
+  $('#main').show();
+
+  // reset labels
+  // Update w/ role (can only move stuff if agent)
+  $('#roleLabel').empty().append("You are the " + game.my_role + '.');
+  $('#instructs').empty();
+  if(game.my_role === game.playerRoleNames.role1) {
+    $('#chatarea').show();      
+    $('#instructs')
+      .append("<p>Fill in the question so your partner</p> " +
+	      "<p>can help you complete the highlighted combo!</p>");
+  } else if(game.my_role === game.playerRoleNames.role2) {
+    $('#chatarea').hide();
+    $('#feedback').append('0/2 possible cards selected');
+    $('#advance_button').show()
+      .attr('disabled', 'disabled')
+      .click({game: game}, advanceRound);
+    $('#instructs')
+      .append("<p>After your partner types their question, </p>" 
+	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
+  }
+  drawScreen(game);
 }
 
-module.exports = UI;
+module.exports = {
+  confetti,
+  drawScreen,
+  disableCards,
+  fadeInSelections,
+  reset
+};

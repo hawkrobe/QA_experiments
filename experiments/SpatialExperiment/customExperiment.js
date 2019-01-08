@@ -172,6 +172,7 @@ class RefGameExperiment {
     function commonOutput (client, message_data) {
       var target = client.game.currStim.target;
       var distractor = target == 'g1' ? 'g0' : 'g1';
+      console.log(client.game.currStim);
       return {
 	iterationName: client.game.iterationName,
 	gameid: client.game.id,
@@ -179,7 +180,7 @@ class RefGameExperiment {
 	workerId: client.workerid,
 	assignmentId: client.assignmentid,
 	trialNum: client.game.roundNum,
-	trialType: client.game.trialInfo.currGoalType,
+	trialType: client.game.currStim.currGoalType,
 	targetGoalSet: client.game.currStim.goalSets[target],
 	distractorGoalSet: client.game.currStim.goalSets[distractor],
 	firstRole: client.game.firstRole
@@ -203,11 +204,11 @@ class RefGameExperiment {
     
 
     var exitSurveyOutput = function(client, message_data) {
-      var subjectInformationObj = JSON.parse(message_data.slice(1))['subject_information'];
+      var subjInfo = JSON.parse(message_data.slice(1));
       return _.extend(
 	_.omit(commonOutput(client, message_data),
 	       ['targetGoalSet', 'distractorGoalSet', 'trialType', 'trialNum']),
-	subjectInformationObj);
+	subjInfo);
     };
     
 
