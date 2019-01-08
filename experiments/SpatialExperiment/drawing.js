@@ -1,67 +1,101 @@
-// drawing.js
-// This file contains functions to draw on the HTML5 canvas
+var Confetti = require('./src/confetti.js');
+var confetti = new Confetti(300);
 
+// This gets called when someone selects something in the menu during the 
+// exit survey... collects data from drop-down menus and submits using mmturkey
+function dropdownTip(data){
+  var commands = data.split('::');
+  switch(commands[0]) {
+  case 'human' :
+    $('#humanResult').show();
+    globalGame.data = _.extend(globalGame.data, 
+			       {'thinksHuman' : commands[1]}); break;
+  case 'language' :
+    globalGame.data = _.extend(globalGame.data, 
+			       {'nativeEnglish' : commands[1]}); break;
+  case 'partner' :
+    globalGame.data = _.extend(globalGame.data,
+			       {'ratePartner' : commands[1]}); break;
+  case 'confused' :
+    globalGame.data = _.extend(globalGame.data,
+			       {'confused' : commands[1]}); break;
+  case 'submit' :
+    globalGame.data = _.extend(globalGame.data, 
+			       {'comments' : $('#comments').val(),
+				'strategy' : $('#strategy').val(),
+				'role' : globalGame.my_role,
+				'totalLength' : Date.now() - globalGame.startTime});
+    globalGame.submitted = true;
+    console.log("data is...");
+    console.log(globalGame.data);
+    if(_.size(globalGame.urlParams) >= 4) {
+      globalGame.socket.send("exitSurvey." + JSON.stringify(globalGame.data));
+      window.opener.turk.submit(globalGame.data, true);
+      window.close(); 
+    } else {
+      console.log("would have submitted the following :")
+      console.log(globalGame.data);
+    }
+    break;
+  }
+}
 
-function handleButton() {
+var advanceRound = function(event) {
+  console.log(event.data);
+  var game = event.data.game;
+
+  // Stop letting people click stuff
+  $('#advance_button').show().attr('disabled', 'disabled');
+  disableCards(game.selections);
+  game.revealedCards = game.revealedCards.concat(game.selections);
+  var timeElapsed = Date.now() - game.messageReceivedTime;
+  game.socket.send("reveal.human." + timeElapsed + '.' +
+		   game.selections.join('.'));
+  game.messageSent = false;
+  game.selections = [];
+};
+
+function handleButton(game) {
   // Disable or enable button to fit logic
-  if(globalGame.selections.length > 0) {
+  if(game.selections.length > 0) {
     $('#advance_button').removeAttr('disabled');
   } else {
     $('#advance_button').attr('disabled', 'disabled');
   }
 }
 
-function handleHighlighting(imgSelector, name) {
-  var alreadyClicked = _.includes(globalGame.selections, name);
+function handleHighlighting(game, imgSelector, name) {
+  var alreadyClicked = _.includes(game.selections, name);
   var cellSelector = imgSelector.parent();
   if(alreadyClicked) {
-    _.remove(globalGame.selections, obj => obj == name);    
+    _.remove(game.selections, obj => obj == name);    
     cellSelector.css({'border-color' : 'white', 'border-width' : '1px'});
-  } else if (globalGame.selections.length < 2) {
-    globalGame.selections.push(name);
+  } else if (game.selections.length < 2) {
+    game.selections.push(name);
     cellSelector.css({'border-color' : '#32CD32', 'border-width' : '5px'});
   }
-  $('#feedback').empty().append(globalGame.selections.length + '/2 possible cards selected');
+  $('#feedback').empty().append(game.selections.length +
+				'/2 possible cards selected');
 }
 
-function fadeInSelections(cards){
-  _.forEach(cards, name => {
-    var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
-    var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
-    $('#haze-' + col + row).hide();
-    $(`img[data-name="${name}"]`)
-      .css({opacity: 0.0})
-      .show()
-      .css({opacity: 1, 'transition': 'opacity 2s linear'});
-  });
-}
-
-function disableCards(cards) {
-  _.forEach(cards, (name) => {
-    // Disable card
-    console.log('disabling' + cards);
-    var cardElement = $(`img[data-name="${name}"]`);
-    cardElement.css({'transition' : 'opacity 1s', opacity: 0.2});
-    cardElement.off('click');
-    cardElement.parent().css({'border-color' : 'white', 'border-width': '1px'});
-  });
-}
-
-function setupHandlers() {
+function setupHandlers(game) {
   $('#context img').click(function(event) {
     var name = $(this).attr('data-name');
-    if(globalGame.messageSent) {
-      handleHighlighting($( this ), name);
-      handleButton();
+    if(game.messageSent) {
+      handleHighlighting(game, $( this ), name);
+      handleButton(game);
     }
   });
 }
 
-function initGoals(goalSets, targetGoal) {
+
+function initGoals(game) {
+  var goalSets = game.goalSets;
+  var targetGoal = game.targetGoal;
   $('#goals').append('<br>');
   _.forEach(_.shuffle(_.values(goalSets)), function(goals, i) {
     var border = (_.isEqual(goals, goalSets[targetGoal]) &&
-		  globalGame.my_role == globalGame.playerRoleNames.role1 ?
+		  game.my_role == game.playerRoleNames.role1 ?
 		  'green' : 'black');
     var cell = $('<div/>').attr({
       height: '10%',
@@ -84,17 +118,17 @@ function initGoals(goalSets, targetGoal) {
   $('#goals').fadeIn();
 }
 
-function initGrid(objects) {
+function initGrid(game) {
   // Add objects to grid
   _.forEach(_.range(1, 5), x => {
     _.forEach(_.range(1, 5), y => {
       var div = $('<div/>')
 	  .attr({style: `border: solid 1px #FFFFFF; \
                          background-color: black; grid-column: ${x}; grid-row: ${y}`});
-      var obj = _.find(objects, {'gridX' : x, 'gridY' : y});
+      var obj = _.find(game.objects, {'gridX' : x, 'gridY' : y});
       // Put image in grid if it exists
       if(!_.isUndefined(obj)){
-	var visible = (globalGame.my_role == globalGame.playerRoleNames.role1 ?
+	var visible = (game.my_role == game.playerRoleNames.role1 ?
 		       'display: none' : '');
 	div.append($('<img/>').attr({
 	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
@@ -103,7 +137,7 @@ function initGrid(objects) {
 	}));
       }
       // Put haze in questioner's grid
-      if(globalGame.my_role == globalGame.playerRoleNames.role1) {
+      if(game.my_role == game.playerRoleNames.role1) {
 	div.append($('<img/>').attr({
 	  height: '100%', width: '100%', src: 'images/haze.jpg',
 	  id: 'haze-' + x + y,
@@ -120,69 +154,88 @@ function initGrid(objects) {
     .off('click');
 
   // Allow listener to click on things
-  if (globalGame.my_role === globalGame.playerRoleNames.role2) {
-    globalGame.selections = [];
-    setupHandlers(); 
+  if (game.my_role === game.playerRoleNames.role2) {
+    game.selections = [];
+    setupHandlers(game); 
   }
 }
 
-var drawScreen = function(game, player) {
-  // Draw message in center (for countdown, e.g.)
+function fadeInSelections(cards){
+    _.forEach(cards, name => {
+      var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
+      var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
+      $('#haze-' + col + row).hide();
+      $(`img[data-name="${name}"]`)
+	.css({opacity: 0.0})
+	.show()
+	.css({opacity: 1, 'transition': 'opacity 2s linear'});
+    });
+  }
+
+function disableCards(cards) {
+    _.forEach(cards, (name) => {
+      // Disable card
+      console.log('disabling' + cards);
+      var cardElement = $(`img[data-name="${name}"]`);
+      cardElement.css({'transition' : 'opacity 1s', opacity: 0.2});
+      cardElement.off('click');
+      cardElement.parent().css({'border-color' : 'white', 'border-width': '1px'});
+    });
+  }
+
+function drawScreen (game) {
+  var player = game.getPlayer(game.my_id);
   if (player.message) {
-    $('#waiting').html(player.message);
+    $('#waiting').html(this.player.message);
   } else {
     $('#waiting').html('');
-    game.confetti.reset();
-    initGoals(game.goalSets, game.targetGoal);    
-    initGrid(game.objects);
+    confetti.reset();
+    initGoals(game);    
+    initGrid(game);
   }
 };
 
-// Rain down confetti
-class Confetti {
-  constructor(count) {
-    this.count = count;
+function reset (game, data) {
+  $('#chatbutton').removeAttr('disabled');
+  $('#scoreupdate').html(" ");
+  if(game.roundNum + 1 > game.numRounds) {
+    $('#roundnumber').empty();
+    $('#instructs').empty()
+      .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+  } else {
+    $('#feedback').empty();
+    $('#roundnumber').empty()
+      .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
   }
 
-  pickColor(index) {
-    return (index == 1 ? '#faa040' : // yellow
-	    index == 2 ? '#e94a3f' : // blue
-	    "#e94a3f");              // red 
-  }
+  $('#main').show();
 
-  // Initialize confetti particle
-  create(i) {
-    var width = Math.random() * 8;
-    var height = width * 0.4;
-    var colourIdx = Math.ceil(Math.random() * 3);
-    var colour = this.pickColor(colourIdx);
-    $(`<div style="position:fixed" id=confetti-${i} class="confetti"></div>`).css({
-      "width" : width+"px",
-      "height" : height+"px",
-      "top" : -Math.random()*20+"%",
-      "left" : Math.random()*100+"%",
-      "opacity" : Math.random()+0.5,
-      "background-color": colour,
-      "transform" : "rotate("+Math.random()*360+"deg)"
-    }).appendTo('#header');  
+  // reset labels
+  // Update w/ role (can only move stuff if agent)
+  $('#roleLabel').empty().append("You are the " + game.my_role + '.');
+  $('#instructs').empty();
+  if(game.my_role === game.playerRoleNames.role1) {
+    $('#chatarea').show();      
+    $('#instructs')
+      .append("<p>Fill in the question so your partner</p> " +
+	      "<p>can help you complete the highlighted combo!</p>");
+  } else if(game.my_role === game.playerRoleNames.role2) {
+    $('#chatarea').hide();
+    $('#feedback').append('0/2 possible cards selected');
+    $('#advance_button').show()
+      .attr('disabled', 'disabled')
+      .click({game: game}, advanceRound);
+    $('#instructs')
+      .append("<p>After your partner types their question, </p>" 
+	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
   }
-
-  //Dropp all confetti
-  drop() {
-    for(var i = 0; i < this.count; i++) {
-      this.create(i);
-      $('#confetti-' + i).animate({
-	top: "100%",
-	left: "+="+Math.random()*15+"%"
-      }, {
-	duration: Math.random()*3000 + 3000
-      });
-    };
-  }
-
-  reset() {
-    for(var i = 0; i < this.count; i++) {
-      $('#confetti-' + i).remove();
-    }
-  }
+  drawScreen(game);
 }
+
+module.exports = {
+  confetti,
+  drawScreen,
+  disableCards,
+  fadeInSelections,
+  reset
+};

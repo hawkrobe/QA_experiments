@@ -1,0 +1,23 @@
+{
+  "email" : "rxdh@stanford.edu",
+  "projectName" : "QA",
+  "experimentName" : "cards",
+  "iterationName" : "single_player_sample",
+  "anonymizeCSV" : true,
+  "bonusAmt" : 5, 
+  "dataStore" : ["csv", "mongo"],
+  "playersThreshold" : 1,
+  "playerRoleNames" : {
+    "role1" : "seeker",
+    "role2" : "helper"
+  },
+  "numRounds" : 6,
+  "numHorizontalCells" : 4,
+  "numVerticalCells" : 4,
+  "cellDimensions" : {
+    "height" : 300,
+    "width" : 300
+  }, 
+  "cellPadding" : 0,
+  "delay" : 1500
+}
