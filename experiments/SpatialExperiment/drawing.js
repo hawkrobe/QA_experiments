@@ -88,36 +88,6 @@ function setupHandlers(game) {
   });
 }
 
-
-function initGoals(game) {
-  var goalSets = game.goalSets;
-  var targetGoal = game.targetGoal;
-  $('#goals').append('<br>');
-  _.forEach(_.shuffle(_.values(goalSets)), function(goals, i) {
-    var border = (_.isEqual(goals, goalSets[targetGoal]) &&
-		  game.my_role == game.playerRoleNames.role1 ?
-		  'green' : 'black');
-    var cell = $('<div/>').attr({
-      height: '10%',
-      class : 'grid',
-      style: `border-width: 15px; border-style: solid; border-color: ${border}`
-    });
-    _.forEach(_.shuffle(goals), function(goalCard, j) {
-      var card = $('<img/>').attr({
-	width: '33%',
-	outline: '1px solid white',
-	src: '/images/thumbnails/' + goalCard + '.svg',
-	style : `margin-left: auto; margin-right: auto; vertical-align: middle;`
-      });
-      cell.append(card);
-    });
-    $('#goals').append($('<p style="text-align:left; font-size: 125%"/>').text(`COMBO #${i+1}`));
-    $('#goals').append(cell);
-    $('#goals').append('<br><br><hr><br><br>');
-  });
-  $('#goals').fadeIn();
-}
-
 function initGrid(game) {
   // Add objects to grid
   _.forEach(_.range(1, 5), x => {
@@ -190,7 +160,6 @@ function drawScreen (game) {
   } else {
     $('#waiting').html('');
     confetti.reset();
-    initGoals(game);    
     initGrid(game);
   }
 };
