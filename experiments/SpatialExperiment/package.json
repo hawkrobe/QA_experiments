@@ -3,7 +3,7 @@
   "description": "Unofficial fork of MWERT, adapted to replicate sensing experiment",
   "version": "0.0.0",
   "scripts": {
-    "build": "webpack --mode development ./src/client.js --output ./bundle.js; node app.js"
+    "build": "webpack --mode development ./src/client.js --output ./dist/bundle.js; node app.js"
   },
   "private": true,
   "dependencies": {
