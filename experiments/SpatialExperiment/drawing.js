@@ -41,14 +41,14 @@ function dropdownTip(data){
 }
 
 var advanceRound = function(event) {
-  console.log(event.data);
   var game = event.data.game;
-
+  
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
   disableCards(game.selections);
-  game.revealedCards = game.revealedCards.concat(game.selections);
+
   var timeElapsed = Date.now() - game.messageReceivedTime;
+  game.revealedCards = game.revealedCards.concat(game.selections);  
   game.socket.send("reveal.human." + timeElapsed + '.' +
 		   game.selections.join('.'));
   game.messageSent = false;
@@ -78,12 +78,12 @@ function handleHighlighting(game, imgSelector, name) {
 				'/2 possible cards selected');
 }
 
-function setupHandlers(game) {
-  $('#context img').click(function(event) {
-    var name = $(this).attr('data-name');
+function setupTokenPlacingHandlers(game) {
+  $('img.cell').mousedown(function(event) {
+    //var name = $(this).attr('data-name');
     if(game.messageSent) {
-      handleHighlighting(game, $( this ), name);
-      handleButton(game);
+      $('.cell').css({'pointer-events': 'none'});
+      //handleHighlighting(game, $( this ), name);
     }
   });
 }
@@ -92,29 +92,29 @@ function initGrid(game) {
   // Add objects to grid
   _.forEach(_.range(1, 5), x => {
     _.forEach(_.range(1, 5), y => {
-      var div = $('<div/>')
-	  .attr({style: `border: solid 1px #FFFFFF; \
-                         background-color: black; grid-column: ${x}; grid-row: ${y}`});
-      var obj = _.find(game.objects, {'gridX' : x, 'gridY' : y});
-      // Put image in grid if it exists
-      if(!_.isUndefined(obj)){
-	var visible = (game.my_role == game.playerRoleNames.role1 ?
-		       'display: none' : '');
-	div.append($('<img/>').attr({
-	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
-	  style : `margin-left: auto; margin-right: auto; \
-                   vertical-align: middle; ${visible}`
-	}));
-      }
+      var div = $('<img/>').addClass('cell')
+	  .text('1')
+      	  .attr({style: `border: solid 1px #FFFFFF; \
+                         grid-column: ${x}; grid-row: ${y}`});
+      // var obj = _.find(game.objects, {'gridX' : x, 'gridY' : y});
+      // // Put image in grid if it exists
+      // if(!_.isUndefined(obj)){
+      // 	var visible = (game.my_role == game.playerRoleNames.role1 ?
+      // 		       'display: none' : '');
+      // 	div.append($('<img/>').attr({
+      // 	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
+      // 	  style : `margin-left: auto; margin-right: auto; \
+      //              vertical-align: middle; ${visible}`
+      // 	}));
+      // }
       // Put haze in questioner's grid
-      if(game.my_role == game.playerRoleNames.role1) {
-	div.append($('<img/>').attr({
-	  height: '100%', width: '100%', src: 'images/haze.jpg',
-	  id: 'haze-' + x + y,
-	  style : `margin-left: auto; margin-right: auto; \
-                   vertical-align: middle;`
-	}));
-      } 
+      // if(game.my_role == game.playerRoleNames.role1) {
+      // 	div.append($('<img/>').addClass('cell'));
+      // 	//   class: 'cell'})height: '100%', width: '100%', src: 'images/haze.jpg',
+      // 	//   id: 'haze-' + x + y,
+      // 	//   style : ``
+      // 	// }));
+      // } 
       $("#context").append(div);
     });
   });
@@ -124,9 +124,9 @@ function initGrid(game) {
     .off('click');
 
   // Allow listener to click on things
-  if (game.my_role === game.playerRoleNames.role2) {
+  if (game.my_role === game.playerRoleNames.role1) {
     game.selections = [];
-    setupHandlers(game); 
+    setupTokenPlacingHandlers(game); 
   }
 }
 
