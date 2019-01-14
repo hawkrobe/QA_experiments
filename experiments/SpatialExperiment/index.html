@@ -8,7 +8,7 @@
     <!-- Load jQuery, which lets us handle mouse events -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     
-    <script type="text/javascript" src="bundle.js"></script>
+    <script type="text/javascript" src="dist/bundle.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,44 +41,31 @@
           <div id="chatarea">
             <form action="">
               <p style='padding: 10px; text-align: left; vertical-align: center; display:inline-block; font-size: 150%;'>
-		Where is the
+		Is 
 		<br>
-		<select id="chatbox_rank" style="font-size: 125%;">
+		<select id="chatbox_row" style="font-size: 125%;">
 		  <option value=""></option>
-		  <option value="2">2</option>
-		  <option value="3">3</option>
-		  <option value="4">4</option>
-		  <option value="5">5</option>
-		  <option value="6">6</option>
-		  <option value="7">7</option>
-		  <option value="8">8</option>
-		  <option value="9">9</option>
-		  <option value="10">10</option>
-		  <option value="J">jack</option>
-		  <option value="Q">queen</option>
-		  <option value="K">king</option>
-		  <option value="A">ace</option>
+		  <option value="A">A</option>
+		  <option value="B">B</option>
+		  <option value="C">C</option>
+		  <option value="D">D</option>
 		</select>
 		of
 		<br>
-		<select id="chatbox_suit" style="font-size: 150%;">
+		<select id="chatbox_col" style="font-size: 150%;">
 		  <option value=""></option>
-		  <option value="D">diamonds (&diams;)</option>
-		  <option value="H">hearts (&hearts;)</option>
-		  <option value="C">clubs (&clubs;)</option>
-		  <option value="S">spades (&spades;)</option>
+		  <option value="1">1</option>
+		  <option value="2">2</option>
+		  <option value="3">3</option>
+		  <option value="4">4</option>
 		</select>
+		safe
 		?
 	      </p>
               <input type="submit" id="chatbutton" value="Send"></input>
             </form>
           </div>
         </div>
-	<div id='goal_panel'>
-	  <h1>Possible Combos</h1>
-	  <div id="goals"></div>
-	</div>
-
 	<div id='context_panel'>
 	  <div id="context" class="grid"></div>
 	  <button id="advance_button"

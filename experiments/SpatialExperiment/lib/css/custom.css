@@ -35,26 +35,26 @@ html , body {
   justify-content: space-around;
 }
 
-.cell {
-    max-width: 33%;
-    height: 15%;    
-    text-align: center;
-    flex: 0 0 33%;                       /* don't grow, don't shrink, width */
-}
+/* .cell { */
+/*     max-width: 33%; */
+/*     height: 15%;     */
+/*     text-align: center; */
+/*     flex: 0 0 33%;                       /\* don't grow, don't shrink, width *\/ */
+/* } */
 
-.imgcell {
-    text-align: center;
-    flex: 0 0 25%;                       /* don't grow, don't shrink, width */
-    border: '20px solid',
-    border-color: 'white',
-}
+/* .imgcell { */
+/*     text-align: center; */
+/*     flex: 0 0 25%;                       /\* don't grow, don't shrink, width *\/ */
+/*     border: '20px solid', */
+/*     border-color: 'white', */
+/* } */
 
-.contextcell {
-    text-align: center;
-    /* flex: 0 0 50%;                       /\* don't grow, don't shrink, width *\/ */
-    /* border: '20px solid', */
-    /* border-color: 'black', */
-}
+/* .contextcell { */
+/*     text-align: center; */
+/*     /\* flex: 0 0 50%;                       /\\* don't grow, don't shrink, width *\\/ *\/ */
+/*     /\* border: '20px solid', *\/ */
+/*     /\* border-color: 'black', *\/ */
+/* } */
 
 #header {
     height: 20%;
@@ -85,6 +85,22 @@ html , body {
 	left:0; right:0; top:7.5%; bottom: 0;
 	position: absolute;
 	font-size: 140%
+}
+
+img.cell { 
+    background: url('../../images/unpressedCell.png') no-repeat;
+    background-size :cover;
+    margin-left: auto;
+    margin-right: auto; 
+    vertical-align: middle;
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+
+img.cell:ACTIVE {
+    background: url('../../images/pressedCell.png') no-repeat; 
+    background-size :cover;
 }
 
 #post_test_instruction {
@@ -282,8 +298,8 @@ ALOT...don't understand how to adjust that.*/
 }
 
 #context_panel {
-    height: 90%;
-    width: 40%;
+    /* height: 90%; */
+    /* width: 90%; */
     
     float: right;
     
@@ -298,27 +314,27 @@ ALOT...don't understand how to adjust that.*/
 /* 	font-size: 200%; */
 /* 	overflow-y: visible; */
 /* } */
-#word_grid {
-    float: top;
-    border:solid 1px #333;
-    height: 25vh;
-    width: 40vw;
-    margin: auto;
-    margin-top: 2%;
-    font-size: 200%;
-    background: #383838;
-}
+/* #word_grid { */
+/*     float: top; */
+/*     border:solid 1px #333; */
+/*     height: 25vh; */
+/*     width: 40vw; */
+/*     margin: auto; */
+/*     margin-top: 2%; */
+/*     font-size: 200%; */
+/*     background: #383838; */
+/* } */
 
-#object_grid {
-    float: bottom;
-    margin: auto;
-    /* border:solid 1px #333; */
-    height: 20vw;
-    margin-top: 2%;
-    width: 80vw;
-    z-index: -100;
-    /* background: #383838; */
-}
+/* #object_grid { */
+/*     float: bottom; */
+/*     margin: auto; */
+/*     /\* border:solid 1px #333; *\/ */
+/*     height: 20vw; */
+/*     margin-top: 2%; */
+/*     width: 80vw; */
+/*     z-index: -100; */
+/*     /\* background: #383838; *\/ */
+/* } */
 
 /* #context { */
 /*     float: right; */
