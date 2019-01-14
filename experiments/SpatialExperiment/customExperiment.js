@@ -27,7 +27,7 @@ class RefGameExperiment {
     this.trialList = [];
     this.numRounds = config.numRounds;
     this.objects = require('./images/objects.json');
-    this.firstRole = _.sample(['seeker', 'helper']);
+    this.firstRole = _.sample(['leader'])//, 'helper']);
   }
   
   customEvents (socket) {
@@ -37,7 +37,7 @@ class RefGameExperiment {
 	_.map(all, function(p){
 	  p.player.instance.emit( 'updateScore', data);
 	});
-      }, 1000);
+       }, 1000);
       socket.game.newRound(4000);
     });
   }
@@ -45,7 +45,6 @@ class RefGameExperiment {
   // *
   // * TrialList creation
   // *
-  
   sampleGoalSet (goalType, hiddenCards) {
     var numGoals = 2;
     if(goalType == 'catch') {
