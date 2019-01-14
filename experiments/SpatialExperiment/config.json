@@ -8,7 +8,7 @@
   "dataStore" : ["csv", "mongo"],
   "playersThreshold" : 1,
   "playerRoleNames" : {
-    "role1" : "seeker",
+    "role1" : "leader",
     "role2" : "helper"
   },
   "numRounds" : 6,
