@@ -79,12 +79,13 @@ function handleHighlighting(game, imgSelector, name) {
 }
 
 function setupTokenPlacingHandlers(game) {
-  $('img.cell').mousedown(function(event) {
+  $('img.pressable').click(function(event) {
+    $(this).css({'display' : 'none'});
     //var name = $(this).attr('data-name');
-    if(game.messageSent) {
-      $('.cell').css({'pointer-events': 'none'});
-      //handleHighlighting(game, $( this ), name);
-    }
+    // if(game.messageSent) {
+    //   $('.cell').css({'pointer-events': 'none'});
+    //   //handleHighlighting(game, $( this ), name);
+    // }
   });
 }
 
