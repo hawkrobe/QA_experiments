@@ -35,27 +35,6 @@ html , body {
   justify-content: space-around;
 }
 
-/* .cell { */
-/*     max-width: 33%; */
-/*     height: 15%;     */
-/*     text-align: center; */
-/*     flex: 0 0 33%;                       /\* don't grow, don't shrink, width *\/ */
-/* } */
-
-/* .imgcell { */
-/*     text-align: center; */
-/*     flex: 0 0 25%;                       /\* don't grow, don't shrink, width *\/ */
-/*     border: '20px solid', */
-/*     border-color: 'white', */
-/* } */
-
-/* .contextcell { */
-/*     text-align: center; */
-/*     /\* flex: 0 0 50%;                       /\\* don't grow, don't shrink, width *\\/ *\/ */
-/*     /\* border: '20px solid', *\/ */
-/*     /\* border-color: 'black', *\/ */
-/* } */
-
 #header {
     height: 20%;
     width: 100%;
@@ -85,22 +64,6 @@ html , body {
 	left:0; right:0; top:7.5%; bottom: 0;
 	position: absolute;
 	font-size: 140%
-}
-
-img.cell { 
-    background: url('../../images/unpressedCell.png') no-repeat;
-    background-size :cover;
-    margin-left: auto;
-    margin-right: auto; 
-    vertical-align: middle;
-    height: 100%;
-    width: 100%;
-    display: block;
-}
-
-img.cell:ACTIVE {
-    background: url('../../images/pressedCell.png') no-repeat; 
-    background-size :cover;
 }
 
 #post_test_instruction {
@@ -209,6 +172,37 @@ ALOT...don't understand how to adjust that.*/
 	margin-bottom: auto ;
 	left:0; right:0; top:15%; bottom: 0;
 	position: absolute;
+}
+
+.pressable { 
+    background: url('../../images/unpressedCell.png') no-repeat;
+    background-size :cover;
+    margin-left: auto;
+    margin-right: auto; 
+    vertical-align: middle;
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+
+.pressable:ACTIVE {
+    background: url('../../images/pressedCell.png') no-repeat; 
+    background-size :cover;
+}
+
+.underlying_r {
+    background: url('../../images/xxx.png') no-repeat;
+    height: 100%;
+    width: 100%;
+
+    background-size :cover;    
+}
+
+.underlying_g {
+    background: url('../../images/checkmark.png') no-repeat;
+    height: 100%;
+    width: 100%;    
+    background-size :cover;        
 }
 
 #context {
