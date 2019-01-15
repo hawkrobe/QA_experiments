@@ -91,31 +91,22 @@ function setupTokenPlacingHandlers(game) {
 
 function initGrid(game) {
   // Add objects to grid
-  _.forEach(_.range(1, 5), x => {
-    _.forEach(_.range(1, 5), y => {
-      var div = $('<img/>').addClass('cell')
-	  .text('1')
-      	  .attr({style: `border: solid 1px #FFFFFF; \
-                         grid-column: ${x}; grid-row: ${y}`});
-      // var obj = _.find(game.objects, {'gridX' : x, 'gridY' : y});
-      // // Put image in grid if it exists
-      // if(!_.isUndefined(obj)){
-      // 	var visible = (game.my_role == game.playerRoleNames.role1 ?
-      // 		       'display: none' : '');
-      // 	div.append($('<img/>').attr({
-      // 	  height: '100%', width: '65%', src: obj.url, 'data-name' : obj.name,
-      // 	  style : `margin-left: auto; margin-right: auto; \
-      //              vertical-align: middle; ${visible}`
-      // 	}));
-      // }
-      // Put haze in questioner's grid
-      // if(game.my_role == game.playerRoleNames.role1) {
-      // 	div.append($('<img/>').addClass('cell'));
-      // 	//   class: 'cell'})height: '100%', width: '100%', src: 'images/haze.jpg',
-      // 	//   id: 'haze-' + x + y,
-      // 	//   style : ``
-      // 	// }));
-      // } 
+  _.forEach(_.range(4), x => {
+    _.forEach(_.range(4), y => {
+      var underlying = game.fullMap[x][y];
+      var initialize = game.initMap[x][y] == 'o';   
+      console.log(underlying);
+      console.log(initialize);
+      var div = $('<div/>');
+      var underlyingState = $('<img/>')
+	  .addClass('underlying_' + underlying)
+	  .css({'grid-column': x, 'grid-row': y});
+      div.append(underlyingState);
+
+      if(game.my_role == game.playerRoleNames.role1 && !initialize) {
+	underlyingState.css({display: 'none'});
+	div.append($('<img/>').addClass('pressable'));
+      }
       $("#context").append(div);
     });
   });

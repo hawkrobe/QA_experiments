@@ -45,74 +45,69 @@ class RefGameExperiment {
   // *
   // * TrialList creation
   // *
-  sampleGoalSet (goalType, hiddenCards) {
-    var numGoals = 2;
-    if(goalType == 'catch') {
-      return makeGoalObject(_.map(_.sampleSize(hiddenCards, numGoals), v => [v.name]));
-    } else if(goalType == 'overlap') {
-      var overlappingGoal = _.sampleSize(hiddenCards, 1)[0]['name'];
-      var otherGoals = _.filter(hiddenCards, v => v.name != overlappingGoal);
-      return makeGoalObject(_.map(_.sampleSize(otherGoals, 2),
-				  v => [v.name, overlappingGoal]));
-    } else if(goalType == 'baseline') {
-      var goal1 = _.map(_.sampleSize(hiddenCards, 2), 'name');
-      var others = _.filter(hiddenCards, v => !_.includes(goal1, v.name));
-      var goal2 = _.map(_.sampleSize(others, 2), 'name');
-      return makeGoalObject([goal1, goal2]);
-    } else if(goalType == 'practice') {
-      return makeGoalObject([_.map(_.sampleSize(hiddenCards, 2), 'name')]);
+
+  // 3 trials of each row, counterbalanced
+  sampleMapSequence () {
+    var types = ['catch'];
+    return _.map(types, type => {return {mapType: type, role: this.firstRole}});
+  }
+
+  constructMap (trialInfo) {
+    console.log(trialInfo);
+    if(trialInfo.mapType == 'catch') {
+      return {full: [['g', 'g', 'g', 'g'],
+		     ['g', 'g', 'g', 'g'],
+		     ['r', 'r', 'r', 'r'],
+		     ['r', 'r', 'r', 'r']],
+	      init: [['o', 'o', 'x', 'x'],
+		     ['x', 'x', 'x', 'x'],
+		     ['x', 'x', 'x', 'x'],
+		     ['x', 'x', 'x', 'x']],
+	      role: trialInfo.role};
+    //}  else if(goalType == 'overlap') {
+    //   var overlappingGoal = _.sampleSize(hiddenCards, 1)[0]['name'];
+    //   var otherGoals = _.filter(hiddenCards, v => v.name != overlappingGoal);
+    //   return makeGoalObject(_.map(_.sampleSize(otherGoals, 2),
+    // 				  v => [v.name, overlappingGoal]));
+    // } else if(goalType == 'baseline') {
+    //   var goal1 = _.map(_.sampleSize(hiddenCards, 2), 'name');
+    //   var others = _.filter(hiddenCards, v => !_.includes(goal1, v.name));
+    //   var goal2 = _.map(_.sampleSize(others, 2), 'name');
+    //   return makeGoalObject([goal1, goal2]);
+    // } else if(goalType == 'practice') {
+    // return makeGoalObject([_.map(_.sampleSize(hiddenCards, 2), 'name')]);
     } else {
-      console.error('goal type ' + goalType + ' not yet implemented');
+      console.error('map type ' + trialInfo.mapType + ' not yet implemented');
     }
   }
 
-  // 3 trials of each row, counterbalanced
-  sampleGoalSequence () {
-    var types = ['overlap', 'catch', 'baseline'];
-    var batch1 = _.map(_.shuffle(types), type => {
-      return {goalType: type,
-	      numCards: _.sample(_.range(5, 9)),
-	      role: this.firstRole};
-    });
-    var batch2 = _.map(_.shuffle(types), type => {
-      return {goalType: type,
-	      numCards: _.sample(_.range(5, 9)),
-	      role: this.firstRole == 'seeker' ? 'helper' : 'seeker'};
-    });
-  
-    return _.concat(batch1, batch2);
-  }
-
-  sampleTrial (trialInfo) {
-    // Sample set of hidden cards
-    var hiddenCards = _.sampleSize(this.objects, trialInfo.numCards);
+  // sampleTrial (trialInfo) {
+  //   // Sample the goal sets and pick one to be the target
+  //   var goalSets = this.constructMap(trialInfo.goalType);
     
-    // Sample the goal sets and pick one to be the target
-    var goalSets = this.sampleGoalSet(trialInfo.goalType, hiddenCards);
-    var target = _.sample(_.keys(goalSets));
-    
-    // Sample places to put cards
-    var locs = sampleStimulusLocs(trialInfo.numCards);
-    return _.extend({}, trialInfo, {
-      goalSets,
-      target,
-      hiddenCards: _.map(hiddenCards, function(obj, index) {
-	return _.extend({}, obj, {
-	  gridX: locs[index]['x'],
-	  gridY: locs[index]['y']
-	});
-      })
-    });
-  }
+  //   // Sample places to put cards
+  //   var locs = sampleStimulusLocs(trialInfo.numCards);
+  //   return _.extend({}, trialInfo, {
+  //     goalSets,
+  //     target,
+  //     hiddenCards: _.map(hiddenCards, function(obj, index) {
+  // 	return _.extend({}, obj, {
+  // 	  gridX: locs[index]['x'],
+  // 	  gridY: locs[index]['y']
+  // 	});
+  //     })
+  //   });
+  // }
     
   // Take condition as argument
   // construct context list w/ statistics of condition
   makeTrialList () {
-    var trialSequence = this.sampleGoalSequence();
+    var trialSequence = this.sampleMapSequence();
+    console.log(trialSequence);
 
     // Construct trial list (in sets of complete rounds)
     for (var i = 0; i < this.numRounds; i++) {
-      var world = this.sampleTrial(trialSequence[i]); 
+      var world = this.constructMap(trialSequence[i]); 
       this.trialList.push(world);
     };
     return this.trialList;

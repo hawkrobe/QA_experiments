@@ -12,8 +12,8 @@ function updateState (game, data){
     });
   }
 
-  game.goalSets = data.currStim.goalSets;
-  game.targetGoal = data.currStim.target;
+  game.fullMap = data.currStim.full;
+  game.initMap = data.currStim.init;
   game.objects = _.map(data.currStim.hiddenCards, function(obj) {
     var imgObj = new Image(); //initialize object as an image (from HTML5)
     imgObj.src = obj.url; // tell client where to find it
@@ -126,6 +126,8 @@ var customEvents = function(game) {
 
     if(data.active) {
       updateState(game, data);
+      console.log('state is')
+      console.log(game);
       UI.reset(game, data);
     }
 
