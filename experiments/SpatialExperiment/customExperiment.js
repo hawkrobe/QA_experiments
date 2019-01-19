@@ -26,7 +26,7 @@ class RefGameExperiment {
   constructor() {
     this.trialList = [];
     this.numRounds = config.numRounds;
-    this.objects = require('./images/objects.json');
+//    this.objects = require('./images/objects.json');
     this.firstRole = _.sample(['leader'])//, 'helper']);
   }
   
