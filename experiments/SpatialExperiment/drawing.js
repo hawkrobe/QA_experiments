@@ -80,7 +80,8 @@ function handleHighlighting(game, imgSelector, name) {
 
 function setupTokenPlacingHandlers(game) {
   $('img.pressable').click(function(event) {
-    $(this).css({'display' : 'none'});
+    $(this).siblings().show();
+    $(this).remove();
     //var name = $(this).attr('data-name');
     // if(game.messageSent) {
     //   $('.cell').css({'pointer-events': 'none'});
