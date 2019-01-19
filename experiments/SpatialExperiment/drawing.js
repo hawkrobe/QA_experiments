@@ -82,11 +82,6 @@ function setupTokenPlacingHandlers(game) {
   $('img.pressable').click(function(event) {
     $(this).siblings().show();
     $(this).remove();
-    //var name = $(this).attr('data-name');
-    // if(game.messageSent) {
-    //   $('.cell').css({'pointer-events': 'none'});
-    //   //handleHighlighting(game, $( this ), name);
-    // }
   });
 }
 

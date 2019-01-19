@@ -99,18 +99,19 @@ var customEvents = function(game) {
 
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
-    var code = $('#chatbox_rank').val() +  $('#chatbox_suit').val();
-    var rankText = $('#chatbox_rank').find('option:selected').text();
-    var suitText = $('#chatbox_suit').find('option:selected').text();    
-    var origMsg = ("Where is the " + rankText + " of " + suitText + "?");
+    var row = $('#chatbox_row').val()
+    var col = $('#chatbox_col').val()
+    var code =  row + col;
+    var origMsg = ("Is " + code + " safe?");
     var timeElapsed = Date.now() - game.roundStartTime;
-    var msg = ['chatMessage', code, origMsg.replace(/\./g, '~~~'), timeElapsed, 'human']
+    var msg = ['chatMessage', code,
+	       origMsg.replace(/\./g, '~~~'), timeElapsed, 'human']
 	.join('.');
-    if(rankText != '' && suitText != '') {
+    if(row != '' && col != '') {
       game.socket.send(msg);
       game.sentTyping = false;
-      $("#chatbox_rank").val('');
-      $("#chatbox_suit").val('');
+      $("#chatbox_row").val('');
+      $("#chatbox_col").val('');
       $('#chatbutton').attr('disabled', 'disabled');                  
     }
     return false;   
