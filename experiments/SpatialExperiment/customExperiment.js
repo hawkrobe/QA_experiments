@@ -55,50 +55,17 @@ class RefGameExperiment {
   constructMap (trialInfo) {
     console.log(trialInfo);
     if(trialInfo.mapType == 'catch') {
-      return {full: [['g', 'g', 'g', 'g'],
-		     ['g', 'g', 'g', 'g'],
-		     ['r', 'r', 'r', 'r'],
-		     ['r', 'r', 'r', 'r']],
-	      init: [['o', 'o', 'x', 'x'],
-		     ['x', 'x', 'x', 'x'],
-		     ['x', 'x', 'x', 'x'],
-		     ['x', 'x', 'x', 'x']],
+      return {full: {A1: 'g', A2: 'g', A3: 'g', A4: 'g',
+		     B1: 'g', B2: 'g', B3: 'g', B4: 'g',
+		     C1: 'r', C2: 'r', C3: 'r', C4: 'r',
+		     D1: 'r', D2: 'r', D3: 'r', D4: 'r'},
+	      initRevealed: ['A1', 'A2'],
 	      role: trialInfo.role};
-    //}  else if(goalType == 'overlap') {
-    //   var overlappingGoal = _.sampleSize(hiddenCards, 1)[0]['name'];
-    //   var otherGoals = _.filter(hiddenCards, v => v.name != overlappingGoal);
-    //   return makeGoalObject(_.map(_.sampleSize(otherGoals, 2),
-    // 				  v => [v.name, overlappingGoal]));
-    // } else if(goalType == 'baseline') {
-    //   var goal1 = _.map(_.sampleSize(hiddenCards, 2), 'name');
-    //   var others = _.filter(hiddenCards, v => !_.includes(goal1, v.name));
-    //   var goal2 = _.map(_.sampleSize(others, 2), 'name');
-    //   return makeGoalObject([goal1, goal2]);
-    // } else if(goalType == 'practice') {
-    // return makeGoalObject([_.map(_.sampleSize(hiddenCards, 2), 'name')]);
     } else {
       console.error('map type ' + trialInfo.mapType + ' not yet implemented');
     }
   }
 
-  // sampleTrial (trialInfo) {
-  //   // Sample the goal sets and pick one to be the target
-  //   var goalSets = this.constructMap(trialInfo.goalType);
-    
-  //   // Sample places to put cards
-  //   var locs = sampleStimulusLocs(trialInfo.numCards);
-  //   return _.extend({}, trialInfo, {
-  //     goalSets,
-  //     target,
-  //     hiddenCards: _.map(hiddenCards, function(obj, index) {
-  // 	return _.extend({}, obj, {
-  // 	  gridX: locs[index]['x'],
-  // 	  gridY: locs[index]['y']
-  // 	});
-  //     })
-  //   });
-  // }
-    
   // Take condition as argument
   // construct context list w/ statistics of condition
   makeTrialList () {
@@ -164,8 +131,8 @@ class RefGameExperiment {
   */
   dataOutput () {
     function commonOutput (client, message_data) {
-      var target = client.game.currStim.target;
-      var distractor = target == 'g1' ? 'g0' : 'g1';
+      //var target = client.game.currStim.target;
+      //var distractor = target == 'g1' ? 'g0' : 'g1';
       console.log(client.game.currStim);
       return {
 	iterationName: client.game.iterationName,
@@ -175,8 +142,8 @@ class RefGameExperiment {
 	assignmentId: client.assignmentid,
 	trialNum: client.game.roundNum,
 	trialType: client.game.currStim.currGoalType,
-	targetGoalSet: client.game.currStim.goalSets[target],
-	distractorGoalSet: client.game.currStim.goalSets[distractor],
+	// targetGoalSet: client.game.currStim.goalSets[target],
+	// distractorGoalSet: client.game.currStim.goalSets[distractor],
 	firstRole: client.game.firstRole
       };
     };
