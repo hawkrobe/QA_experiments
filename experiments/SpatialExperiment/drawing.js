@@ -45,10 +45,10 @@ var advanceRound = function(event) {
   
   // Stop letting people click stuff
   $('#advance_button').show().attr('disabled', 'disabled');
-  disableCards(game.selections);
+  disableCells(game.selections);
 
   var timeElapsed = Date.now() - game.messageReceivedTime;
-  game.revealedCards = game.revealedCards.concat(game.selections);  
+  game.revealedCells = game.revealedCells.concat(game.selections);  
   game.socket.send("reveal.human." + timeElapsed + '.' +
 		   game.selections.join('.'));
   game.messageSent = false;
@@ -80,6 +80,11 @@ function handleHighlighting(game, imgSelector, name) {
 
 function setupTokenPlacingHandlers(game) {
   $('img.pressable').click(function(event) {
+    // Log as revealed
+    var buttonName = $(this).attr('id').split('-')[1];
+    game.revealedCells.push(buttonName);
+    game.checkGrid();
+    // replace button with underlying state
     $(this).siblings().show();
     $(this).remove();
   });
@@ -87,21 +92,22 @@ function setupTokenPlacingHandlers(game) {
 
 function initGrid(game) {
   // Add objects to grid
-  _.forEach(_.range(4), x => {
-    _.forEach(_.range(4), y => {
-      var underlying = game.fullMap[x][y];
-      var initialize = game.initMap[x][y] == 'o';   
-      console.log(underlying);
-      console.log(initialize);
+  _.forEach(['A','B','C','D'], (rowName, i) => {
+    _.forEach(_.range(1,5), (colName, j) => {
+      var underlying = game.fullMap[rowName + colName];
+      var initialize = _.includes(game.initRevealed, rowName + colName);
       var div = $('<div/>');
       var underlyingState = $('<img/>')
 	  .addClass('underlying_' + underlying)
-	  .css({'grid-column': x, 'grid-row': y});
+	  .attr({'id' : 'underlying-state-' + rowName + colName})
+	  .css({'grid-row': i, 'grid-column': j});
       div.append(underlyingState);
 
       if(game.my_role == game.playerRoleNames.role1 && !initialize) {
 	underlyingState.css({display: 'none'});
-	div.append($('<img/>').addClass('pressable'));
+	div.append($('<img/>')
+		   .addClass('pressable')
+		   .attr({'id' : 'button-'+rowName+colName}));
       }
       $("#context").append(div);
     });
@@ -118,26 +124,25 @@ function initGrid(game) {
   }
 }
 
-function fadeInSelections(cards){
-    _.forEach(cards, name => {
-      var col = $(`img[data-name="${name}"]`).parent().css('grid-column')[0];
-      var row = $(`img[data-name="${name}"]`).parent().css('grid-row')[0];
-      $('#haze-' + col + row).hide();
-      $(`img[data-name="${name}"]`)
-	.css({opacity: 0.0})
-	.show()
-	.css({opacity: 1, 'transition': 'opacity 2s linear'});
-    });
-  }
+function fadeInSelections(cells){
+  console.log(cells);
+  _.forEach(cells, loc => {
+    $('#button-' + loc).hide();
+    $('#underlying-state-' + loc)
+      .css({opacity: 0.0})
+      .show()
+      .css({opacity: 1, 'transition': 'opacity 2s linear'});
+  });
+}
 
-function disableCards(cards) {
-    _.forEach(cards, (name) => {
+function disableCells(cells) {
+    _.forEach(cells, (name) => {
       // Disable card
-      console.log('disabling' + cards);
-      var cardElement = $(`img[data-name="${name}"]`);
-      cardElement.css({'transition' : 'opacity 1s', opacity: 0.2});
-      cardElement.off('click');
-      cardElement.parent().css({'border-color' : 'white', 'border-width': '1px'});
+      console.log('disabling' + cells);
+      var cellElement = $(`img[data-name="${name}"]`);
+      cellElement.css({'transition' : 'opacity 1s', opacity: 0.2});
+      cellElement.off('click');
+      cellElement.parent().css({'border-color' : 'white', 'border-width': '1px'});
     });
   }
 
@@ -192,7 +197,7 @@ function reset (game, data) {
 module.exports = {
   confetti,
   drawScreen,
-  disableCards,
+  disableCells,
   fadeInSelections,
   reset
 };
