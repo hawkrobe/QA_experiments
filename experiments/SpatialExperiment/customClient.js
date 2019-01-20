@@ -13,12 +13,13 @@ function updateState (game, data){
   }
 
   game.fullMap = data.currStim.full;
-  game.initMap = data.currStim.init;
-  game.objects = _.map(data.currStim.hiddenCards, function(obj) {
-    var imgObj = new Image(); //initialize object as an image (from HTML5)
-    imgObj.src = obj.url; // tell client where to find it
-    return _.extend(obj, {img: imgObj});
-  });
+  game.initRevealed = data.currStim.initRevealed;
+  game.revealedCells = game.initRevealed;
+  // game.objects = _.map(data.currStim.hiddenCards, function(obj) {
+  //   var imgObj = new Image(); //initialize object as an image (from HTML5)
+  //   imgObj.src = obj.url; // tell client where to find it
+  //   return _.extend(obj, {img: imgObj});
+  // });
 
   game.active = data.active;
   game.roundNum = data.roundNum;
@@ -29,15 +30,33 @@ var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
 };
 
-var checkCards = function(game) {
-  var targetCards = game.goalSets[game.targetGoal];
-  return _.isEqual(_.intersection(targetCards, game.revealedCards),
-		   targetCards);
-}
-
 var customEvents = function(game) {
   console.log('launched custom events');
-  // Update messages log when other players send chat  
+  // Update messages log when other players send chat
+
+  // Win condition is to safely complete row/col
+  game.checkGrid = function() {
+    console.log('checking grid');
+    var revealedCells = this.revealedCells;
+    var goodness = _.map(revealedCells, cell => this.fullMap[cell]);
+    var completeCol = _.map(_.range(1,5), colName => {
+      return _.filter(revealedCells, cellName => cellName[1] == colName);
+    });
+    var completeRow = _.map(['A','B','C','D'], rowName => {
+      return _.filter(revealedCells, cellName => cellName[0] == rowName);
+    });
+    if(_.includes(goodness, 'r')) {
+      console.log('failed');
+      return 'fail';
+    } else if (_.some(completeRow, row => row.length == 4) ||
+	       _.some(completeCol, col => col.length == 4)) {
+      console.log('win');
+      return 'win';
+    } else {
+      return 'continue';
+    }
+  }
+
   game.socket.on('chatMessage', function(data){
     game.numQuestionsAsked += 1;
     game.messageReceivedTime = Date.now();
@@ -62,7 +81,7 @@ var customEvents = function(game) {
 
   game.socket.on('updateScore', function(data) {
     var numGoals = game.goalSets[game.targetGoal].length;
-    var numRevealed = game.revealedCards.length;
+    var numRevealed = game.revealedCells.length;
     var numQuestionsAsked = game.numQuestionsAsked;
     var revealPenalty = (numRevealed - numGoals);
     var questionPenalty = (numQuestionsAsked - 1);
@@ -84,12 +103,16 @@ var customEvents = function(game) {
   
   game.socket.on('reveal', function(data) {    
     // Fade in revealed cards
-    if(game.my_role == 'seeker') {
+    console.log('received...')
+    console.log(data);
+    if(game.my_role == game.playerRoleNames.role1) {
       UI.fadeInSelections(data.selections);
     }
-    if(checkCards(game)) {
+    if(game.checkGrid() == 'win') {
       game.socket.emit('allCardsFound', data);
-    } else if (game.bot.role == 'seeker') {
+    } else if (game.checkGrid() == 'fail') {
+      game.socket.emit('fail', data);
+    } else if (game.bot.role == game.playerRoleNames.role1) {
       game.bot.showQuestion();
     } else {
       $('#chatbutton').removeAttr('disabled');
@@ -123,7 +146,7 @@ var customEvents = function(game) {
     game.getPlayer(game.my_id).message = "";
     game.messageSent = false;
     game.numQuestionsAsked = 0;
-    game.revealedCards = [];
+    game.revealedCells = [];
 
     if(data.active) {
       updateState(game, data);
@@ -142,21 +165,14 @@ var customEvents = function(game) {
 class Bot {
   constructor(game, data) {
     this.game = game;
-    this.role = data.currStim.role == 'helper' ? 'seeker' : 'helper';
+    this.role = data.currStim.role == 'helper' ? 'leader' : 'helper';
     this.goalSets = data.currStim.goalSets;
     this.targetSet = data.currStim.target;
   }
 
   // Always asks about non-overlapping card
-  showQuestion() {
+  help() {
     // remove revealed cards from goal set, so it won't keep asking about same card
-    var goalSet = _.difference(this.goalSets[this.targetSet], this.game.revealedCards);
-    var code = goalSet[0];
-    var rank = code.slice(0,-1);
-    var suit = code.slice(-1);    
-    var rankText = $(`#chatbox_rank option[value='${rank}']`).text();
-    var suitText = $(`#chatbox_suit option[value='${suit}']`).text();    
-    var msg = "Where is the " + rankText + ' of ' + suitText + '?';
     $('#messages')
       .append('<span class="typing-msg">Other player is typing... Study the possible combos!</span>')
       .stop(true,true)
@@ -168,25 +184,11 @@ class Bot {
       this.game.socket.send("chatMessage." + code + '.' + msg + '.5000.bot');
     }.bind(this), 5000);
   }
-  
+
+  // Currently reveals random (will set up pragmatic cases later)
   revealAnswer(cardAskedAbout) {
-    var goalSet = this.goalSets[this.targetSet];
-    var overlap = _.intersection(this.goalSets['g0'], this.goalSets['g1']);
-    var inGoal = _.includes(goalSet, cardAskedAbout);
-    var remainingCards = _.difference(_.map(this.game.objects, 'name'),
-			     this.game.revealedCards);
-    var cardExists = _.includes(remainingCards, cardAskedAbout);
-
-    // only reveal full set if seeker asks 'pragmatic' question;
-    // otherwise respond literally. 
-    // if card doesn't exist, pick a random one from goal sets...?
-    var selections = (
-      cardExists ?
-	(cardAskedAbout == overlap || !inGoal ? [cardAskedAbout] : goalSet) :
-      [_.sample(_.sample(this.goalSets))]
-    );
-
-    this.game.revealedCards = _.concat(this.game.revealedCards, selections);
+    var selections = ['A2'];
+    this.game.revealedCells = _.concat(this.game.revealedCells, selections);
     setTimeout(function() {
       this.game.socket.send("reveal.bot.2500." + selections.join('.'));      
     }.bind(this), 2500);
