@@ -115,6 +115,25 @@ function fadeInSelections(cells){
   });
 }
 
+function giveAdditionalInfo(event) {
+  var game = event.data.game;
+  var response = event.data.response;
+
+  // parse preformatted message text
+  var askedAboutCell = $('#messages').text().split(' ')[2];
+  if(response == 'no') {
+    // If they don't want to give more info, go ahead and sent the message
+    var msg = $('#yes-no-dropdown option:selected').text();
+    game.socket.send("reveal.human." + askedAboutCell);
+    game.socket.send(['chatMessage', askedAboutCell,
+		      msg, 5000, 'human', game.my_role].join('.'));
+  } else {
+    // Otherwise give them menu for pragmatic answer...
+    $('#additional_info_init').show();
+  }
+  $('#additional_info').hide();
+}
+
 function fadeOutSelections(cells) {
   _.forEach(cells, (name) => {
     var cellElement = $('#underlying-state-' + name);
@@ -130,6 +149,7 @@ function drawScreen (game) {
     $('#waiting').html('');
     confetti.reset();
     initGrid(game);
+    
   }
 };
 
@@ -153,15 +173,19 @@ function reset (game, data) {
   $('#roleLabel').empty().append("You are the " + game.my_role + '.');
   $('#instructs').empty();
   if(game.my_role === game.playerRoleNames.role1) {
-    $('#chatarea').show();      
+    $('#leaderchatarea').show();
+    $('#helperchatarea').hide();          
     $('#instructs')
       .append("<p>Fill in the question so your partner</p> " +
 	      "<p>can help you complete the highlighted combo!</p>");
   } else if(game.my_role === game.playerRoleNames.role2) {
-    $('#chatarea').hide();
+    $('#leaderchatarea').hide();
+    $('#helperchatarea').show();    
     $('#instructs')
       .append("<p>After your partner types their question, </p>" 
 	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
+    $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
+    $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);    
   }
   drawScreen(game);
 }

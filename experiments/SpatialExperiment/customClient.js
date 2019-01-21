@@ -182,7 +182,8 @@ class Bot {
     var code = 'A2';
     var msg = 'Is ' + code + ' safe?';
     setTimeout(function() {
-      this.game.socket.send("chatMessage." + code + '.' + msg + '.5000.bot');
+      this.game.socket.send(["chatMessage", code, msg,
+			     5000, 'bot', this.role].join('.'));
     }.bind(this), 5000);
   }
 

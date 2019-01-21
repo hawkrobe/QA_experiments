@@ -38,7 +38,7 @@
         <div id='message_panel'>
 	  <ul id="messages"></ul>
           <hr>
-          <div id="chatarea">
+	  <div id="leaderchatarea">
             <form action="">
               <p style='padding: 10px; text-align: left; vertical-align: center; display:inline-block; font-size: 150%;'>
 		<span>
@@ -63,7 +63,54 @@
 	      <br>
               <input type="submit" id="chatbutton" value="Send"></input>
             </form>
+          </div><div id="helperchatarea">
+            <form action="">
+              <p style="padding: 10px; text-align: left; \
+			vertical-align: center; display:inline-block; \
+			font-size: 150%;">
+		<span>
+		  <select id="yes-no-dropdown"
+			  onchange="$('#additional_info').show()"
+			  style="font-size: 125%;display:inline-block;">
+		    <option value=""></option>
+		    <option value="yes">Yes, it is safe</option>
+		    <option value="no">No, it isn't safe</option>
+		  </select>
+		  <p id="additional_info" style="display:none">
+		    Great! Would you like to provide additional information for the helper?
+		    <br>
+		    <button id="yes_button" style="font-size: 125%">
+		      Yes, let me send more information!
+		    </button>
+		    <button id="no_button" style="font-size:125%">
+		      No, just send my yes/no answer.
+		    </button>
+		  </p>
+		  <div id="additional_info_init" style="display:none">
+		    but
+		    <select id="helper_row" style="font-size: 125%;display:inline-block;">
+		      <option value=""></option>
+		      <option value="A">A</option>
+		      <option value="B">B</option>
+		      <option value="C">C</option>
+		      <option value="D">D</option>
+		    </select>
+		    <select id="helper_col" style="font-size: 125%;display:inline-block;">
+		      <option value=""></option>
+		      <option value="1">1</option>
+		      <option value="2">2</option>
+		      <option value="3">3</option>
+		      <option value="4">4</option>
+		    </select>
+		    is!
+		  </div>
+		</span>
+	      </p>
+	      <br>
+              <input type="submit" id="chatbutton" value="Send"></input>
+            </form>
           </div>
+
         </div>
 	<div id='context_panel'>
 	  <div id="context" class="grid"></div>
