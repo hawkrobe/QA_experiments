@@ -40,25 +40,30 @@ function dropdownTip(data){
   }
 }
 
-var advanceRound = function(event) {
+var sendAnswer = function(event) {
   var game = event.data.game;
   var timeElapsed = Date.now() - game.messageReceivedTime;
   game.revealedCells = game.revealedCells.concat(game.selections);  
   game.socket.send("reveal.human." + timeElapsed + '.' +
 		   game.selections.join('.'));
-  game.messageSent = false;
+  game.answerSent = true;
+  game.questionSent = false;  
   game.selections = [];
 };
 
 function setupLeaderHandlers(game) {
   $('img.pressable').click(function(event) {
-    // Log as revealed
-    var buttonName = $(this).attr('id').split('-')[1];
-    game.revealedCells.push(buttonName);
-    game.checkGrid();
-    // replace button with underlying state
-    $(this).siblings().show().css({'opacity' : 1});
-    $(this).remove();
+    // Only let leader click once they've heard answer back
+    if(game.answerSent) {
+      // Log as revealed
+      var buttonName = $(this).attr('id').split('-')[1];
+      game.revealedCells.push(buttonName);
+      game.checkGrid();
+
+      // replace button with underlying state
+      $(this).siblings().show().css({'opacity' : 1});
+      $(this).remove();
+    }
   });
 }
 
@@ -77,15 +82,11 @@ function initGrid(game) {
       div.append(underlyingState);
 
       if(game.my_role == game.playerRoleNames.role1 && !initialize) {
-	//underlyingState.css({display: 'none'});
 	div.append($('<img/>')
 		   .addClass('pressable')
 		   .attr({'id' : 'button-'+rowName+colName})
 		   .css({'z-index' : 2, position: 'absolute'}));
       }
-      // } else if(game.my_role == game.playerRoleNames.role2 && initialize) {
-      // 	underlyingState.css({'opacity' : .25, 'pointer-events' : 'none'});
-      // }
       $("#context").append(div);
     });
   });
