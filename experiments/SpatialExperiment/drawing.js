@@ -42,11 +42,6 @@ function dropdownTip(data){
 
 var advanceRound = function(event) {
   var game = event.data.game;
-  
-  // Stop letting people click stuff
-  $('#advance_button').show().attr('disabled', 'disabled');
-  disableCells(game.selections);
-
   var timeElapsed = Date.now() - game.messageReceivedTime;
   game.revealedCells = game.revealedCells.concat(game.selections);  
   game.socket.send("reveal.human." + timeElapsed + '.' +
@@ -54,29 +49,6 @@ var advanceRound = function(event) {
   game.messageSent = false;
   game.selections = [];
 };
-
-function handleButton(game) {
-  // Disable or enable button to fit logic
-  if(game.selections.length > 0) {
-    $('#advance_button').removeAttr('disabled');
-  } else {
-    $('#advance_button').attr('disabled', 'disabled');
-  }
-}
-
-function handleHighlighting(game, imgSelector, name) {
-  var alreadyClicked = _.includes(game.selections, name);
-  var cellSelector = imgSelector.parent();
-  if(alreadyClicked) {
-    _.remove(game.selections, obj => obj == name);    
-    cellSelector.css({'border-color' : 'white', 'border-width' : '1px'});
-  } else if (game.selections.length < 2) {
-    game.selections.push(name);
-    cellSelector.css({'border-color' : '#32CD32', 'border-width' : '5px'});
-  }
-  $('#feedback').empty().append(game.selections.length +
-				'/2 possible cards selected');
-}
 
 function setupLeaderHandlers(game) {
   $('img.pressable').click(function(event) {
@@ -87,15 +59,6 @@ function setupLeaderHandlers(game) {
     // replace button with underlying state
     $(this).siblings().show().css({'opacity' : 1});
     $(this).remove();
-  });
-}
-
-
-function setupHelperHandlers(game) {
-  $('img').click(function(event) {
-    // Highlight
-    var cellName = $(this).attr('id').split('-')[1];
-    handleHighlighting(game, $(this), cellName);
   });
 }
 
@@ -134,9 +97,7 @@ function initGrid(game) {
   // Allow listener to click on things
   game.selections = [];
   if (game.my_role === game.playerRoleNames.role1) {
-    setupLeaderHandlers(game); 
-  } else {
-    setupHelperHandlers(game); 
+    setupLeaderHandlers(game);
   }
 }
 
@@ -149,20 +110,16 @@ function fadeInSelections(cells){
     $('#underlying-state-' + loc)
       .css({opacity: 0, 'pointer-events' : 'none'})
       .show()
-      .css({opacity: 0.25, 'transition': 'opacity 2s linear'});
+      .css({opacity: 0.25, 'transition': 'opacity 1s linear'});
   });
 }
 
-function disableCells(cells) {
-    _.forEach(cells, (name) => {
-      // Disable card
-      console.log('disabling' + cells);
-      var cellElement = $(`img[data-name="${name}"]`);
-      cellElement.css({'transition' : 'opacity 1s', opacity: 0.2});
-      cellElement.off('click');
-      cellElement.parent().css({'border-color' : 'white', 'border-width': '1px'});
-    });
-  }
+function fadeOutSelections(cells) {
+  _.forEach(cells, (name) => {
+    var cellElement = $('#underlying-state-' + name);
+    cellElement.css({'transition' : 'opacity 1s', opacity: 0.2});
+  });
+}
 
 function drawScreen (game) {
   var player = game.getPlayer(game.my_id);
@@ -201,10 +158,6 @@ function reset (game, data) {
 	      "<p>can help you complete the highlighted combo!</p>");
   } else if(game.my_role === game.playerRoleNames.role2) {
     $('#chatarea').hide();
-    $('#feedback').append('0/2 possible cards selected');
-    $('#advance_button').show()
-      .attr('disabled', 'disabled')
-      .click({game: game}, advanceRound);
     $('#instructs')
       .append("<p>After your partner types their question, </p>" 
 	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
@@ -215,7 +168,7 @@ function reset (game, data) {
 module.exports = {
   confetti,
   drawScreen,
-  disableCells,
+  fadeOutSelections,
   fadeInSelections,
   reset
 };

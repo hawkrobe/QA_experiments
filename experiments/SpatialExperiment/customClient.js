@@ -96,8 +96,6 @@ var customEvents = function(game) {
     $('#score').empty().append('total bonus: $' + bonus_score);
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});
-    $("#goals").fadeOut(1000, function() {$(this).empty();});
-    $('#advance_button').hide();
     UI.confetti.drop();
   });
   
@@ -105,7 +103,10 @@ var customEvents = function(game) {
     // Fade in revealed cards
     if(game.my_role == game.playerRoleNames.role1) {
       UI.fadeInSelections(data.selections);
+    } else {
+      UI.fadeOutSelections(data.selections);
     }
+
     // See if game is over...
     if(!game.checkGrid()) {
       if (game.bot.role == game.playerRoleNames.role1) {
@@ -175,7 +176,7 @@ class Bot {
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    var code = 'A2'
+    var code = 'A2';
     var msg = 'Is ' + code + ' safe?';
     setTimeout(function() {
       this.game.socket.send("chatMessage." + code + '.' + msg + '.5000.bot');
