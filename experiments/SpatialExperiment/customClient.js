@@ -36,7 +36,6 @@ var customEvents = function(game) {
 
   // Win condition is to safely complete row/col
   game.checkGrid = function() {
-    console.log('checking grid');
     var revealedCells = this.revealedCells;
     var goodness = _.map(revealedCells, cell => this.fullMap[cell]);
     var completeCol = _.map(_.range(1,5), colName => {
@@ -46,21 +45,22 @@ var customEvents = function(game) {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
     if(_.includes(goodness, 'r')) {
-      console.log('failed');
-      return 'fail';
+      game.socket.emit('fail', {});
+      return true;
     } else if (_.some(completeRow, row => row.length == 4) ||
 	       _.some(completeCol, col => col.length == 4)) {
-      console.log('win');
-      return 'win';
+      game.socket.emit('allCardsFound', {});
+      return true;
     } else {
-      return 'continue';
+      return false;
     }
   }
-
+  
   game.socket.on('chatMessage', function(data){
     game.numQuestionsAsked += 1;
     game.messageReceivedTime = Date.now();
-    var source = game.my_role == "seeker" ? 'You' : "Seeker";
+    console.log(data);
+    var source = game.my_role == "leader" ? 'You' : "leader";
     // To bar responses until speaker has uttered at least one message
     if(source !== "You"){
       game.messageSent = true;
@@ -74,7 +74,7 @@ var customEvents = function(game) {
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    if(game.bot.role == 'helper') {
+    if(game.bot.role == 'helper' && data.sender == 'human') {
       game.bot.revealAnswer(data.code);
     }
   });
@@ -103,21 +103,18 @@ var customEvents = function(game) {
   
   game.socket.on('reveal', function(data) {    
     // Fade in revealed cards
-    console.log('received...')
-    console.log(data);
     if(game.my_role == game.playerRoleNames.role1) {
       UI.fadeInSelections(data.selections);
     }
-    if(game.checkGrid() == 'win') {
-      game.socket.emit('allCardsFound', data);
-    } else if (game.checkGrid() == 'fail') {
-      game.socket.emit('fail', data);
-    } else if (game.bot.role == game.playerRoleNames.role1) {
-      game.bot.showQuestion();
-    } else {
-      $('#chatbutton').removeAttr('disabled');
-      game.messageSent = false;
-    }
+    // See if game is over...
+    if(!game.checkGrid()) {
+      if (game.bot.role == game.playerRoleNames.role1) {
+	game.bot.showQuestion();
+      } else {
+	$('#chatbutton').removeAttr('disabled');
+	game.messageSent = false;
+      }    
+    } 
   });
 
   // Tell server when client types something in the chatbox
@@ -156,7 +153,7 @@ var customEvents = function(game) {
     }
 
     // Kick things off by asking a question 
-    if(game.bot.role == 'seeker') {
+    if(game.bot.role == 'leader') {
       game.bot.showQuestion();
     }
   });
@@ -166,31 +163,37 @@ class Bot {
   constructor(game, data) {
     this.game = game;
     this.role = data.currStim.role == 'helper' ? 'leader' : 'helper';
-    this.goalSets = data.currStim.goalSets;
-    this.targetSet = data.currStim.target;
+    this.fullMap = data.currStim.full;
   }
 
   // Always asks about non-overlapping card
-  help() {
+  showQuestion() {
     // remove revealed cards from goal set, so it won't keep asking about same card
     $('#messages')
-      .append('<span class="typing-msg">Other player is typing... Study the possible combos!</span>')
+      .append('<span class="typing-msg">Other player is selecting question... Study the grid!</span>')
       .stop(true,true)
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-
+    var code = 'A2'
+    var msg = 'Is ' + code + ' safe?';
     setTimeout(function() {
       this.game.socket.send("chatMessage." + code + '.' + msg + '.5000.bot');
     }.bind(this), 5000);
   }
 
-  // Currently reveals random (will set up pragmatic cases later)
-  revealAnswer(cardAskedAbout) {
-    var selections = ['A2'];
+  // Currently reveals literal card (will set up pragmatic cases later)
+  revealAnswer(cellAskedAbout) {
+    var selections = [cellAskedAbout];
     this.game.revealedCells = _.concat(this.game.revealedCells, selections);
+    var msg = (this.fullMap[cellAskedAbout] == 'g' ?
+	       'Yes, ' + cellAskedAbout + ' is safe' :
+	       'No, ' + cellAskedAbout + ' is not safe');
     setTimeout(function() {
-      this.game.socket.send("reveal.bot.2500." + selections.join('.'));      
+      console.log('triggered');
+      this.game.socket.send("reveal.bot.2500." + selections.join('.'));
+      this.game.socket.send(['chatMessage', cellAskedAbout,
+			     msg, 5000, 'bot'].join('.'));
     }.bind(this), 2500);
   }
 }
