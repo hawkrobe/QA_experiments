@@ -78,7 +78,7 @@ function handleHighlighting(game, imgSelector, name) {
 				'/2 possible cards selected');
 }
 
-function setupTokenPlacingHandlers(game) {
+function setupLeaderHandlers(game) {
   $('img.pressable').click(function(event) {
     // Log as revealed
     var buttonName = $(this).attr('id').split('-')[1];
@@ -90,25 +90,39 @@ function setupTokenPlacingHandlers(game) {
   });
 }
 
+
+function setupHelperHandlers(game) {
+  $('img').click(function(event) {
+    // Highlight
+    var cellName = $(this).attr('id').split('-')[1];
+    handleHighlighting(game, $(this), cellName);
+  });
+}
+
 function initGrid(game) {
   // Add objects to grid
   _.forEach(['A','B','C','D'], (rowName, i) => {
     _.forEach(_.range(1,5), (colName, j) => {
       var underlying = game.fullMap[rowName + colName];
       var initialize = _.includes(game.initRevealed, rowName + colName);
-      var div = $('<div/>');
+      var div = $('<div/>').css({position: 'relative'});
       var underlyingState = $('<img/>')
 	  .addClass('underlying_' + underlying)
 	  .attr({'id' : 'underlying-state-' + rowName + colName})
-	  .css({'grid-row': i, 'grid-column': j});
+	  .css({'grid-row': i, 'grid-column': j,
+		'z-index': 1, position: 'absolute', left:'0px'});
       div.append(underlyingState);
 
       if(game.my_role == game.playerRoleNames.role1 && !initialize) {
-	underlyingState.css({display: 'none'});
+	//underlyingState.css({display: 'none'});
 	div.append($('<img/>')
 		   .addClass('pressable')
-		   .attr({'id' : 'button-'+rowName+colName}));
-      }
+		   .attr({'id' : 'button-'+rowName+colName})
+		   .css({'z-index' : 2, position: 'absolute'}));
+
+      // } else if(game.my_role == game.playerRoleNames.role2 && initialize) {
+      // 	underlyingState.css({'opacity' : .25, 'pointer-events' : 'none'});
+      // }
       $("#context").append(div);
     });
   });
@@ -118,20 +132,24 @@ function initGrid(game) {
     .off('click');
 
   // Allow listener to click on things
+  game.selections = [];
   if (game.my_role === game.playerRoleNames.role1) {
-    game.selections = [];
-    setupTokenPlacingHandlers(game); 
+    setupLeaderHandlers(game); 
+  } else {
+    setupHelperHandlers(game); 
   }
 }
 
 function fadeInSelections(cells){
-  console.log(cells);
   _.forEach(cells, loc => {
-    $('#button-' + loc).hide();
+    // Move state to front
     $('#underlying-state-' + loc)
-      .css({opacity: 0.0})
+      .css({'z-index': 3});
+    // Fade in
+    $('#underlying-state-' + loc)
+      .css({opacity: 0, 'pointer-events' : 'none'})
       .show()
-      .css({opacity: 1, 'transition': 'opacity 2s linear'});
+      .css({opacity: 0.25, 'transition': 'opacity 2s linear'});
   });
 }
 
