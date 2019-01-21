@@ -27,7 +27,7 @@ class RefGameExperiment {
     this.trialList = [];
     this.numRounds = config.numRounds;
 //    this.objects = require('./images/objects.json');
-    this.firstRole = _.sample(['leader'])//, 'helper']);
+    this.firstRole = _.sample(['helper']);
   }
   
   customEvents (socket) {
@@ -100,7 +100,8 @@ class RefGameExperiment {
 	var msg = message_parts[2].replace(/~~~/g,'.');
 	_.map(all, function(p){
 	  p.player.instance.emit( 'chatMessage', {
-	    user: client.userid, msg: msg, code: message_parts[1]
+	    user: client.userid, msg: msg, code: message_parts[1],
+	    sender: message_parts[4]
 	  });
 	});
       }
