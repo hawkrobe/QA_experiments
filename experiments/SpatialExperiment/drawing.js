@@ -85,7 +85,7 @@ function setupLeaderHandlers(game) {
     game.revealedCells.push(buttonName);
     game.checkGrid();
     // replace button with underlying state
-    $(this).siblings().show();
+    $(this).siblings().show().css({'opacity' : 1});
     $(this).remove();
   });
 }
@@ -119,7 +119,7 @@ function initGrid(game) {
 		   .addClass('pressable')
 		   .attr({'id' : 'button-'+rowName+colName})
 		   .css({'z-index' : 2, position: 'absolute'}));
-
+      }
       // } else if(game.my_role == game.playerRoleNames.role2 && initialize) {
       // 	underlyingState.css({'opacity' : .25, 'pointer-events' : 'none'});
       // }
