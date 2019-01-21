@@ -57,24 +57,26 @@ var customEvents = function(game) {
   }
   
   game.socket.on('chatMessage', function(data){
-    game.numQuestionsAsked += 1;
-    game.messageReceivedTime = Date.now();
-    console.log(data);
-    var source = game.my_role == "leader" ? 'You' : "leader";
+    var source = (data.sender == 'human' ? 'You' :
+		  data.sender == "bot" ? data.source_role :
+		  console.log('unknown source'));
+    var color = source === "You" ? "#363636" : "#707070";    
     // To bar responses until speaker has uttered at least one message
-    if(source !== "You"){
-      game.messageSent = true;
+    if(data.source_role == "helper"){
+      game.answerSent = true;
+    } else {
+      game.questionSent = true;
     }
-    var col = source === "You" ? "#363636" : "#707070";
     $('.typing-msg').remove();
     $('#messages')
-      .append($('<li style="padding: 5px 10px; background: ' + col + '">')
+      .append($('<li style="padding: 5px 10px; background: ' + color + '">')
     	      .text(source + ": " + data.msg))
       .stop(true,true)
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    if(game.bot.role == 'helper' && data.sender == 'human') {
+    // If human asks questions, have bot respond with answer
+    if(data.sender == 'human' && data.source_role == 'leader') {
       game.bot.revealAnswer(data.code);
     }
   });
@@ -120,13 +122,13 @@ var customEvents = function(game) {
 
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
-    var row = $('#chatbox_row').val()
-    var col = $('#chatbox_col').val()
+    var row = $('#chatbox_row').val();
+    var col = $('#chatbox_col').val();
     var code =  row + col;
     var origMsg = ("Is " + code + " safe?");
     var timeElapsed = Date.now() - game.roundStartTime;
-    var msg = ['chatMessage', code,
-	       origMsg.replace(/\./g, '~~~'), timeElapsed, 'human']
+    var msg = ['chatMessage', code, origMsg.replace(/\./g, '~~~'),
+	       timeElapsed, 'human', game.my_role]
 	.join('.');
     if(row != '' && col != '') {
       game.socket.send(msg);
@@ -137,12 +139,13 @@ var customEvents = function(game) {
     }
     return false;   
   });
-
+  
   game.socket.on('newRoundUpdate', function(data){
     console.log('received update');
     game.bot = new Bot(game, data);
     game.getPlayer(game.my_id).message = "";
-    game.messageSent = false;
+    game.questionSent = false;
+    game.answerSent = false;    
     game.numQuestionsAsked = 0;
     game.revealedCells = [];
 
@@ -191,10 +194,9 @@ class Bot {
 	       'Yes, ' + cellAskedAbout + ' is safe' :
 	       'No, ' + cellAskedAbout + ' is not safe');
     setTimeout(function() {
-      console.log('triggered');
       this.game.socket.send("reveal.bot.2500." + selections.join('.'));
       this.game.socket.send(['chatMessage', cellAskedAbout,
-			     msg, 5000, 'bot'].join('.'));
+			     msg, 5000, 'bot', this.role].join('.'));
     }.bind(this), 2500);
   }
 }
