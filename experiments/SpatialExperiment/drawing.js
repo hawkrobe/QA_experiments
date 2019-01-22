@@ -115,6 +115,7 @@ function fadeInSelections(cells){
   });
 }
 
+// TODO: this will break if most recent message is not at top of messages window
 function giveAdditionalInfo(event) {
   var game = event.data.game;
   var response = event.data.response;
@@ -132,6 +133,8 @@ function giveAdditionalInfo(event) {
 }
 
 function fadeOutSelections(cells) {
+  console.log('fading out');
+  console.log(cells);
   _.forEach(cells, (name) => {
     var cellElement = $('#underlying-state-' + name);
     cellElement.css({'transition' : 'opacity 1s', opacity: 0.2});
@@ -182,7 +185,10 @@ function reset (game, data) {
       .append("<p>After your partner types their question, </p>" 
 	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
     $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
-    $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);    
+    $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
+    $('#answer_button').click({game: game}, function(event) {
+      event.data.game.sendAnswer();
+    });        
   }
   drawScreen(game);
 }
