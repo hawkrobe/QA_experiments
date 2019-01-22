@@ -14,7 +14,9 @@ class ServerRefGame extends ServerGame {
   }
 
   customEvents (socket) {
-    socket.on('allCardsFound', function(data) {
+    console.log('setting events');
+    socket.on('endRound', function(data) {
+      console.log('round ended...');
       var all = socket.game.activePlayers();
       setTimeout(function() {
 	_.map(all, function(p){
@@ -31,7 +33,7 @@ class ServerRefGame extends ServerGame {
   
   // 3 trials of each row, counterbalanced
   sampleMapSequence () {
-    var types = ['catch', 'catch'];
+    var types = ['catch', 'catch', 'pragmatic', 'pragmatic'];
     var otherRole = this.firstRole == 'leader' ? 'helper' : 'leader';
     return _.map(types, (type, i) => {
       return {mapType: type, role: i % 2 == 0 ? this.firstRole : otherRole};
@@ -40,13 +42,9 @@ class ServerRefGame extends ServerGame {
   
   constructMap (trialInfo) {
     const gameMap = new GameMap(trialInfo.mapType);
-    if(trialInfo.mapType == 'catch') {
-      return {full: gameMap['grid'],
-	      initRevealed: gameMap['initRevealed'],
-	      role: trialInfo.role};
-    } else {
-      console.error('map type ' + trialInfo.mapType + ' not yet implemented');
-    }
+    return {full: gameMap['grid'],
+	    initRevealed: gameMap['initRevealed'],
+	    role: trialInfo.role};
   }
 
   // Take condition as argument
@@ -206,9 +204,9 @@ class GameMap {
   
   sampleInitRevealed (transformation) {
     const grid = (this.trialType == 'catch' ? this.sampleInitRevealedCatch() :
+		  this.trialType == 'pragmatic' ? this.sampleInitRevealedPragmatic() :
 		  console.error('unknown trialType' + this.trialType));
     const dict = this.matrixToDict(transformation(grid));
-    console.log(dict);
     return _.filter(_.keys(dict), key => dict[key] === 'x');
   }
 
@@ -221,6 +219,17 @@ class GameMap {
     const initRevealed = [
       ['x' ,'x', 'x', 'o'],
       ['o', 'o', 'o', 'o'],
+      ['o', 'o', 'o', 'o'],
+      ['o', 'o', 'o', 'o']
+    ];
+    return Math.random() < .5 ? initRevealed : this.reflect(initRevealed);
+  }
+
+  // This allows 8 possible initial states
+  sampleInitRevealedPragmatic () {
+    const initRevealed = [
+      ['x' ,'x', 'o', 'o'],
+      ['x', 'o', 'o', 'o'],
       ['o', 'o', 'o', 'o'],
       ['o', 'o', 'o', 'o']
     ];
