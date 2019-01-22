@@ -15,12 +15,6 @@ function updateState (game, data){
   game.fullMap = data.currStim.full;
   game.initRevealed = data.currStim.initRevealed;
   game.revealedCells = game.initRevealed;
-  // game.objects = _.map(data.currStim.hiddenCards, function(obj) {
-  //   var imgObj = new Image(); //initialize object as an image (from HTML5)
-  //   imgObj.src = obj.url; // tell client where to find it
-  //   return _.extend(obj, {img: imgObj});
-  // });
-
   game.active = data.active;
   game.roundNum = data.roundNum;
   game.roundStartTime = Date.now();
@@ -63,6 +57,7 @@ var customEvents = function(game) {
 
   // Win condition is to safely complete row/col
   game.checkGrid = function() {
+    console.log('checking grid');
     var revealedCells = this.revealedCells;
     var goodness = _.map(revealedCells, cell => this.fullMap[cell]);
     var completeCol = _.map(_.range(1,5), colName => {
@@ -72,11 +67,13 @@ var customEvents = function(game) {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
     if(_.includes(goodness, 'r')) {
-      game.socket.emit('fail', {});
+      console.log('fail');
+      game.socket.emit('endRound', {outcome: 'fail'});
       return true;
     } else if (_.some(completeRow, row => row.length == 4) ||
 	       _.some(completeCol, col => col.length == 4)) {
-      game.socket.emit('allCardsFound', {});
+      console.log('success');
+      game.socket.emit('endRound', {outcome: 'success'});
       return true;
     } else {
       return false;
@@ -113,23 +110,21 @@ var customEvents = function(game) {
   });
 
   game.socket.on('updateScore', function(data) {
-    var numGoals = game.goalSets[game.targetGoal].length;
-    var numRevealed = game.revealedCells.length;
-    var numQuestionsAsked = game.numQuestionsAsked;
-    var revealPenalty = (numRevealed - numGoals);
-    var questionPenalty = (numQuestionsAsked - 1);
-    var score = (revealPenalty > 0 || questionPenalty > 0) ? 0 : game.bonusAmt;
+    console.log('update score');
+    var score = data.outcome == 'fail' ? 0 : game.bonusAmt;
     game.data.score += score;
     var bonus_score = (parseFloat(game.data.score) / 100
 		       .toFixed(2));
-    var feedbackMessage = (questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
-			   revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
-			   "Great job! You completed the combo in one exchange!");
-    $('#feedback').html(feedbackMessage + ' You earned $0.0' + score);
+    // var feedbackMessage = (questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
+    // 			   revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
+    // 			   "Great job! You completed the combo in one exchange!");
+    $('#feedback').html('You earned $0.0' + score);
     $('#score').empty().append('total bonus: $' + bonus_score);
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});
-    UI.confetti.drop();
+    if(data.outcome == 'success') {
+      UI.confetti.drop();
+    }
   });
   
   game.socket.on('reveal', function(data) {    
@@ -141,14 +136,15 @@ var customEvents = function(game) {
     }
 
     // See if game is over...
-    if(!game.checkGrid()) {
-      if (game.my_role == game.playerRoleNames.role2) {
+    //
+    if (game.my_role == game.playerRoleNames.role2) {
+      if(!game.checkGrid()) {
 	game.bot.showQuestion();
-      } else {
-	$('#question_button').removeAttr('disabled');
-	game.messageSent = false;
-      }    
-    } 
+      }
+    } else {
+      $('#question_button').removeAttr('disabled');
+      game.messageSent = false;
+    }    
   });
 
   // Tell server when answerer types something in the chatbox

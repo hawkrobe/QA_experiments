@@ -11,7 +11,7 @@
     "role1" : "leader",
     "role2" : "helper"
   },
-  "numRounds" : 1,
+  "numRounds" : 4,
   "numHorizontalCells" : 4,
   "numVerticalCells" : 4,
   "cellDimensions" : {
