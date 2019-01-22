@@ -31,8 +31,19 @@ var client_addnewround = function(game) {
 };
 
 var customEvents = function(game) {
-  console.log('launched custom events');
-  // Update messages log when other players send chat
+
+  // TODO: this will cause a bug if not the first message
+  game.sendAnswer = function(cells) {
+    var msg = $('#yes-no-dropdown option:selected').text();
+    var askedAboutCell = $('#messages').text().split(' ')[2];
+    $('#yes-no-dropdown').val('');
+    $('#helper_row').val('');
+    $('#helper_col').val('');
+    $('#helper_safe').val('');    
+    game.socket.send("reveal.human." + cells.join('.'));
+    game.socket.send(['chatMessage', cells.join('&'),
+		      msg, 5000, 'human', game.my_role].join('.'));
+  };
 
   // Win condition is to safely complete row/col
   game.checkGrid = function() {

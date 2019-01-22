@@ -123,10 +123,7 @@ function giveAdditionalInfo(event) {
   var askedAboutCell = $('#messages').text().split(' ')[2];
   if(response == 'no') {
     // If they don't want to give more info, go ahead and sent the message
-    var msg = $('#yes-no-dropdown option:selected').text();
-    game.socket.send("reveal.human." + askedAboutCell);
-    game.socket.send(['chatMessage', askedAboutCell,
-		      msg, 5000, 'human', game.my_role].join('.'));
+    game.sendAnswer([askedAboutCell]);
   } else {
     // Otherwise give them menu for pragmatic answer...
     $('#additional_info_init').show();
