@@ -3,17 +3,33 @@ var utils = require('./sharedUtils.js');
 var ServerGame = require('./game.js')['ServerGame'];
 var player = require('./player.js');
 
+function getAllMethodNames(obj) {
+  let methods = new Set();
+  while ((obj = Reflect.getPrototypeOf(obj))) {
+    let keys = Reflect.ownKeys(obj);
+    keys.forEach((k) => methods.add(k));
+  }
+  return methods;
+}
+
 class ReferenceGameServer {
   constructor(expPath) {
     this.expPath = expPath;
     this.customGame = require([__base, expPath, 'customGame.js'].join('/'));
     this.customConfig = require([__base, expPath, 'config.json'].join('/'));
-    
+
     // Track ongoing games
     this.games = {};
     this.gameCount = 0;
   }
 
+  validateGame(game) {
+    var methods = getAllMethodNames(game);
+    console.assert(methods.has('customEvents'), 'missing customEvents');
+    console.assert(methods.has('dataOutput'), 'missing dataOutput');
+    console.assert(methods.has('onMessage'), 'missing onMessage'); 
+  }
+  
   // if game relies on asynchronous stim logic, need to wait until everything
   // is fetched before starting game (otherwise race conditions)
   startGame(game) {
@@ -41,9 +57,9 @@ class ReferenceGameServer {
   // We'll just pass messages off to the server_onMessage function for now.
   connectPlayer(game, player) {
     player.game = game;
-    if(_.has(game, 'customEvents')) {
-      game.customEvents(player);
-    }
+
+    // Attach custom events
+    game.customEvents(player);
     
     player.on('message', function(m) {
       // Relay to user-provided onMessage function
@@ -72,6 +88,7 @@ class ReferenceGameServer {
     });
     
     var game = new this.customGame(config);
+    this.validateGame(game);
     this.connectPlayer(game, player);
     this.log('player ' + player.userid + ' created a game with id ' + game.id);
     
