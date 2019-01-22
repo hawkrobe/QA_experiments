@@ -33,17 +33,16 @@ class ServerRefGame extends ServerGame {
   sampleMapSequence () {
     var types = ['catch', 'catch'];
     var otherRole = this.firstRole == 'leader' ? 'helper' : 'leader';
-    console.log('first role is' + this.firstRole);
     return _.map(types, (type, i) => {
       return {mapType: type, role: i % 2 == 0 ? this.firstRole : otherRole};
     });
   }
   
   constructMap (trialInfo) {
+    const gameMap = new GameMap(trialInfo.mapType);
     if(trialInfo.mapType == 'catch') {
-      var grid = new GameMap()['grid'];
-      return {full: grid,
-	      initRevealed: ['A1', 'A2'],
+      return {full: gameMap['grid'],
+	      initRevealed: gameMap['initRevealed'],
 	      role: trialInfo.role};
     } else {
       console.error('map type ' + trialInfo.mapType + ' not yet implemented');
@@ -176,24 +175,58 @@ class ServerRefGame extends ServerGame {
 }
 
 class GameMap {
-  constructor() {
+  constructor(trialType) {
+    this.labels = [
+      'A1', 'A2', 'A3', 'A4',
+      'B1', 'B2', 'B3', 'B4',
+      'C1', 'C2', 'C3', 'C4',
+      'D1', 'D2', 'D3', 'D4'
+    ];
+    this.trialType = trialType;
+
     const origMap = [
       ['g' ,'g', 'g', 'g'],
       ['g', 'g', 'g', 'g'],
       ['r', 'r', 'r', 'r'],
       ['r', 'r', 'r', 'r']
     ];
-    const labels = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4',
-		    'C1', 'C2', 'C3', 'C4', 'D1', 'D2', 'D3', 'D4'];
-    var transformation = _.sample([
+
+    // Sample 1 of the 4 possible transformations
+    const transformation = _.sample([
       x => x,
       x => this.rotate(x),
       x => this.reflect(this.rotate(x)),
       x => this.rotate(this.reflect(this.rotate(x)))
     ]);
-    this.grid = _.zipObject(labels, _.flatten(transformation(origMap)));
+    this.initRevealed = this.sampleInitRevealed(transformation);
+    this.grid = this.matrixToDict(transformation(origMap));
+    console.log(this.initRevealed);
+    console.log(this.grid);
+  }
+  
+  sampleInitRevealed (transformation) {
+    const grid = (this.trialType == 'catch' ? this.sampleInitRevealedCatch() :
+		  console.error('unknown trialType' + this.trialType));
+    const dict = this.matrixToDict(transformation(grid));
+    console.log(dict);
+    return _.filter(_.keys(dict), key => dict[key] === 'x');
   }
 
+  matrixToDict (matrix) {
+    return _.zipObject(this.labels, _.flatten(matrix));
+  }
+  
+  // This allows 8 possible initial states
+  sampleInitRevealedCatch () {
+    const initRevealed = [
+      ['x' ,'x', 'x', 'o'],
+      ['o', 'o', 'o', 'o'],
+      ['o', 'o', 'o', 'o'],
+      ['o', 'o', 'o', 'o']
+    ];
+    return Math.random() < .5 ? initRevealed : this.reflect(initRevealed);
+  }
+  
   rotate (grid) {
     return _.zip(...grid);
   }
