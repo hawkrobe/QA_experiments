@@ -6,9 +6,8 @@ var player = require('./player.js');
 class ReferenceGameServer {
   constructor(expPath) {
     this.expPath = expPath;
+    this.customGame = require([__base, expPath, 'customGame.js'].join('/'));
     this.customConfig = require([__base, expPath, 'config.json'].join('/'));
-    this.customExperiment = require([__base, expPath, 'customExperiment.js'].join('/'));
-    this.customEvents = this.customExperiment.customEvents;
     
     // Track ongoing games
     this.games = {};
@@ -24,11 +23,13 @@ class ReferenceGameServer {
   /*
     Writes data specified by experiment instance to csv and/or mongodb
   */
-  writeData (client, eventType, message_parts) {
-    var output = this.customExperiment.dataOutput();
+  writeData (client, outputDict, message) {
+    var messageParts = message.split('.');
     var game = client.game;
-    if(_.has(output, eventType)) {
-      var dataPoint = _.extend(output[eventType](client, message_parts), {eventType});
+    var eventType = messageParts[0];
+    if(_.has(outputDict, eventType)) {
+      var dataPoint = _.extend(outputDict[eventType](client, messageParts),
+			       {eventType});
       if(_.includes(game.dataStore, 'csv'))
 	utils.writeDataToCSV(game, dataPoint);
       if(_.includes(game.dataStore, 'mongo'))
@@ -36,16 +37,23 @@ class ReferenceGameServer {
     }
   }
 
-  onMessage (client, message) {
-    var message_parts = message.split('.');
-    this.customExperiment.onMessage(client, message);
-    if(!_.isEmpty(client.game.dataStore)) {
-      this.writeData(client, message_parts[0], message_parts);
-    }
-  }
-
+  // Now we want set up some callbacks to handle messages that clients will send.
+  // We'll just pass messages off to the server_onMessage function for now.
   connectPlayer(game, player) {
     player.game = game;
+    if(_.has(game, 'customEvents')) {
+      game.customEvents(player);
+    }
+    
+    player.on('message', function(m) {
+      // Relay to user-provided onMessage function
+      game.onMessage(player, m);
+      // Then write 
+      if(!_.isEmpty(player.game.dataStore)) {
+	this.writeData(player, game.dataOutput(), m);
+      }
+    }.bind(this));
+
     player.emit('joinGame', {
       id: player.userid,
       numPlayers: game.players.length
@@ -62,10 +70,8 @@ class ReferenceGameServer {
       initPlayer : player,
       playerCount: 1
     });
-
-    var game = new ServerGame(config, this.customExperiment);
     
-    // assign role
+    var game = new this.customGame(config);
     this.connectPlayer(game, player);
     this.log('player ' + player.userid + ' created a game with id ' + game.id);
     
