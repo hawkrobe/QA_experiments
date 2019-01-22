@@ -40,17 +40,6 @@ function dropdownTip(data){
   }
 }
 
-var sendAnswer = function(event) {
-  var game = event.data.game;
-  var timeElapsed = Date.now() - game.messageReceivedTime;
-  game.revealedCells = game.revealedCells.concat(game.selections);  
-  game.socket.send("reveal.human." + timeElapsed + '.' +
-		   game.selections.join('.'));
-  game.answerSent = true;
-  game.questionSent = false;  
-  game.selections = [];
-};
-
 function setupLeaderHandlers(game) {
   $('img.pressable').click(function(event) {
     // Only let leader click once they've heard answer back
@@ -154,7 +143,7 @@ function drawScreen (game) {
 };
 
 function reset (game, data) {
-  $('#chatbutton').removeAttr('disabled');
+  $('#question_button').removeAttr('disabled');
   $('#scoreupdate').html(" ");
   if(game.roundNum + 1 > game.numRounds) {
     $('#roundnumber').empty();
@@ -180,15 +169,13 @@ function reset (game, data) {
 	      "<p>can help you complete the highlighted combo!</p>");
   } else if(game.my_role === game.playerRoleNames.role2) {
     $('#leaderchatarea').hide();
-    $('#helperchatarea').show();    
+    $('#helperchatarea').show();
+    $('#yes-no-dropdown').attr("disabled","disabled");
     $('#instructs')
       .append("<p>After your partner types their question, </p>" 
 	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
     $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
     $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
-    $('#answer_button').click({game: game}, function(event) {
-      event.data.game.sendAnswer();
-    });        
   }
   drawScreen(game);
 }

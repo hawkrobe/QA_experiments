@@ -33,14 +33,30 @@ var client_addnewround = function(game) {
 var customEvents = function(game) {
 
   // TODO: this will cause a bug if not the first message
-  game.sendAnswer = function(cells) {
+  var sendAnswer = function(event) {
+  var game = event.data.game;
+  var timeElapsed = Date.now() - game.messageReceivedTime;
+  game.revealedCells = game.revealedCells.concat(game.selections);  
+  game.socket.send("reveal.human." + timeElapsed + '.' +
+		   game.selections.join('.'));
+  };
+
+  game.sendAnswer = function() {
     var msg = $('#yes-no-dropdown option:selected').text();
     var askedAboutCell = $('#messages').text().split(' ')[2];
+    var additionalCell = ($('#helper_row option:selected').text() +
+			  $('#helper_col option:selected').text());
+    var cells = (additionalCell == '' ? [askedAboutCell] :
+		 [askedAboutCell, additionalCell]);
+    if(additionalCell != '') {
+      msg += " and " + additionalCell + ' is ' + $('#helper_safe option:selected').text();
+    }
     $('#yes-no-dropdown').val('');
     $('#helper_row').val('');
     $('#helper_col').val('');
-    $('#helper_safe').val('');    
-    game.socket.send("reveal.human." + cells.join('.'));
+    $('#helper_safe').val('');
+    var timeElapsed = Date.now() - game.roundStartTime;
+    game.socket.send(['reveal', 'human', timeElapsed].concat(cells).join('.'));
     game.socket.send(['chatMessage', cells.join('&'),
 		      msg, 5000, 'human', game.my_role].join('.'));
   };
@@ -75,8 +91,12 @@ var customEvents = function(game) {
     // To bar responses until speaker has uttered at least one message
     if(data.source_role == "helper"){
       game.answerSent = true;
+      game.questionSent = false;
+      $('#yes-no-dropdown').attr("disabled","disabled");
     } else {
+      game.answerSent = false;
       game.questionSent = true;
+      $('#yes-no-dropdown').removeAttr("disabled");
     }
     $('.typing-msg').remove();
     $('#messages')
@@ -122,17 +142,23 @@ var customEvents = function(game) {
 
     // See if game is over...
     if(!game.checkGrid()) {
-      if (game.bot.role == game.playerRoleNames.role1) {
+      if (game.my_role == game.playerRoleNames.role2) {
 	game.bot.showQuestion();
       } else {
-	$('#chatbutton').removeAttr('disabled');
+	$('#question_button').removeAttr('disabled');
 	game.messageSent = false;
       }    
     } 
   });
 
-  // Tell server when client types something in the chatbox
-  $('form').submit(function(){
+  // Tell server when answerer types something in the chatbox
+  $('#answer_button').click(function() {
+    $('#additional_info_init').hide();
+    game.sendAnswer();
+  });        
+
+  // Tell server when questioner types something in the chatbox
+  $('#question_button').click(function(){
     var row = $('#chatbox_row').val();
     var col = $('#chatbox_col').val();
     var code =  row + col;
@@ -146,7 +172,7 @@ var customEvents = function(game) {
       game.sentTyping = false;
       $("#chatbox_row").val('');
       $("#chatbox_col").val('');
-      $('#chatbutton').attr('disabled', 'disabled');                  
+      $('#question_button').attr('disabled', 'disabled');                  
     }
     return false;   
   });
