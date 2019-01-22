@@ -99,21 +99,12 @@ var initialize = function(query, client, id) {
   client.workerid = query.workerId ? query.workerId : '';
   client.assignmentid = query.assignmentId ? query.assignmentId : '';
 
-  // Make contact with client
-  if(_.has(refGameServer, 'customEvents')) {refGameServer.customEvents(client);};
-  
   // Good to know when they connected
   console.log('\t socket.io:: player ' + client.userid + ' connected');
 
   //Pass off to game.server.js code
   refGameServer.findGame(client);
-  
-  // Now we want set up some callbacks to handle messages that clients will send.
-  // We'll just pass messages off to the server_onMessage function for now.
-  client.on('message', function(m) {
-    refGameServer.onMessage(client, m);
-  });
-  
+    
   // When this client disconnects, we want to tell the game server
   // about that as well, so it can remove them from the game they are
   // in, and make sure the other player knows that they left and so on.
