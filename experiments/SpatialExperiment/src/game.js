@@ -49,16 +49,13 @@ class Game {
 // Takes a more specific config as well as custom functions to construct
 // trial list and advance to next round
 class ServerGame extends Game {
-  constructor(config, experiment) {
+  constructor(config) {
     super(config);
     this.active = false;
-    this.streams = {};
-    
+    this.streams = {};    
     this.id = config.id; 
     this.expPath = config.expPath;
     this.playerCount = config.playerCount;
-    this.trialList = experiment.makeTrialList();
-
     this.players = [{
       id: config.initPlayer.userid,
       instance: config.initPlayer,
@@ -104,7 +101,6 @@ class ServerGame extends Game {
       this.currStim = this.trialList[this.roundNum];
       var state = this.takeSnapshot();
       _.forEach(this.activePlayers(), p => {
-	console.log('emitting');
 	setTimeout(() => p.player.instance.emit( 'newRoundUpdate', state), delay);
       });
     }
