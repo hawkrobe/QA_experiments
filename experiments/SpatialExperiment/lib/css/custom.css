@@ -149,19 +149,32 @@ html , body {
     position: absolute;
 }
 
-#submitbutton {
-    height: 6%;
-    width: 5%;
-    float: left;
-    margin-left: 10%;
-    margin-top: 2%;
-    background: rgb(255,255,255);
-    border: none;
+#question_button {
+    border: 0; 
+    height: 50%;
+    font-size: 150%;
+    border-radius: 5px;
+    width: 50%;
     padding: 5px;
-
-/*trying to change around attributes of click button reduces the clickable area
-ALOT...don't understand how to adjust that.*/
+    margin-left: .5%;
+    margin-right: .5%;
+    margin-top: .5%;
+    margin-bottom: .5%;
 }
+
+#answer_button {
+    border: 0; 
+    height: 50%;
+    font-size: 150%;
+    border-radius: 5px;
+    width: 50%;
+    padding: 5px;
+    margin-left: .5%;
+    margin-right: .5%;
+    margin-top: .5%;
+    margin-bottom: .5%;
+}
+
 
 #main {
 	height: auto;
