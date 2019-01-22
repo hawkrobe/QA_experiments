@@ -4,24 +4,6 @@ var assert = require('assert');
 var utils  = require(__base + 'src/sharedUtils.js');
 var ServerGame = require('./src/game.js')['ServerGame'];
 
-function makeGoalObject (goals) {
-  var goalNames = _.map(_.range(goals.length), v=>'g' + v);
-  return _.zipObject(goalNames, goals);
-};
-
-function getAllLocs() {
-  return _.flattenDeep(_.map(_.range(1,5), function(i) {
-    return _.map(_.range(1,5), function(j) {
-      return {x: i, y: j};
-    });
-  }));
-};
-
-function sampleStimulusLocs (numObjects) {
-  var locs = getAllLocs();
-  return _.sampleSize(locs, numObjects);
-}
-
 class ServerRefGame extends ServerGame {
   constructor(config) {
     super(config);
@@ -46,7 +28,7 @@ class ServerRefGame extends ServerGame {
   // *
   // * TrialList creation
   // *
-
+  
   // 3 trials of each row, counterbalanced
   sampleMapSequence () {
     var types = ['catch', 'catch'];
@@ -206,29 +188,18 @@ class GameMap {
     var transformation = _.sample([
       x => x,
       x => this.rotate(x),
-      // x => this.reflect(this.rotate(x)),
-      // x => this.rotate(this.reflect(this.rotate(x)))
+      x => this.reflect(this.rotate(x)),
+      x => this.rotate(this.reflect(this.rotate(x)))
     ]);
     this.grid = _.zipObject(labels, _.flatten(transformation(origMap)));
-    // console.log(transformation(origMap));
-    // console.log(_.flatten(transformation(origMap)));
-    // console.log(this.grid);
   }
 
   rotate (grid) {
-    console.log('before rotated:')
-    console.log(grid);
-    console.log('after rotated:')
-    console.log(_.zip(...grid));
     return _.zip(...grid);
   }
 
   reflect (grid) {
-    console.log('before reflect:')
-    console.log(grid);
-    console.log('after reflect')
-    console.log(_.map(grid, row => _.reverse(...row)));
-    return _.map(grid, row => _.reverse(...row));
+    return _.map(grid, row => _.reverse(row.slice()));
   }
 }
 
