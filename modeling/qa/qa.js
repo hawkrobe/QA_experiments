@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('lodash');
 var assert = require('assert');
 var fs = require('fs');
 
@@ -296,7 +296,7 @@ var butLast = function(xs){
 };
 
 // Meaning of answer is locations of all cards mentioned
-var locationAnswerMeaning = function(utterance){
+var cardsLocationAnswerMeaning = function(utterance){
   return function(world){
     return _.every(utterance, function(v) {
       var components = v.split('_of_');
@@ -305,7 +305,7 @@ var locationAnswerMeaning = function(utterance){
   };
 };
 
-var nameToQUD = function(qudName) {
+var cardsNameToQUD = function(qudName) {
   var components = qudName.split("_of_");
   return function(world){
     return _.find(world, {rank: components[0], suit: components[1]})['location'];
@@ -313,18 +313,79 @@ var nameToQUD = function(qudName) {
 };
 
 // Have to do two things in loop; compute normalizing constant & kernal thing
-var interpreterScore = function(trueWorld, answer, qudName, worldDist) {
+var cardsInterpreterScore = function(trueWorld, answer, qudName, worldDist) {
   var normalizingConstant = 0;
   var collapsedVal = 0;
   var worldStates = worldDist.support();
-  var f = locationAnswerMeaning(answer);
-  var qud = nameToQUD(qudName);
+  var f = cardsLocationAnswerMeaning(answer);
+  var qud = cardsNameToQUD(qudName);
   for(var i = 0; i < worldStates.length; i++) {
     var worldState = worldStates[i];
     var qudMatch = qud(trueWorld) === qud(worldState) ? 1 : 0;
     normalizingConstant += (f(worldState) * Math.exp(worldDist.score(worldState)));
     collapsedVal += (f(worldState) * Math.exp(worldDist.score(worldState)) * qudMatch);
   }
+  return (Math.log(collapsedVal) -
+	  Math.log(normalizingConstant));
+};
+
+var spatialLocationAnswerMeaning = function(utterance){
+  return function(world){
+    return _.every(utterance, function(v) {
+      var components = v.split('_');
+      return world[components[0]] === components[1];
+    });
+  };
+};
+
+var completeCol = function(qud, world) {
+  var colVals = _.filter(_.keys(world), function(cellName) {return cellName[1] == qud;});
+  return _.every(colVals, function(val) {return world[val] == 'safe'});
+};
+
+var completeRow = function(qud, world) {
+  var rowVals = _.filter(_.keys(world), function(cellName) { return cellName[0] == qud;});
+  return _.every(rowVals, function(val) {return world[val] == 'safe'});
+};
+
+
+var rows = ['A', 'B', 'C'];
+var cols = ['1', '2', '3'];
+
+// Project down to subspace of location of card in question
+var spatialLocationQUD = function(qudName) {
+  return function(world){
+    return (_.includes(cols, qudName) ?
+	    completeCol(qudName, world) :
+	    completeRow(qudName, world));
+  };
+};
+
+var spatialNameToQUD = function(qudName){
+  if(qudName == 'identity') 
+    return function(w) {return w;};
+  else 
+    return spatialLocationQUD(qudName);
+};
+
+// Have to do two things in loop; compute normalizing constant & kernal thing
+var spatialInterpreterScore = function(trueWorld, answer, qudName, worldDist) {
+  var normalizingConstant = 0;
+  var collapsedVal = 0;
+  var worldStates = worldDist.support();
+  var f = spatialLocationAnswerMeaning(answer);
+  console.log(trueWorld);
+  console.log(qudName);
+  console.log(answer);
+  var qud = spatialNameToQUD(qudName);
+  for(var i = 0; i < worldStates.length; i++) {
+    var worldState = worldStates[i];
+    var qudMatch = qud(trueWorld) === qud(worldState) ? 1 : 0;
+    normalizingConstant += (f(worldState) * Math.exp(worldDist.score(worldState)));
+    collapsedVal += (f(worldState) * Math.exp(worldDist.score(worldState)) * qudMatch);
+  }
+  console.log('collapsed', collapsedVal);
+  console.log('normalizing', normalizingConstant);
   return (Math.log(collapsedVal) -
 	  Math.log(normalizingConstant));
 };
@@ -431,7 +492,8 @@ module.exports = {
   printERP: printERP,
   readCSV: readCSV,
   writeCSV: writeCSV,
-  interpreterScore: interpreterScore,
+  cardsInterpreterScore: cardsInterpreterScore,
+  spatialInterpreterScore: spatialInterpreterScore,  
   A1Score: A1Score,
   appendCSV: appendCSV,
   writeERP: writeERP,
