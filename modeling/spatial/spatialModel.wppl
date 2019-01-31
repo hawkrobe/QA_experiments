@@ -19,11 +19,14 @@ var cols = ['1', '2', '3'];
 
 // TODO : sample worlds (all possible locations of bombs?)
 // note: that seems computationally expensive but maybe simplifiable?
+var bomb = function() {
+  return flip() ? 'safe' : 'unsafe';
+}
 var worldPrior = Infer({method: 'enumerate'}, function(){
   return {
-    'A1' : 'safe', 'A2' : 'safe',   'A3' : 'unsafe',
-    'B1' : 'safe', 'B2' : 'unsafe', 'B3' : 'unsafe',
-    'C1' : 'safe', 'C2' : 'safe',   'C3' : 'safe'
+    'A1' : bomb(), 'A2' : bomb(), 'A3' : bomb(),
+    'B1' : bomb(), 'B2' : bomb(), 'B3' : bomb(),
+    'C1' : bomb(), 'C2' : bomb(), 'C3' : bomb()
   };
 });
 
@@ -51,30 +54,11 @@ var answers = _.flattenDeep(map(function(row) {
 
 var answerPrior = Infer({method: 'enumerate'}, function() {
   var answer1 = uniformDraw(answers);
-  return flip() ? [answer1] : [answer1].concat(uniformDraw(_.without(answers, answer1)));
+  var answer1Cell = answer1.split('_')[0];
+  return (flip() ? [answer1] :
+	  [answer1].concat(uniformDraw(_.without(answers, answer1Cell + '_safe',
+						 answer1Cell + '_unsafe'))));
 });
-
-//var checkStatus = function(world) 
-
-// Meaning of answer is locations of all cards mentioned
-var locationAnswerMeaning = function(utterance){
-  return function(world){
-    console.log(utterance);
-    all(function(v) {
-      var components = v.split('_');
-      return world[components[0]] == components[1];
-    }, utterance);
-  };
-};
-
-//   -----------
-// | Interpreter |
-//   -----------
-
-var meaning = function(utt){
-  return (_.includes(answerPrior.support(), utt) ? locationAnswerMeaning(utt) :
-          console.error('unknown utterance!', utt));
-};
 
 //  ------
 // | QUDs |
@@ -83,29 +67,6 @@ var meaning = function(utt){
 var qudPrior = function(){
   var type = flip() ? 'rows' : 'cols';
   return type == 'cols' ? cols : rows;
-};
-
-var completeCol = function(qud, world) {
-  var colVals = filter(function(cellName) { cellName[1] == qud;}, _.keys(world));
-  return all(function(val) {return world[val] == 'safe'}, colVals);
-};
-
-var completeRow = function(qud, world) {
-  var rowVals = filter(function(cellName) { cellName[0] == qud;}, _.keys(world));
-  return all(function(val) {return world[val] == 'safe'}, rowVals);
-};
-
-console.log(sample(worldPrior));
-console.log(completeCol('1', sample(worldPrior)));
-
-
-// Project down to subspace of location of card in question
-var locationQUD = function(qudName) {
-  return function(world){
-    return (_.includes(cols, qudName) ?
-	    completeCol(qudName, world) :
-	    completeRow(qudName, world));
-  };
 };
 
 var QUDPosteriorFromMeaning = function(question) {
@@ -138,24 +99,24 @@ var nameToQUD = function(qudName){
 // | Models |
 //  -------
 
-// var getPriorProb = dp.cache(function(goal) {
-//   var qud = nameToQUD(goal);                                              
-//   return Infer({method: 'enumerate'}, function() {
-//     var world = sample(worldPrior);
-//     return qud(world) ? 0 : uniformDraw(_.range(1,cards.length));
-//   });
-// });
+var getPriorProb = dp.cache(function(goal) {
+  var qud = nameToQUD(goal);                                              
+  return Infer({method: 'enumerate'}, function() {
+    var world = sample(worldPrior);
+    return qud(world) ? 0 : uniformDraw(_.range(1,cards.length));
+  });
+});
 
 // Simplification for this simple problem...
-// var getPosteriorProb = dp.cache(function(type, answer, goal) {
-//   var qud = nameToQUD(goal);
-//   var likelihood = Infer({method: 'enumerate'}, function() {
-//     var w = sample(worldPrior);
-//     condition(meaning(answer)(w));
-//     return qud(w);
-//   }).score(true);
-//   return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
-// });
+var getPosteriorProb = dp.cache(function(type, answer, goal) {
+  var qud = nameToQUD(goal);
+  var likelihood = Infer({method: 'enumerate'}, function() {
+    var w = sample(worldPrior);
+    condition(meaning(answer)(w));
+    return qud(w);
+  }).score(true);
+  return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
+});
 
 var Qrationality = 10;
 var Arationality = 3;
@@ -197,7 +158,7 @@ var answerer = dp.cache(function(type, question, trueWorld, state) {
   return Infer({method: 'enumerate'}, function(){
     var answer = sample(answerPrior);
     var newUtility = expectation(qudPosterior, function(qudName) {
-      return qa.interpreterScore(trueWorld, answer, qudName, worldPrior);
+      return qa.spatialInterpreterScore(trueWorld, answer, qudName, worldPrior);
     });
     factor(newUtility * Arationality - answer.length);      
     return answer;
