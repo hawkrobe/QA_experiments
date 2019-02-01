@@ -1,0 +1,293 @@
+///fold:
+var KL = function(erpTrue, erpApprox){                       
+  var values = erpTrue.support([]);                          
+  return sum(map(                                            
+    function(value){                                         
+      var scoreP = erpTrue.score(value);                     
+      var scoreQ = erpApprox.score(value);                   
+      var probP = Math.exp(scoreP);                          
+      return probP == 0.0 ? 0.0 : probP * (scoreP - scoreQ); 
+    }, values));                                             
+};
+
+var bernoulliKL = function(p, q){
+  if(p == 1) {
+    return Math.log(1/q);
+  } else if (p == 0) {
+    return Math.log(1/(1-q));
+  } else {
+    return p * Math.log(p/q) + (1-p) * Math.log((1-p)/(1-q));
+  }
+};                                                           
+
+///
+
+//   ---------------
+// | World knowledge |
+//   ---------------
+
+// Questioner assumes all these cards are somewhere...
+var objs = ['o1', 'o2', 'o3', 'o4']//, 'o4']//['10', 'J', 'Q', 'K', 'A'];
+    
+// In principle, we have uncertainty over exact locations in a grid-world
+// but to reduce computational complexity, we simply represent whether same
+// or difference from the "true" world
+var old_trueWorld = [{'obj' : 'o1', location : 0},
+		     {'obj' : 'o2', location : 1},
+		     {'obj' : 'o3', location : 2},
+		     {'obj' : 'o4', location : 3}
+		    ];
+var old_worldPrior = Infer({method: 'enumerate'}, function(){
+  var possibleSeq = uniformDraw(qa.permute(_.range(objs.length)));
+  return map2(function(obj, i) {
+    return {obj: obj, location: i};
+  }, objs, possibleSeq);
+});
+
+var new_trueWorld = map(function(obj) {return {obj: obj, location: true}}, objs);
+var new_worldPrior = Infer({method: 'enumerate'}, function(){
+  var trueSeq = _.range(objs.length);
+  var possibleSeq = uniformDraw(qa.permute(_.range(objs.length)));
+  return map2(function(i, j) {
+    return {obj: objs[i], location: i == j};
+  }, trueSeq, possibleSeq);
+});
+//  -------------------
+// | Question knowledge |
+//  -------------------
+
+var questionPrior = Infer({method: 'enumerate'}, function(){
+  var obj = uniformDraw(objs);
+  return 'where_is_' + obj + '?';
+});
+
+//  -----------------
+// | Answer knowledge |
+//  -----------------
+
+//var objSets = qa.powerset(objs);
+var new_answers = qa.powerset(objs);
+var old_answers = Infer({method: 'enumerate'}, function() {
+  var objSet = uniformDraw(qa.powerset(objs));
+  
+  var locSet = uniformDraw(qa.powerset(_.range(objs.length)));
+  condition(objSet.length == locSet.length);
+  var locSeq = uniformDraw(qa.permute(locSet));
+  return map2(function(obj, loc) {obj + '@' + loc}, objSet, locSeq);
+}).support();
+
+var new_answerPrior = Infer({method: 'enumerate'}, function() {
+  var answer = uniformDraw(new_answers);
+  condition(answer.length > 0);
+  return answer;
+});
+
+var old_answerPrior = Infer({method: 'enumerate'}, function() {
+  var answer = uniformDraw(old_answers);
+  condition(answer.length > 0);
+  return answer;
+});
+
+
+// Meaning of answer is locations of all cards mentioned
+var new_locationAnswerMeaning = function(utterance){
+  return function(world){
+    all(function(v) {
+      return filter(function(x) {return x.obj == v;},
+		    world)[0]['location'];
+    }, utterance);
+  };
+};
+
+var old_locationAnswerMeaning = function(utterance){
+  return function(world){
+    all(function(v) {
+      var obj = v.split('@')[0];
+      var loc = v.split('@')[1];
+      return filter(function(x) {return x.obj == obj;},
+		    world)[0]['location'] == loc;
+    }, utterance);
+  };
+};
+
+//   -----------
+// | Interpreter |
+//   -----------
+
+var interpreter = function(answer, version){
+  return Infer({method: 'enumerate'}, function(){
+    var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
+    var world = sample(worldPrior);
+    var answerMeaning = meaning(answer, version);
+    condition(answerMeaning(world));
+    return world;
+  });                                                                         
+};
+
+var meaning = function(utterance, version){
+  if(version == 'new')
+    return new_locationAnswerMeaning(utterance);
+  else
+    return old_locationAnswerMeaning(utterance);
+};
+
+//  ------
+// | QUDs |
+//  ------
+
+// Project down to subspace of location of card in question
+var locationQUD = function(qudName) {
+  return function(world){
+    return _.find(world, {obj: qudName})['location'];
+  };
+};
+
+var qudPrior = function(goalSets){
+  return uniformDraw(goalSets);
+};
+
+var QUDPosteriorFromInference = dp.cache(function(question, context, version){
+  return Infer({method: 'enumerate'}, function() {
+    var qudName = qudPrior(context);
+    observe(Q('explicit', qudName, version), question);
+    return uniformDraw(qudName);
+  });
+});
+
+var QUDPosteriorFromMeaning = function(question) {
+  if(_.includes(questionPrior.support(), question))
+    return Delta({v: qa.butLast(question).split('_is_')[1]});
+  else
+    console.error('unknown question' + question);
+};
+
+var nameToQUD = function(qudName){
+  if(qudName == 'identity') 
+    return function(w) {return w;};
+  // else if(_.isArray(qudName))
+  //   return function(w) {all(function(qud) {locationQUD(qud)(w)}, qudName);};
+  else 
+    return locationQUD(qudName);
+};
+
+// Note that because answerer is symmetric across worlds,
+// and worlds have equal probability, we can just say
+// same or different from true world?
+
+//  -------
+// | Models |
+//  -------
+
+var makeTruthfulAnswerPrior = dp.cache(function(answerPrior, trueWorld, version) {
+  return Infer({method: 'enumerate'}, function(){
+    var answer = sample(answerPrior);
+    condition(_.isFinite(interpreter(answer, version).score(trueWorld)));
+    return answer;
+  });
+});
+
+// For prior & posterior, need to break out true/false into actual locations and
+var getPriorProb = dp.cache(function(goal, version) {
+  var qud = nameToQUD(goal);
+  var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
+  return Infer({method: 'enumerate'}, function() {
+    var world = sample(worldPrior);
+    return (version == 'old' ? qud(world) :
+	    (qud(world) ? 0 : uniformDraw(_.range(1,objs.length))));
+  });                                                                        
+});                                                                           
+
+// Takes a coarse-grained true/false world and converts back to original space (with symmetry)
+// TODO: is there some way of breaking down the possible locations corresponding to
+// the 'false' world here? 
+var getSubsetOfWorlds = dp.cache(function(answer, goal, version) {
+  var qud = nameToQUD(goal);
+  var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
+  var likelihood = Infer({method: 'enumerate'}, function() {
+    var w = sample(worldPrior);
+    condition(meaning(answer, 'new')(w));
+    return qud(w);
+  }).score(true);
+  return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
+});
+
+var getPosteriorProb = dp.cache(function(question, answer, goal, version, type) {
+  var qud = nameToQUD(goal);
+  var worldPrior = version == 'new' ? Delta({v:new_trueWorld}) : old_worldPrior;
+  return Infer({method: 'enumerate'}, function() {
+    var world = sample(worldPrior);
+    observe(A(type, question, world, version), answer);
+    return qud(world);
+  });
+});
+
+var rationality = 10;
+var goalContext = [['o2', 'o3', 'o1'],
+		   ['o1', 'o2', 'o4']
+		  ];
+
+var Q = dp.cache(function(type, goalSet, version) {
+  var worldPrior = version == 'new' ? new_worldPrior : old_worldPrior;
+  return Infer({method: 'enumerate'}, function() {
+    var goal = uniformDraw(goalSet);
+    var question = sample(questionPrior);
+    var possibleAnswer = (
+      version == 'new' ?
+	A(type, question, new_trueWorld, version) :
+	Infer({method: 'enumerate'}, function() {
+	  var trueWorld = sample(worldPrior);
+	  return sample(A(type, question, trueWorld, version));
+	})
+    );
+    var infGain = expectation(possibleAnswer, function(answer){
+      var priorProb = getPriorProb(goal, version);
+      var posteriorProb = (version == 'old' ?
+			   getPosteriorProb(question, answer, goal, version, type) :
+			   getSubsetOfWorlds(answer,goal,version));
+      return KL(posteriorProb, priorProb);
+    });
+    factor(infGain * rationality);
+    return question;
+  });
+});
+
+var A = dp.cache(function(type, question, trueWorld, version) {
+  var qudPosterior = (type == 'explicit' ? QUDPosteriorFromMeaning(question) :
+		      QUDPosteriorFromInference(question, goalContext, version));
+  var answerPrior = version == 'old' ? old_answerPrior : new_answerPrior;
+  return Infer({method: 'enumerate'}, function(){
+    var answer = (version == 'old' ?
+		  sample(makeTruthfulAnswerPrior(answerPrior, trueWorld, version)) :
+		  sample(answerPrior));
+    var qudName = sample(qudPosterior);
+    var qud = nameToQUD(qudName);
+    var newUtility = expectation(interpreter(answer, version), function(w) {
+      return qud(w) == qud(trueWorld);
+    });
+    factor(newUtility * rationality - answer.length);      
+    return answer;
+  });
+});
+
+
+// NOTES:
+// 1. collapsing worlds & answer space equivalent to restricting to only 'true' answers...
+
+var version = 'new';
+var trueWorld = version == 'old' ? old_trueWorld : new_trueWorld;
+// A('explicit', 'where_is_o1?', trueWorld, version);
+// Q('explicit', ['o3', 'o1'], version);
+//A('pragmatic', 'where_is_o1?', trueWorld, version);
+Q('pragmatic', ['o1', 'o2', 'o4'], version);
+
+// print('A0:');
+// viz.table(answerer('literal', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
+// viz.table(answerer('literal', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
+
+// print('A1:');
+// viz.table(answerer('explicit', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
+// viz.table(answerer('explicit', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
+
+// print('A2:')
+// viz.table(answerer('pragmatic', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
+// viz.table(answerer('pragmatic', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
