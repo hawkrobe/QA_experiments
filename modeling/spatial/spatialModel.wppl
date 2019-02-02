@@ -22,13 +22,19 @@ var cols = ['1', '2', '3'];
 var bomb = function() {
   return flip() ? 'safe' : 'unsafe';
 }
+
 var worldPrior = Infer({method: 'enumerate'}, function(){
-  return {
+  var world = {
     'A1' : bomb(), 'A2' : bomb(), 'A3' : bomb(),
     'B1' : bomb(), 'B2' : bomb(), 'B3' : bomb(),
     'C1' : bomb(), 'C2' : bomb(), 'C3' : bomb()
   };
+  condition(qa.completeCol('1', world) || qa.completeCol('2', world) || qa.completeCol('3', world));
+  condition(qa.completeRow('A', world) || qa.completeRow('B', world) || qa.completeRow('C', world));
+  return world;
 });
+
+//console.log(worldPrior.support().slice(0,3));
 
 //  -------------------
 // | Question knowledge |
@@ -37,7 +43,7 @@ var worldPrior = Infer({method: 'enumerate'}, function(){
 var questionPrior = Infer({method: 'enumerate'}, function(){
   var row = uniformDraw(rows);
   var col = uniformDraw(cols);  
-  return 'is_' + row + '_' + col + '_safe?';
+  return 'is_' + row + col + '_safe?';
 });
 
 //  -----------------
@@ -52,12 +58,22 @@ var answers = _.flattenDeep(map(function(row) {
   }, cols);
 }, rows));
 
-var answerPrior = Infer({method: 'enumerate'}, function() {
+var shortAnswers = map(function(v){return [v]}, answers);
+var longAnswers = _.uniq(Infer({method: 'enumerate'}, function() {
   var answer1 = uniformDraw(answers);
-  var answer1Cell = answer1.split('_')[0];
-  return (flip() ? [answer1] :
-	  [answer1].concat(uniformDraw(_.without(answers, answer1Cell + '_safe',
-						 answer1Cell + '_unsafe'))));
+  var a1cell = answer1.split('_')[0];
+  var answer2 = uniformDraw(_.without(answers, a1cell + '_safe', a1cell + '_unsafe'));
+  return sort([answer1, answer2]);
+}).support());
+
+var answerPrior = Categorical({vs : shortAnswers.concat(longAnswers)});
+var makeTruthfulAnswerPrior = dp.cache(function(trueWorld) {
+  return Infer({method: 'enumerate', model: function(){
+    var answer = sample(answerPrior);
+    condition(_.isFinite(qa.spatialInterpreterScore(trueWorld, answer,
+						    'identity', worldPrior)));
+    return answer;
+  }});
 });
 
 //  ------
@@ -84,13 +100,6 @@ var QUDPosteriorFromInference = dp.cache(function(question){
   });
 });
 
-var nameToQUD = function(qudName){
-  if(qudName == 'identity') 
-    return function(w) {return w;};
-  else 
-    return locationQUD(qudName);
-};
-
 // Note that because answerer is symmetric across worlds,
 // and worlds have equal probability, we can just say
 // same or different from true world?
@@ -99,54 +108,96 @@ var nameToQUD = function(qudName){
 // | Models |
 //  -------
 
+var spatialLocationQUD = function(qudName) {
+  return function(world){
+    return (_.includes(cols, qudName) ? qa.completeCol(qudName, world) :
+	    _.includes(rows, qudName) ? qa.completeRow(qudName, world) :
+	    qa.cellMatch(qudName, world));
+  };
+};
+
+var spatialNameToQUD = function(qudName){
+  if(qudName == 'identity') 
+    return function(w) {return w;};
+  else 
+    return spatialLocationQUD(qudName);
+};
+
 var getPriorProb = dp.cache(function(goal) {
-  var qud = nameToQUD(goal);                                              
+  var qud = spatialNameToQUD(goal);                                              
   return Infer({method: 'enumerate'}, function() {
     var world = sample(worldPrior);
-    return qud(world) ? 0 : uniformDraw(_.range(1,cards.length));
+    return qud(world);
   });
 });
 
 // Simplification for this simple problem...
-var getPosteriorProb = dp.cache(function(type, answer, goal) {
-  var qud = nameToQUD(goal);
-  var likelihood = Infer({method: 'enumerate'}, function() {
-    var w = sample(worldPrior);
-    condition(meaning(answer)(w));
-    return qud(w);
-  }).score(true);
-  return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
+// var getPosteriorProb = dp.cache(function(type, answer, goal) {
+//   var qud = spatialNameToQUD(goal);
+//   var likelihood = Infer({method: 'enumerate'}, function() {
+//     var w = sample(worldPrior);
+//     condition(meaning(answer)(w));
+//     return qud(w);
+//   }).score(true);
+//   return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
+// });
+
+var spatialLocationAnswerMeaning = function(utterance){
+  return function(world){
+    return all(function(v) {
+      var components = v.split('_');
+      return world[components[0]] === components[1];
+    }, utterance);
+  };
+};
+
+
+var getPosteriorProb = dp.cache(function(type, question, answer, goal) {
+  var qud = spatialNameToQUD(goal);
+  var meaning = spatialLocationAnswerMeaning(answer);
+  return Infer({method: 'enumerate'}, function(){
+    var world = sample(worldPrior);
+    condition(meaning(world));
+    return qud(world);
+  });
 });
 
-var Qrationality = 10;
-var Arationality = 3;
-// var goalContext = [['A_of_hearts', 'K_of_spades', 'K_of_hearts', 'K_of_clubs'],
-// 		   ['A_of_hearts', 'K_of_spades', 'K_of_diamonds', 'A_of_diamonds'],
-// 		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_clubs', 'A_of_clubs'],
-// //		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_', 'K_of_clubs']
-// 		  ];
 
+var Qrationality = 10;
+var Arationality = 1;
+
+var makeConsistentWorldPrior = function(gridState) {
+  return Infer({'method' : 'enumerate'}, function() {
+    var world = sample(worldPrior);
+    condition(all(function(v) {world[v] == 'safe'}, gridState));
+    return world;
+  });
+};
 var questioner = dp.cache(function(type, trueGoal, gridState) {
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
   return Infer({method: 'enumerate'}, function() {
     var question = sample(questionPrior);
     var goal = uniformDraw(trueGoal);
-//    console.log('thinking about question ' + question + ' with goal ' + goal);
-    // Note here that probabilities of diff. possible worlds is already reflected in
-    // definition of true world (and alternatives)
-    var world = sample(worldPrior);
-    var possibleAnswer = answerer(type, question, world, gridState);
+    console.log('thinking about question ' + question + ' with goal ' + goal);
     
-    var infGain = expectation(possibleAnswer, function(answer){
-      var priorProb = getPriorProb(goal);
-      var posteriorProb = getPosteriorProb(type, answer, goal);
-      return KL(posteriorProb, priorProb);
+    var utility = expectation(consistentWorldPrior, function(trueWorld) {
+      var possibleAnswer = answerer(type, question, trueWorld, gridState);
+      var infGain = expectation(possibleAnswer, function(answer){
+	var priorProb = getPriorProb(goal);
+	var posteriorProb = getPosteriorProb(type, question, answer, goal);
+	return KL(posteriorProb, priorProb);
+      });
+      console.log(infGain);
+      return infGain;
     });
-    factor(infGain * Qrationality);
+    factor(utility * Qrationality);
     return question;
   });
 });
 
-var answerer = dp.cache(function(type, question, trueWorld, state) {
+var answerer = dp.cache(function(type, question, trueWorld, gridState) {
+  var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);  
   var qudPosterior = (type === 'pragmatic' ? QUDPosteriorFromInference(question) :
                       type === 'explicit' ? QUDPosteriorFromMeaning(question) :
                       type === 'literal' ? Delta({v: 'identity'}) :
@@ -156,15 +207,23 @@ var answerer = dp.cache(function(type, question, trueWorld, state) {
     console.log(qudPosterior);
   }
   return Infer({method: 'enumerate'}, function(){
-    var answer = sample(answerPrior);
+    var answer = sample(truthfulAnswerPrior);
     var newUtility = expectation(qudPosterior, function(qudName) {
-      return qa.spatialInterpreterScore(trueWorld, answer, qudName, worldPrior);
+      return qa.spatialInterpreterScore(trueWorld, answer, qudName, consistentWorldPrior);
     });
-    factor(newUtility * Arationality - answer.length);      
+    factor(newUtility * Arationality);      
     return answer;
   });
 });
 
-questioner('explicit', 'horizontal');
+var trueGoal = qudPrior();
+var trueWorld = sample(worldPrior);
+var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld);
+var answer = sample(truthfulAnswerPrior);
+//console.log(answerer('explicit', 'is_A1_safe?', trueWorld, {}));
+// console.log(qa.spatialA1Score(answer, 'is_A1_safe?', trueWorld, {answers: truthfulAnswerPrior.support(), worldPrior: worldPrior, rationality: Arationality}));
+// console.log(trueWorld);
+// console.log(answer);
+questioner('explicit', 'A', ['A1']);
 //answerer('pragmatic', 'where_is_K_of_spades?', trueWorld, goalContext);
 //questioner('pragmatic', goalContext[0]);
