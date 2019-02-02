@@ -348,6 +348,9 @@ var completeRow = function(qud, world) {
   return _.every(rowVals, function(val) {return world[val] == 'safe'});
 };
 
+var cellMatch = function(qud, world) {
+  return world[qud] == 'safe';
+};
 
 var rows = ['A', 'B', 'C'];
 var cols = ['1', '2', '3'];
@@ -355,9 +358,9 @@ var cols = ['1', '2', '3'];
 // Project down to subspace of location of card in question
 var spatialLocationQUD = function(qudName) {
   return function(world){
-    return (_.includes(cols, qudName) ?
-	    completeCol(qudName, world) :
-	    completeRow(qudName, world));
+    return (_.includes(cols, qudName) ? completeCol(qudName, world) :
+	    _.includes(cols, qudName) ? completeRow(qudName, world) :
+	    cellMatch(qudName, world));
   };
 };
 
@@ -374,23 +377,40 @@ var spatialInterpreterScore = function(trueWorld, answer, qudName, worldDist) {
   var collapsedVal = 0;
   var worldStates = worldDist.support();
   var f = spatialLocationAnswerMeaning(answer);
-  console.log(trueWorld);
-  console.log(qudName);
-  console.log(answer);
   var qud = spatialNameToQUD(qudName);
   for(var i = 0; i < worldStates.length; i++) {
     var worldState = worldStates[i];
-    var qudMatch = qud(trueWorld) === qud(worldState) ? 1 : 0;
+    var qudMatch = _.isEqual(qud(trueWorld), qud(worldState)) ? 1 : 0;
     normalizingConstant += (f(worldState) * Math.exp(worldDist.score(worldState)));
     collapsedVal += (f(worldState) * Math.exp(worldDist.score(worldState)) * qudMatch);
   }
-  console.log('collapsed', collapsedVal);
-  console.log('normalizing', normalizingConstant);
   return (Math.log(collapsedVal) -
 	  Math.log(normalizingConstant));
 };
 
-var A1Score = function(trueAnswer, question, world, config) {
+
+function _logsumexp(a) {
+  var m = Math.max.apply(null, a);
+  var sum = 0;
+  for (var i = 0; i < a.length; ++i) {
+    sum += (a[i] === -Infinity ? 0 : Math.exp(a[i] - m));
+  }
+  return m + Math.log(sum);
+}
+
+var spatialA1Score = function(trueAnswer, question, world, config) {
+  var qudName = butLast(question).split('_')[1];
+  var scores = [];
+  for(var i = 0; i < config.answers.length; i++) {
+    var answer = config.answers[i];
+    var utility = spatialInterpreterScore(world, answer, qudName, config.worldPrior);
+    scores.push(utility);
+  }
+  var trueScore = spatialInterpreterScore(world, trueAnswer, qudName, config.worldPrior);
+  return trueScore * config.rationality - _logsumexp(scores);
+};
+
+var cardA1Score = function(trueAnswer, question, world, config) {
   var qudName = butLast(question).split('_is_')[1];
   var normalizingConstant = 0;
   for(var i = 0; i <config.answers.length; i++) {
@@ -493,8 +513,12 @@ module.exports = {
   readCSV: readCSV,
   writeCSV: writeCSV,
   cardsInterpreterScore: cardsInterpreterScore,
-  spatialInterpreterScore: spatialInterpreterScore,  
-  A1Score: A1Score,
+  spatialInterpreterScore: spatialInterpreterScore,
+  completeRow :completeRow,
+  completeCol : completeCol,
+  cellMatch : cellMatch,
+  cardA1Score: cardA1Score,
+  spatialA1Score: spatialA1Score,  
   appendCSV: appendCSV,
   writeERP: writeERP,
   bayesianErpWriter: bayesianErpWriter,
