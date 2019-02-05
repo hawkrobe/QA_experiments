@@ -69,10 +69,13 @@ function initBombMap(game) {
 			 'z-index': 1, position: 'absolute', left:'0px'}));
       } else {
 	div.append($('<div/>')
-		   .css({'background' : 'rgb(100,100,100)',
+		   .css({'background' : 'url("../../images/checkmark.png") no-repeat',
+			 'background-size' : 'cover',
 			 'height' : '100%', 'width' : '100%',
 			 'grid-row': i, 'grid-column': j,
-			 'z-index': 1, position: 'absolute', left:'0px'}));
+			 'z-index': 1, position: 'absolute', left:'0px'}))
+//		   .text(rowName + colName));
+//		   .append($('<p/>').text(rowName + colName)));
       }
       $("#bomb-map").append(div);
     });
@@ -100,10 +103,12 @@ function initGrid(game) {
 		'z-index': 1, position: 'absolute', left:'0px'});
       div.append(underlyingState);
       if(!initialize) {
-	div.append($('<img/>')
+	div.append($('<div/>')
 		   .addClass('pressable')
-		   .attr({'id' : 'button-'+rowName+colName})
-		   .css({'z-index' : 2, position: 'absolute'}));
+		   .attr({'id' : 'button-'+rowName+colName,
+			  'style' : 'background: url("../../images/unpressedCell-' + rowName + colName + '.png") no-repeat; background-size :cover; z-index: 2; position: absolute'
+			 })
+		  );
       }
       $("#context").append(div);
     });
