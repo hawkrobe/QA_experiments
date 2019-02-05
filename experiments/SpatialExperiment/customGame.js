@@ -175,18 +175,16 @@ class ServerRefGame extends ServerGame {
 class GameMap {
   constructor(trialType) {
     this.labels = [
-      'A1', 'A2', 'A3', 'A4',
-      'B1', 'B2', 'B3', 'B4',
-      'C1', 'C2', 'C3', 'C4',
-      'D1', 'D2', 'D3', 'D4'
+      'A1', 'A2', 'A3',
+      'B1', 'B2', 'B3', 
+      'C1', 'C2', 'C3'
     ];
     this.trialType = trialType;
 
     const origMap = [
-      ['g' ,'g', 'g', 'g'],
-      ['g', 'g', 'g', 'g'],
-      ['r', 'r', 'r', 'r'],
-      ['r', 'r', 'r', 'r']
+      ['g' ,'g', 'g'],
+      ['g', 'r', 'g'],
+      ['g', 'r', 'r']
     ];
 
     // Sample 1 of the 4 possible transformations
@@ -217,10 +215,9 @@ class GameMap {
   // This allows 8 possible initial states
   sampleInitRevealedCatch () {
     const initRevealed = [
-      ['x' ,'x', 'x', 'o'],
-      ['o', 'o', 'o', 'o'],
-      ['o', 'o', 'o', 'o'],
-      ['o', 'o', 'o', 'o']
+      ['x' ,'x', 'o'],
+      ['o', 'o', 'o'],
+      ['o', 'o', 'o']
     ];
     return Math.random() < .5 ? initRevealed : this.reflect(initRevealed);
   }
@@ -228,10 +225,9 @@ class GameMap {
   // This allows 8 possible initial states
   sampleInitRevealedPragmatic () {
     const initRevealed = [
-      ['x' ,'x', 'o', 'o'],
-      ['x', 'o', 'o', 'o'],
-      ['o', 'o', 'o', 'o'],
-      ['o', 'o', 'o', 'o']
+      ['x' ,'o', 'o'],
+      ['o', 'o', 'o'],
+      ['o', 'o', 'o']
     ];
     return Math.random() < .5 ? initRevealed : this.reflect(initRevealed);
   }
