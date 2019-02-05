@@ -77,7 +77,13 @@ function initBombMap(game) {
       $("#bomb-map").append(div);
     });
   });
-  $("#message_panel").append($('<p/>').text('Secret bomb map').css({'position' : 'absolute', 'bottom' : '0'}));
+  $("#map").append(
+    $('<span/>')
+      .text('Secret bomb map')
+      .css({'position' : 'absolute', 'bottom' : '0vh',
+	    'margin-left': '-15vh', 'width' : '30vh', 'text-align' : 'center',
+	    'font-size' : '110%'})
+  );
 }
 
 function initGrid(game) {

@@ -241,16 +241,28 @@ html , body {
     /* margin-right: 5%; */
     background: #000000;
 }
+
+#map:before {
+    content: " ";
+    display: block;
+    border-top: 1px solid #FFFFFF;
+}
+
+#map {
+    position:absolute;
+    height:40vh;
+    width:40vh;
+    bottom:10vh;
+}
+
 #bomb-map {
     display: grid;
-    /* background: #000000; */
     position: absolute;
-    /* border:solid 1px #333333; *\/ */
     grid-template-columns: 10vh 10vh 10vh;
     grid-template-rows: 10vh 10vh 10vh;
     height: 30vh;
     width: 30vh;
-    bottom: 15vh;
+    bottom: 5vh;
     grid-gap: 1vh;
     margin-left: 5vh;
     /* margin-right: 5%; */
