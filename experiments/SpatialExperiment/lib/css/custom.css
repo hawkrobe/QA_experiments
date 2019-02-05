@@ -33,6 +33,7 @@ html , body {
   display: flex;                       /* establish flex container */
   flex-wrap: wrap;                     /* enable flex items to wrap */
   justify-content: space-around;
+  align-content: center;
 }
 
 #header {
@@ -188,8 +189,8 @@ html , body {
 }
 
 .pressable { 
-    background: url('../../images/unpressedCell.png') no-repeat;
-    background-size :cover;
+    /* background: url('../../images/unpressedCell.png') no-repeat; */
+    /* background-size :cover; */
     margin-left: auto;
     margin-right: auto; 
     vertical-align: middle;
@@ -199,8 +200,8 @@ html , body {
 }
 
 .pressable:ACTIVE {
-    background: url('../../images/pressedCell.png') no-repeat; 
-    background-size :cover;
+    background: url('../../images/pressedCell.png') no-repeat !important; 
+    background-size :cover !important;
 }
 
 .underlying_r {
