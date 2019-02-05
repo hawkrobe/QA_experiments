@@ -41,8 +41,9 @@ function dropdownTip(data){
 }
 
 function setupLeaderHandlers(game) {
-  $('img.pressable').click(function(event) {
+  $('.pressable').click(function(event) {
     // Only let leader click once they've heard answer back
+    console.log('here');
     if(game.answerSent) {
       // Log as revealed
       var buttonName = $(this).attr('id').split('-')[1];
@@ -73,9 +74,7 @@ function initBombMap(game) {
 			 'background-size' : 'cover',
 			 'height' : '100%', 'width' : '100%',
 			 'grid-row': i, 'grid-column': j,
-			 'z-index': 1, position: 'absolute', left:'0px'}))
-//		   .text(rowName + colName));
-//		   .append($('<p/>').text(rowName + colName)));
+			 'z-index': 1, position: 'absolute', left:'0px'}));
       }
       $("#bomb-map").append(div);
     });
@@ -85,7 +84,7 @@ function initBombMap(game) {
       .text('Secret bomb map')
       .css({'position' : 'absolute', 'bottom' : '0vh',
 	    'margin-left': '-15vh', 'width' : '30vh', 'text-align' : 'center',
-	    'font-size' : '110%'})
+	    'font-size' : '150%'})
   );
 }
 
