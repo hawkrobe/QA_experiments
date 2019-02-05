@@ -36,14 +36,17 @@ class ServerRefGame extends ServerGame {
     var types = ['catch', 'catch', 'pragmatic', 'pragmatic'];
     var otherRole = this.firstRole == 'leader' ? 'helper' : 'leader';
     return _.map(types, (type, i) => {
-      return {mapType: type, role: i % 2 == 0 ? this.firstRole : otherRole};
+      return {trialType: type,
+	      goal: _.sample(['rows', 'columns']),
+	      role: i % 2 == 0 ? this.firstRole : otherRole};
     });
   }
   
   constructMap (trialInfo) {
-    const gameMap = new GameMap(trialInfo.mapType);
-    return {full: gameMap['grid'],
+    const gameMap = new GameMap(trialInfo);
+    return {full: gameMap['underlying'],
 	    initRevealed: gameMap['initRevealed'],
+	    goal: trialInfo.goal,
 	    role: trialInfo.role};
   }
 
@@ -173,39 +176,36 @@ class ServerRefGame extends ServerGame {
 }
 
 class GameMap {
-  constructor(trialType) {
+  constructor(trialInfo) {
+    this.trialType = trialInfo.trialType;
+    this.goalType = trialInfo.goal;    
+
     this.labels = [
       'A1', 'A2', 'A3',
       'B1', 'B2', 'B3', 
       'C1', 'C2', 'C3'
     ];
-    this.trialType = trialType;
-
-    const origMap = [
-      ['g' ,'g', 'g'],
-      ['g', 'r', 'g'],
-      ['g', 'r', 'r']
-    ];
 
     // Sample 1 of the 4 possible transformations
-    const transformation = _.sample([
+    const transformation = this.goalType == 'rows' ? _.sample([
       x => x,
+      x => this.rotate(this.reflect(this.rotate(x)))
+    ]) : _.sample([
       x => this.rotate(x),
       x => this.reflect(this.rotate(x)),
-      x => this.rotate(this.reflect(this.rotate(x)))
     ]);
-    this.initRevealed = this.sampleInitRevealed(transformation);
-    this.grid = this.matrixToDict(transformation(origMap));
-    console.log(this.initRevealed);
-    console.log(this.grid);
+	  
+    this.sampleMap(transformation);
   }
   
-  sampleInitRevealed (transformation) {
-    const grid = (this.trialType == 'catch' ? this.sampleInitRevealedCatch() :
-		  this.trialType == 'pragmatic' ? this.sampleInitRevealedPragmatic() :
+  sampleMap (transformation) {
+    const grid = (this.trialType == 'catch' ? this.sampleCatch() :
+		  this.trialType == 'pragmatic' ? this.samplePragmatic() :
 		  console.error('unknown trialType' + this.trialType));
-    const dict = this.matrixToDict(transformation(grid));
-    return _.filter(_.keys(dict), key => dict[key] === 'x');
+    console.log(grid);
+    const initDict = this.matrixToDict(transformation(grid.initRevealed));
+    this.initRevealed = _.filter(_.keys(initDict), key => initDict[key] === 'x');
+    this.underlying = this.matrixToDict(transformation(grid.underlying));
   }
 
   matrixToDict (matrix) {
@@ -213,25 +213,61 @@ class GameMap {
   }
   
   // This allows 8 possible initial states
-  sampleInitRevealedCatch () {
-    const initRevealed = [
-      ['x' ,'x', 'o'],
-      ['o', 'o', 'o'],
-      ['o', 'o', 'o']
-    ];
-    return Math.random() < .5 ? initRevealed : this.reflect(initRevealed);
+  sampleCatch () {
+    const rowToReveal = _.sample([0,1,2]);
+    let initRevealed = this.allHidden();
+    let underlying = this.allBombs();
+    initRevealed[rowToReveal][0] = 'x';
+    initRevealed[rowToReveal][1] = 'x';    
+    underlying[rowToReveal][0] = 'g';
+    underlying[rowToReveal][1] = 'g';    
+    underlying[rowToReveal][2] = 'g';
+    return Math.random() < .5 ? {
+      initRevealed, underlying
+    } : {
+      initRevealed: this.reflect(initRevealed),
+      underlying: this.reflect(underlying)
+    };
   }
 
   // This allows 8 possible initial states
-  sampleInitRevealedPragmatic () {
-    const initRevealed = [
-      ['x' ,'o', 'o'],
+  samplePragmatic () {
+    const rowToReveal = _.sample([0,1,2]);
+    const colToReveal = _.sample([0,1,2]);
+    let initRevealed = this.allHidden();
+    let underlying = this.allBombs();
+    initRevealed[rowToReveal][colToReveal] = 'x';
+    underlying[rowToReveal][0] = 'g';
+    underlying[rowToReveal][1] = 'g';    
+    underlying[rowToReveal][2] = 'g';
+        return Math.random() < .5 ? {
+      initRevealed, underlying
+    } : {
+      initRevealed: this.reflect(initRevealed),
+      underlying: this.reflect(underlying)
+    };
+  }
+
+  allHidden() {
+    return [
+      ['o' ,'o', 'o'],
       ['o', 'o', 'o'],
       ['o', 'o', 'o']
     ];
-    return Math.random() < .5 ? initRevealed : this.reflect(initRevealed);
   }
   
+  allBombs() {
+    return [
+      [this.bomb(), this.bomb(), this.bomb()],
+      [this.bomb(), this.bomb(), this.bomb()],
+      [this.bomb(), this.bomb(), this.bomb()]
+    ];
+  }
+  
+  bomb() {
+    return Math.random() < .5 ? 'g' : 'r';
+  }
+
   rotate (grid) {
     return _.zip(...grid);
   }
