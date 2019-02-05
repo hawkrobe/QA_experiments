@@ -1,9 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231300137	0	catch	JC	KD	Where is the where is the club of jacks?	13642	chatMessage
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231343452	1	overlap	QH,7H	QD,7H	Where is the Queen of hearts??	3605	chatMessage
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231370705	1	overlap	QH,7H	QD,7H	Where is the Seven of hearts?	4364	chatMessage
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231401847	2	overlap	AD,JH	QD,JH	Where is the ace of diamonds and jack of hearts?	11181	chatMessage
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231450927	2	overlap	AD,JH	QD,JH	Where is the ace of diamonds?	4114	chatMessage
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231584532	2	overlap	AD,JH	QD,JH	Where is the ace of diamonds?	5383	chatMessage
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231617221	2	overlap	AD,JH	QD,JH	Where is the ace of diamonds?	7030	chatMessage
-full_sample	7751-6c96f420-0c8c-4e8f-beb3-51e2dc1dcb4f	1546231633904	2	overlap	AD,JH	QD,JH	Where is the ace of diamonds?	9354	chatMessage

@@ -1,8 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217521036	0	catch	4H	10H	Where is the 4 of hearts?	3071	chatMessage
-full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217541646	1	baseline	JC,7S	4C,3S	Where is the 7 of spades?	2508	chatMessage
-full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217560107	1	baseline	JC,7S	4C,3S	Where is the jack of clubs?	4017	chatMessage
-full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217574062	2	baseline	8D,4C	QC,10S	Where is the four of clubs?	3208	chatMessage
-full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217593384	3	overlap	8D,KD	8C,KD	Where is the 8 of diamonds?	5935	chatMessage
-full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217612029	4	overlap	7D,10H	9C,10H	Where is the 7 of diamonds?	3061	chatMessage
-full_sample	9305-c48b28d3-8ab0-42a2-b612-7f8115b42e2e	1546217628749	5	catch	6H	9H	Where is the 6 of hearts?	4383	chatMessage

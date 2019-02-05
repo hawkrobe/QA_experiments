@@ -1,9 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511774060	0	baseline	KD,QC	6C,9S	Where is the king of dfiamonds?	7251	chatMessage
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511797862	1	baseline	5C,QC	2C,6H	Where is the 5 of clubs?	3488	chatMessage
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511823878	1	baseline	5C,QC	2C,6H	Where is the queen of clubs?	3600	chatMessage
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511843066	2	overlap	AD,3D	QS,3D	Where is the ace of diamonds?	5047	chatMessage
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511863638	3	overlap	QD,2C	8H,2C	Where is the queen of diamonds?	3679	chatMessage
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511874755	3	overlap	QD,2C	8H,2C	Where is the 2 of clubs?	5038	chatMessage
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511897102	4	catch	2D	6S	Where is the two of disamonds?	6848	chatMessage
-cards_sample	2287-9d0f1460-f345-4638-9511-5aebe7ab60ab	1545511914996	5	catch	9H	5S	Where is the 9 of hearts?	2751	chatMessage

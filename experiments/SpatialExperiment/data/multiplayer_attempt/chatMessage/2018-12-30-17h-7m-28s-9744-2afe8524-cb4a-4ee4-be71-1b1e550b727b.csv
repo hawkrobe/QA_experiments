@@ -1,5 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	9744-2afe8524-cb4a-4ee4-be71-1b1e550b727b	1546218448148	0	overlap	JC,5H	7C,5H	Where is the 7 clubs?	4917	chatMessage
-full_sample	9744-2afe8524-cb4a-4ee4-be71-1b1e550b727b	1546218474334	0	overlap	JC,5H	7C,5H	Where is the jack clubs?	3708	chatMessage
-full_sample	9744-2afe8524-cb4a-4ee4-be71-1b1e550b727b	1546218493258	1	overlap	3D,5C	8S,5C	Where is the three of diamonds?	4267	chatMessage
-full_sample	9744-2afe8524-cb4a-4ee4-be71-1b1e550b727b	1546218527755	1	overlap	3D,5C	8S,5C	Where is the five of clubs?	4610	chatMessage

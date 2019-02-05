@@ -1,7 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229100240	0	overlap	AC,7S	3C,7S	Where is the where is the ace of clubs?	4450	chatMessage
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229130723	1	catch	AH	4C	Where is the ace of hearts?	3896	chatMessage
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229163899	2	catch	2H	8S	Where is the 2 of hearts?	2286	chatMessage
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229184197	3	baseline	10D,4D	10C,6S	Where is the four of diamonds?	4574	chatMessage
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229206819	4	baseline	4S,9C	10C,JS	Where is the 4 of spades?	2931	chatMessage
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229232878	5	overlap	7D,8D	6S,8D	Where is the seven of diamonds?	5115	chatMessage

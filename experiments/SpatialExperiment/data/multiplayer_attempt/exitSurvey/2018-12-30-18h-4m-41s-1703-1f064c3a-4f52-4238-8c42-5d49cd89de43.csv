@@ -1,3 +1,0 @@
-iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
-full_sample	1703-1f064c3a-4f52-4238-8c42-5d49cd89de43	1546221881589	10	1703-1f064c3a-4f52-4238-8c42-5d49cd89de43	0	no	yes	okay	yes	no	I chose the card the player asked for	seeker	364674	exitSurvey
-full_sample	1703-1f064c3a-4f52-4238-8c42-5d49cd89de43	1546221895552	10	1703-1f064c3a-4f52-4238-8c42-5d49cd89de43	1	yes	yes	okay	yes	thanks	Try to as for the right card,	helper	315778	exitSurvey

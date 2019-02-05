@@ -1,3 +1,0 @@
-iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
-full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221274951	5	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	0	no	yes	okay	yes	None	I just picked the first card I saw	seeker	352841	exitSurvey
-full_sample	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	1546221278989	5	9761-e7c015ac-ea93-4623-b43f-87756d815ae0	0	yes	yes	okay	yes	No	None specifically	helper	347613	exitSurvey

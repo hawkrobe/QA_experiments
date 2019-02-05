@@ -1,7 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	firstRole	cardAskedAbout	sender	timeFromRoundStart	eventType
-single_player_sample	6338-d3ca639e-b12a-4c6b-a476-2d4fa274d015	1546803382214	0	baseline	JD,9D	3H,10D	seeker	9D	human	7405	chatMessage
-single_player_sample	6338-d3ca639e-b12a-4c6b-a476-2d4fa274d015	1546803396385	1	catch	3D	AD	seeker	3D	human	7368	chatMessage
-single_player_sample	6338-d3ca639e-b12a-4c6b-a476-2d4fa274d015	1546803411234	2	overlap	AS,5D	3C,5D	seeker	AS	human	8082	chatMessage
-single_player_sample	6338-d3ca639e-b12a-4c6b-a476-2d4fa274d015	1546803423069	3	overlap	8D,7S	KH,7S	seeker	8D	bot	5000	chatMessage
-single_player_sample	6338-d3ca639e-b12a-4c6b-a476-2d4fa274d015	1546803442201	4	baseline	4C,JD	6H,7S	seeker	4C	bot	5000	chatMessage
-single_player_sample	6338-d3ca639e-b12a-4c6b-a476-2d4fa274d015	1546803458330	5	catch	AC	6C	seeker	AC	bot	5000	chatMessage

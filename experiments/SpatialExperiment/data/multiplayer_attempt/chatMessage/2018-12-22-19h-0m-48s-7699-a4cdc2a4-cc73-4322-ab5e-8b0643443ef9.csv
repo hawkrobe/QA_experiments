@@ -1,7 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-testing	7699-a4cdc2a4-cc73-4322-ab5e-8b0643443ef9	1545534048766	0	baseline	3D,3H	9S,2D	Where is the 3 of hearts?	6199	chatMessage
-testing	7699-a4cdc2a4-cc73-4322-ab5e-8b0643443ef9	1545534082378	1	overlap	6S,7H	3H,7H	Where is the Where is the six of spades??	3768	chatMessage
-testing	7699-a4cdc2a4-cc73-4322-ab5e-8b0643443ef9	1545534108522	2	catch	9S	7D	Where is the 9 of spades?	6338	chatMessage
-testing	7699-a4cdc2a4-cc73-4322-ab5e-8b0643443ef9	1545534132547	3	baseline	QH,7C	4C,KC	Where is the Where is the queen of hearts??	5583	chatMessage
-testing	7699-a4cdc2a4-cc73-4322-ab5e-8b0643443ef9	1545534160747	4	overlap	9C,10S	8C,10S	Where is the where is the 9 of clubs??	8217	chatMessage
-testing	7699-a4cdc2a4-cc73-4322-ab5e-8b0643443ef9	1545534192418	5	catch	8S	8D	Where is the eight of spades?	3551	chatMessage

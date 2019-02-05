@@ -1,6 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	7029-500a3daa-6624-4f52-b7cc-456e61df8ab5	1546221245530	0	catch	2C	QS	Where is the queen of spades??	3812	chatMessage
-full_sample	7029-500a3daa-6624-4f52-b7cc-456e61df8ab5	1546221280986	0	catch	2C	QS	Where is the two of clubs?	2115	chatMessage
-full_sample	7029-500a3daa-6624-4f52-b7cc-456e61df8ab5	1546221302853	1	overlap	6C,KD	10H,KD	Where is the king of diamonds?	4988	chatMessage
-full_sample	7029-500a3daa-6624-4f52-b7cc-456e61df8ab5	1546221324674	1	overlap	6C,KD	10H,KD	Where is the 6 of clubs?	3986	chatMessage
-full_sample	7029-500a3daa-6624-4f52-b7cc-456e61df8ab5	1546221347414	1	overlap	6C,KD	10H,KD	Where is the 6 of clubs?	3014	chatMessage

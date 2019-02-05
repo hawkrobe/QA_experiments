@@ -1,3 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	4008-3f05f5c0-7b86-405f-a5b4-1457df0f5451	1546221210140	0	catch	JC	9S	Where is the Where is the Jack of clubs?	21871	chatMessage
-full_sample	4008-3f05f5c0-7b86-405f-a5b4-1457df0f5451	1546221243124	0	catch	JC	9S	Where is the is the jack of clubs?	3324	chatMessage

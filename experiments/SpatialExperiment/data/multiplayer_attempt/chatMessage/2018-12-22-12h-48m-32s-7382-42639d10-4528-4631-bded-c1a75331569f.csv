@@ -1,8 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-cards_sample	7382-42639d10-4528-4631-bded-c1a75331569f	1545511712628	0	catch	2D	8H	Where is the 2 of Diamonds?	7808	chatMessage
-cards_sample	7382-42639d10-4528-4631-bded-c1a75331569f	1545511760530	1	overlap	KS,4H	5C,4H	Where is the where is the King of spades?	12487	chatMessage
-cards_sample	7382-42639d10-4528-4631-bded-c1a75331569f	1545511783772	2	overlap	KC,8C	7S,8C	Where is the king of spades?	3606	chatMessage
-cards_sample	7382-42639d10-4528-4631-bded-c1a75331569f	1545511813922	2	overlap	KC,8C	7S,8C	Where is the 8 of clubs?	2093	chatMessage
-cards_sample	7382-42639d10-4528-4631-bded-c1a75331569f	1545511832235	3	baseline	7D,5S	AD,4C	Where is the 7 of diamonds?	2820	chatMessage
-cards_sample	7382-42639d10-4528-4631-bded-c1a75331569f	1545511857553	4	baseline	2S,9D	2D,10H	Where is the 2 of spades?	3903	chatMessage
-cards_sample	7382-42639d10-4528-4631-bded-c1a75331569f	1545511883088	5	catch	6H	2H	Where is the 6 of hearts?	3854	chatMessage

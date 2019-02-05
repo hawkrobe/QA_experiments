@@ -1,3 +1,0 @@
-iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
-full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546218170138	25	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	0	yes	yes	liked	confused		click on what they said they needed	helper	333866	exitSurvey
-full_sample	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1546218179275	25	8949-bc9824e1-4505-4ca5-abda-5b581ae45a31	1	yes	yes	okay	yes		Give good directions and follow them	seeker	397728	exitSurvey

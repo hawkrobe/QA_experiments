@@ -1,8 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	7166-dfa6d44b-5024-4883-b3a4-4c851a2d039d	1546217801506	0	baseline	3C,QD	5H,7C	Where is the QUEEN OF DIAMONDS?	16545	chatMessage
-full_sample	7166-dfa6d44b-5024-4883-b3a4-4c851a2d039d	1546217838162	1	catch	3C	QS	Where is the THREE OF CLUBS?	7388	chatMessage
-full_sample	7166-dfa6d44b-5024-4883-b3a4-4c851a2d039d	1546217876461	2	overlap	2C,JS	3S,JS	Where is the 2 OF CLUBS?	12507	chatMessage
-full_sample	7166-dfa6d44b-5024-4883-b3a4-4c851a2d039d	1546217899599	3	baseline	3C,4C	QH,AH	Where is the FOUR OF CLUBS?	5686	chatMessage
-full_sample	7166-dfa6d44b-5024-4883-b3a4-4c851a2d039d	1546217921628	4	catch	6C	3D	Where is the 6 OF CLUBS?	4427	chatMessage
-full_sample	7166-dfa6d44b-5024-4883-b3a4-4c851a2d039d	1546217934871	5	overlap	JC,2C	5D,2C	Where is the TWO OF CLUBS?	2949	chatMessage
-full_sample	7166-dfa6d44b-5024-4883-b3a4-4c851a2d039d	1546217978835	5	overlap	JC,2C	5D,2C	Where is the JACK OF CLUBS?	12762	chatMessage

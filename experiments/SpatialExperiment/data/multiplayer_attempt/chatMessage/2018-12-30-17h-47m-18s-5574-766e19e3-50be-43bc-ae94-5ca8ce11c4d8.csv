@@ -1,4 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	5574-766e19e3-50be-43bc-ae94-5ca8ce11c4d8	1546220838834	0	baseline	8D,QS	4C,4H	Where is the 8 of diamonds?	5964	chatMessage
-full_sample	5574-766e19e3-50be-43bc-ae94-5ca8ce11c4d8	1546220868693	0	baseline	8D,QS	4C,4H	Where is the queen of spades?	6203	chatMessage
-full_sample	5574-766e19e3-50be-43bc-ae94-5ca8ce11c4d8	1546220896454	1	overlap	QC,3C	8S,3C	Where is the where is the 3 of clubs?	6295	chatMessage

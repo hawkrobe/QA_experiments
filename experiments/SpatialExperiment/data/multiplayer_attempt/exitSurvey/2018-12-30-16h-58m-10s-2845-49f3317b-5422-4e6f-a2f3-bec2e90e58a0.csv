@@ -1,3 +1,0 @@
-iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
-full_sample	2845-49f3317b-5422-4e6f-a2f3-bec2e90e58a0	1546217890407	15	2845-49f3317b-5422-4e6f-a2f3-bec2e90e58a0	0	yes	yes	liked	yes		Asking about the card that revealed the most about the combo, so if the combos had a card in common, picking the other card,	seeker	277709	exitSurvey
-full_sample	2845-49f3317b-5422-4e6f-a2f3-bec2e90e58a0	1546217899151	15	2845-49f3317b-5422-4e6f-a2f3-bec2e90e58a0	0	no	yes	okay	yes	no	Tried to get the combo with only 1 exchange	helper	258683	exitSurvey

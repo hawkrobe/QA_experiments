@@ -1,3 +1,0 @@
-iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229314823	30	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	0	no	yes	okay	yes	No,	To listen to my partner and pick the corresponding cards,	seeker	267449	exitSurvey
-full_sample	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1546229322786	30	7533-cb997872-a6cd-407f-b711-26cb3f8b6d52	1	no	yes	loved	yes	thanks, interesting, you never know with MTurk (re: program vs actual other player), it was fun,	it was pretty simple; ask about the first listed card unless the same card was listed in both pairs	helper	236871	exitSurvey

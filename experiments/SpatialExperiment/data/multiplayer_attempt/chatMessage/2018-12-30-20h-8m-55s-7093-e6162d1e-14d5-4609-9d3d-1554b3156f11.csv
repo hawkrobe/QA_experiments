@@ -1,7 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229335450	0	overlap	KC,AH	KH,AH	Where is the king of clubs?	100447	chatMessage
-full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229401933	1	catch	5C	6C	Where is the 5 of clubs?	14120	chatMessage
-full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229429976	2	baseline	JS,7H	3C,KD	Where is the 7 of hearts?	7492	chatMessage
-full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229463416	3	overlap	5H,4H	3H,4H	Where is the 5 of hearts?	5378	chatMessage
-full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229498289	4	catch	4D	QC	Where is the 4 of diamonds?	18067	chatMessage
-full_sample	7093-e6162d1e-14d5-4609-9d3d-1554b3156f11	1546229528760	5	baseline	10H,6D	AC,JD	Where is the 6 of diamonds?	9416	chatMessage

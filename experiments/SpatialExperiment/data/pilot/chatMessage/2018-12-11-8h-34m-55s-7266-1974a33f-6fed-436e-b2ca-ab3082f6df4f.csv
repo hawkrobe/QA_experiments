@@ -1,9 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546095352	0	catch	JS	KC	Where is the Jack of clubs?	5568	chatMessage
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546144975	1	overlap	QS,10S	8D,10S	Where is the Where is the queen of spades??	5873	chatMessage
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546162283	2	overlap	9S,JS	5H,JS	Where is the nine of spades?	3584	chatMessage
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546181074	2	overlap	9S,JS	5H,JS	Where is the jack of spades?	3606	chatMessage
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546208881	3	baseline	9H,KH	10H,AS	Where is the nine of hearts?	1657	chatMessage
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546233557	4	baseline	KH,7S	8D,5D	Where is the king of hearts?	10797	chatMessage
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546246629	4	baseline	KH,7S	8D,5D	Where is the seven of spades?	5704	chatMessage
-pilot0	7266-1974a33f-6fed-436e-b2ca-ab3082f6df4f	1544546269461	5	catch	AC	2C	Where is the ace of clubs??	1628	chatMessage

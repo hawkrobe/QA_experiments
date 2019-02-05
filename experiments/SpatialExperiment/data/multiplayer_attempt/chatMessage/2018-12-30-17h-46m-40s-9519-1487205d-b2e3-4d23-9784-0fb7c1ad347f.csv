@@ -1,4 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	9519-1487205d-b2e3-4d23-9784-0fb7c1ad347f	1546220800381	0	baseline	3C,10C	2D,6D	Where is the 10 of clubs?	6096	chatMessage
-full_sample	9519-1487205d-b2e3-4d23-9784-0fb7c1ad347f	1546220828929	0	baseline	3C,10C	2D,6D	Where is the 3 of clubs?	4233	chatMessage
-full_sample	9519-1487205d-b2e3-4d23-9784-0fb7c1ad347f	1546220859497	1	baseline	2H,KS	9C,10C	Where is the where is 2 of hearts and other?	10879	chatMessage

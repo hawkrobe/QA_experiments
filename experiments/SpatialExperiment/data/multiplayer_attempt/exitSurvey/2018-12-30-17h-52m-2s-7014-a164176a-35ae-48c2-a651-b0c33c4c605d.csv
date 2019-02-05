@@ -1,3 +1,0 @@
-iterationName	gameid	time	score	gameID	quizFailCounter	thinksHuman	nativeEnglish	ratePartner	confused	comments	strategy	role	totalLength	eventType
-full_sample	7014-a164176a-35ae-48c2-a651-b0c33c4c605d	1546221122508	5	7014-a164176a-35ae-48c2-a651-b0c33c4c605d	0	no	yes	not much	yes	Confusing instructions		helper	332529	exitSurvey
-full_sample	7014-a164176a-35ae-48c2-a651-b0c33c4c605d	1546221152557	5	7014-a164176a-35ae-48c2-a651-b0c33c4c605d	0	yes	yes	okay	yes	No	I tried to pick the card my partner asked for	seeker	364064	exitSurvey

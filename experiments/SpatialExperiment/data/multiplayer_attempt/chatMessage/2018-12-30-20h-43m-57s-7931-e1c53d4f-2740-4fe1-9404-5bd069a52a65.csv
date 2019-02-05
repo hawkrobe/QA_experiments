@@ -1,5 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-full_sample	7931-e1c53d4f-2740-4fe1-9404-5bd069a52a65	1546231437318	0	catch	7S	9D	Where is the 7 of spades?	3393	chatMessage
-full_sample	7931-e1c53d4f-2740-4fe1-9404-5bd069a52a65	1546231471477	1	overlap	JS,6C	3S,6C	Where is the 6 of clubs?	5634	chatMessage
-full_sample	7931-e1c53d4f-2740-4fe1-9404-5bd069a52a65	1546231503561	1	overlap	JS,6C	3S,6C	Where is the Jack of spades?	6340	chatMessage
-full_sample	7931-e1c53d4f-2740-4fe1-9404-5bd069a52a65	1546231535003	2	overlap	10S,AD	6S,AD	Where is the 10 of spades?	5921	chatMessage

@@ -1,6 +1,0 @@
-iterationName	gameid	time	trialNum	trialType	targetGoalSet	distractorGoalSet	text	timeFromRoundStart	eventType
-pilot0	1697-ae209004-cc11-43d2-b371-d30b660daf3b	1544510053235	0	baseline	5C,KS	8S,10H	Where is the king of spades?	3620	chatMessage
-pilot0	1697-ae209004-cc11-43d2-b371-d30b660daf3b	1544510080772	0	baseline	5C,KS	8S,10H	Where is the five of clubs?	1907	chatMessage
-pilot0	1697-ae209004-cc11-43d2-b371-d30b660daf3b	1544510103164	0	baseline	5C,KS	8S,10H	Where is the hello??	2681	chatMessage
-pilot0	1697-ae209004-cc11-43d2-b371-d30b660daf3b	1544510165186	0	baseline	5C,KS	8S,10H	Where is the eight of spades?	2402	chatMessage
-pilot0	1697-ae209004-cc11-43d2-b371-d30b660daf3b	1544510195345	0	baseline	5C,KS	8S,10H	Where is the ten of hearts??	2908	chatMessage
