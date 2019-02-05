@@ -223,7 +223,6 @@ class Bot {
   // Currently reveals literal card (will set up pragmatic cases later)
   revealAnswer(cellAskedAbout) {
     var selections = [cellAskedAbout];
-    this.game.revealedCells = _.concat(this.game.revealedCells, selections);
     var msg = (this.fullMap[cellAskedAbout] == 'g' ?
 	       'Yes, ' + cellAskedAbout + ' is safe' :
 	       'No, ' + cellAskedAbout + ' is not safe');

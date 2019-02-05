@@ -43,16 +43,16 @@ function dropdownTip(data){
 function setupLeaderHandlers(game) {
   $('.pressable').click(function(event) {
     // Only let leader click once they've heard answer back
-    console.log('here');
     if(game.answerSent) {
       // Log as revealed
       var buttonName = $(this).attr('id').split('-')[1];
       game.revealedCells.push(buttonName);
-      game.checkGrid();
 
       // replace button with underlying state
       $(this).siblings().show().css({'opacity' : 1});
       $(this).remove();
+      game.checkGrid();
+
     }
   });
 }
