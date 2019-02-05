@@ -60,18 +60,18 @@ var customEvents = function(game) {
     console.log('checking grid');
     var revealedCells = this.revealedCells;
     var goodness = _.map(revealedCells, cell => this.fullMap[cell]);
-    var completeCol = _.map(_.range(1,5), colName => {
+    var completeCol = _.map(_.range(1,4), colName => {
       return _.filter(revealedCells, cellName => cellName[1] == colName);
     });
-    var completeRow = _.map(['A','B','C','D'], rowName => {
+    var completeRow = _.map(['A','B','C'], rowName => {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
     if(_.includes(goodness, 'r')) {
       console.log('fail');
       game.socket.emit('endRound', {outcome: 'fail'});
       return true;
-    } else if (_.some(completeRow, row => row.length == 4) ||
-	       _.some(completeCol, col => col.length == 4)) {
+    } else if (_.some(completeRow, row => row.length == 3) ||
+	       _.some(completeCol, col => col.length == 3)) {
       console.log('success');
       game.socket.emit('endRound', {outcome: 'success'});
       return true;

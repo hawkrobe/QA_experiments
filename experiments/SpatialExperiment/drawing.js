@@ -56,10 +56,34 @@ function setupLeaderHandlers(game) {
   });
 }
 
+function initBombMap(game) {
+  // Add objects to grid
+  _.forEach(['A','B','C'], (rowName, i) => {
+    _.forEach(_.range(1,4), (colName, j) => {
+      var underlying = game.fullMap[rowName + colName];
+      var div = $('<div/>').css({position: 'relative'});
+      if(underlying == 'r') {
+	div.append($('<img/>')
+		   .addClass('bomb')
+		   .css({'grid-row': i, 'grid-column': j,
+			 'z-index': 1, position: 'absolute', left:'0px'}));
+      } else {
+	div.append($('<div/>')
+		   .css({'background' : 'rgb(100,100,100)',
+			 'height' : '100%', 'width' : '100%',
+			 'grid-row': i, 'grid-column': j,
+			 'z-index': 1, position: 'absolute', left:'0px'}));
+      }
+      $("#bomb-map").append(div);
+    });
+  });
+  $("#message_panel").append($('<p/>').text('Secret bomb map').css({'position' : 'absolute', 'bottom' : '0'}));
+}
+
 function initGrid(game) {
   // Add objects to grid
-  _.forEach(['A','B','C','D'], (rowName, i) => {
-    _.forEach(_.range(1,5), (colName, j) => {
+  _.forEach(['A','B','C'], (rowName, i) => {
+    _.forEach(_.range(1,4), (colName, j) => {
       var underlying = game.fullMap[rowName + colName];
       var initialize = _.includes(game.initRevealed, rowName + colName);
       var div = $('<div/>').css({position: 'relative'});
@@ -69,8 +93,7 @@ function initGrid(game) {
 	  .css({'grid-row': i, 'grid-column': j,
 		'z-index': 1, position: 'absolute', left:'0px'});
       div.append(underlyingState);
-
-      if(game.my_role == game.playerRoleNames.role1 && !initialize) {
+      if(!initialize) {
 	div.append($('<img/>')
 		   .addClass('pressable')
 		   .attr({'id' : 'button-'+rowName+colName})
@@ -79,6 +102,7 @@ function initGrid(game) {
       $("#context").append(div);
     });
   });
+
   $("#context").fadeIn();
   // Unbind old click listeners if they exist
   $('#context img')
@@ -138,6 +162,9 @@ function drawScreen (game) {
     $('#waiting').html('');
     confetti.reset();
     initGrid(game);
+    if(game.my_role == game.playerRoleNames.role2) {
+      initBombMap(game);
+    }
     
   }
 };
