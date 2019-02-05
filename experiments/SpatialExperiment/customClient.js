@@ -14,6 +14,7 @@ function updateState (game, data){
 
   game.fullMap = data.currStim.full;
   game.initRevealed = data.currStim.initRevealed;
+  game.goal = data.currStim.goal;  
   game.revealedCells = game.initRevealed;
   game.active = data.active;
   game.roundNum = data.roundNum;
@@ -57,8 +58,9 @@ var customEvents = function(game) {
 
   // Win condition is to safely complete row/col
   game.checkGrid = function() {
-    console.log('checking grid');
+    var goal = this.goal;
     var revealedCells = this.revealedCells;
+
     var goodness = _.map(revealedCells, cell => this.fullMap[cell]);
     var completeCol = _.map(_.range(1,4), colName => {
       return _.filter(revealedCells, cellName => cellName[1] == colName);
@@ -70,8 +72,8 @@ var customEvents = function(game) {
       console.log('fail');
       game.socket.emit('endRound', {outcome: 'fail'});
       return true;
-    } else if (_.some(completeRow, row => row.length == 3) ||
-	       _.some(completeCol, col => col.length == 3)) {
+    } else if (goal == 'rows' && _.some(completeRow, row => row.length == 3) ||
+	       goal == 'columns' && _.some(completeCol, col => col.length == 3)) {
       console.log('success');
       game.socket.emit('endRound', {outcome: 'success'});
       return true;
