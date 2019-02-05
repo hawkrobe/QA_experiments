@@ -211,6 +211,13 @@ html , body {
     background-size :cover;    
 }
 
+.bomb {
+    background: url('../../images/bomb.jpg') no-repeat;
+    height: 100%;
+    width: 100%;
+    background-size :cover;    
+}
+
 .underlying_g {
     background: url('../../images/checkmark.png') no-repeat;
     height: 100%;
@@ -223,15 +230,29 @@ html , body {
     /* background: #000000; */
     float: top;
     /* border:solid 1px #333333; *\/ */
-    grid-template-columns: 15vh 15vh 15vh 15vh;
-    grid-template-rows: 15vh 15vh 15vh 15vh;
-    height: 60vh;
-    width: 60vh;
+    grid-template-columns: 22vh 22vh 22vh;
+    grid-template-rows: 22vh 22vh 22vh;
+    height: 66vh;
+    width: 66vh;
     grid-gap: 0vh;
-    margin-left: auto;
-    margin-right: auto;
+    margin-right: 10vh;
     margin-bottom: auto ;
-    margin-top: 10%;
+    margin-top: 5%;
+    /* margin-right: 5%; */
+    background: #000000;
+}
+#bomb-map {
+    display: grid;
+    /* background: #000000; */
+    position: absolute;
+    /* border:solid 1px #333333; *\/ */
+    grid-template-columns: 10vh 10vh 10vh;
+    grid-template-rows: 10vh 10vh 10vh;
+    height: 30vh;
+    width: 30vh;
+    bottom: 15vh;
+    grid-gap: 1vh;
+    margin-left: 5vh;
     /* margin-right: 5%; */
     background: #000000;
 }
@@ -248,11 +269,11 @@ html , body {
 
 #message_panel {
 	height: 90%;
-	width: 25%;
+	width: 40vh;
 
 	float: left;
 
-	margin-left: 2.5%;
+	margin-left: 10%;
 	margin-right: 2.5%;
 	list-style-type: none;
 
@@ -260,7 +281,7 @@ html , body {
 }
 
 #messages {
-	height:30%;
+	height:20%;
 	text-align: left;
 	font-size: 200%;
 	overflow-y: scroll;
