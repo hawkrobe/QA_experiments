@@ -130,26 +130,20 @@ function fadeInSelections(cells){
   });
 }
 
-// TODO: this will break if most recent message is not at top of messages window
+// If they don't want to give more info, go ahead and sent the message
+// Otherwise replace this choice w/ menu for pragmatic answer...
 function giveAdditionalInfo(event) {
   var game = event.data.game;
   var response = event.data.response;
-
-  // parse preformatted message text
-  var askedAboutCell = $('#messages').text().split(' ')[2];
   if(response == 'no') {
-    // If they don't want to give more info, go ahead and sent the message
-    game.sendAnswer([askedAboutCell]);
+    game.sendAnswer();
   } else {
-    // Otherwise give them menu for pragmatic answer...
     $('#additional_info_init').show();
   }
   $('#additional_info').hide();
 }
 
 function fadeOutSelections(cells) {
-  console.log('fading out');
-  console.log(cells);
   _.forEach(cells, (name) => {
     var cellElement = $('#underlying-state-' + name);
     cellElement.css({'transition' : 'opacity 1s', opacity: 0.2});
@@ -166,8 +160,7 @@ function drawScreen (game) {
     initGrid(game);
     if(game.my_role == game.playerRoleNames.role2) {
       initBombMap(game);
-    }
-    
+    }    
   }
 };
 
@@ -200,7 +193,6 @@ function reset (game, data) {
   } else if(game.my_role === game.playerRoleNames.role2) {
     $('#leaderchatarea').hide();
     $('#helperchatarea').show();
-    $('#yes-no-dropdown').attr("disabled","disabled");
     $('#instructs')
       .append("<p>After your partner types their question, check your bomb map and help them!</p>" 
 	      + "<p>Remember they are either trying to complete a row or a column.</p>");
