@@ -90,9 +90,9 @@ class ServerRefGame extends ServerGame {
       }
       break;
 
-    case 'reveal' :
+    case 'answer' :
       _.map(all, function(p){
-	p.player.instance.emit('reveal', {selections: message_parts.slice(3)});
+	p.player.instance.emit('answer', {selections: message_parts.slice(3)});
       });
       break;
 
