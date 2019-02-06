@@ -44,15 +44,7 @@ function setupLeaderHandlers(game) {
   $('.pressable').click(function(event) {
     // Only let leader click once they've heard answer back
     if(game.answerSent) {
-      // Log as revealed
-      var buttonName = $(this).attr('id').split('-')[1];
-      game.revealedCells.push(buttonName);
-
-      // replace button with underlying state
-      $(this).siblings().show().css({'opacity' : 1});
-      $(this).remove();
-      game.checkGrid();
-
+      game.revealCell($(this));
     }
   });
 }
@@ -202,15 +194,16 @@ function reset (game, data) {
     $('#leaderchatarea').show();
     $('#helperchatarea').hide();          
     $('#instructs')
-      .append("<p>Fill in the question so your partner</p> " +
-	      "<p>can help you complete the highlighted combo!</p>");
+      .append("<p>On this round, your goal is to complete one of the <b>" +
+	      game.goal + "</b>.</p>" +
+	      "<p> Your partner wants to help you avoid the bombs, so ask them a question!");
   } else if(game.my_role === game.playerRoleNames.role2) {
     $('#leaderchatarea').hide();
     $('#helperchatarea').show();
     $('#yes-no-dropdown').attr("disabled","disabled");
     $('#instructs')
-      .append("<p>After your partner types their question, </p>" 
-	      + "<p>select up to <b>two</b> cards to complete their combo!</p>");
+      .append("<p>After your partner types their question, check your bomb map and help them!</p>" 
+	      + "<p>Remember they are either trying to complete a row or a column.</p>");
     $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
     $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
   }
