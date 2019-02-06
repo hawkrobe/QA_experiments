@@ -27,18 +27,33 @@ var client_addnewround = function(game) {
 
 var customEvents = function(game) {
 
+  // Tell server when answerer sends
+  $('#answer_button').click(function() {
+    $('#additional_info_init').hide();
+    game.sendAnswer();
+  });        
 
-  // var sendAnswer = function(event) {
-  //   var game = event.data.game;
-  //   var timeElapsed = Date.now() - game.messageReceivedTime;
-  //   game.revealedCells = game.revealedCells.concat(game.selections);  
-  //   game.socket.send("answer.human." + timeElapsed + '.' +
-  // 		     game.selections.join('.'));
-  // };
+  // Tell server when questioner types something in the chatbox
+  $('#question_button').click(function(){
+    var row = $('#chatbox_row').val();
+    var col = $('#chatbox_col').val();
+    var code =  row + col;
+    var timeElapsed = Date.now() - game.roundStartTime;
+    var msg = ['question', code, timeElapsed, 'human', game.my_role]
+	.join('.');
+    if(row != '' && col != '') {
+      game.socket.send(msg);
+      game.sentTyping = false;
+      $("#chatbox_row").val('');
+      $("#chatbox_col").val('');
+      $('#question_button').attr('disabled', 'disabled');                  
+    }
+    return false;   
+  });
 
+  // Log as revealed
   game.revealCell= function(cell) {
     if(cell.length > 0) {
-      // Log as revealed
       var buttonName = cell.attr('id').split('-')[1];
       game.revealedCells.push(buttonName);
 
@@ -52,9 +67,8 @@ var customEvents = function(game) {
   };
   
   game.sendAnswer = function() {
-    // TODO: this will cause a bug if not the first message
     var msg = $('#yes-no-dropdown option:selected').text();
-    var askedAboutCell = $('#messages').text().split(' ')[2];
+    var askedAboutCell = game.askedAboutCell; 
     var additionalCell = ($('#helper_row option:selected').text() +
 			  $('#helper_col option:selected').text());
     var cells = (additionalCell == '' ? [askedAboutCell] :
@@ -67,9 +81,8 @@ var customEvents = function(game) {
     $('#helper_col').val('');
     $('#helper_safe').val('');
     var timeElapsed = Date.now() - game.roundStartTime;
-    game.socket.send(['answer', 'human', timeElapsed].concat(cells).join('.'));
-    game.socket.send(['chatMessage', cells.join('&'),
-		      msg, 5000, 'human', game.my_role].join('.'));
+    game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
+		     .concat(cells).join('.'));
   };
 
   // Win condition is to safely complete row/col
@@ -99,21 +112,16 @@ var customEvents = function(game) {
   }
   
   game.socket.on('chatMessage', function(data){
+    console.log(data);
     var source = (data.sender == 'human' ? 'You' :
 		  data.sender == "bot" ? data.source_role :
 		  console.log('unknown source'));
     var color = source === "You" ? "#363636" : "#707070";    
-    // To bar responses until speaker has uttered at least one message
-    if(data.source_role == "helper"){
-      game.answerSent = true;
-      game.questionSent = false;
-      $('#yes-no-dropdown').attr("disabled","disabled");
-    } else {
-      game.answerSent = false;
-      game.questionSent = true;
-      $('#yes-no-dropdown').removeAttr("disabled");
-    }
+
+    // get rid of 'partner is typing...' message
     $('.typing-msg').remove();
+
+    // append message to pane
     $('#messages')
       .append($('<li style="padding: 5px 10px; background: ' + color + '">')
     	      .text(source + ": " + data.msg))
@@ -121,9 +129,26 @@ var customEvents = function(game) {
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    // If human asks questions, have bot respond with answer
-    if(data.sender == 'human' && data.source_role == 'leader') {
-      game.bot.answer(data.code);
+    
+    // bar responses until speaker has uttered at least one message (and vice versa)
+    if(data.source_role == "helper"){
+      $('#question_button').removeAttr('disabled');
+      $('#yes-no-dropdown').hide();
+      game.answerSent = true;
+      game.questionSent = false;
+      game.selections = data.code;
+      UI.fadeInSelections(game.selections);
+      if(data.sender == 'human') {
+	game.bot.reveal(data.code);
+      }
+    } else {
+      $('#yes-no-dropdown').show().css({display: 'inline-block'});
+      game.answerSent = false;
+      game.questionSent = true;
+      game.askedAboutCell = data.code;
+      if(data.sender == 'human') {
+	game.bot.answer(data.code);
+      }
     }
   });
 
@@ -144,51 +169,7 @@ var customEvents = function(game) {
       UI.confetti.drop();
     }
   });
-  
-  game.socket.on('answer', function(data) {    
-    // Fade in revealed cards
-    //if(game.my_role == game.playerRoleNames.role1) {
-      UI.fadeInSelections(data.selections);
-    // } else {
-    //   UI.fadeOutSelections(data.selections);
-    // }
-
-    // See if game is over...
-    //
-    if (game.my_role == game.playerRoleNames.role2) {
-      game.bot.reveal(data.selections);
-    } else {
-      $('#question_button').removeAttr('disabled');
-      game.messageSent = false;
-    }    
-  });
-
-  // Tell server when answerer types something in the chatbox
-  $('#answer_button').click(function() {
-    $('#additional_info_init').hide();
-    game.sendAnswer();
-  });        
-
-  // Tell server when questioner types something in the chatbox
-  $('#question_button').click(function(){
-    var row = $('#chatbox_row').val();
-    var col = $('#chatbox_col').val();
-    var code =  row + col;
-    var origMsg = ("Is " + code + " safe?");
-    var timeElapsed = Date.now() - game.roundStartTime;
-    var msg = ['chatMessage', code, origMsg.replace(/\./g, '~~~'),
-	       timeElapsed, 'human', game.my_role]
-	.join('.');
-    if(row != '' && col != '') {
-      game.socket.send(msg);
-      game.sentTyping = false;
-      $("#chatbox_row").val('');
-      $("#chatbox_col").val('');
-      $('#question_button').attr('disabled', 'disabled');                  
-    }
-    return false;   
-  });
-  
+    
   game.socket.on('newRoundUpdate', function(data){
     console.log('received update');
     game.bot = new Bot(game, data);
@@ -207,7 +188,7 @@ var customEvents = function(game) {
 
     // Kick things off by asking a question 
     if(game.bot.role == 'leader') {
-      game.bot.showQuestion();
+      game.bot.ask();
     }
   });
 };
@@ -220,44 +201,46 @@ class Bot {
   }
 
   // Always asks about non-overlapping card
-  showQuestion() {
-    // remove revealed cards from goal set, so it won't keep asking about same card
+  ask() {
+    console.log('bot asking...');
     $('#messages')
-      .append('<span class="typing-msg">Other player is selecting question... Study the grid!</span>')
+      .append('<span class="typing-msg">Other player is selecting question... \
+                Study the grid!</span>')
       .stop(true,true)
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
     var code = 'A2';
-    var msg = 'Is ' + code + ' safe?';
     setTimeout(function() {
-      this.game.socket.send(["chatMessage", code, msg,
-			     5000, 'bot', this.role].join('.'));
+      this.game.socket.send(["question", code, 5000, 'bot', this.role].join('.'));
     }.bind(this), 5000);
   }
 
   // Currently reveals literal card (will set up pragmatic cases later)
   answer(cellAskedAbout) {
+    console.log('bot answering...');
     var selections = [cellAskedAbout];
     var msg = (this.fullMap[cellAskedAbout] == 'g' ?
 	       'Yes, ' + cellAskedAbout + ' is safe' :
 	       'No, ' + cellAskedAbout + ' is not safe');
     setTimeout(function() {
-      this.game.socket.send("answer.bot.2500." + selections.join('.'));
-      this.game.socket.send(['chatMessage', cellAskedAbout,
-			     msg, 5000, 'bot', this.role].join('.'));
+      this.game.socket.send(["answer", msg, 2500, "bot", this.role]
+			    .concat(selections).join('.'));
     }.bind(this), 2500);
   }
 
-  // Clicks on the non-bombs...
+  // click on the non-bombs that have been revealed and ask another Q...
   reveal(selections) {
-    _.forEach(selections, id =>  {
-      if(this.fullMap[id] == 'g')
-	this.game.revealCell($('#button-' + id));
-    });
-    if(!this.game.checkGrid()) {
-      this.showQuestion();
-    }
+    console.log('bot revealing...');
+    setTimeout(function() {
+      _.forEach(selections, id =>  {
+	if(this.fullMap[id] == 'g')
+	  this.game.revealCell($('#button-' + id));
+      });
+      if(!this.game.checkGrid()) {
+	this.ask();
+      }
+    }.bind(this), 2500);
   }
 }
 

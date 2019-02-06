@@ -77,22 +77,30 @@ class ServerRefGame extends ServerGame {
     var others = gc.getOthers(client.userid);
     switch(message_type) {
     
-    case 'chatMessage' :
-      if(client.game.playerCount == gc.playersThreshold && !gc.paused) {
-	var msg = message_parts[2].replace(/~~~/g,'.');
-	_.map(all, function(p){
-	  p.player.instance.emit( 'chatMessage', {
-	    user: client.userid, msg: msg, code: message_parts[1],
-	    sender: message_parts[4],
-	    source_role: message_parts[5]
-	  });
-	});
-      }
-      break;
-
-    case 'answer' :
+    case 'question' :
+      var code = message_parts[1];
+      var msg = ("Is " + code + " safe?");
       _.map(all, function(p){
-	p.player.instance.emit('answer', {selections: message_parts.slice(3)});
+	p.player.instance.emit( 'chatMessage', {
+	  user: client.userid,
+	  msg: msg,
+	  code: code,
+	  sender: message_parts[3],
+	  source_role: message_parts[4]
+	});
+      });
+      break;
+      
+    case 'answer' :
+      console.log(message_parts);
+      _.map(all, function(p){
+	p.player.instance.emit('chatMessage', {
+	  user: client.userid,
+	  msg: message_parts[1],
+	  sender: message_parts[3],
+	  source_role: message_parts[4],
+	  code: message_parts.slice(5)
+	});
       });
       break;
 
