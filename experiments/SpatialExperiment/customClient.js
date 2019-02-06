@@ -27,16 +27,32 @@ var client_addnewround = function(game) {
 
 var customEvents = function(game) {
 
-  // TODO: this will cause a bug if not the first message
-  var sendAnswer = function(event) {
-  var game = event.data.game;
-  var timeElapsed = Date.now() - game.messageReceivedTime;
-  game.revealedCells = game.revealedCells.concat(game.selections);  
-  game.socket.send("reveal.human." + timeElapsed + '.' +
-		   game.selections.join('.'));
-  };
 
+  // var sendAnswer = function(event) {
+  //   var game = event.data.game;
+  //   var timeElapsed = Date.now() - game.messageReceivedTime;
+  //   game.revealedCells = game.revealedCells.concat(game.selections);  
+  //   game.socket.send("answer.human." + timeElapsed + '.' +
+  // 		     game.selections.join('.'));
+  // };
+
+  game.revealCell= function(cell) {
+    if(cell.length > 0) {
+      // Log as revealed
+      var buttonName = cell.attr('id').split('-')[1];
+      game.revealedCells.push(buttonName);
+
+      // replace button with underlying state
+      cell.siblings().show().css({'opacity' : 1});
+      cell.remove();
+      game.checkGrid();
+    } else {
+      console.log('tried to reveal non-existant cell...');
+    }
+  };
+  
   game.sendAnswer = function() {
+    // TODO: this will cause a bug if not the first message
     var msg = $('#yes-no-dropdown option:selected').text();
     var askedAboutCell = $('#messages').text().split(' ')[2];
     var additionalCell = ($('#helper_row option:selected').text() +
@@ -51,7 +67,7 @@ var customEvents = function(game) {
     $('#helper_col').val('');
     $('#helper_safe').val('');
     var timeElapsed = Date.now() - game.roundStartTime;
-    game.socket.send(['reveal', 'human', timeElapsed].concat(cells).join('.'));
+    game.socket.send(['answer', 'human', timeElapsed].concat(cells).join('.'));
     game.socket.send(['chatMessage', cells.join('&'),
 		      msg, 5000, 'human', game.my_role].join('.'));
   };
@@ -107,7 +123,7 @@ var customEvents = function(game) {
       }, 800);
     // If human asks questions, have bot respond with answer
     if(data.sender == 'human' && data.source_role == 'leader') {
-      game.bot.revealAnswer(data.code);
+      game.bot.answer(data.code);
     }
   });
 
@@ -129,20 +145,18 @@ var customEvents = function(game) {
     }
   });
   
-  game.socket.on('reveal', function(data) {    
+  game.socket.on('answer', function(data) {    
     // Fade in revealed cards
-    if(game.my_role == game.playerRoleNames.role1) {
+    //if(game.my_role == game.playerRoleNames.role1) {
       UI.fadeInSelections(data.selections);
-    } else {
-      UI.fadeOutSelections(data.selections);
-    }
+    // } else {
+    //   UI.fadeOutSelections(data.selections);
+    // }
 
     // See if game is over...
     //
     if (game.my_role == game.playerRoleNames.role2) {
-      if(!game.checkGrid()) {
-	game.bot.showQuestion();
-      }
+      game.bot.reveal(data.selections);
     } else {
       $('#question_button').removeAttr('disabled');
       game.messageSent = false;
@@ -223,16 +237,27 @@ class Bot {
   }
 
   // Currently reveals literal card (will set up pragmatic cases later)
-  revealAnswer(cellAskedAbout) {
+  answer(cellAskedAbout) {
     var selections = [cellAskedAbout];
     var msg = (this.fullMap[cellAskedAbout] == 'g' ?
 	       'Yes, ' + cellAskedAbout + ' is safe' :
 	       'No, ' + cellAskedAbout + ' is not safe');
     setTimeout(function() {
-      this.game.socket.send("reveal.bot.2500." + selections.join('.'));
+      this.game.socket.send("answer.bot.2500." + selections.join('.'));
       this.game.socket.send(['chatMessage', cellAskedAbout,
 			     msg, 5000, 'bot', this.role].join('.'));
     }.bind(this), 2500);
+  }
+
+  // Clicks on the non-bombs...
+  reveal(selections) {
+    _.forEach(selections, id =>  {
+      if(this.fullMap[id] == 'g')
+	this.game.revealCell($('#button-' + id));
+    });
+    if(!this.game.checkGrid()) {
+      this.showQuestion();
+    }
   }
 }
 
