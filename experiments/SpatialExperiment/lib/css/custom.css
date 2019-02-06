@@ -252,7 +252,7 @@ html , body {
 #map {
     position:absolute;
     height:40vh;
-    width:40vh;
+    width:60vh;
     bottom:10vh;
 }
 
@@ -265,7 +265,7 @@ html , body {
     width: 30vh;
     bottom: 5vh;
     grid-gap: 1vh;
-    margin-left: 5vh;
+    margin-left: 15vh;
     /* margin-right: 5%; */
     background: #000000;
 }
@@ -282,7 +282,7 @@ html , body {
 
 #message_panel {
 	height: 90%;
-	width: 40vh;
+	width: 60vh;
 
 	float: left;
 
