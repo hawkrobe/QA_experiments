@@ -40,11 +40,13 @@ function dropdownTip(data){
   }
 }
 
+// Only let leader click once they've heard answer back
+// Limit number of clicks per answer to 2... 
 function setupLeaderHandlers(game) {
   $('.pressable').click(function(event) {
-    // Only let leader click once they've heard answer back
-    if(game.answerSent) {
+    if(game.answerSent && game.numCellsClicked < 2) {
       game.revealCell($(this));
+      game.numCellsClicked += 1;
     }
   });
 }
