@@ -238,12 +238,8 @@ class GameMap {
     underlying[rowToReveal][0] = 'g';
     underlying[rowToReveal][1] = 'g';    
     underlying[rowToReveal][2] = 'g';
-    return Math.random() < .5 ? {
-      initRevealed, underlying
-    } : {
-      initRevealed: this.reflect(initRevealed),
-      underlying: this.reflect(underlying)
-    };
+    return (!this.validate(initRevealed, underlying) ? this.sampleCatch() :
+	    this.sampleReflection(initRevealed, underlying));
   }
 
   // For some spice, we randomly sample initializations and stuff
@@ -261,15 +257,9 @@ class GameMap {
       });
     });
 
-    console.log(initRevealed);
-    console.log('allrevealed', this.allRevealed(initRevealed));
-    return this.allRevealed(initRevealed) ? this.sampleRandom() :
-      Math.random() < .5 ? {
-	initRevealed, underlying
-      } : {
-	initRevealed: this.reflect(initRevealed),
-	underlying: this.reflect(underlying)
-      };
+    return (!this.validate(initRevealed, underlying) ? this.sampleRandom() :
+	    this.sampleReflection(initRevealed, underlying));
+
   }
 
   // We pick 1 cell to be initiated,
@@ -296,12 +286,8 @@ class GameMap {
       underlying[rowToReveal][1] = 'g';    
       underlying[rowToReveal][2] = 'g';
     }
-    return Math.random() < .5 ? {
-      initRevealed, underlying
-    } : {
-      initRevealed: this.reflect(initRevealed),
-      underlying: this.reflect(underlying)
-    };
+    return (!this.validate(initRevealed, underlying) ? this.samplePragmatic() :
+	    this.sampleReflection(initRevealed, underlying));
   }
   
   sampleEmpty () {
@@ -311,12 +297,27 @@ class GameMap {
     underlying[rowToBeOkay][0] = 'g';
     underlying[rowToBeOkay][1] = 'g';    
     underlying[rowToBeOkay][2] = 'g';
-    return Math.random() < .5 ? {
-      initRevealed, underlying
-    } : {
-      initRevealed: this.reflect(initRevealed),
-      underlying: this.reflect(underlying)
+    return (!this.validate(initRevealed, underlying) ? this.sampleEmpty() :
+	    this.sampleReflection(initRevealed, underlying));
+  }
+
+  sampleReflection (initRevealed, underlying) {
+    if(Math.random() < .5)
+      return {initRevealed, underlying};
+    else 
+      return {initRevealed: this.reflect(initRevealed),
+	      underlying: this.reflect(underlying)};
+  }
+  
+  validate(initRevealed, underlying) {
+    return !this.allRevealed(initRevealed) && this.colRowExists(underlying);
+  }
+  
+  colRowExists(underlying) {
+    var completeRow = function(grid) {
+      return _.some(grid, row => _.every(row, cellName => cellName == 'g'));
     };
+    return completeRow(underlying) && completeRow(this.rotate(underlying));
   }
 
   allRevealed(initRevealed) {
