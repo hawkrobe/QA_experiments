@@ -58,7 +58,7 @@ function initBombMap(game) {
     _.forEach(_.range(1,4), (colName, j) => {
       var underlying = game.fullMap[rowName + colName];
       var div = $('<div/>').css({position: 'relative'});
-      if(underlying == 'r') {
+      if(underlying == 'x') {
 	div.append($('<img/>')
 		   .addClass('bomb')
 		   .css({'grid-row': i, 'grid-column': j,

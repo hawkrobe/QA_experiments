@@ -120,7 +120,7 @@ var customEvents = function(game) {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
     
-    if(_.includes(goodness, 'r')) {
+    if(_.includes(goodness, 'x')) {
       console.log('fail');
       game.socket.emit('endRound', {outcome: 'fail'});
       $('.pressable').off('click');

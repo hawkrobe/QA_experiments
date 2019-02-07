@@ -25,7 +25,7 @@ class Bot {
   answer(cellAskedAbout) {
     console.log('bot answering...');
     var selections = [cellAskedAbout];
-    var msg = (this.fullMap[cellAskedAbout] == 'g' ?
+    var msg = (this.fullMap[cellAskedAbout] == 'o' ?
 	       'Yes, ' + cellAskedAbout + ' is safe' :
 	       'No, ' + cellAskedAbout + ' is not safe');
     setTimeout(function() {
@@ -41,7 +41,7 @@ class Bot {
     setTimeout(function() {
       let over = [];
       _.forEach(selections, id =>  {
-	if(this.fullMap[id] == 'g')
+	if(this.fullMap[id] == 'o')
 	  over.push(this.game.revealCell($('#button-' + id)));
       });
       if(!_.includes(over, true)) {
