@@ -204,7 +204,7 @@ html , body {
     background-size :cover !important;
 }
 
-.underlying_r {
+.underlying_x {
     background: url('../../images/xxx.png') no-repeat;
     height: 100%;
     width: 100%;
@@ -219,7 +219,7 @@ html , body {
     background-size :cover;    
 }
 
-.underlying_g {
+.underlying_o {
     background: url('../../images/checkmark.png') no-repeat;
     height: 100%;
     width: 100%;    
