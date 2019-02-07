@@ -12,10 +12,11 @@ function updateState (game, data){
     });
   }
 
-  game.fullMap = data.currStim.full;
-  game.initRevealed = data.currStim.initRevealed;
+  console.log(data.currStim);
+  game.fullMap = _.clone(data.currStim.underlying);
+  game.initRevealed = _.clone(data.currStim.initRevealed);
   game.goal = data.currStim.goal;  
-  game.revealedCells = game.initRevealed;
+  game.revealedCells = _.clone(game.initRevealed);
   game.active = data.active;
   game.roundNum = data.roundNum;
   game.roundStartTime = Date.now();
@@ -25,7 +26,23 @@ var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
 };
 
+// If they don't want to give more info, go ahead and sent the message
+// Otherwise replace this choice w/ menu for pragmatic answer...
+function giveAdditionalInfo(event) {
+  var game = event.data.game;
+  var response = event.data.response;
+  if(response == 'no') {
+    game.sendAnswer();
+  } else {
+    $('#additional_info_init').show();
+  }
+  $('#additional_info').hide();
+}
+
 var customEvents = function(game) {
+
+  $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
+  $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
 
   // Tell server when answerer sends
   $('#answer_button').click(function() {
@@ -60,7 +77,7 @@ var customEvents = function(game) {
       // replace button with underlying state
       cell.siblings().show().css({'opacity' : 1});
       cell.remove();
-      game.checkGrid();
+      return game.checkGrid();
     } else {
       console.log('tried to reveal non-existant cell...');
     }
@@ -112,7 +129,6 @@ var customEvents = function(game) {
   }
   
   game.socket.on('chatMessage', function(data){
-    console.log(data);
     var source = (data.sender == 'human' ? 'You' :
 		  data.sender == "bot" ? data.source_role :
 		  console.log('unknown source'));
@@ -165,6 +181,7 @@ var customEvents = function(game) {
     $('#score').empty().append('total bonus: $' + bonus_score);
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});
+    $("#bomb-map").fadeOut(1000, function() {$(this).empty();});    
     if(data.outcome == 'success') {
       UI.confetti.drop();
     }
@@ -197,7 +214,7 @@ class Bot {
   constructor(game, data) {
     this.game = game;
     this.role = data.currStim.role == 'helper' ? 'leader' : 'helper';
-    this.fullMap = data.currStim.full;
+    this.fullMap = data.currStim.underlying;
   }
 
   // Always asks about non-overlapping card
@@ -229,15 +246,17 @@ class Bot {
     }.bind(this), 2500);
   }
 
-  // click on the non-bombs that have been revealed and ask another Q...
+  // click on the non-bombs that have been revealed
+  // ask another Q if and only if this doesn't complete the round...
   reveal(selections) {
     console.log('bot revealing...');
     setTimeout(function() {
+      let over = [];
       _.forEach(selections, id =>  {
 	if(this.fullMap[id] == 'g')
-	  this.game.revealCell($('#button-' + id));
+	  over.push(this.game.revealCell($('#button-' + id)));
       });
-      if(!this.game.checkGrid()) {
+      if(!_.includes(over, true)) {
 	this.ask();
       }
     }.bind(this), 2500);

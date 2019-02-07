@@ -51,6 +51,7 @@ function setupLeaderHandlers(game) {
 
 function initBombMap(game) {
   // Add objects to grid
+  console.log(game.fullMap);
   _.forEach(['A','B','C'], (rowName, i) => {
     _.forEach(_.range(1,4), (colName, j) => {
       var underlying = game.fullMap[rowName + colName];
@@ -71,6 +72,7 @@ function initBombMap(game) {
       $("#bomb-map").append(div);
     });
   });
+  $("#bomb-map").fadeIn();
   $("#map").append(
     $('<span/>')
       .text('Secret bomb map')
@@ -130,18 +132,6 @@ function fadeInSelections(cells){
   });
 }
 
-// If they don't want to give more info, go ahead and sent the message
-// Otherwise replace this choice w/ menu for pragmatic answer...
-function giveAdditionalInfo(event) {
-  var game = event.data.game;
-  var response = event.data.response;
-  if(response == 'no') {
-    game.sendAnswer();
-  } else {
-    $('#additional_info_init').show();
-  }
-  $('#additional_info').hide();
-}
 
 function fadeOutSelections(cells) {
   _.forEach(cells, (name) => {
@@ -196,8 +186,6 @@ function reset (game, data) {
     $('#instructs')
       .append("<p>After your partner types their question, check your bomb map and help them!</p>" 
 	      + "<p>Remember they are either trying to complete a row or a column.</p>");
-    $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
-    $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
   }
   drawScreen(game);
 }
