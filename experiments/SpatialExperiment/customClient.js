@@ -41,7 +41,7 @@ function giveAdditionalInfo(event) {
 }
 
 var customEvents = function(game) {
-
+  // Process responses to 'give additional info?' question
   $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
   $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
 
@@ -79,6 +79,7 @@ var customEvents = function(game) {
       cell.siblings().show().css({'opacity' : 1});
       cell.remove();
       return game.checkGrid();
+//      if(roundOver) $(
     } else {
       console.log('tried to reveal non-existant cell...');
     }
@@ -91,14 +92,17 @@ var customEvents = function(game) {
 			  $('#helper_col option:selected').text());
     var cells = (additionalCell == '' ? [askedAboutCell] :
 		 [askedAboutCell, additionalCell]);
+    var timeElapsed = Date.now() - game.roundStartTime;
+    
     if(additionalCell != '') {
-      msg += " and " + additionalCell + ' is ' + $('#helper_safe option:selected').text();
+      msg += " and " + additionalCell + ' is ';
+      msg += $('#helper_safe option:selected').text();
     }
     $('#yes-no-dropdown').val('');
     $('#helper_row').val('');
     $('#helper_col').val('');
     $('#helper_safe').val('');
-    var timeElapsed = Date.now() - game.roundStartTime;
+
     game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
 		     .concat(cells).join('.'));
   };
@@ -115,14 +119,17 @@ var customEvents = function(game) {
     var completeRow = _.map(['A','B','C'], rowName => {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
+    
     if(_.includes(goodness, 'r')) {
       console.log('fail');
       game.socket.emit('endRound', {outcome: 'fail'});
+      $('.pressable').off('click');
       return true;
     } else if (goal == 'rows' && _.some(completeRow, row => row.length == 3) ||
 	       goal == 'columns' && _.some(completeCol, col => col.length == 3)) {
       console.log('success');
       game.socket.emit('endRound', {outcome: 'success'});
+      $('.pressable').off('click');
       return true;
     } else {
       return false;
@@ -154,6 +161,7 @@ var customEvents = function(game) {
       game.answerSent = true;
       game.questionSent = false;
       game.selections = data.code;
+      game.numCellsClicked = 0;
       UI.fadeInSelections(game.selections);
       if(data.sender == 'human') {
 	game.bot.reveal(data.code);
