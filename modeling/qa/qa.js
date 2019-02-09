@@ -52,6 +52,20 @@ var writeSpatialQuestioner = function(filename, labels, erp) {
   appendCSV(data, filename);
 };
 
+var writeSpatialAnswerer = function(filename, labels, erp) {
+  var data = _.filter(erp.support().map(function(v) {
+    console.log(v);
+    var prob = erp.score(v);
+    console.log(prob);
+    if (Math.exp(prob) > 0.01){
+      return labels.concat([v, String(Math.exp(prob).toFixed(2))]);
+    } else {
+      return [];
+    }
+  }), function(v) {return v.length > 0;});
+  appendCSV(data, filename);
+};
+
 // Note this is highly specific to a single type of erp
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');

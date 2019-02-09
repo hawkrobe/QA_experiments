@@ -69,13 +69,14 @@ var answerPrior = Categorical({vs : shortAnswers.concat(longAnswers)});
 
 // this cuts out answers that are literally false (mostly for
 // computaitonal efficiency reasons)
-var makeTruthfulAnswerPrior = dp.cache(function(question, trueWorld) {
+var makeTruthfulAnswerPrior = dp.cache(function(question, trueWorld, gridState) {
   var cellAskedAbout = question.split("_")[1];
   var validAnswers = filter(function(answer) {
     var isTrue = all(function(v){return trueWorld[v.split('_')[0]] == v.split('_')[1]},
 		     answer);
     var responds = any(function(v){return v.split('_')[0] == cellAskedAbout}, answer);
-    return isTrue && responds;
+    var alreadyRevealed = any(function(v){return _.includes(gridState, v.split('_')[0])}, answer);
+    return isTrue && responds && !alreadyRevealed;
   }, answerPrior.support());
   return Categorical({vs: validAnswers});
 });
@@ -167,12 +168,19 @@ var makeConsistentWorldPrior = dp.cache(function(gridState) {
   }, worldPrior.support())});
 });
 
+var makeValidQuestionPrior = function(gridState) {
+  return Categorical({vs: filter(function(q) {
+    return !_.includes(gridState, q.split('_')[1]);
+  }, questionPrior.support())});
+};
+
 var questioner = dp.cache(function(type, goal, gridState) {
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
+  var validQuestionPrior = makeValidQuestionPrior(gridState);
   return Infer({method: 'enumerate'}, function() {
-    var question = sample(questionPrior);
+    var question = sample(validQuestionPrior);
     var trueGoal = goal;
-    console.log('thinking about question ' + question + ' with goal ' + trueGoal);
+//    console.log('thinking about question ' + question + ' with goal ' + trueGoal);
     
     var utility = expectation(consistentWorldPrior, function(trueWorld) {
       var possibleAnswer = answerer(type, question, trueWorld, gridState);
@@ -199,25 +207,26 @@ var interpreter = dp.cache(function(answer, consistentWorldPrior){
 
 var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-  var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld);
+  var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
   var qudPosterior = (
     type === 'pragmatic' ? QUDPosteriorFromInference(question, gridState) :
       type === 'explicit' ? QUDPosteriorFromMeaning(question) :
       type === 'literal' ? Delta({v: 'identity'}) :
       console.error('type not recognized')
   );
-  if(type == 'pragmatic') {
-    console.log('qud posterior for question ' + question);
-    console.log(qudPosterior);
-  }
+  // if(type == 'pragmatic') {
+  //   console.log('qud posterior for question ' + question);
+  //   console.log(qudPosterior);
+  // }
   return Infer({method: 'enumerate'}, function(){
-    var localQUD = spatialNameToQUD(sample(qudPosterior));
+    var qudName = sample(qudPosterior);
+    var localQUD = spatialNameToQUD(qudName);
     var answer = sample(truthfulAnswerPrior);
     var possibleWorlds = interpreter(answer, consistentWorldPrior);
     var newUtility = expectation(possibleWorlds, function(w) {
       return localQUD(w) == localQUD(trueWorld);
     });
-    factor(newUtility * Arationality);      
+    factor(newUtility * Arationality - answer.length);      
     return answer;
   });
 });
@@ -254,45 +263,53 @@ var allRevealed = function (listRevealed) {
 	  any(function(v) {return v == 3}, colRevealed));
 }
   
-var possibleItem = Infer({method: 'enumerate'}, function() {
+var possibleInitStates = Infer({method: 'enumerate'}, function() {
+  var world = sample(worldPrior);
+  var initState = uniformDraw(qa.powerset(filter(function(v){return world[v] == 'safe'}, _.keys(world))));
+  condition(validate(initState, world));
+  return {initState};
+});
+
+
+var writeOutQuestionerPredictions= function() {
+  Infer({method: 'enumerate', model: function() {
+    var item = sample(possibleInitStates);
+    var initState = item.initState;
+    var goal = qudPrior();
+    var goalString = _.includes(goal, 'A') ? 'rows' : 'columns';
+    console.log(initState);
+    qa.writeSpatialQuestioner('spatialQuestionerOutput.csv',
+			      ['explicit', initState, goalString],
+			      questioner('explicit', goal, initState));
+    qa.writeSpatialQuestioner('spatialQuestionerOutput.csv',
+			      ['pragmatic', initState, goalString],
+			      questioner('pragmatic', goal, initState));
+
+  }});
+};
+
+// writeOutQuestionerPredictions();
+var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
   var initState = uniformDraw(qa.powerset(filter(function(v){return world[v] == 'safe'}, _.keys(world))));
   condition(validate(initState, world));
   return {world, initState};
 });
 
-var initState = sample(possibleItem)['initState'];
-console.log(initState);
-//console.log(questioner('pragmatic', ['A', 'B', 'C'], initState));
-//console.log(questioner('explicit', ['A', 'B', 'C'], ['B1', 'B3', 'C2' ]));
-var w = makeConsistentWorldPrior(['B1', 'B3', 'C2' ]);
-console.log(answerer('explicit', 'is_B2_safe?', sample(w), ['B1', 'B3', 'C2' ]));
-				       
-// var trueGoal = qudPrior();
-// var trueWorld = {'A1' : 'safe', 'A2' : 'unsafe', 'A3' : 'safe',
-// 		 'B1' : 'safe', 'B2': 'safe', 'B3': 'safe',
-// 		 'C1' : 'unsafe' , 'C2' : 'unsafe', 'C3' : 'safe'};
-// console.log(trueWorld);
-// console.log(answer);
-//answerer('explicit', ['A', 'B', 'C'], ['C1']);
-//questioner('explicit', ['A', 'B', 'C'], ['C3']);
-//answerer('pragmatic', 'is_A2_safe?', trueWorld, ['A1']);
+var writeOutAnswererPredictions= function() {
+  Infer({method: 'enumerate', model: function() {
+    var item = sample(possibleInitStates);
+    var initState = item.initState;
+    var trueWorld = item.world;
+    var question = sample(makeValidQuestionPrior(initState));
+    qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
+			    ['explicit', trueWorld, initState, question],
+			    answerer('explicit', question, trueWorld, initState));
+    qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
+			    ['pragmatic', trueWorld, initState, question],
+			    answerer('pragmatic', question, trueWorld, initState));
 
+  }});
+};
 
-// Infer({method: 'enumerate', model: function() {
-//   var item = sample(possibleItem);
-//   var trueWorld = item.world;
-//   var initState = item.initState;
-//   var goal = qudPrior();
-//   var goalString = _.includes(goal, 'A') ? 'rows' : 'columns';
-//   qa.writeSpatialQuestioner('spatialQuestionerOutput.csv',
-// 			    [JSON.stringify(trueWorld), initState, goalString],
-// 			    questioner('explicit', goal, initState));
-// }});
-//maketruthfulanswerprior('is_A1_safe?', trueWorld);
-//console.log(answerer('explicit', 'is_A2_safe?', trueWorld, ['A1']));
-// console.log(qa.spatialA1Score(answer, 'is_A1_safe?', trueWorld, {answers: truthfulAnswerPrior.support(), worldPrior: worldPrior, rationality: Arationality}));
-// console.log(trueWorld);
-// console.log(answer);
-//questioner('explicit', ['A', 'B', 'C'], ['A1']);
-//answerer('pragmatic', 'is_B1_safe?', trueWorld, []);
+writeOutAnswererPredictions();
