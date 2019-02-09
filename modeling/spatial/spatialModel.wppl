@@ -78,13 +78,6 @@ var makeTruthfulAnswerPrior = dp.cache(function(question, trueWorld) {
     return isTrue && responds;
   }, answerPrior.support());
   return Categorical({vs: validAnswers});
-  // return Infer({method: 'enumerate', model: function(){
-  //   var answer = sample(answerPrior);
-  //   var score = qa.spatialInterpreterScore(trueWorld, answer, 'identity', worldPrior);
-  //   condition(_.isFinite(score));
-  //   condition();
-  //   return answer;
-  // }});
 });
 
 //  ------
@@ -110,10 +103,6 @@ var QUDPosteriorFromInference = dp.cache(function(question, gridState){
     return qudName;
   });
 });
-
-// Note that because answerer is symmetric across worlds,
-// and worlds have equal probability, we can just say
-// same or different from true world?
 
 //  -------
 // | Models |
@@ -167,7 +156,7 @@ var getPosteriorProb = dp.cache(function(type, answer, goal) {
 
 
 var Qrationality = 100;
-var Arationality = 10;
+var Arationality = 100;
 
 var makeConsistentWorldPrior = dp.cache(function(gridState) {
   return Infer({'method' : 'enumerate'}, function() {
@@ -237,17 +226,67 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
     return answer;
   });
 });
-				       
-var trueGoal = qudPrior();
-var trueWorld = {'A1' : 'safe', 'A2' : 'safe', 'A3' : 'safe',
-		 'B1' : 'safe', 'B2': 'unsafe', 'B3': 'safe',
-		 'C1' : 'safe' , 'C2' : 'unsafe', 'C3' : 'safe'};
-var consistentWorldPrior = makeConsistentWorldPrior(['A1']);
-//makeTruthfulAnswerPrior('is_A1_safe?', trueWorld);
+
+var validate = function(initRevealed, underlying) {
+  return !allRevealed(initRevealed) && colRowExists(underlying);
+};
+
+var completeRow = function (grid) {
+  return qa.completeRow('A', grid) || qa.completeRow('B', grid) || qa.completeRow('C', grid);
+};
+
+var completeCol = function (grid) {
+  return qa.completeCol('1', grid) || qa.completeCol('2', grid) || qa.completeCol('3', grid);
+};
+
+var colRowExists = function(grid) {
+  return completeRow(grid) && completeCol(grid);
+}
+
+var allRevealed = function (listRevealed) {
+  var rowsRevealed = map(function(v) {
+    return filter(function(cell) {
+      return cell[0] == v;
+    }, listRevealed).length;
+  }, ['A', 'B', 'C']);
+
+  var colRevealed = map(function(v) {
+    return filter(function(cell) {
+      return cell[1] == v;
+    }, listRevealed).length;
+  }, ['1', '2', '3']);
+  return (any(function(v) {return v == 3}, rowsRevealed) ||
+	  any(function(v) {return v == 3}, colRevealed));
+}
+  
+var possibleItem = Infer({method: 'enumerate'}, function() {
+  var world = sample(worldPrior);
+  var initState = uniformDraw(qa.powerset(filter(function(v){return world[v] == 'safe'}, _.keys(world))));
+  condition(validate(initState, world));
+  return {world, initState};
+});
+
+var initState = sample(possibleItem)['initState'];
+console.log(initState);
+//console.log(questioner('pragmatic', ['A', 'B', 'C'], initState));
+//console.log(questioner('explicit', ['A', 'B', 'C'], ['B1', 'B3', 'C2' ]));
+var w = makeConsistentWorldPrior(['B1', 'B3', 'C2' ]);
+console.log(answerer('explicit', 'is_B2_safe?', sample(w), ['B1', 'B3', 'C2' ]));
+// Infer({method: 'enumerate', model: function() {
+//   var item = sample(possibleItem);
+//   var trueWorld = item.world;
+//   var initState = item.initState;
+//   var goal = qudPrior();
+//   var goalString = _.includes(goal, 'A') ? 'rows' : 'columns';
+//   qa.writeSpatialQuestioner('spatialQuestionerOutput.csv',
+// 			    [JSON.stringify(trueWorld), initState, goalString],
+// 			    questioner('explicit', goal, initState));
+// }});
+//maketruthfulanswerprior('is_A1_safe?', trueWorld);
 //console.log(answerer('explicit', 'is_A2_safe?', trueWorld, ['A1']));
 // console.log(qa.spatialA1Score(answer, 'is_A1_safe?', trueWorld, {answers: truthfulAnswerPrior.support(), worldPrior: worldPrior, rationality: Arationality}));
 // console.log(trueWorld);
 // console.log(answer);
 //questioner('explicit', ['A', 'B', 'C'], ['A1']);
-answerer('pragmatic', 'is_B1_safe?', trueWorld, []);
+//answerer('pragmatic', 'is_B1_safe?', trueWorld, []);
 //questioner('pragmatic', ['A', 'B'], ['A1'])//goalContext[0]);
