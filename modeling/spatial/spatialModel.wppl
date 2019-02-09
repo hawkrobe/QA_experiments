@@ -137,7 +137,7 @@ var spatialNameToQUD = function(qudName){
   }
 };
 
-var getPriorProb = dp.cache(function(goal) {
+var getPriorProb = dp.cache(function(worldPrior, goal) {
   var qud = spatialNameToQUD(goal);                                              
   return Infer({method: 'enumerate'}, function() {
     var world = sample(worldPrior);
@@ -154,8 +154,10 @@ var spatialLocationAnswerMeaning = function(utterance){
   };
 };
 
-
-var getPosteriorProb = dp.cache(function(type, answer, goal) {
+// Note that in principle we should be conditioning on hearing back from
+// answerer here, but in this case, they are equivalent
+// var A = answerer(type, question, world, gridState);
+var getPosteriorProb = dp.cache(function(worldPrior, type, answer, goal) {
   var qud = spatialNameToQUD(goal);
   var meaning = spatialLocationAnswerMeaning(answer);
   return Infer({method: 'enumerate'}, function(){
@@ -165,31 +167,29 @@ var getPosteriorProb = dp.cache(function(type, answer, goal) {
   });
 });
 
-
 var Qrationality = 100;
 var Arationality = 10;
 
+// This takes subset of worlds where the 'known' revealed cells
+// are true (i.e. when people start with a map, or after revealing more)
 var makeConsistentWorldPrior = dp.cache(function(gridState) {
-  return Infer({'method' : 'enumerate'}, function() {
-    var world = sample(worldPrior);
-    condition(all(function(v) {return world[v] == 'safe'}, gridState));
-    return world;
-  });
+  return Categorical({vs : filter(function(w) {
+    return all(function(v) {return w[v] == 'safe';}, gridState);
+  }, worldPrior.support())});
 });
 
 var questioner = dp.cache(function(type, goal, gridState) {
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-  console.log(consistentWorldPrior.support().length);
   return Infer({method: 'enumerate'}, function() {
     var question = sample(questionPrior);
-    var trueGoal = goal//uniformDraw(goal);
+    var trueGoal = goal;
     console.log('thinking about question ' + question + ' with goal ' + trueGoal);
     
     var utility = expectation(consistentWorldPrior, function(trueWorld) {
       var possibleAnswer = answerer(type, question, trueWorld, gridState);
       var infGain = expectation(possibleAnswer, function(answer){
-	var priorProb = getPriorProb(trueGoal);
-	var posteriorProb = getPosteriorProb(type, answer, trueGoal);
+	var priorProb = getPriorProb(consistentWorldPrior, trueGoal);
+	var posteriorProb = getPosteriorProb(consistentWorldPrior, type, answer, trueGoal); 
 	return KL(posteriorProb, priorProb);
       });
       return infGain;
@@ -222,32 +222,24 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
     console.log(qudPosterior);
   }
   return Infer({method: 'enumerate'}, function(){
-    var answer = sample(truthfulAnswerPrior);
     var localQUD = spatialNameToQUD(sample(qudPosterior));
-//    console.log(answer);
-    var newUtility = expectation(interpreter(answer, consistentWorldPrior), function(w) {
-      // console.log(w);
-      // console.log(localQUD(w));
+    var answer = sample(truthfulAnswerPrior);
+    var possibleWorlds = interpreter(answer, consistentWorldPrior);
+    var newUtility = expectation(possibleWorlds, function(w) {
       return localQUD(w) == localQUD(trueWorld);
-//      console.log(qa.spatialInterpreterScore(trueWorld, answer, localQUD, consistentWorldPrior));
-      //return qa.spatialInterpreterScore(trueWorld, answer, localQUD, consistentWorldPrior);
     });
-				 
     factor(newUtility * Arationality);      
     return answer;
   });
 });
 				       
 var trueGoal = qudPrior();
-var trueWorld = {'A1' : 'safe', 'A2' : 'safe', 'A3' : 'safe',
-		 'B1' : 'safe', 'B2': 'unsafe', 'B3': 'safe',
-		 'C1' : 'safe' , 'C2' : 'unsafe', 'C3' : 'safe'};
-var consistentWorldPrior = makeConsistentWorldPrior(['A1']);
-//makeTruthfulAnswerPrior('is_A1_safe?', trueWorld);
-//console.log(answerer('explicit', 'is_A2_safe?', trueWorld, ['A1']));
-// console.log(qa.spatialA1Score(answer, 'is_A1_safe?', trueWorld, {answers: truthfulAnswerPrior.support(), worldPrior: worldPrior, rationality: Arationality}));
+var trueWorld = {'A1' : 'safe', 'A2' : 'unsafe', 'A3' : 'safe',
+		 'B1' : 'safe', 'B2': 'safe', 'B3': 'safe',
+		 'C1' : 'unsafe' , 'C2' : 'unsafe', 'C3' : 'safe'};
 // console.log(trueWorld);
 // console.log(answer);
-//questioner('explicit', ['A', 'B', 'C'], ['A1']);
-answerer('pragmatic', 'is_B1_safe?', trueWorld, []);
+//answerer('explicit', ['A', 'B', 'C'], ['C1']);
+//questioner('explicit', ['A', 'B', 'C'], ['C3']);
+answerer('pragmatic', 'is_A2_safe?', trueWorld, ['A1']);
 //questioner('pragmatic', ['A', 'B'], ['A1'])//goalContext[0]);
