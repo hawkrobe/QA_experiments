@@ -1,10 +1,28 @@
+const questionerModel = require('./src/spatialQuestionerOutput.json');
+
 class Bot {
   constructor(game, data) {
     this.game = game;
     this.role = data.currStim.role == 'helper' ? 'leader' : 'helper';
     this.fullMap = data.currStim.underlying;
+    this.state = data.currStim.initRevealed;
+    this.goal = data.currStim.goal;
   }
 
+  selectQuestion() {
+    var possibilities = _.filter(questionerModel, {
+      initState: this.state.concat().sort().join(','),
+      goal: this.goal,
+      questionerType: 'pragmatic'
+    });
+    
+    var maxProb = _.max(_.map(possibilities, function(v) {return _.toNumber(v.prob) }));
+    console.log(maxProb);
+    var valsWithMax = _.filter(possibilities, function(v){return _.toNumber(v.prob) == maxProb});
+    console.log(valsWithMax);
+    return _.sample(valsWithMax)['question']
+  }
+  
   // Always asks about non-overlapping card
   ask() {
     console.log('bot asking...');
@@ -15,7 +33,8 @@ class Bot {
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    var code = 'A2';
+    
+    var code = this.selectQuestion();
     setTimeout(function() {
       this.game.socket.send(["question", code, 5000, 'bot', this.role].join('.'));
     }.bind(this), 5000);
@@ -48,6 +67,10 @@ class Bot {
 	this.ask();
       }
     }.bind(this), 2500);
+  }
+
+  update(revealedCells) {
+    this.state = _.clone(revealedCells);
   }
 }
 
