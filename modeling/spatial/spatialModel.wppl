@@ -168,11 +168,11 @@ var makeConsistentWorldPrior = dp.cache(function(gridState) {
   }, worldPrior.support())});
 });
 
-var makeValidQuestionPrior = function(gridState) {
+var makeValidQuestionPrior = dp.cache(function(gridState) {
   return Categorical({vs: filter(function(q) {
     return !_.includes(gridState, q.split('_')[1]);
   }, questionPrior.support())});
-};
+});
 
 var questioner = dp.cache(function(type, goal, gridState) {
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
@@ -292,21 +292,24 @@ var writeOutQuestionerPredictions= function() {
 var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
   var initState = uniformDraw(qa.powerset(filter(function(v){return world[v] == 'safe'}, _.keys(world))));
-  condition(validate(initState, world));
+  condition(validate(initState, world) && initState.length > 0);
   return {world, initState};
 });
 
 var writeOutAnswererPredictions= function() {
   Infer({method: 'enumerate', model: function() {
-    var item = sample(possibleInitStates);
+    var item = sample(possibleAnswererItems);
     var initState = item.initState;
     var trueWorld = item.world;
+    console.log(item);
     var question = sample(makeValidQuestionPrior(initState));
+    console.log(question);
     qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
-			    ['explicit', trueWorld, initState, question],
+			    ['explicit', question.split('_')[1], JSON.stringify(trueWorld), initState],
 			    answerer('explicit', question, trueWorld, initState));
+    console.log('running pragmatic');
     qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
-			    ['pragmatic', trueWorld, initState, question],
+			    ['pragmatic', question.split('_')[1], JSON.stringify(trueWorld), initState],
 			    answerer('pragmatic', question, trueWorld, initState));
 
   }});
