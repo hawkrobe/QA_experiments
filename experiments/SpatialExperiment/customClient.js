@@ -74,12 +74,12 @@ var customEvents = function(game) {
     if(cell.length > 0) {
       var buttonName = cell.attr('id').split('-')[1];
       game.revealedCells.push(buttonName);
-
+      game.bot.update(game.revealedCells);
+	
       // replace button with underlying state
       cell.siblings().show().css({'opacity' : 1});
       cell.remove();
       return game.checkGrid();
-//      if(roundOver) $(
     } else {
       console.log('tried to reveal non-existant cell...');
     }
