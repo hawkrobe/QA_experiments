@@ -39,9 +39,7 @@ var writeERP = function(erp, labels, filename, fixed) {
 
 var writeSpatialQuestioner = function(filename, labels, erp) {
   var data = _.filter(erp.support().map(function(v) {
-    console.log(v);
     var prob = erp.score(v);
-    console.log(prob);
     if (Math.exp(prob) > 0.01){
       var out = butLast(v).split("_")[1];
       return labels.concat([out, String(Math.exp(prob).toFixed(2))]);
@@ -54,9 +52,7 @@ var writeSpatialQuestioner = function(filename, labels, erp) {
 
 var writeSpatialAnswerer = function(filename, labels, erp) {
   var data = _.filter(erp.support().map(function(v) {
-    console.log(v);
     var prob = erp.score(v);
-    console.log(prob);
     if (Math.exp(prob) > 0.01){
       return labels.concat([v, String(Math.exp(prob).toFixed(2))]);
     } else {
@@ -542,6 +538,7 @@ module.exports = {
   readCSV: readCSV,
   writeCSV: writeCSV,
   writeSpatialQuestioner: writeSpatialQuestioner,
+  writeSpatialAnswerer: writeSpatialAnswerer,  
   cardsInterpreterScore: cardsInterpreterScore,
   spatialInterpreterScore: spatialInterpreterScore,
   completeRow :completeRow,
