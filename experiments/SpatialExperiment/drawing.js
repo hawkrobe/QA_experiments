@@ -91,7 +91,15 @@ function initGrid(game) {
       var underlying = game.fullMap[rowName + colName];
       var initialize = _.includes(game.initRevealed, rowName + colName);
       var div = $('<div/>').css({position: 'relative'});
-      var underlyingState = $('<img/>')
+      if(game.my_role == game.playerRoleNames.role1) {
+	var shadow = (game.goal == 'columns' ?
+		      '0px -1vh 0px 0vh #000000, 0px 1vh 0px 0vh #000000, ' +
+		      '-1vh 0px 0px 1vh #F24495, 1vh 0px 0px 1vh #F24495' :
+		      '-1vh 0px 0px 0vh #000000, 1vh 0px 0px 0vh #000000, ' +
+		      '0px -1vh 0px 1vh #3f95ff, 0px 1vh 0px 1vh #3f95ff');
+	div.css({'box-shadow': shadow});
+      }
+      var underlyingState = $('<div/>')
 	  .addClass('underlying_' + underlying)
 	  .attr({'id' : 'underlying-state-' + rowName + colName})
 	  .css({'grid-row': i, 'grid-column': j,
@@ -105,6 +113,7 @@ function initGrid(game) {
 			 })
 		  );
       }
+
       $("#context").append(div);
     });
   });
