@@ -4,6 +4,9 @@ var assert = require('assert');
 var utils  = require(__base + 'src/sharedUtils.js');
 var ServerGame = require('./src/game.js')['ServerGame'];
 var GameMap = require('./maps.js');
+var questionsFromModel = require('./src/spatialQuestionerOutput.json');
+console.log(questionsFromModel);
+//var answersFromModel = require('./src/spatialAnswererOutput.json');
 
 class ServerRefGame extends ServerGame {
   constructor(config) {
@@ -16,6 +19,30 @@ class ServerRefGame extends ServerGame {
 
   customEvents (socket) {
     console.log('setting events');
+    socket.on('getQuestion', function(data){
+      console.log('getting question');
+      console.log(data.state);
+      console.log(questionsFromModel[_.keys(questionsFromModel)[0]])
+      var possibilities = _.filter(questionsFromModel, {
+	initState: JSON.stringify(data.state),
+	goal: data.goal,
+	questionerType: 'pragmatic'
+      });
+      console.log(possibilities);
+      var maxProb = _.max(_.map(possibilities, function(v) {
+	return _.toNumber(v.prob);
+      }));
+      var valsWithMax = _.filter(possibilities, function(v){
+	return _.toNumber(v.prob) == maxProb;
+      });
+      // this gets bound to the callback, so triggered when server responds...
+      var code =_.sample(valsWithMax)['question'];
+      this.onMessage(socket, ["question", code, 5000, 'bot', this.role].join('.'));
+    }.bind(this));
+
+    socket.on('getAnswer', function(data){
+
+    });
     socket.on('endRound', function(data) {
       console.log('round ended...');
       var all = socket.game.activePlayers();

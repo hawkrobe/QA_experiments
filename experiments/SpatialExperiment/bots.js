@@ -7,21 +7,9 @@ class Bot {
     this.fullMap = data.currStim.underlying;
     this.state = data.currStim.initRevealed;
     this.goal = data.currStim.goal;
+    this.game.socket.on('receivedQuestion', this.sendQuestion);
   }
 
-  selectQuestion() {
-    var possibilities = _.filter(questionerModel, {
-      initState: this.state.concat().sort().join(','),
-      goal: this.goal,
-      questionerType: 'pragmatic'
-    });
-    
-    var maxProb = _.max(_.map(possibilities, function(v) {return _.toNumber(v.prob) }));
-    console.log(maxProb);
-    var valsWithMax = _.filter(possibilities, function(v){return _.toNumber(v.prob) == maxProb});
-    console.log(valsWithMax);
-    return _.sample(valsWithMax)['question']
-  }
   
   // Always asks about non-overlapping card
   ask() {
@@ -33,11 +21,8 @@ class Bot {
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    
-    var code = this.selectQuestion();
-    setTimeout(function() {
-      this.game.socket.send(["question", code, 5000, 'bot', this.role].join('.'));
-    }.bind(this), 5000);
+    console.log(this.state);
+    this.game.socket.emit('getQuestion', {state: this.state, goal: this.goal});
   }
 
   // Currently reveals literal card (will set up pragmatic cases later)
@@ -69,8 +54,8 @@ class Bot {
     }.bind(this), 2500);
   }
 
-  update(revealedCells) {
-    this.state = _.clone(revealedCells);
+  update(state) {
+    this.state = _.clone(state);
   }
 }
 
