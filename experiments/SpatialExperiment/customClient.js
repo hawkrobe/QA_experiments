@@ -15,9 +15,9 @@ function updateState (game, data){
 
   console.log(data.currStim);
   game.fullMap = _.clone(data.currStim.underlying);
-  game.initRevealed = _.clone(data.currStim.initRevealed);
+  game.gridState = _.clone(data.currStim.initRevealed);
   game.goal = data.currStim.goal;  
-  game.revealedCells = _.clone(game.initRevealed);
+  game.revealedCells = _.clone(game.gridState['safe']);
   game.active = data.active;
   game.roundNum = data.roundNum;
   game.roundStartTime = Date.now();
@@ -74,7 +74,6 @@ var customEvents = function(game) {
     if(cell.length > 0) {
       var buttonName = cell.attr('id').split('-')[1];
       game.revealedCells.push(buttonName);
-      game.bot.update(game.revealedCells);
 	
       // replace button with underlying state
       cell.siblings().show().css({'opacity' : 1});
@@ -162,6 +161,15 @@ var customEvents = function(game) {
       game.questionSent = false;
       game.selections = data.code;
       game.numCellsClicked = 0;
+      _.forEach(game.selections, function(cell) {
+	var c = game.fullMap[cell] == 'x' ? 'unsafe' : 'safe';
+	console.log(c);
+	console.log(game.gridState[c]);
+	game.gridState[c].push(cell);
+      });
+      console.log('grid state')
+      console.log(game.gridState);
+      game.bot.update(game.gridState);
       UI.fadeInSelections(game.selections);
       if(data.sender == 'human') {
 	game.bot.reveal(data.code);
