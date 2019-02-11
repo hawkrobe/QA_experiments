@@ -89,7 +89,7 @@ function initGrid(game) {
   _.forEach(['A','B','C'], (rowName, i) => {
     _.forEach(_.range(1,4), (colName, j) => {
       var underlying = game.fullMap[rowName + colName];
-      var initialize = _.includes(game.initRevealed, rowName + colName);
+      var initialize = _.includes(game.revealedCells, rowName + colName);
       var div = $('<div/>').css({position: 'relative'});
       if(game.my_role == game.playerRoleNames.role1) {
 	var shadow = (game.goal == 'columns' ?

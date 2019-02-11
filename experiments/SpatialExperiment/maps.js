@@ -32,7 +32,10 @@ class GameMap {
 		  this.trialType == 'random' ? this.sampleRandom() :
 		  console.error('unknown trialType' + this.trialType));
     const initDict = this.matrixToDict(transformation(grid.initRevealed));
-    this.initRevealed = _.filter(_.keys(initDict), key => initDict[key] === 'x');
+    this.initRevealed = {
+      'safe' : _.filter(_.keys(initDict), key => initDict[key] === 'x'),
+      'unsafe' : []
+    };
     this.underlying = this.matrixToDict(transformation(grid.underlying));
   }
 
