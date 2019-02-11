@@ -140,13 +140,14 @@ var spatialNameToQUD = function(qudName){
   }
 };
 
-var getPriorProb = dp.cache(function(worldPrior, goal) {
+var getPriorProb = dp.cache(function(goal, gridState) {
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
   var qud = spatialNameToQUD(goal);                                              
   return Infer({method: 'enumerate'}, function() {
-    var world = sample(worldPrior);
+    var world = sample(consistentWorldPrior);
     return qud(world);
   });
-});
+}, 10000);
 
 var spatialLocationAnswerMeaning = function(utterance){
   return function(world){
@@ -160,15 +161,16 @@ var spatialLocationAnswerMeaning = function(utterance){
 // Note that in principle we should be conditioning on hearing back from
 // answerer here, but in this case, they are equivalent
 // var A = answerer(type, question, world, gridState);
-var getPosteriorProb = dp.cache(function(worldPrior, type, answer, goal) {
+var getPosteriorProb = dp.cache(function(type, answer, goal, gridState) {
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
   var qud = spatialNameToQUD(goal);
   var meaning = spatialLocationAnswerMeaning(answer);
   return Infer({method: 'enumerate'}, function(){
-    var world = sample(worldPrior);
+    var world = sample(consistentWorldPrior);
     condition(meaning(world));
     return qud(world);
   });
-});
+}, 1000);
 
 var Qrationality = 100;
 var Arationality = 100;
@@ -180,7 +182,7 @@ var makeConsistentWorldPrior = dp.cache(function(gridState) {
     return (all(function(v) {return w[v] == 'safe';}, gridState['safe']) &&
 	    all(function(v) {return w[v] == 'unsafe';}, gridState['unsafe']));
   }, worldPrior.support())});
-});
+}, 1000);
 
 var makeValidQuestionPrior = dp.cache(function(gridState) {
   return Categorical({vs: filter(function(q) {
@@ -194,31 +196,32 @@ var questioner = dp.cache(function(type, goal, gridState) {
   var validQuestionPrior = makeValidQuestionPrior(gridState);
   return Infer({method: 'enumerate'}, function() {
     var question = sample(validQuestionPrior);
+    //console.log('considering question' + question);
     var trueGoal = goal;    
     var utility = expectation(consistentWorldPrior, function(trueWorld) {
       var possibleAnswer = answerer(type, question, trueWorld, gridState);
       return expectation(possibleAnswer, function(answer){
-	var priorProb = getPriorProb(consistentWorldPrior, trueGoal);
-	var posteriorProb = getPosteriorProb(consistentWorldPrior, type, answer, trueGoal); 
+	var priorProb = getPriorProb(trueGoal, gridState);
+	var posteriorProb = getPosteriorProb(type, answer, trueGoal, gridState); 
 	return KL(posteriorProb, priorProb);
       });
     });
     factor(utility * Qrationality);
     return question;
   });
-}, 10000);
+}, 1000);
 
-var interpreter = dp.cache(function(answer, consistentWorldPrior){
+var interpreter = dp.cache(function(answer, gridState){
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
   return Infer({method: 'enumerate'}, function(){
     var world = sample(consistentWorldPrior);
     var answerMeaning = spatialLocationAnswerMeaning(answer);
     condition(answerMeaning(world));
     return world;
   });
-});
+}, 1000);
 
 var answerer = dp.cache(function(type, question, trueWorld, gridState) {
-  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
   var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
   var qudPosterior = (
     type === 'pragmatic' ? QUDPosteriorFromInference(question, gridState) :
@@ -231,14 +234,14 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
     var qudName = sample(qudPosterior);
     var localQUD = spatialNameToQUD(qudName);
     var answer = sample(truthfulAnswerPrior);
-    var possibleWorlds = interpreter(answer, consistentWorldPrior);
+    var possibleWorlds = interpreter(answer, gridState);
     var newUtility = expectation(possibleWorlds, function(w) {
       return localQUD(w) == localQUD(trueWorld);
     });
     factor(newUtility * Arationality - answer.length);      
     return answer;
   });
-}, 10000);
+}, 1000);
 
 var validate = function(initRevealed, underlying) {
   return !allRevealed(initRevealed) && colRowExists(underlying);
@@ -278,7 +281,8 @@ var possibleInitStates = Infer({method: 'enumerate'}, function() {
   var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
   var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
 		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
-  condition(validate(initState, world) && (initState['safe'].length + initState['unsafe'].length) > 0 );
+  condition(validate(initState, world) && (initState['safe'].length + initState['unsafe'].length) > 0 
+	    && !_.isEqual(initState['unsafe'], []) && !_.isEqual(initState['unsafe'], ['C3']));
   return {initState};
 });
 
@@ -298,7 +302,7 @@ var writeOutQuestionerPredictions= function() {
   });
 };
 
-writeOutQuestionerPredictions();
+//writeOutQuestionerPredictions();
 
 var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
@@ -311,21 +315,21 @@ var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
 });
 
 var writeOutAnswererPredictions= function() {
-  Infer({method: 'enumerate', model: function() {
-    var item = sample(possibleAnswererItems);
+  foreach(possibleAnswererItems.support(), function(item) {
     var initState = item.initState;
     var trueWorld = item.world;
     console.log(item);
-    var question = sample(makeValidQuestionPrior(initState));
-    console.log(question);
-    qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
-			    ['explicit', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
-			    answerer('explicit', question, trueWorld, initState));
-    qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
-			    ['pragmatic', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
-			    answerer('pragmatic', question, trueWorld, initState));
-
-  }});
+    foreach(makeValidQuestionPrior(initState).support(), function(question) {
+      console.log(question);
+      qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
+			      ['explicit', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
+			      answerer('explicit', question, trueWorld, initState));
+      qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
+			      ['pragmatic', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
+			      answerer('pragmatic', question, trueWorld, initState));
+      
+      });
+  });
 };
 
-//writeOutAnswererPredictions();
+writeOutAnswererPredictions();
