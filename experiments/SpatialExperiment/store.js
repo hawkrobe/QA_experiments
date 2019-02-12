@@ -112,6 +112,40 @@ function serve() {
       }
     });
 
+    app.post('/db/getAnswer', (request, response) => {
+      if (!request.body) {
+	return failure(response, '/db/getAnswer needs post request body');
+      }
+      console.log(`got request to get stims from ${request.body.dbname}/${request.body.colname}`);
+
+      const databaseName = request.body.dbname;
+      const collectionName = request.body.colname;
+      if (!collectionName) {
+	return failure(response, '/db/getAnswer needs collection');
+      }
+      if (!databaseName) {
+	return failure(response, '/db/getAnswer needs database');
+      }
+
+      const database = connection.db(databaseName);
+      const collection = database.collection(collectionName);
+
+      // sort by number of times previously served up and take the first
+      collection.find({
+	'question' : request.body.cellAskedAbout,
+	'world' : request.body.fullMap,
+	'initState' : request.body.state,
+	'answererType' : 'pragmatic'
+      }).toArray( (err, results) => {
+	if(err) {
+	  console.log(err);
+	} else {
+	  console.log(results);
+	  response.send(results);
+	}
+      });
+    });
+    
     app.post('/db/insert', (request, response) => {
       if (!request.body) {
         return failure(response, '/db/insert needs post request body');
