@@ -21,21 +21,14 @@ class Bot {
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    console.log(this.state);
     this.game.socket.emit('getQuestion', {state: this.state, goal: this.goal});
   }
 
   // Currently reveals literal card (will set up pragmatic cases later)
   answer(cellAskedAbout) {
     console.log('bot answering...');
-    var selections = [cellAskedAbout];
-    var msg = (this.fullMap[cellAskedAbout] == 'o' ?
-	       'Yes, ' + cellAskedAbout + ' is safe' :
-	       'No, ' + cellAskedAbout + ' is not safe');
-    setTimeout(function() {
-      this.game.socket.send(["answer", msg, 2500, "bot", this.role]
-			    .concat(selections).join('.'));
-    }.bind(this), 2500);
+    this.game.socket.emit('getAnswer', {state: this.state, fullMap: this.fullMap,
+					cellAskedAbout: cellAskedAbout});
   }
 
   // click on the non-bombs that have been revealed
