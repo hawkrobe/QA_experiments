@@ -161,15 +161,15 @@ var customEvents = function(game) {
       game.questionSent = false;
       game.selections = data.code;
       game.numCellsClicked = 0;
+
+      // Update state & tell bot about it
       _.forEach(game.selections, function(cell) {
 	var c = game.fullMap[cell] == 'x' ? 'unsafe' : 'safe';
-	console.log(c);
-	console.log(game.gridState[c]);
 	game.gridState[c].push(cell);
       });
-      console.log('grid state')
-      console.log(game.gridState);
       game.bot.update(game.gridState);
+
+      // Show players the updated common ground
       UI.fadeInSelections(game.selections);
       if(data.sender == 'human') {
 	game.bot.reveal(data.code);

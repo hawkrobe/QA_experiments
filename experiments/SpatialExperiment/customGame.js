@@ -4,9 +4,37 @@ var assert = require('assert');
 var utils  = require(__base + 'src/sharedUtils.js');
 var ServerGame = require('./src/game.js')['ServerGame'];
 var GameMap = require('./maps.js');
+var sendPostRequest = require('request').post;
 var questionsFromModel = require('./src/spatialQuestionerOutput.json');
-console.log(questionsFromModel);
-//var answersFromModel = require('./src/spatialAnswererOutput.json');
+
+var getBestVal = function(possibilities) {
+  var maxProb = _.max(_.map(possibilities, function(v) {
+    return _.toNumber(v.prob);
+  }));
+  var valsWithMax = _.filter(possibilities, function(v){
+    return _.toNumber(v.prob) == maxProb;
+  });
+  return _.sample(valsWithMax);
+};
+
+var getAnswerBotResponseFromDB = function(postData, successCallback, failCallback) {
+  sendPostRequest('http://localhost:5000/db/getAnswer', {
+    json: postData
+  }, function(error, res, body) {
+    try {
+      if (!error && res.statusCode === 200) {
+	console.log("success! Received data " + JSON.stringify(body));
+	successCallback(body);
+      } else {
+	throw `${error}`;
+      }
+    } catch (err) {
+      console.log(err);
+      console.log('no database; allowing participant to continue');
+      failCallback();
+    }
+  }.bind(this));
+}
 
 class ServerRefGame extends ServerGame {
   constructor(config) {
@@ -18,31 +46,57 @@ class ServerRefGame extends ServerGame {
   }
 
   customEvents (socket) {
-    console.log('setting events');
+    // Pulls out requested data from json and returns as message
     socket.on('getQuestion', function(data){
-      console.log('getting question');
-      console.log(data.state);
-      console.log(questionsFromModel[_.keys(questionsFromModel)[0]])
+      var state = {'safe' : _.clone(data.state['safe']).sort(),
+		   'unsafe' : _.clone(data.state['unsafe']).sort()};
       var possibilities = _.filter(questionsFromModel, {
-	initState: JSON.stringify(data.state),
+	initState: JSON.stringify(state),
 	goal: data.goal,
 	questionerType: 'pragmatic'
       });
-      console.log(possibilities);
-      var maxProb = _.max(_.map(possibilities, function(v) {
-	return _.toNumber(v.prob);
-      }));
-      var valsWithMax = _.filter(possibilities, function(v){
-	return _.toNumber(v.prob) == maxProb;
-      });
-      // this gets bound to the callback, so triggered when server responds...
-      var code =_.sample(valsWithMax)['question'];
-      this.onMessage(socket, ["question", code, 5000, 'bot', this.role].join('.'));
+
+      var code = getBestVal(possibilities)['question'];
+      this.onMessage(socket, ["question", code, 5000, 'bot', 'leader'].join('.'));
     }.bind(this));
 
+    // Pulls out requested answer bot response data from db and retunrs as message
     socket.on('getAnswer', function(data){
+      console.log('bot getting answer...');
+      const state = {'safe' : _.clone(data.state['safe']).sort(),
+		     'unsafe' : _.clone(data.state['unsafe']).sort()};
+      const fullMap = _.mapValues(data.fullMap, v => v == 'o' ? 'safe' : 'unsafe');
+      const postData = {
+	dbname: 'QA', colname: 'answererBotResponses',
+	cellAskedAbout: data.cellAskedAbout,
+	fullMap: JSON.stringify(fullMap),
+	state: JSON.stringify(state)
+      };
+      const successCallback = function(body) {
+	const selections = getBestVal(body)['answer'].split(',');
+	const askedAbout = _.find(selections, v => {
+	  return v.split('_')[0] == data.cellAskedAbout;
+	});
+	const other = _.find(selections, v => {
+	  return v.split('_')[0] != data.cellAskedAbout;
+	});
 
-    });
+	let msg = (fullMap[data.cellAskedAbout] == 'safe' ?
+		   'Yes, ' + data.cellAskedAbout + ' is safe' :
+		   'No, ' + data.cellAskedAbout + ' is not safe');
+	msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : ''
+	let packet = ["answer", msg, 5000, 'bot', 'helper',
+		      askedAbout.split('_')[0]].join('.');
+	packet += other ? '.' + other.split('_')[0] : '';
+	this.onMessage(socket, packet);
+      }.bind(this);
+      const failCallback = function() {
+	this.onMessage(socket, ["answer", 'oops', 5000, 'bot', 'helper'].join('.'));
+      }.bind(this);
+      getAnswerBotResponseFromDB(postData, successCallback, failCallback);
+    }.bind(this));
+
+    // Gets called when round is over
     socket.on('endRound', function(data) {
       console.log('round ended...');
       var all = socket.game.activePlayers();
