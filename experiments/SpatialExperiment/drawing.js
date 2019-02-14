@@ -100,12 +100,13 @@ function initGrid(game) {
 	div.css({'box-shadow': shadow});
       }
       var underlyingState = $('<div/>')
-	  .addClass('underlying_' + underlying)
-	  .attr({'id' : 'underlying-state-' + rowName + colName})
-	  .css({'grid-row': i, 'grid-column': j,
-		'z-index': 1, position: 'absolute', left:'0px'});
+	    .addClass('underlying_' + underlying)
+	    .attr({'id' : 'underlying-state-' + rowName + colName})
+	    .css({'grid-row': i, 'grid-column': j,
+		  'z-index': 1, position: 'absolute', left:'0px'});
       div.append(underlyingState);
       if(!initialize) {
+	underlyingState.hide();
 	div.append($('<div/>')
 		   .addClass('pressable')
 		   .attr({'id' : 'button-'+rowName+colName,
