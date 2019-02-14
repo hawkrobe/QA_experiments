@@ -185,11 +185,12 @@ function reset (game, data) {
   $('#roleLabel').empty().append("You are the " + game.my_role + '.');
   $('#instructs').empty();
   if(game.my_role === game.playerRoleNames.role1) {
+    var style_tag = game.goal == 'columns' ? '<b style="color:#F24495">' : '<b style="color:#3f95ff">';
+    var goal_tag = game.goal == 'columns' ? 'COLUMN' : 'ROW';
     $('#leaderchatarea').show();
     $('#helperchatarea').hide();          
     $('#instructs')
-      .append("<p>On this round, your goal is to complete one of the <b>" +
-	      game.goal + "</b>.</p>" +
+      .append("<p>Your goal this round is... " + style_tag + "COMPLETE ANY " + goal_tag + "</b>.</p>" +
 	      "<p> Your partner wants to help you avoid the bombs, so ask them a question!");
   } else if(game.my_role === game.playerRoleNames.role2) {
     $('#leaderchatarea').hide();
