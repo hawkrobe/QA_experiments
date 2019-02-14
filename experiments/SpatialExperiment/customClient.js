@@ -27,6 +27,20 @@ var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
 };
 
+function initialResponse(event) {
+  var game = event.data.game;
+  var response = event.data.response;
+  game.optionSelected = response;
+  $('#additional_info').show();
+  if(response == 'yes, it is safe') {
+    $('#unsafe_button').css({opacity: 0.25, 'transition': 'opacity 0.5s linear'});
+  } else {
+    $('#safe_button').css({opacity: 0.25, 'transition': 'opacity 0.5s linear'});
+  }
+  $('#unsafe_button').attr('disabled', 'disabled');
+  $('#safe_button').attr('disabled', 'disabled');
+}
+
 // If they don't want to give more info, go ahead and sent the message
 // Otherwise replace this choice w/ menu for pragmatic answer...
 function giveAdditionalInfo(event) {
@@ -40,14 +54,30 @@ function giveAdditionalInfo(event) {
   $('#additional_info').hide();
 }
 
+function goalQueryResponse(event) {
+  event.data.game.socket.send(['goalInference', event.data.response].join(','));
+  $('#goal_query').hide();
+  $('#safeness_choice').show().css({display: 'inline-block'});
+  $('#safe_button').css({opacity : 1}).removeAttr('disabled');
+  $('#unsafe_button').css({opacity : 1}).removeAttr('disabled');      
+
+}
+
 var customEvents = function(game) {
   // Process responses to 'give additional info?' question
+  $('#rows_button').click({game: game, response: 'rows'}, goalQueryResponse);
+  $('#columns_button').click({game: game, response: 'columns'}, goalQueryResponse);
   $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
   $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
+  $('#safe_button').click({game: game, response: 'yes, it is safe'}, initialResponse);
+  $('#unsafe_button').click({game: game, response: 'no, it is NOT safe'},
+			    initialResponse);
+
 
   // Tell server when answerer sends
   $('#answer_button').click(function() {
     $('#additional_info_init').hide();
+    $('#answer_button').attr('disabled', 'disabled');
     game.sendAnswer();
   });        
 
@@ -85,7 +115,7 @@ var customEvents = function(game) {
   };
   
   game.sendAnswer = function() {
-    var msg = $('#yes-no-dropdown option:selected').text();
+    var msg = game.optionSelected;
     var askedAboutCell = game.askedAboutCell; 
     var additionalCell = ($('#helper_row option:selected').text() +
 			  $('#helper_col option:selected').text());
@@ -97,7 +127,6 @@ var customEvents = function(game) {
       msg += " and " + additionalCell + ' is ';
       msg += $('#helper_safe option:selected').text();
     }
-    $('#yes-no-dropdown').val('');
     $('#helper_row').val('');
     $('#helper_col').val('');
     $('#helper_safe').val('');
@@ -156,7 +185,7 @@ var customEvents = function(game) {
     // bar responses until speaker has uttered at least one message (and vice versa)
     if(data.source_role == "helper"){
       $('#question_button').removeAttr('disabled');
-      $('#yes-no-dropdown').hide();
+      $('#safeness_choice').hide();
       game.answerSent = true;
       game.questionSent = false;
       game.selections = data.code;
@@ -175,7 +204,8 @@ var customEvents = function(game) {
 	game.bot.reveal(data.code);
       }
     } else {
-      $('#yes-no-dropdown').show().css({display: 'inline-block'});
+      $('#answer_button').removeAttr('disabled');
+      $('#goal_query').show();
       game.answerSent = false;
       game.questionSent = true;
       game.askedAboutCell = data.code;
