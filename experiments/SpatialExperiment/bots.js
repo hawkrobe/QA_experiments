@@ -1,4 +1,3 @@
-const questionerModel = require('./src/spatialQuestionerOutput.json');
 
 class Bot {
   constructor(game, data) {
