@@ -25,6 +25,13 @@ class Bot {
 
   // Currently reveals literal card (will set up pragmatic cases later)
   answer(cellAskedAbout) {
+    $('#messages')
+      .append('<span class="typing-msg">Other player is thinking...</span>')
+      .stop(true,true)
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
+
     console.log('bot answering...');
     this.game.socket.emit('getAnswer', {state: this.state, fullMap: this.fullMap,
 					cellAskedAbout: cellAskedAbout});

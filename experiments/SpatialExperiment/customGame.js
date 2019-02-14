@@ -57,7 +57,9 @@ class ServerRefGame extends ServerGame {
       });
 
       var code = getBestVal(possibilities)['question'];
-      this.onMessage(socket, ["question", code, 5000, 'bot', 'leader'].join('.'));
+      setTimeout(function() {
+	this.onMessage(socket, ["question", code, 5000, 'bot', 'leader'].join('.'));
+      }.bind(this), 3000);
     }.bind(this));
 
     // Pulls out requested answer bot response data from db and retunrs as message
@@ -88,11 +90,15 @@ class ServerRefGame extends ServerGame {
 	let packet = ["answer", msg, 5000, 'bot', 'helper',
 		      askedAbout.split('_')[0]].join('.');
 	packet += other ? '.' + other.split('_')[0] : '';
-	this.onMessage(socket, packet);
+	setTimeout(function() {
+	  this.onMessage(socket, packet);
+	}.bind(this), 3000);
       }.bind(this);
       const failCallback = function() {
 	this.onMessage(socket, ["answer", 'oops', 5000, 'bot', 'helper'].join('.'));
       }.bind(this);
+
+      // Now query database
       getAnswerBotResponseFromDB(postData, successCallback, failCallback);
     }.bind(this));
 
@@ -151,7 +157,7 @@ class ServerRefGame extends ServerGame {
   onMessage (client,message) {
     //Cut the message up into sub components
     var message_parts = message.split('.');
-
+    
     //The first is always the type of message
     var message_type = message_parts[0];
 
@@ -190,10 +196,14 @@ class ServerRefGame extends ServerGame {
       });
       break;
 
+    case 'goalInference' :
+      console.log(message_parts.slice(1));
+      break;
+
     case 'exitSurvey' :
       console.log(message_parts.slice(1));
       break;
-      
+
     case 'h' : // Receive message when browser focus shifts
       //target.visible = message_parts[1];
       break;
