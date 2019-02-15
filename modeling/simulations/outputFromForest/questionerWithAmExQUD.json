@@ -1,0 +1,26 @@
+[
+  {
+    "x": "Do you accept credit cards?",
+    "y": 7.237903871576381e-30
+  },
+  {
+    "x": "Do you accept CarteBlanche?",
+    "y": 7.888609052209993e-31
+  },
+  {
+    "x": "Do you accept Diners?",
+    "y": 7.888609052209993e-31
+  },
+  {
+    "x": "Do you accept AmericanExpress?",
+    "y": 1
+  },
+  {
+    "x": "Do you accept MasterCard?",
+    "y": 7.888609052209993e-31
+  },
+  {
+    "x": "Do you accept Visa?",
+    "y": 7.888609052209993e-31
+  }
+]
