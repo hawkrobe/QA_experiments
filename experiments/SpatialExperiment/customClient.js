@@ -23,6 +23,15 @@ function updateState (game, data){
   game.roundStartTime = Date.now();
 };
 
+// Update grid state & tell bot about it
+function updateGridState (game) {
+  _.forEach(game.selections, function(cell) {
+    var c = game.fullMap[cell] == 'x' ? 'unsafe' : 'safe';
+    game.gridState[c].push(cell);
+  });
+  game.bot.update(game.gridState);
+};
+
 var client_addnewround = function(game) {
   $('#roundnumber').append(game.roundNum);
 };
@@ -184,31 +193,25 @@ var customEvents = function(game) {
     
     // bar responses until speaker has uttered at least one message (and vice versa)
     if(data.source_role == "helper"){
-      $('#question_button').removeAttr('disabled');
-      $('#safeness_choice').hide();
-      game.answerSent = true;
-      game.questionSent = false;
       game.selections = data.code;
-      game.numCellsClicked = 0;
-
-      // Update state & tell bot about it
-      _.forEach(game.selections, function(cell) {
-	var c = game.fullMap[cell] == 'x' ? 'unsafe' : 'safe';
-	game.gridState[c].push(cell);
-      });
-      game.bot.update(game.gridState);
-
+      UI.reset(game, 'answerReceived');
+      updateGridState(game);
+      
       // Show players the updated common ground
       UI.fadeInSelections(game.selections);
-      if(data.sender == 'human') {
-	game.bot.reveal(data.code);
-      }
+      setTimeout(function() {
+	var roundOver = [];
+	_.forEach(game.selections, id =>  {
+	  if(game.fullMap[id] == 'o')
+	    roundOver.push(game.revealCell($('#button-' + id)));
+	});
+	if(data.sender == 'human' && !_.includes(roundOver, true)) {
+	  game.bot.ask(data.code);
+	}
+      }, 1000);
     } else {
-      $('#answer_button').removeAttr('disabled');
-      $('#goal_query').show();
-      game.answerSent = false;
-      game.questionSent = true;
       game.askedAboutCell = data.code;
+      UI.reset(game, 'questionReceived');
       if(data.sender == 'human') {
 	game.bot.answer(data.code);
       }
@@ -237,17 +240,10 @@ var customEvents = function(game) {
   game.socket.on('newRoundUpdate', function(data){
     console.log('received update');
     game.bot = new Bot(game, data);
-    game.getPlayer(game.my_id).message = "";
-    game.questionSent = false;
-    game.answerSent = false;    
-    game.numQuestionsAsked = 0;
-    game.revealedCells = [];
 
     if(data.active) {
       updateState(game, data);
-      console.log('state is')
-      console.log(game);
-      UI.reset(game, data);
+      UI.reset(game, 'newRound');
     }
 
     // Kick things off by asking a question 
