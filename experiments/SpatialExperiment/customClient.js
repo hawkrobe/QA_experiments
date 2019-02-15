@@ -69,7 +69,6 @@ function goalQueryResponse(event) {
   $('#safeness_choice').show().css({display: 'inline-block'});
   $('#safe_button').css({opacity : 1}).removeAttr('disabled');
   $('#unsafe_button').css({opacity : 1}).removeAttr('disabled');      
-
 }
 
 var customEvents = function(game) {
@@ -96,14 +95,21 @@ var customEvents = function(game) {
     var col = $('#chatbox_col').val();
     var code =  row + col;
     var timeElapsed = Date.now() - game.roundStartTime;
-    var msg = ['question', code, timeElapsed, 'human', game.my_role]
-	.join('.');
-    if(row != '' && col != '') {
-      game.socket.send(msg);
-      game.sentTyping = false;
-      $("#chatbox_row").val('');
-      $("#chatbox_col").val('');
-      $('#question_button').attr('disabled', 'disabled');                  
+    var msg = ['question', code, timeElapsed, 'human', game.my_role].join('.');
+    $("#chatbox_row").val('');
+    $("#chatbox_col").val('');
+    var alreadyRev = _.includes(game.gridState['safe']
+				.concat(game.gridState['unsafe']),
+				code);
+    if(!alreadyRev) {
+      if(row != '' && col != '') {
+	game.socket.send(msg);
+	game.sentTyping = false;
+	$('#question_button').attr('disabled', 'disabled');
+      }
+    } else {
+      $('#leaderchatarea').append($('<p/>').text('hmmm, you already know that... Pick another question!').attr('id', 'errormsg'));
+      setTimeout(function() {$('#errormsg').remove()}, 1500)
     }
     return false;   
   });
@@ -128,20 +134,38 @@ var customEvents = function(game) {
     var askedAboutCell = game.askedAboutCell; 
     var additionalCell = ($('#helper_row option:selected').text() +
 			  $('#helper_col option:selected').text());
+    var cellStatus = $('#helper_safe option:selected').text();
+
     var cells = (additionalCell == '' ? [askedAboutCell] :
 		 [askedAboutCell, additionalCell]);
     var timeElapsed = Date.now() - game.roundStartTime;
-    
+
     if(additionalCell != '') {
-      msg += " and " + additionalCell + ' is ';
-      msg += $('#helper_safe option:selected').text();
+      msg += " and " + additionalCell + ' is ' + cellStatus;
     }
     $('#helper_row').val('');
     $('#helper_col').val('');
     $('#helper_safe').val('');
-
-    game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
-		     .concat(cells).join('.'));
+    var alreadyRev = _.includes(game.gridState['safe'].concat(game.gridState['unsafe']), additionalCell);
+    var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[askedAboutCell] == 'x' ||
+		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[askedAboutCell] == 'o' ||
+		    cellStatus == 'safe' && game.fullMap[additionalCell] == 'x' ||
+		    cellStatus == 'unsafe' && game.fullMap[additionalCell] == 'o');
+    
+    if(!alreadyRev && !falseAns) {
+      game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
+		       .concat(cells).join('.'));
+    } else {
+      var errorText = alreadyRev ? 'hmmm, the leader already knows that.' : "hmmm, that's just not true!";
+      $('#helperchatarea').append($('<p/>').text(errorText + ' Pick another answer!').attr('id', 'errormsg'));
+      setTimeout(function() {
+	$('#errormsg').remove();
+	$('#safeness_choice').show().css({display: 'inline-block'});
+	$('#safe_button').css({opacity : 1}).removeAttr('disabled');
+	$('#unsafe_button').css({opacity : 1}).removeAttr('disabled');
+	$('#answer_button').removeAttr('disabled');
+      }, 2500);
+    }
   };
 
   // Win condition is to safely complete row/col
