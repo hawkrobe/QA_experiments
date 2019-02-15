@@ -211,6 +211,7 @@ var customEvents = function(game) {
       }, 1000);
     } else {
       game.askedAboutCell = data.code;
+      game.questionNum += 1;
       UI.reset(game, 'questionReceived');
       if(data.sender == 'human') {
 	game.bot.answer(data.code);
@@ -219,16 +220,18 @@ var customEvents = function(game) {
   });
 
   game.socket.on('updateScore', function(data) {
-    console.log('update score');
-    var score = data.outcome == 'fail' ? 0 : game.bonusAmt;
-    game.data.score += score;
-    var bonus_score = (parseFloat(game.data.score) / 100
-		       .toFixed(2));
-    // var feedbackMessage = (questionPenalty > 0 ? "Sorry, you did not complete the combo in one exchange." :
-    // 			   revealPenalty > 0 ? "Sorry, you revealed cards that weren't in the combo." :
-    // 			   "Great job! You completed the combo in one exchange!");
-    $('#feedback').html('You earned $0.0' + score);
-    $('#score').empty().append('total bonus: $' + bonus_score);
+    console.log(game.questionNum);
+    var rawScore = data.outcome == 'fail' ? 0 : game.bonusAmt - game.questionNum + 1;
+    console.log(rawScore);
+    game.data.score += rawScore;    
+    var feedbackMessage = (rawScore == 0 ? "You exploded!" :
+			   "You safely completed your goal in " +
+			   game.questionNum + " questions.");
+    var monetaryScore = (parseFloat(game.data.score) / 100).toFixed(2); 
+    $('#feedback').html(feedbackMessage + ' You earned $0.0' + rawScore);
+    $('#score').empty().append('total bonus: $' + monetaryScore);
+
+    // Some animations to mark end of round
     $('#messages').empty();
     $("#context").fadeOut(1000, function() {$(this).empty();});
     $("#bomb-map").fadeOut(1000, function() {$(this).empty();});    
