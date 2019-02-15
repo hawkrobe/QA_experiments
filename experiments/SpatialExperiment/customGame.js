@@ -110,7 +110,8 @@ class ServerRefGame extends ServerGame {
 	_.map(all, function(p){
 	  p.player.instance.emit( 'updateScore', data);
 	});
-       }, 1000);
+      }, 1000);
+      socket.game.questionNum = 0;
       socket.game.newRound(4000);
     });
   }
@@ -170,6 +171,7 @@ class ServerRefGame extends ServerGame {
     switch(message_type) {
     
     case 'question' :
+      gc.questionNum += 1;
       var code = message_parts[1];
       var msg = ("Is " + code + " safe?");
       _.map(all, function(p){
@@ -230,6 +232,7 @@ class ServerRefGame extends ServerGame {
 	assignmentId: client.assignmentid,
 	trialNum: client.game.roundNum,
 	trialType: client.game.currStim.currGoalType,
+	questionNumber: client.game.questionNum,
 	// targetGoalSet: client.game.currStim.goalSets[target],
 	// distractorGoalSet: client.game.currStim.goalSets[distractor],
 	firstRole: client.game.firstRole

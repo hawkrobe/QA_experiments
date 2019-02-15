@@ -168,7 +168,7 @@ function reset (game, pointInTime) {
     game.answerSent = false;
     game.questionSent = true;
   } else if (pointInTime == 'newRound') {
-    game.numQuestionsAsked = 0;
+    game.questionNum = 0;
     game.questionSent = false;
     game.answerSent = false;
     game.getPlayer(game.my_id).message = "";
