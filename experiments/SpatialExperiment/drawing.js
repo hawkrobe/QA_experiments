@@ -40,17 +40,6 @@ function dropdownTip(data){
   }
 }
 
-// Only let leader click once they've heard answer back
-// Limit number of clicks per answer to 2... 
-function setupLeaderHandlers(game) {
-  $('.pressable').click(function(event) {
-    if(game.answerSent && game.numCellsClicked < 2) {
-      game.revealCell($(this));
-      game.numCellsClicked += 1;
-    }
-  });
-}
-
 function initBombMap(game) {
   // Add objects to grid
   console.log(game.fullMap);
@@ -84,13 +73,15 @@ function initBombMap(game) {
   );
 }
 
+// Add objects to grid
 function initGrid(game) {
-  // Add objects to grid
   _.forEach(['A','B','C'], (rowName, i) => {
     _.forEach(_.range(1,4), (colName, j) => {
       var underlying = game.fullMap[rowName + colName];
       var initialize = _.includes(game.revealedCells, rowName + colName);
       var div = $('<div/>').css({position: 'relative'});
+
+      // It's hard to draw lines in a CSS grid so this is a hack to do so
       if(game.my_role == game.playerRoleNames.role1) {
 	var shadow = (game.goal == 'columns' ?
 		      '0px -1vh 0px 0vh #000000, 0px 1vh 0px 0vh #000000, ' +
@@ -99,36 +90,35 @@ function initGrid(game) {
 		      '0px -1vh 0px 1vh #3f95ff, 0px 1vh 0px 1vh #3f95ff');
 	div.css({'box-shadow': shadow});
       }
+
+      // Create the underlying tiles according to game map
       var underlyingState = $('<div/>')
 	    .addClass('underlying_' + underlying)
 	    .attr({'id' : 'underlying-state-' + rowName + colName})
 	    .css({'grid-row': i, 'grid-column': j,
 		  'z-index': 1, position: 'absolute', left:'0px'});
       div.append(underlyingState);
+
+      // Cover up the ones that aren't designated for initial board
       if(!initialize) {
 	underlyingState.hide();
-	div.append($('<div/>')
-		   .addClass('pressable')
-		   .attr({'id' : 'button-'+rowName+colName,
-			  'style' : 'background: url("../../images/unpressedCell-' + rowName + colName + '.png") no-repeat; background-size :cover; z-index: 2; position: absolute'
-			 })
-		  );
+	var button = $('<div/>')
+	  .addClass('pressable')
+	  .attr({
+	    'id' : 'button-'+rowName+colName,
+	    'style' : ('background: url("../../images/unpressedCell-' +
+		       rowName + colName + '.png") no-repeat;' +
+		       'background-size :cover; z-index: 2; position: absolute')
+	  });
+	div.append(button);
       }
 
       $("#context").append(div);
     });
   });
 
+  // Now show whole grid
   $("#context").fadeIn();
-  // Unbind old click listeners if they exist
-  $('#context img')
-    .off('click');
-
-  // Allow listener to click on things
-  game.selections = [];
-  if (game.my_role === game.playerRoleNames.role1) {
-    setupLeaderHandlers(game);
-  }
 }
 
 function fadeInSelections(cells){
@@ -166,41 +156,58 @@ function drawScreen (game) {
   }
 };
 
-function reset (game, data) {
-  $('#question_button').removeAttr('disabled');
-  $('#scoreupdate').html(" ");
-  if(game.roundNum + 1 > game.numRounds) {
-    $('#roundnumber').empty();
-    $('#instructs').empty()
-      .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+function reset (game, pointInTime) {
+  if(pointInTime == 'answerReceived') {
+    $('#question_button').removeAttr('disabled');
+    $('#safeness_choice').hide();
+    game.answerSent = true;
+    game.questionSent = false;
+  } else if (pointInTime == 'questionReceived') {
+    $('#answer_button').removeAttr('disabled');
+    $('#goal_query').show();
+    game.answerSent = false;
+    game.questionSent = true;
+  } else if (pointInTime == 'newRound') {
+    game.numQuestionsAsked = 0;
+    game.questionSent = false;
+    game.answerSent = false;
+    game.getPlayer(game.my_id).message = "";
+    $('#scoreupdate').html(" ");
+    if(game.roundNum + 1 > game.numRounds) {
+      $('#roundnumber').empty();
+      $('#instructs').empty()
+	.append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+    } else {
+      $('#feedback').empty();
+      $('#roundnumber').empty()
+	.append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+    }
+
+    $('#main').show();
+    
+    // reset labels
+    // Update w/ role (can only move stuff if agent)
+    $('#roleLabel').empty().append("You are the " + game.my_role + '.');
+    $('#instructs').empty();
+    if(game.my_role === game.playerRoleNames.role1) {
+      var style_tag = game.goal == 'columns' ? '<b style="color:#F24495">' : '<b style="color:#3f95ff">';
+      var goal_tag = game.goal == 'columns' ? 'COLUMN' : 'ROW';
+      $('#leaderchatarea').show();
+      $('#helperchatarea').hide();          
+      $('#instructs')
+	.append("<p>Your goal this round is... " + style_tag + "COMPLETE ANY " + goal_tag + "</b>.</p>" +
+		"<p> Your partner wants to help you avoid the bombs, so ask them a question!");
+    } else if(game.my_role === game.playerRoleNames.role2) {
+      $('#leaderchatarea').hide();
+      $('#helperchatarea').show();
+      $('#instructs')
+	.append("<p>After your partner types their question, check your bomb map and help them!</p>" 
+		+ "<p>Remember they are either trying to complete a row or a column.</p>");
+    }
+    drawScreen(game);
   } else {
-    $('#feedback').empty();
-    $('#roundnumber').empty()
-      .append("Round\n" + (game.roundNum + 1) + "/" + game.numRounds);
+    console.log('unknown reset param');
   }
-
-  $('#main').show();
-
-  // reset labels
-  // Update w/ role (can only move stuff if agent)
-  $('#roleLabel').empty().append("You are the " + game.my_role + '.');
-  $('#instructs').empty();
-  if(game.my_role === game.playerRoleNames.role1) {
-    var style_tag = game.goal == 'columns' ? '<b style="color:#F24495">' : '<b style="color:#3f95ff">';
-    var goal_tag = game.goal == 'columns' ? 'COLUMN' : 'ROW';
-    $('#leaderchatarea').show();
-    $('#helperchatarea').hide();          
-    $('#instructs')
-      .append("<p>Your goal this round is... " + style_tag + "COMPLETE ANY " + goal_tag + "</b>.</p>" +
-	      "<p> Your partner wants to help you avoid the bombs, so ask them a question!");
-  } else if(game.my_role === game.playerRoleNames.role2) {
-    $('#leaderchatarea').hide();
-    $('#helperchatarea').show();
-    $('#instructs')
-      .append("<p>After your partner types their question, check your bomb map and help them!</p>" 
-	      + "<p>Remember they are either trying to complete a row or a column.</p>");
-  }
-  drawScreen(game);
 }
 
 module.exports = {
