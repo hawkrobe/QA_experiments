@@ -168,6 +168,7 @@ function reset (game, pointInTime) {
     game.answerSent = false;
     game.questionSent = true;
   } else if (pointInTime == 'newRound') {
+    $('#goal_query').hide();
     game.questionNum = 0;
     game.questionSent = false;
     game.answerSent = false;
