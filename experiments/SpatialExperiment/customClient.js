@@ -150,8 +150,7 @@ var customEvents = function(game) {
     var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[askedAboutCell] == 'x' ||
 		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[askedAboutCell] == 'o' ||
 		    cellStatus == 'safe' && game.fullMap[additionalCell] == 'x' ||
-		    cellStatus == 'unsafe' && game.fullMap[additionalCell] == 'o');
-    
+		    cellStatus == 'not  safe' && game.fullMap[additionalCell] == 'o');
     if(!alreadyRev && !falseAns) {
       game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
 		       .concat(cells).join('.'));
