@@ -75,6 +75,7 @@ var customEvents = function(game) {
   // Process responses to 'give additional info?' question
   $('#rows_button').click({game: game, response: 'rows'}, goalQueryResponse);
   $('#columns_button').click({game: game, response: 'columns'}, goalQueryResponse);
+  $('#not_sure_button').click({game: game, response: 'not sure'}, goalQueryResponse);  
   $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
   $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
   $('#safe_button').click({game: game, response: 'yes, it is safe'}, initialResponse);
