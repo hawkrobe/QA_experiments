@@ -235,6 +235,7 @@ var customEvents = function(game) {
     } else {
       game.askedAboutCell = data.code;
       game.questionNum += 1;
+      UI.fadeInQuestionMark(data.code);
       UI.reset(game, 'questionReceived');
       if(data.sender == 'human') {
 	game.bot.answer(data.code);
