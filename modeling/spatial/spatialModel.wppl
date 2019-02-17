@@ -171,7 +171,7 @@ var getPosteriorProb = dp.cache(function(type, question, answer, goal, gridState
     observe(A, answer);
     return qud(world);
   });
-}, 1000);
+}, 10000);
 
 var Qrationality = 1000;
 var Arationality = 1000;
@@ -183,7 +183,7 @@ var makeConsistentWorldPrior = dp.cache(function(gridState) {
     return (all(function(v) {return w[v] == 'safe';}, gridState['safe']) &&
 	    all(function(v) {return w[v] == 'unsafe';}, gridState['unsafe']));
   }, worldPrior.support())});
-}, 1000);
+}, 10000);
 
 var makeValidQuestionPrior = dp.cache(function(gridState) {
   return Categorical({vs: filter(function(q) {
@@ -207,11 +207,10 @@ var questioner = dp.cache(function(type, goal, gridState) {
       });
       return exp;
     });
-    var rationality = type == 'pragmatic' ? QPragRationality : QExpRationality;
-    factor(utility.toFixed(8) * rationality);
+    factor(utility.toFixed(8) * Qrationality);
     return question;
   });
-}, 1000);
+}, 10000);
 
 var interpreter = dp.cache(function(answer, gridState){
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
@@ -221,7 +220,7 @@ var interpreter = dp.cache(function(answer, gridState){
     condition(answerMeaning(world));
     return world;
   });
-}, 1000);
+}, 10000);
   
 var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
@@ -246,7 +245,7 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
       return answer;
     });
   }
-}, 1000);
+}, 10000);
 
 // var example = {
 //   world: {"A1":"unsafe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"unsafe","C2":"safe","C3":"unsafe"},
@@ -318,7 +317,7 @@ var writeOutQuestionerPredictions= function() {
   });
 };
 
-writeOutQuestionerPredictions();
+//writeOutQuestionerPredictions();
 
 var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
@@ -336,10 +335,10 @@ var writeOutAnswererPredictions= function() {
     var trueWorld = item.world;
     console.log(item);
     foreach(makeValidQuestionPrior(initState).support(), function(question) {
-      qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
+      qa.writeSpatialAnswerer('spatialAnswererOutput_MAPversion.csv',
       			      ['explicit', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
       			      answerer('explicit', question, trueWorld, initState));
-      qa.writeSpatialAnswerer('spatialAnswererOutput.csv',
+      qa.writeSpatialAnswerer('spatialAnswererOutput_MAPversion.csv',
       			      ['pragmatic', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
       			      answerer('pragmatic', question, trueWorld, initState));
       
@@ -347,4 +346,4 @@ var writeOutAnswererPredictions= function() {
   });
 };
 
-//writeOutAnswererPredictions();
+writeOutAnswererPredictions();
