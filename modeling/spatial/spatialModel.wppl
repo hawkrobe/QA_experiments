@@ -230,7 +230,7 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
       console.error('type not recognized')
   );
   if(type == 'pragmatic') {
-    console.log(qudPosterior);
+//    console.log(qudPosterior);
   }
   return Infer({method: 'enumerate'}, function(){
     var qudName = sample(qudPosterior);
@@ -245,14 +245,10 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   });
 }, 1000);
 
-var w = sample(makeConsistentWorldPrior({"safe":["B1","C2"],"unsafe":["C3"]}));
-console.log(w)
-console.log(answerer('pragmatic', 'is_A2_safe?', w, {"safe":["B1","C2"],"unsafe":["C3"]}))
-console.log(answerer('pragmatic', 'is_C1_safe?', w, {"safe":["B1","C2"],"unsafe":["C3"]}))
-
-var validate = function(initRevealed, underlying) {
-  return !allRevealed(initRevealed) && colRowExists(underlying);
-};
+// var w = sample(makeConsistentWorldPrior({"safe":["B1","C2"],"unsafe":["C3"]}));
+// console.log(w)
+// console.log(answerer('pragmatic', 'is_A2_safe?', w, {"safe":["B1","C2"],"unsafe":["C3"]}))
+// console.log(answerer('pragmatic', 'is_C1_safe?', w, {"safe":["B1","C2"],"unsafe":["C3"]}))
 
 var completeRow = function (grid) {
   return qa.completeRow('A', grid) || qa.completeRow('B', grid) || qa.completeRow('C', grid);
@@ -288,11 +284,14 @@ var possibleInitStates = Infer({method: 'enumerate'}, function() {
   var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
   var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
 		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
-  condition(validate(initState, world) && (initState['safe'].length + initState['unsafe'].length) > 0 
-	    && !_.isEqual(initState['unsafe'], []) && !_.isEqual(initState['unsafe'], ['C3']));
+
+  condition(allRevealed(initState) && colRowExists(world) &&
+	    (initState['safe'].length + initState['unsafe'].length) < 9);
   return {initState};
 });
 
+
+//console.log(possibleInitStates);
 var writeOutQuestionerPredictions= function() {
   foreach(possibleInitStates.support(), function(item) {
     foreach([['A', 'B', 'C'], ['1', '2', '3']], function(goal) {
@@ -309,7 +308,7 @@ var writeOutQuestionerPredictions= function() {
   });
 };
 
-// writeOutQuestionerPredictions();
+//writeOutQuestionerPredictions();
 
 var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
@@ -317,7 +316,9 @@ var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
   var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
 		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
-  condition(validate(initState, world) && (initState['safe'].length + initState['unsafe'].length) > 0 );
+  condition(allRevealed(initState) && colRowExists(world) &&
+	    (initState['safe'].length + initState['unsafe'].length) < 9);
+//  condition(validate(initState, world) && (initState['safe'].length + initState['unsafe'].length) > 0 );
   return {world, initState};
 });
 
