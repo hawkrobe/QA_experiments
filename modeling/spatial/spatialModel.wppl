@@ -226,7 +226,9 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
       type === 'literal' ? Delta({v: 'identity'}) :
       console.error('type not recognized')
   );
-  
+  if(type == 'pragmatic') {
+    console.log(qudPosterior);
+  }
   return Infer({method: 'enumerate'}, function(){
     var qudName = sample(qudPosterior);
     var localQUD = spatialNameToQUD(qudName);
@@ -309,4 +311,4 @@ var writeOutAnswererPredictions= function() {
   });
 };
 
-writeOutAnswererPredictions();
+//writeOutAnswererPredictions();

@@ -4,6 +4,37 @@ var assert = require('assert');
 var utils  = require(__base + 'src/sharedUtils.js');
 var ServerGame = require('./src/game.js')['ServerGame'];
 var GameMap = require('./maps.js');
+var sendPostRequest = require('request').post;
+var questionsFromModel = require('./src/spatialQuestionerOutput.json');
+
+var getBestVal = function(possibilities) {
+  var maxProb = _.max(_.map(possibilities, function(v) {
+    return _.toNumber(v.prob);
+  }));
+  var valsWithMax = _.filter(possibilities, function(v){
+    return _.toNumber(v.prob) == maxProb;
+  });
+  return _.sample(valsWithMax);
+};
+
+var getAnswerBotResponseFromDB = function(postData, successCallback, failCallback) {
+  sendPostRequest('http://localhost:5000/db/getAnswer', {
+    json: postData
+  }, function(error, res, body) {
+    try {
+      if (!error && res.statusCode === 200) {
+	console.log("success! Received data " + JSON.stringify(body));
+	successCallback(body);
+      } else {
+	throw `${error}`;
+      }
+    } catch (err) {
+      console.log(err);
+      console.log('no database; allowing participant to continue');
+      failCallback();
+    }
+  }.bind(this));
+}
 
 class ServerRefGame extends ServerGame {
   constructor(config) {
@@ -15,7 +46,63 @@ class ServerRefGame extends ServerGame {
   }
 
   customEvents (socket) {
-    console.log('setting events');
+    // Pulls out requested data from json and returns as message
+    socket.on('getQuestion', function(data){
+      var state = {'safe' : _.clone(data.state['safe']).sort(),
+		   'unsafe' : _.clone(data.state['unsafe']).sort()};
+      var possibilities = _.filter(questionsFromModel, {
+	initState: JSON.stringify(state),
+	goal: data.goal,
+	questionerType: 'pragmatic'
+      });
+
+      var code = getBestVal(possibilities)['question'];
+      setTimeout(function() {
+	this.onMessage(socket, ["question", code, 5000, 'bot', 'leader'].join('.'));
+      }.bind(this), 3000);
+    }.bind(this));
+
+    // Pulls out requested answer bot response data from db and retunrs as message
+    socket.on('getAnswer', function(data){
+      console.log('bot getting answer...');
+      const state = {'safe' : _.clone(data.state['safe']).sort(),
+		     'unsafe' : _.clone(data.state['unsafe']).sort()};
+      const fullMap = _.mapValues(data.fullMap, v => v == 'o' ? 'safe' : 'unsafe');
+      const postData = {
+	dbname: 'QA', colname: 'answererBotResponses',
+	cellAskedAbout: data.cellAskedAbout,
+	fullMap: JSON.stringify(fullMap),
+	state: JSON.stringify(state)
+      };
+      const successCallback = function(body) {
+	const selections = getBestVal(body)['answer'].split(',');
+	const askedAbout = _.find(selections, v => {
+	  return v.split('_')[0] == data.cellAskedAbout;
+	});
+	const other = _.find(selections, v => {
+	  return v.split('_')[0] != data.cellAskedAbout;
+	});
+
+	let msg = (fullMap[data.cellAskedAbout] == 'safe' ?
+		   'Yes, ' + data.cellAskedAbout + ' is safe' :
+		   'No, ' + data.cellAskedAbout + ' is not safe');
+	msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : ''
+	let packet = ["answer", msg, 5000, 'bot', 'helper',
+		      askedAbout.split('_')[0]].join('.');
+	packet += other ? '.' + other.split('_')[0] : '';
+	setTimeout(function() {
+	  this.onMessage(socket, packet);
+	}.bind(this), 3000);
+      }.bind(this);
+      const failCallback = function() {
+	this.onMessage(socket, ["answer", 'oops', 5000, 'bot', 'helper'].join('.'));
+      }.bind(this);
+
+      // Now query database
+      getAnswerBotResponseFromDB(postData, successCallback, failCallback);
+    }.bind(this));
+
+    // Gets called when round is over
     socket.on('endRound', function(data) {
       console.log('round ended...');
       var all = socket.game.activePlayers();
@@ -23,7 +110,8 @@ class ServerRefGame extends ServerGame {
 	_.map(all, function(p){
 	  p.player.instance.emit( 'updateScore', data);
 	});
-       }, 1000);
+      }, 1000);
+      socket.game.questionNum = 0;
       socket.game.newRound(4000);
     });
   }
@@ -70,7 +158,7 @@ class ServerRefGame extends ServerGame {
   onMessage (client,message) {
     //Cut the message up into sub components
     var message_parts = message.split('.');
-
+    
     //The first is always the type of message
     var message_type = message_parts[0];
 
@@ -83,6 +171,7 @@ class ServerRefGame extends ServerGame {
     switch(message_type) {
     
     case 'question' :
+      gc.questionNum += 1;
       var code = message_parts[1];
       var msg = ("Is " + code + " safe?");
       _.map(all, function(p){
@@ -109,10 +198,14 @@ class ServerRefGame extends ServerGame {
       });
       break;
 
+    case 'goalInference' :
+      console.log(message_parts.slice(1));
+      break;
+
     case 'exitSurvey' :
       console.log(message_parts.slice(1));
       break;
-      
+
     case 'h' : // Receive message when browser focus shifts
       //target.visible = message_parts[1];
       break;
@@ -139,6 +232,7 @@ class ServerRefGame extends ServerGame {
 	assignmentId: client.assignmentid,
 	trialNum: client.game.roundNum,
 	trialType: client.game.currStim.currGoalType,
+	questionNumber: client.game.questionNum,
 	// targetGoalSet: client.game.currStim.goalSets[target],
 	// distractorGoalSet: client.game.currStim.goalSets[distractor],
 	firstRole: client.game.firstRole

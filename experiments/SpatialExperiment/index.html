@@ -58,31 +58,36 @@
 	      </span>
 	    </p>
 	    <br>
-            <button id="question_button" value="Send">Send</input>
+            <button class="big_button" id="question_button" value="Send">Send</input>
           </div>
+
 	  <div id="helperchatarea">
-            <p style="padding: 10px; text-align: left; \
-		      vertical-align: center; display:inline-block; \
-		      font-size: 150%;">
-	      <span>
-		<select id="yes-no-dropdown"
-			onchange="$('#additional_info').show()"
-			style="font-size: 125%;display:none;">
-		  <option value=""></option>
-		  <option value="yes">Yes, it is safe</option>
-		  <option value="no">No, it isn't safe</option>
-		</select>
-		<p id="additional_info" style="display:none">
-		  Great! Would you like to provide additional information for the helper?
-		  <br>
-		  <button id="yes_button" style="font-size: 125%">
-		    Yes, let me send more information!
-		  </button>
-		  <button id="no_button" style="font-size:125%">
-		    No, just send my yes/no answer.
-		  </button>
-		</p>
-		<div id="additional_info_init" style="display:none">
+	    <span id="goal_query" style="font-size: 125%;display:none;width:100%">
+	      <p style="font-size: 125%"> Which goal do you think the questioner has?</p>
+	      <button class="big_button" id="rows_button"
+		      style="width:30%">ROWS</button>
+	      <button class="big_button" id="columns_button"
+		      style="width:30%">COLUMNS</button>
+	      <button class="big_button" id="not_sure_button"
+		      style="width:30%">NOT SURE</button>
+	    </span>
+
+	    <span id="safeness_choice" style="font-size: 125%;display:none;width:100%">
+	      <p style="font-size: 125%"> Now use these buttons to respond! </p>
+	      <button class="big_button" id="safe_button"
+		      style="background:#8ABF4C">Yes, SAFE</button>
+	      <button class="big_button" id="unsafe_button"
+		      style="background:#E83D56">No, UNSAFE</button>
+	    </span>
+	    <p id="additional_info" style="display:none">
+	      <button class="big_button" id="yes_button" style="">
+		send MORE INFO!
+	      </button>
+	      <button class="big_button" id="no_button" style="">
+		that's all.
+	      </button>
+	    </p>
+	    <div id="additional_info_init" style="display:none">
 		  and
 		  <select id="helper_row" style="font-size: 125%;display:inline-block;">
 		    <option value=""></option>
@@ -102,10 +107,10 @@
 		    <option value="safe">safe</option>
 		    <option value="not safe">not safe</option>
 		  </select>
-		  <button id="answer_button" value="Send">Send</input>
+		  <span/><button class="big_button" id="answer_button" value="Send">Send</input>
 		</div>
 	      </span>
-	    <span style="font-size: 150%; bottom:52vh; width:30vh; position:absolute; display:block; margin-left: 15vh;"> Message box</span>
+	    <!-- <span style="font-size: 150%; bottom:52vh; width:30vh; position:absolute; display:block; margin-left: 15vh;"> Message box</span> -->
 	    <br>
 	    <div id="map">
 	      <div id="bomb-map" class="grid"> </div>

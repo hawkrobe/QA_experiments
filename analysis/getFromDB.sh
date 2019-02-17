@@ -1,0 +1,5 @@
+mongoexport --authenticationDatabase admin --host 127.0.0.1 --db QA --username <user> --password <password> -c "cards" --type=csv --query "{'eventType': 'chatMessage'}" --fields iterationName,gameid,time,trialNum,trialType,targetGoalSet,distractorGoalSet,firstRole,cardAskedAbout,sender,timeFromRoundStart --out ../experiments/CardsExperiment1/data/chatMessage/chatMessageFromMongo.csv
+
+mongoexport --authenticationDatabase admin --host 127.0.0.1 --db QA --username <user> --password <password> -c "cards" --type=csv --query "{'eventType': 'reveal'}" --fields iterationName,gameid,time,trialNum,trialType,targetGoalSet,distractorGoalSet,firstRole,sender,timeFromMessage,revealedObjs --out ../experiments/CardsExperiment1/data/reveal/revealFromMongo.csv
+
+mongoexport --authenticationDatabase admin --host 127.0.0.1 --db QA --username <user> --password <password> -c "cards" --type=csv --query "{'eventType': 'exitSurvey'}" --fields iterationName,gameid,time,role,confused,strategy,comments,totalLength,ratePartner,nativeEnglish,quizFailCounter,score,firstRole --out ../experiments/CardsExperiment1/data/exitSurvey/exitSurveyFromMongo.csv

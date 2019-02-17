@@ -1,4 +1,3 @@
-const questionerModel = require('./src/spatialQuestionerOutput.json');
 
 class Bot {
   constructor(game, data) {
@@ -7,21 +6,9 @@ class Bot {
     this.fullMap = data.currStim.underlying;
     this.state = data.currStim.initRevealed;
     this.goal = data.currStim.goal;
+    this.game.socket.on('receivedQuestion', this.sendQuestion);
   }
 
-  selectQuestion() {
-    var possibilities = _.filter(questionerModel, {
-      initState: this.state.concat().sort().join(','),
-      goal: this.goal,
-      questionerType: 'pragmatic'
-    });
-    
-    var maxProb = _.max(_.map(possibilities, function(v) {return _.toNumber(v.prob) }));
-    console.log(maxProb);
-    var valsWithMax = _.filter(possibilities, function(v){return _.toNumber(v.prob) == maxProb});
-    console.log(valsWithMax);
-    return _.sample(valsWithMax)['question']
-  }
   
   // Always asks about non-overlapping card
   ask() {
@@ -33,24 +20,21 @@ class Bot {
       .animate({
 	scrollTop: $("#messages").prop("scrollHeight")
       }, 800);
-    
-    var code = this.selectQuestion();
-    setTimeout(function() {
-      this.game.socket.send(["question", code, 5000, 'bot', this.role].join('.'));
-    }.bind(this), 5000);
+    this.game.socket.emit('getQuestion', {state: this.state, goal: this.goal});
   }
 
   // Currently reveals literal card (will set up pragmatic cases later)
   answer(cellAskedAbout) {
+    $('#messages')
+      .append('<span class="typing-msg">Other player is thinking...</span>')
+      .stop(true,true)
+      .animate({
+	scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
+
     console.log('bot answering...');
-    var selections = [cellAskedAbout];
-    var msg = (this.fullMap[cellAskedAbout] == 'o' ?
-	       'Yes, ' + cellAskedAbout + ' is safe' :
-	       'No, ' + cellAskedAbout + ' is not safe');
-    setTimeout(function() {
-      this.game.socket.send(["answer", msg, 2500, "bot", this.role]
-			    .concat(selections).join('.'));
-    }.bind(this), 2500);
+    this.game.socket.emit('getAnswer', {state: this.state, fullMap: this.fullMap,
+					cellAskedAbout: cellAskedAbout});
   }
 
   // click on the non-bombs that have been revealed
@@ -69,8 +53,8 @@ class Bot {
     }.bind(this), 2500);
   }
 
-  update(revealedCells) {
-    this.state = _.clone(revealedCells);
+  update(state) {
+    this.state = _.clone(state);
   }
 }
 

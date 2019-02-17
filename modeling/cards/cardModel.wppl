@@ -43,6 +43,7 @@ var worldPrior = Infer({method: 'enumerate'}, function(){
   }, trueSeq, possibleSeq);
 });
 
+console.log(worldPrior);
 //  -------------------
 // | Question knowledge |
 //  -------------------
@@ -128,13 +129,13 @@ var nameToQUD = function(qudName){
     return locationQUD(qudName);
 };
 
-// Note that because answerer is symmetric across worlds,
-// and worlds have equal probability, we can just say
-// same or different from true world?
-
 //  -------
 // | Models |
 //  -------
+
+// Note that because answerer is symmetric across worlds,
+// and worlds have equal probability, we can just say
+// same or different from true world?
 
 var getPriorProb = dp.cache(function(goal) {
   var qud = nameToQUD(goal);                                              
@@ -174,7 +175,9 @@ var questioner = dp.cache(function(type, trueGoal) {
 
     var infGain = expectation(possibleAnswer, function(answer){
       var priorProb = getPriorProb(goal);
+      console.log(priorProb)
       var posteriorProb = getPosteriorProb(type, answer, goal);
+      console.log(posteriorProb);
       return KL(posteriorProb, priorProb);
     });
     factor(infGain * Qrationality);
@@ -194,7 +197,7 @@ var answerer = dp.cache(function(type, question, trueWorld, context) {
   return Infer({method: 'enumerate'}, function(){
     var answer = sample(answerPrior);
     var newUtility = expectation(qudPosterior, function(qudName) {
-      return qa.interpreterScore(trueWorld, answer, qudName, worldPrior);
+      return qa.cardsInterpreterScore(trueWorld, answer, qudName, worldPrior);
     });
     factor(newUtility * Arationality - answer.length);      
     return answer;
@@ -203,4 +206,4 @@ var answerer = dp.cache(function(type, question, trueWorld, context) {
 
 //questioner('explicit', goalContext[0]);
 //answerer('pragmatic', 'where_is_K_of_spades?', trueWorld, goalContext);
-questioner('pragmatic', goalContext[0]);
+//questioner('pragmatic', goalContext[0]);

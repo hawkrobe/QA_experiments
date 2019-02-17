@@ -22,7 +22,7 @@
       li {
       font-size: 18px;
       }
-</style>
+    </style>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -48,88 +48,119 @@
 
       <div class="well" style="width:800px; margin: 0 auto">
 
-	<h2><center>Complete the combo!</center>  </h2>
+	<h2><center>Don't get exploded!</center></h2>
 
 	<p>
-	  In this experiment you will play a communication game with a robot partner! 
+	  You will play a cooperative game with a robot.
+	  Read these instructions carefully to learn how to play! 
 	</p>
 
 	<p>
-	  You will both see a 4 x 4 grid containing cards. For every
-	  round of the game, one player (the "seeker") will be given a
-	  goal: to find a specific combination of cards in the
-	  grid. There will either be 1 or 2 cards in this combo.
-	  However, the seeker is trapped in a fog and cannot see
-	  where <b>any</b> of the cards are! Thankfully, the other
-	  player (the "helper") knows where all the cards are but does 
-	  not know which ones the seeker is trying to find.
+	  The game takes place on a 3 x 3 board, which both of you can see at all times.
+	  At the beginning of each round, some tiles on the board may have green checkmarks.
+	  These tiles are <i>safe</i>.
 	</p>
 
 	<p>
 	  <center>
-	    <img src="images/cardViews.png" alt="Example objects"
-		 style="width:400px; height:225px">
+	    <img src="images/grid.png" alt="Example objects"
+		 style="width:300px; height:300px">
 	  </center>
 	</p>
 
 	<p>
-	  There are two things you need to know to succeed.
+	  Some of the other tiles are also safe.
+	  But beneath others there are bombs!
+	  You and your partner win the game by revealing certain patterns of safe tiles on the board.
+	  However, if a bomb is accidentally revealed, you explode and lose the round.
 	</p>
 
-	<ol>
-	  <li>
-	    <b>Both the seeker and the helper can see the list of
-	      possible combos</b>. The seeker will see their target
-	      combo highlighted in a green box. These are the cards
-	      they are trying to find.  The helper knows the seeker is
-	      trying to obtain one of the combos in the list but does
-	      not know which one.
-	  </li>
-	</ol>
+	<p>
+	  What makes the game fun is that each of you have secret information.
+	  You will need to communicate to win!
+	</p>
+
+	<p>
+	  One of you (the "leader") is told what pattern of tiles you need to reveal.
+	  Sometimes you will need to complete one of the <i>columns</i>.
+	</p>
+
 	<p>
 	  <center>
-	    <img src="images/goalViews.png" alt="Example goals"
-		 style="width:400px; height:235px">
+	    <img src="images/completeanycolumn.png" alt="Example objects"
+		 style="width:300px; height:311px">
 	  </center>
 	</p>
-	<ol start="2">
-	  <li>
-	    The seeker is able to <b>ask the helper a question</b>
-	      about the location of a card. The seeker must use
-	      dropdown menus to complete the question: "Where is the
-	      ...?"
-	    <p>
-	      <center>
-		<img src="images/message.png" alt="Example objects"
-		     style="width:300px; height:158px">
-	      </center>
-	    </p>
-
-	    <p>
-	      The helper will then see this question and select up
-	      to <b>two</b> cards to reveal by clicking on cards, and
-	      then on the 'REVEAL' button when ready. They will need
-	      to wait until the seeker has sent a question before
-	      being able to click anything.
-	    </p>
-	    <p>
-	      <center>
-		<img src="images/response.png" alt="reveal"
-		     style="width:300px; height:349px">
-	      </center>
-	    </p>
-	  </li>
-	</ol>	
 
 	<p>
-	  On every round, if the seeker asks a good question and the
-	  helper carefully reveals the right cards, it is possible to
-	  complete the combo in a single exchange. This is how you get
-	  the <b>bonus of $0.05 per round</b>. If the combo is not
-	  completed after the first question, or if other cards are
-	  revealed, you will not receive the bonus, so pay attention
-	  to your choices! There are a total of <b>6 rounds</b>, and
-	  you will switch roles halfway through. After the final round
+	  Other times you must complete one of the <i>rows</i>.
+	</p>
+	
+	<p>
+	  <center>
+	    <img src="images/completeanyrow.png" alt="Example objects"
+		 style="width:300px; height:323px">
+	  </center>
+	</p>
+
+	<p>
+	  While the leader know the goal, they don't know where the bombs are!
+	  Thankfully, the other player (the "helper") is given a secret map.
+	</p>
+
+	<p>
+	  <center>
+	    <img src="images/bombMap.png" alt="Example objects"
+		 style="width:300px; height:332px">
+	  </center>
+	</p>
+
+	<p>
+	  To communicate, the leader must ask a question and the helper must respond to that question.
+	  Specifically, the leader selects a cell to ask about (e.g. "Is A3 safe?") from a dropdown menu.
+	</p>
+	
+	<p>
+	  <center>
+	    <img src="images/fullQuestionerViewCols.png" alt="Example objects"
+		 style="width:200px; height:92px">
+	  </center>
+	</p>
+	
+	<p>
+	  The helper will then answer a question about what they think the goal is:
+	</p>
+
+	<p>
+	  <center>
+	    <img src="images/goalanswer.png" alt="Example objects"
+		 style="width:300px; height:170px">
+	  </center>
+	</p>
+
+	<p>
+	  And then respond to the question with a yes/no, as well as
+	  optionally provide info about an additional tile (e.g. "yes,
+	  it is safe but A2 is not.")
+	</p>
+
+	<p>
+	  <center>
+	    <img src="images/moreInfo.png" alt="reveal"
+		 style="width:300px; height:178px">
+	  </center>
+	</p>
+	
+	<p>
+	  The reason the helper may want to provide additional information is to help win the round in fewer questions!
+	  For every additional question the leader asks, your bonus will go down.
+	  If you successfully complete your goal after asking a single question, you will both get a <b>bonus of $0.05 per round</b>.
+	  If the combo is still not completed after the first question, you will only receive <b>$0.04</b>, and so on.
+	  So pay attention to your choices!
+	</p>
+	
+	<p>
+	  There are a total of <b>20 rounds</b>. After the final round
 	  you will answer a few more questions and be on your way.
 	</p>
 	
@@ -158,7 +189,7 @@
       <div class="well" style="width:800px; margin: 0 auto">
 	
 	<br>
-	The Seeker is trying to fool the Helper into revealing unhelpful cards.
+	The point of the game is to lie and make your partner explode.
 	<br>
 	<input type="radio" name="dgoal" value="no"> True
 	<br>
@@ -166,7 +197,7 @@
 	<br>
 
 	<br>
-	The Helper aims to complete the Seeker's target combo by revealing cards.
+	The Helper is trying to help the Leader complete their goal in as few questions as possible.
 	<br>
 	<input type="radio" name="mgoal" value="yes"> True
 	<br>
@@ -174,7 +205,7 @@
 	<br>
 
 	<br>
-	The Seeker must pick a single card to ask about (i.e. Where is the <b>jack of hearts</b>?)
+	The Leader's secret goal is either to find a safe <i>column</i> or a safe <i>row</i>.
 	<br>
 	<input type="radio" name="message" value="yes"> True
 	<br>
@@ -182,29 +213,30 @@
 	<br>
 
 	<br>
-	The Seeker and Helper are both aware of all the <b>possible</b> combos on each round.
+	The Helper may provide additional information beyond their yes/no answer.
 	<br>
 	<input type="radio" name="location" value="yes"> True
 	<br>
 	<input type="radio" name="location" value="no"> False
 	<br>
 
-	<br>
-	Imagine the following round: you are the Helper and there is
-	only <b>one</b> possible combo. What would you need to do to
-	get a bonus?
-	<p>
-	  <center><img src="images/singleCombo.png" alt="single possible combo"
-		       style="width:500px;height:323px">
-	  </center>
-	</p>	
-	<br>
-	<input type="radio" name="comp" value="no"> Only reveal the six of diamonds (the first card).
-	<br>
-	<input type="radio" name="comp" value="yes"> Reveal <b>both</b> the six of diamonds and three of clubs.
-	<br>
-	<input type="radio" name="comp" value="no"> Reveal the nine of spades.
-	<br>
+	<!-- <br> -->
+	<!-- Imagine the following round: you are the Helper and there is -->
+	<!-- only <b>one</b> possible combo. What would you need to do to -->
+	<!-- get a bonus? -->
+	<!-- <p> -->
+	<!--   <center> -->
+	<!--     <img src="images/singleCombo.png" alt="single possible combo" -->
+	<!-- 	 style="width:500px;height:323px"> -->
+	<!--   </center> -->
+	<!-- </p>	 -->
+	<!-- <br> -->
+	<!-- <input type="radio" name="comp" value="no"> Only reveal the six of diamonds (the first card). -->
+	<!-- <br> -->
+	<!-- <input type="radio" name="comp" value="yes"> Reveal <b>both</b> the six of diamonds and three of clubs. -->
+	<!-- <br> -->
+	<!-- <input type="radio" name="comp" value="no"> Reveal the nine of spades. -->
+	<!-- <br> -->
 
 	<br>
 	It is possible to do this HIT more than once.
@@ -242,7 +274,7 @@
         var ans1 = $('input[name="dgoal"]:checked').val();
         var ans2 = $('input[name="mgoal"]:checked').val();
         var ans3 = $('input[name="message"]:checked').val();
-        var ans4 = $('input[name="comp"]:checked').val();
+        var ans4 = "yes";//$('input[name="comp"]:checked').val();
         var ans5 = $('input[name="location"]:checked').val();
         var ans6 = $('input[name="completed"]:checked').val();
 

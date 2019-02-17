@@ -4,6 +4,7 @@ bundle.js
 .RData
 .Rhistory
 auth.json
+auth.txt
 node_modules
 *~
 *.aux
