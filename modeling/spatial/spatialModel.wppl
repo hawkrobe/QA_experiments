@@ -39,9 +39,7 @@ var worldPrior = Infer({method: 'enumerate'}, function(){
     'B1' : bomb(), 'B2' : bomb(), 'B3' : bomb(),
     'C1' : bomb(), 'C2' : bomb(), 'C3' : bomb()
   };
-  // condition(qa.completeCol('1', world) || qa.completeCol('2', world) || qa.completeCol('3', world));
-  // condition(qa.completeRow('A', world) || qa.completeRow('B', world) || qa.completeRow('C', world));
- return world;
+  return world;
 });
 
 //  -------------------
@@ -134,7 +132,7 @@ var spatialNameToQUD = function(qudName){
   if(qudName == 'identity') 
     return function(w) {return w;};
   else if(qudName.length > 1) {
-    return function(w) {any(function(qud) { return spatialLocationQUD(qud)(w);}, qudName)};
+    return function(w) {map(function(qud) { return spatialLocationQUD(qud)(w);}, qudName)};
   } else {
     return spatialLocationQUD(qudName);
   }
@@ -161,19 +159,19 @@ var spatialLocationAnswerMeaning = function(utterance){
 // Note that in principle we should be conditioning on hearing back from
 // answerer here, but in this case, they are equivalent
 // var A = answerer(type, question, world, gridState);
-var getPosteriorProb = dp.cache(function(type, answer, goal, gridState) {
+var getPosteriorProb = dp.cache(function(type, question, answer, goal, gridState) {
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
   var qud = spatialNameToQUD(goal);
-  var meaning = spatialLocationAnswerMeaning(answer);
   return Infer({method: 'enumerate'}, function(){
     var world = sample(consistentWorldPrior);
-    condition(meaning(world));
+    var A = answerer(type, question, world, gridState);
+    observe(A, answer);
     return qud(world);
   });
 }, 1000);
 
-var Qrationality = 100;
-var Arationality = 100;
+var Qrationality = 1000;
+var Arationality = 1000;
 
 // This takes subset of worlds where the 'known' revealed cells
 // are true (i.e. when people start with a map, or after revealing more)
@@ -196,7 +194,6 @@ var questioner = dp.cache(function(type, goal, gridState) {
   var validQuestionPrior = makeValidQuestionPrior(gridState);
   return Infer({method: 'enumerate'}, function() {
     var question = sample(validQuestionPrior);
-    //console.log('considering question' + question);
     var trueGoal = goal;    
     var utility = expectation(consistentWorldPrior, function(trueWorld) {
       var possibleAnswer = answerer(type, question, trueWorld, gridState);
@@ -245,11 +242,6 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   });
 }, 1000);
 
-// var w = sample(makeConsistentWorldPrior({"safe":["B1","C2"],"unsafe":["C3"]}));
-// console.log(w)
-// console.log(answerer('pragmatic', 'is_A2_safe?', w, {"safe":["B1","C2"],"unsafe":["C3"]}))
-// console.log(answerer('pragmatic', 'is_C1_safe?', w, {"safe":["B1","C2"],"unsafe":["C3"]}))
-
 var completeRow = function (grid) {
   return qa.completeRow('A', grid) || qa.completeRow('B', grid) || qa.completeRow('C', grid);
 };
@@ -261,22 +253,6 @@ var completeCol = function (grid) {
 var colRowExists = function(grid) {
   return completeRow(grid) && completeCol(grid);
 }
-
-var allRevealed = function (listRevealed) {
-  var rowsRevealed = map(function(v) {
-    return filter(function(cell) {
-      return cell[0] == v;
-    }, listRevealed['safe']).length;
-  }, ['A', 'B', 'C']);
-
-  var colRevealed = map(function(v) {
-    return filter(function(cell) {
-      return cell[1] == v;
-    }, listRevealed['safe']).length;
-  }, ['1', '2', '3']);
-  return (any(function(v) {return v == 3}, rowsRevealed) ||
-	  any(function(v) {return v == 3}, colRevealed));
-}
   
 var possibleInitStates = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
@@ -284,31 +260,27 @@ var possibleInitStates = Infer({method: 'enumerate'}, function() {
   var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
   var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
 		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
-
-  condition(allRevealed(initState) && colRowExists(world) &&
-	    (initState['safe'].length + initState['unsafe'].length) < 9);
+  condition(colRowExists(world) && (initState['safe'].length + initState['unsafe'].length) < 9);
   return {initState};
 });
 
-
-//console.log(possibleInitStates);
 var writeOutQuestionerPredictions= function() {
   foreach(possibleInitStates.support(), function(item) {
     foreach([['A', 'B', 'C'], ['1', '2', '3']], function(goal) {
       var initState = item.initState;
       var goalString = _.includes(goal, 'A') ? 'rows' : 'columns';
       console.log(initState);
-      qa.writeSpatialQuestioner('spatialQuestionerOutput.csv',
+      qa.writeSpatialQuestioner('spatialQuestionerOutputMAP_version.csv',
 				['explicit', JSON.stringify(initState), goalString],
 				questioner('explicit', goal, initState));
-      qa.writeSpatialQuestioner('spatialQuestionerOutput.csv',
+      qa.writeSpatialQuestioner('spatialQuestionerOutputMAP_version.csv',
 				['pragmatic', JSON.stringify(initState), goalString],
 				questioner('pragmatic', goal, initState));
     });
   });
 };
 
-//writeOutQuestionerPredictions();
+writeOutQuestionerPredictions();
 
 var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
@@ -316,9 +288,7 @@ var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
   var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
 		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
-  condition(allRevealed(initState) && colRowExists(world) &&
-	    (initState['safe'].length + initState['unsafe'].length) < 9);
-//  condition(validate(initState, world) && (initState['safe'].length + initState['unsafe'].length) > 0 );
+  condition(colRowExists(world) && (initState['safe'].length + initState['unsafe'].length) < 9);
   return {world, initState};
 });
 
@@ -340,4 +310,4 @@ var writeOutAnswererPredictions= function() {
   });
 };
 
-writeOutAnswererPredictions();
+//writeOutAnswererPredictions();
