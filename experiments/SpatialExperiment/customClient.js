@@ -75,6 +75,7 @@ var customEvents = function(game) {
   // Process responses to 'give additional info?' question
   $('#rows_button').click({game: game, response: 'rows'}, goalQueryResponse);
   $('#columns_button').click({game: game, response: 'columns'}, goalQueryResponse);
+  $('#not_sure_button').click({game: game, response: 'not sure'}, goalQueryResponse);  
   $('#yes_button').click({game: game, response: 'yes'}, giveAdditionalInfo);
   $('#no_button').click({game: game, response: 'no'}, giveAdditionalInfo);
   $('#safe_button').click({game: game, response: 'yes, it is safe'}, initialResponse);
@@ -150,8 +151,7 @@ var customEvents = function(game) {
     var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[askedAboutCell] == 'x' ||
 		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[askedAboutCell] == 'o' ||
 		    cellStatus == 'safe' && game.fullMap[additionalCell] == 'x' ||
-		    cellStatus == 'unsafe' && game.fullMap[additionalCell] == 'o');
-    
+		    cellStatus == 'not  safe' && game.fullMap[additionalCell] == 'o');
     if(!alreadyRev && !falseAns) {
       game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
 		       .concat(cells).join('.'));
@@ -236,6 +236,7 @@ var customEvents = function(game) {
     } else {
       game.askedAboutCell = data.code;
       game.questionNum += 1;
+      UI.fadeInQuestionMark(data.code);
       UI.reset(game, 'questionReceived');
       if(data.sender == 'human') {
 	game.bot.answer(data.code);

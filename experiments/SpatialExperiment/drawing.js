@@ -111,6 +111,11 @@ function initGrid(game) {
 		       'background-size :cover; z-index: 2; position: absolute')
 	  });
 	div.append(button);
+	var questionMark = $('<div/>').addClass('pressable')
+	      .attr({'id' : 'questionMark' + rowName + colName,
+		     'style' : ('background: url("../../images/unpressedCell-question.png") no-repeat;' +
+				'display:none;background-size :cover; z-index: 2; position: absolute')});
+	div.append(questionMark);
       }
 
       $("#context").append(div);
@@ -123,6 +128,15 @@ function initGrid(game) {
 
 function fadeInSelections(cells){
   _.forEach(cells, loc => {
+    // Delete question marks since these are now impossible to ask about again...
+    $('#questionMark' + loc)
+      .css({opacity:1})
+      .css({opacity: 0, 'transition': 'opacity 1s linear'})
+      .remove();
+    // $('#button-' + loc)
+    //   .css({opacity:1})
+    //   .css({opacity: 0, 'transition': 'opacity 0.5s linear'});
+    
     // Move state to front
     $('#underlying-state-' + loc)
       .css({'z-index': 3});
@@ -134,12 +148,15 @@ function fadeInSelections(cells){
   });
 }
 
-
-function fadeOutSelections(cells) {
-  _.forEach(cells, (name) => {
-    var cellElement = $('#underlying-state-' + name);
-    cellElement.css({'transition' : 'opacity 1s', opacity: 0.2});
-  });
+function fadeInQuestionMark(cell){
+  // Move state to front
+  $('#questionMark' + cell)
+    .css({'z-index': 3});
+  // Fade in
+  $('#questionMark' + cell)
+    .css({opacity: 0, 'pointer-events' : 'none'})
+    .show()
+    .css({opacity: 1, 'transition': 'opacity 1s linear'});
 }
 
 function drawScreen (game) {
@@ -197,13 +214,13 @@ function reset (game, pointInTime) {
       $('#helperchatarea').hide();          
       $('#instructs')
 	.append("<p>Your goal this round is... " + style_tag + "COMPLETE ANY " + goal_tag + "</b>.</p>" +
-		"<p> Your partner wants to help you avoid the bombs, so ask them a question!");
+		"<p> Ask your partner a question to avoid the bombs!");
     } else if(game.my_role === game.playerRoleNames.role2) {
       $('#leaderchatarea').hide();
       $('#helperchatarea').show();
       $('#instructs')
-	.append("<p>After your partner types their question, check your bomb map and help them!</p>" 
-		+ "<p>Remember they are either trying to complete a row or a column.</p>");
+	.append("<p>After your partner types their question</p>" +
+		"<p>check your bomb map and help them!</p>");
     }
     drawScreen(game);
   } else {
@@ -214,7 +231,7 @@ function reset (game, pointInTime) {
 module.exports = {
   confetti,
   drawScreen,
-  fadeOutSelections,
+  fadeInQuestionMark,
   fadeInSelections,
   reset
 };

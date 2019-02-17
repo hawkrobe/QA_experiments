@@ -46,6 +46,20 @@ class ServerRefGame extends ServerGame {
   }
 
   customEvents (socket) {
+
+    
+    socket.game.sendAnswerMessage = function(askedAbout, other, fullMap, data) {
+      let msg = (fullMap[askedAbout] == 'safe' ? 'Yes, it is safe' :
+		 'No, it is not safe');
+      msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : '';
+
+      let packet = ["answer", msg, 5000, 'bot', 'helper', askedAbout].join('.');
+      packet += other ? '.' + other.split('_')[0] : '';
+      setTimeout(function() {
+	this.onMessage(socket, packet);
+      }.bind(this), 3000);
+    }.bind(this);
+    
     // Pulls out requested data from json and returns as message
     socket.on('getQuestion', function(data){
       var state = {'safe' : _.clone(data.state['safe']).sort(),
@@ -74,6 +88,7 @@ class ServerRefGame extends ServerGame {
 	fullMap: JSON.stringify(fullMap),
 	state: JSON.stringify(state)
       };
+
       const successCallback = function(body) {
 	const selections = getBestVal(body)['answer'].split(',');
 	const askedAbout = _.find(selections, v => {
@@ -82,22 +97,14 @@ class ServerRefGame extends ServerGame {
 	const other = _.find(selections, v => {
 	  return v.split('_')[0] != data.cellAskedAbout;
 	});
+	socket.game.sendAnswerMessage(askedAbout.split('_')[0], other, fullMap, data);
+      };
 
-	let msg = (fullMap[data.cellAskedAbout] == 'safe' ?
-		   'Yes, ' + data.cellAskedAbout + ' is safe' :
-		   'No, ' + data.cellAskedAbout + ' is not safe');
-	msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : ''
-	let packet = ["answer", msg, 5000, 'bot', 'helper',
-		      askedAbout.split('_')[0]].join('.');
-	packet += other ? '.' + other.split('_')[0] : '';
-	setTimeout(function() {
-	  this.onMessage(socket, packet);
-	}.bind(this), 3000);
-      }.bind(this);
+      // if comes back empty, just answer literally
       const failCallback = function() {
-	this.onMessage(socket, ["answer", 'oops', 5000, 'bot', 'helper'].join('.'));
-      }.bind(this);
-
+	socket.game.sendAnswerMessage(data.cellAskedAbout, '', fullMap, data);
+      };
+      
       // Now query database
       getAnswerBotResponseFromDB(postData, successCallback, failCallback);
     }.bind(this));
@@ -122,12 +129,18 @@ class ServerRefGame extends ServerGame {
   
   
   sampleMapSequence () {
-    var types = _.shuffle([//'catch', 'catch', 'pragmatic', 'pragmatic',
-//			   'blocked', 'blocked', 'empty', 'empty',
-      'random', 'random', 'random', 'random',
-      'random', 'random', 'random', 'random']);
+    // Everyone starts with a couple catch trials for practice
     var otherRole = this.firstRole == 'leader' ? 'helper' : 'leader';
-    return _.map(types, (type, i) => {
+    var initTypes = ['catch', 'catch', 'random', 'random', 'random', 'random'];
+    var restTypes = ['random', 'random', 'random', 'random', 
+		     'pragmatic', 'blocked', 'empty'];
+    var restAsLeader = _.shuffle(restTypes);
+    var restAsHelper = _.shuffle(restTypes);    
+    var result = initTypes.concat(_.flattenDeep(_.reduce(restAsLeader, (arr, v, i) => {
+      return arr.concat(v, restAsHelper[i]);
+    }, [])));
+    console.log (result)
+    return _.map(result, (type, i) => {
       return {trialType: type,
 	      goal: _.sample(['rows', 'columns']),
 	      role: i % 2 == 0 ? this.firstRole : otherRole};
