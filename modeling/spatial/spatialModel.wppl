@@ -174,7 +174,7 @@ var getPosteriorProb = dp.cache(function(type, question, answer, goal, gridState
 }, 1000);
 
 var Qrationality = 1000;
-var Arationality = 1000;
+var Arationality = 10;
 
 // This takes subset of worlds where the 'known' revealed cells
 // are true (i.e. when people start with a map, or after revealing more)
@@ -207,8 +207,7 @@ var questioner = dp.cache(function(type, goal, gridState) {
       });
       return exp;
     });
-    var rationality = type == 'pragmatic' ? QPragRationality : QExpRationality;
-    factor(utility.toFixed(8) * rationality);
+    factor(utility.toFixed(8) * Qrationality);
     return question;
   });
 }, 1000);
@@ -248,14 +247,23 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   }
 }, 1000);
 
+// THIS EXAMPLE ILLUSTRATES WHETHER ANSWERER HAS 'SUFFICIENCY' property (i.e. stops with B3 info instead of TMI)
+var example = {
+  world: {"A1":"safe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+  initState: {"safe":["B1","B2"],"unsafe":[]}
+};
+
+console.log(answerer('pragmatic', 'is_B3_safe?', example.world,example.initState));
+console.log(questioner('explicit', ['1', '2', '3'], example.initState));
+
+// IN SOME VERSIONS OF THE MODEL, THE ANSWERER PREFERS REVEALING C1 WHEN ASKED ABOUT B3, which is weird...
 // var example = {
 //   world: {"A1":"unsafe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"unsafe","C2":"safe","C3":"unsafe"},
 //   initState: {"safe":["B1","C2"],"unsafe":['C3']}
 // };
 
 // console.log(questioner('explicit', ['1', '2', '3'], example.initState));
-// console.log(questioner('explicit', ['A', 'B', 'C'], example.initState));
-// console.log(answerer('pragmatic', 'is_A1_safe?', example.world, example.initState));
+//console.log(answerer('pragmatic', 'is_B3_safe?', example.world, example.initState));
 // console.log(answerer('pragmatic', 'is_A2_safe?', example.world, example.initState));
 // console.log(answerer('pragmatic', 'is_C1_safe?', example.world, example.initState));
 // console.log(questioner('pragmatic', ['1', '2', '3'], example.initState));
@@ -270,13 +278,11 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
 
 // console.log(answerer('pragmatic', 'is_B3_safe?', example.world, example.initState));
 
-var example = {
-  world: {"A1":"safe","A2":"unsafe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"unsafe","C3":"safe"},
-  initState: {"safe":["A1"],"unsafe":[]}
-};
-console.log(answerer('pragmatic', 'is_A2_safe?', example.world, example.initState));
-// console.log(questioner('explicit', ['A', 'B', 'C'], example.initState));
-// console.log(questioner('explicit', ['1', '2', '3'], example.initState));
+// var example = {
+//   world: {"A1":"safe","A2":"unsafe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"unsafe","C3":"safe"},
+//   initState: {"safe":["A1"],"unsafe":[]}
+// };
+// console.log(answerer('pragmatic', 'is_A2_safe?', example.world, example.initState));
 // console.log(questioner('pragmatic', ['A', 'B', 'C'], example.initState));
 // console.log(questioner('pragmatic', ['1', '2', '3'], example.initState));
 
@@ -318,7 +324,7 @@ var writeOutQuestionerPredictions= function() {
   });
 };
 
-writeOutQuestionerPredictions();
+//writeOutQuestionerPredictions();
 
 var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
   var world = sample(worldPrior);
