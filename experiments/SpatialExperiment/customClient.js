@@ -109,7 +109,7 @@ var customEvents = function(game) {
       if(row != '' && col != '') {
 	game.socket.send(msg);
 	game.sentTyping = false;
-	$('#question_button').attr('disabled', 'disabled');
+	$('#leaderchatarea').hide();
       }
     } else {
       $('#leaderchatarea').append($('<p/>').text('hmmm, you already know that... Pick another question!').attr('id', 'errormsg'));
@@ -127,7 +127,7 @@ var customEvents = function(game) {
       // replace button with underlying state
       cell.siblings().show().css({'opacity' : 1});
       cell.remove();
-      return game.checkGrid();
+      game.checkGrid();
     } else {
       console.log('tried to reveal non-existant cell...');
     }
@@ -156,8 +156,9 @@ var customEvents = function(game) {
 		    cellStatus == 'safe' && game.fullMap[additionalCell] == 'x' ||
 		    cellStatus == 'not  safe' && game.fullMap[additionalCell] == 'o');
     if(!alreadyRev && !falseAns) {
+      var fullMap = _.mapValues(game.fullMap, v => v == 'o' ? 'safe' : 'unsafe');
       game.socket.send(['answer', msg, timeElapsed, 'human',
-			JSON.stringify(game.gridState)].concat(cells).join('.'));
+			JSON.stringify(game.gridState), JSON.stringify(fullMap)].concat(cells).join('.'));
     } else {
       var errorText = alreadyRev ? 'hmmm, the leader already knows that.' : "hmmm, that's just not true!";
       $('#helperchatarea').append($('<p/>').text(errorText + ' Pick another answer!').attr('id', 'errormsg'));
@@ -183,22 +184,22 @@ var customEvents = function(game) {
     var completeRow = _.map(['A','B','C'], rowName => {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
-    
-    if(_.includes(goodness, 'x')) {
-      console.log('fail');
-      game.socket.emit('endRound', {outcome: 'fail'});
-      $('.pressable').off('click');
-      return true;
-    } else if (goal == 'rows' && _.some(completeRow, row => row.length == 3) ||
-	       goal == 'columns' && _.some(completeCol, col => col.length == 3)) {
-      console.log('success');
-      game.socket.emit('endRound', {outcome: 'success'});
-      $('.pressable').off('click');
-      return true;
-    } else {
-      return false;
+
+    if(!game.roundOver) {
+      if(_.includes(goodness, 'x')) {
+	console.log('fail');
+	game.socket.emit('endRound', {outcome: 'fail'});
+	$('.pressable').off('click');
+	game.roundOver = true;
+      } else if (goal == 'rows' && _.some(completeRow, row => row.length == 3) ||
+		 goal == 'columns' && _.some(completeCol, col => col.length == 3)) {
+	console.log('success');
+	game.socket.emit('endRound', {outcome: 'success'});
+	$('.pressable').off('click');
+	game.roundOver = true;
+      }
     }
-  }
+  };
   
   game.socket.on('chatMessage', function(data){
     var partnerRole = _.without(_.values(game.playerRoleNames), game.my_role);
@@ -231,10 +232,14 @@ var customEvents = function(game) {
 	var roundOver = [];
 	_.forEach(game.selections, id =>  {
 	  if(game.fullMap[id] == 'o')
-	    roundOver.push(game.revealCell($('#button-' + id)));
+	    game.revealCell($('#button-' + id));
 	});
-	if(data.sender == 'human' && !_.includes(roundOver, true)) {
-	  game.bot.ask(data.code);
+	if(!game.roundOver) {
+	  if(data.sender == 'human') {
+	    game.bot.ask(data.code);
+	  } else {
+	    $('#leaderchatarea').show();
+	  }
 	}
       }, 1000);
     } else if (data.type == 'question') {
