@@ -51,7 +51,7 @@ class ServerRefGame extends ServerGame {
       let msg = (fullMap[cellAskedAbout] == 'safe' ? 'Yes, it is safe' :
 		 'No, it is not safe');
       msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : '';
-      let packet = ["answer", msg, 5000, 'bot',
+      let packet = ["answer", msg, 5000, 'bot', JSON.stringify(fullMap),
 		    JSON.stringify(state), cellAskedAbout].join('.');
       packet += other ? '.' + other.split('_')[0] : '';
       setTimeout(function() {
@@ -138,7 +138,6 @@ class ServerRefGame extends ServerGame {
     var result = initTypes.concat(_.flattenDeep(_.reduce(restAsLeader, (arr, v, i) => {
       return arr.concat(v, restAsHelper[i]);
     }, [])));
-    console.log (result)
     return _.map(result, (type, i) => {
       return {trialType: type,
 	      goal: _.sample(['rows', 'columns']),
@@ -205,7 +204,7 @@ class ServerRefGame extends ServerGame {
 	  user: client.userid,
 	  msg: message_parts[1],
 	  sender: message_parts[3],
-	  code: message_parts.slice(5),
+	  code: message_parts.slice(6),
 	  type: 'answer'	  
 	});
       });
@@ -252,11 +251,11 @@ class ServerRefGame extends ServerGame {
       return _.extend(
 	commonOutput(client, message_data), {
 	  sender: message_data[3],
-	  underlyingWorld: client.game.currStim.underlying,
+	  underlyingWorld: message_data[5],
 	  timeFromMessage: message_data[2],
 	  gridState: message_data[4],	
-	  cellAskedAbout: message_data[5],
-	  answer : message_data.slice(5).sort()
+	  cellAskedAbout: message_data[6],
+	  answer : message_data.slice(6).sort()
 	});
     };
 
