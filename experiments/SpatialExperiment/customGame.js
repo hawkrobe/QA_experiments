@@ -43,17 +43,16 @@ class ServerRefGame extends ServerGame {
     this.numRounds = config.numRounds;
     this.firstRole = _.sample(['helper', 'leader']);
     this.trialList = this.makeTrialList(this.firstRole);
+    this.questionNum = 0;
   }
 
   customEvents (socket) {
-
-    
-    socket.game.sendAnswerMessage = function(askedAbout, other, fullMap, data) {
-      let msg = (fullMap[askedAbout] == 'safe' ? 'Yes, it is safe' :
+    socket.game.sendAnswerMsg = function(cellAskedAbout, other, fullMap, state, data) {
+      let msg = (fullMap[cellAskedAbout] == 'safe' ? 'Yes, it is safe' :
 		 'No, it is not safe');
       msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : '';
-
-      let packet = ["answer", msg, 5000, 'bot', 'helper', askedAbout].join('.');
+      let packet = ["answer", msg, 5000, 'bot',
+		    JSON.stringify(state), cellAskedAbout].join('.');
       packet += other ? '.' + other.split('_')[0] : '';
       setTimeout(function() {
 	this.onMessage(socket, packet);
@@ -64,6 +63,7 @@ class ServerRefGame extends ServerGame {
     socket.on('getQuestion', function(data){
       var state = {'safe' : _.clone(data.state['safe']).sort(),
 		   'unsafe' : _.clone(data.state['unsafe']).sort()};
+      
       var possibilities = _.filter(questionsFromModel, {
 	initState: JSON.stringify(state),
 	goal: data.goal,
@@ -72,7 +72,8 @@ class ServerRefGame extends ServerGame {
 
       var code = getBestVal(possibilities)['question'];
       setTimeout(function() {
-	this.onMessage(socket, ["question", code, 5000, 'bot', 'leader'].join('.'));
+	this.onMessage(socket, ["question", code, 5000, 'bot',
+				JSON.stringify(state)].join('.'));
       }.bind(this), 3000);
     }.bind(this));
 
@@ -81,6 +82,7 @@ class ServerRefGame extends ServerGame {
       console.log('bot getting answer...');
       const state = {'safe' : _.clone(data.state['safe']).sort(),
 		     'unsafe' : _.clone(data.state['unsafe']).sort()};
+      
       const fullMap = _.mapValues(data.fullMap, v => v == 'o' ? 'safe' : 'unsafe');
       const postData = {
 	dbname: 'QA', colname: 'answererBotResponses',
@@ -91,18 +93,15 @@ class ServerRefGame extends ServerGame {
 
       const successCallback = function(body) {
 	const selections = getBestVal(body)['answer'].split(',');
-	const askedAbout = _.find(selections, v => {
-	  return v.split('_')[0] == data.cellAskedAbout;
-	});
 	const other = _.find(selections, v => {
 	  return v.split('_')[0] != data.cellAskedAbout;
 	});
-	socket.game.sendAnswerMessage(askedAbout.split('_')[0], other, fullMap, data);
+	socket.game.sendAnswerMsg(data.cellAskedAbout, other, fullMap, state, data);
       };
 
       // if comes back empty, just answer literally
       const failCallback = function() {
-	socket.game.sendAnswerMessage(data.cellAskedAbout, '', fullMap, data);
+	socket.game.sendAnswerMsg(data.cellAskedAbout, '', fullMap, state, data);
       };
       
       // Now query database
@@ -152,6 +151,7 @@ class ServerRefGame extends ServerGame {
     const gameMap = new GameMap(trialInfo);
     return {underlying: gameMap['underlying'],
 	    initRevealed: gameMap['initRevealed'],
+	    trialType: trialInfo.trialType,
 	    goal: trialInfo.goal,
 	    role: trialInfo.role};
   }
@@ -193,7 +193,7 @@ class ServerRefGame extends ServerGame {
 	  msg: msg,
 	  code: code,
 	  sender: message_parts[3],
-	  source_role: message_parts[4]
+	  type: 'question'
 	});
       });
       break;
@@ -205,14 +205,13 @@ class ServerRefGame extends ServerGame {
 	  user: client.userid,
 	  msg: message_parts[1],
 	  sender: message_parts[3],
-	  source_role: message_parts[4],
-	  code: message_parts.slice(5)
+	  code: message_parts.slice(5),
+	  type: 'answer'	  
 	});
       });
       break;
 
     case 'goalInference' :
-      console.log(message_parts.slice(1));
       break;
 
     case 'exitSurvey' :
@@ -234,9 +233,6 @@ class ServerRefGame extends ServerGame {
   */
   dataOutput () {
     function commonOutput (client, message_data) {
-      //var target = client.game.currStim.target;
-      //var distractor = target == 'g1' ? 'g0' : 'g1';
-      console.log(client.game.currStim);
       return {
 	iterationName: client.game.iterationName,
 	gameid: client.game.id,
@@ -244,29 +240,37 @@ class ServerRefGame extends ServerGame {
 	workerId: client.workerid,
 	assignmentId: client.assignmentid,
 	trialNum: client.game.roundNum,
-	trialType: client.game.currStim.currGoalType,
+	trialType: client.game.currStim.trialType,
 	questionNumber: client.game.questionNum,
-	// targetGoalSet: client.game.currStim.goalSets[target],
-	// distractorGoalSet: client.game.currStim.goalSets[distractor],
 	firstRole: client.game.firstRole
       };
     };
     
-    var revealOutput = function(client, message_data) {
+    var answerOutput = function(client, message_data) {
       var selections = message_data.slice(3);
       var allObjs = client.game.currStim.hiddenCards;
       return _.extend(
 	commonOutput(client, message_data), {
-	  sender: message_data[1],
+	  sender: message_data[3],
+	  underlyingWorld: client.game.currStim.underlying,
 	  timeFromMessage: message_data[2],
-	  revealedObjs : selections,
-	  numRevealed : selections.length,
-	  fullContext: JSON.stringify(_.map(allObjs, v => {
-	    return _.omit(v, ['rank', 'suit', 'url']);
-	  }))
+	  gridState: message_data[4],	
+	  cellAskedAbout: message_data[5],
+	  answer : message_data.slice(5).sort()
 	});
     };
-    
+
+    var questionOutput = function(client, message_data) {
+      return _.extend(
+	commonOutput(client, message_data), {
+	  question: message_data[1],
+	  sender: message_data[3],
+	  gridState: message_data[4],	
+	  timeFromMessage: message_data[2],
+	  goal: client.game.currStim.goal
+	});
+    };
+
 
     var exitSurveyOutput = function(client, message_data) {
       var subjInfo = JSON.parse(message_data.slice(1));
@@ -277,19 +281,20 @@ class ServerRefGame extends ServerGame {
     };
     
 
-    var messageOutput = function(client, message_data) {
+    var goalInferenceOutput = function(client, message_data) {
       return _.extend(
 	commonOutput(client, message_data), {
-	  cardAskedAbout: message_data[1],
-	  sender: message_data[4],
-	  timeFromRoundStart: message_data[3]
+	  cellAskedAbout: message_data[1],
+	  goalResponse: message_data[2],
+	  gridState: message_data[3]	  
 	}
       );
     };
 
     return {
-      'chatMessage' : messageOutput,
-      'reveal' : revealOutput,
+      'question' : questionOutput,
+      'answer' : answerOutput,
+      'goalInference' : goalInferenceOutput, 
       'exitSurvey' : exitSurveyOutput
     };
   }

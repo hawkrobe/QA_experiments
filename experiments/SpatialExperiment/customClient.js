@@ -64,7 +64,9 @@ function giveAdditionalInfo(event) {
 }
 
 function goalQueryResponse(event) {
-  event.data.game.socket.send(['goalInference', event.data.response].join(','));
+  var game = event.data.game;
+  game.socket.send(['goalInference', game.cellAskedAbout, event.data.response,
+		    JSON.stringify(game.gridState)].join('.'));
   $('#goal_query').hide();
   $('#safeness_choice').show().css({display: 'inline-block'});
   $('#safe_button').css({opacity : 1}).removeAttr('disabled');
@@ -96,7 +98,8 @@ var customEvents = function(game) {
     var col = $('#chatbox_col').val();
     var code =  row + col;
     var timeElapsed = Date.now() - game.roundStartTime;
-    var msg = ['question', code, timeElapsed, 'human', game.my_role].join('.');
+    var msg = ['question', code, timeElapsed, 'human',
+	       JSON.stringify(game.gridState)].join('.');
     $("#chatbox_row").val('');
     $("#chatbox_col").val('');
     var alreadyRev = _.includes(game.gridState['safe']
@@ -132,13 +135,13 @@ var customEvents = function(game) {
   
   game.sendAnswer = function() {
     var msg = game.optionSelected;
-    var askedAboutCell = game.askedAboutCell; 
+    var cellAskedAbout = game.cellAskedAbout; 
     var additionalCell = ($('#helper_row option:selected').text() +
 			  $('#helper_col option:selected').text());
     var cellStatus = $('#helper_safe option:selected').text();
 
-    var cells = (additionalCell == '' ? [askedAboutCell] :
-		 [askedAboutCell, additionalCell]);
+    var cells = (additionalCell == '' ? [cellAskedAbout] :
+		 [cellAskedAbout, additionalCell]);
     var timeElapsed = Date.now() - game.roundStartTime;
 
     if(additionalCell != '') {
@@ -148,13 +151,13 @@ var customEvents = function(game) {
     $('#helper_col').val('');
     $('#helper_safe').val('');
     var alreadyRev = _.includes(game.gridState['safe'].concat(game.gridState['unsafe']), additionalCell);
-    var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[askedAboutCell] == 'x' ||
-		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[askedAboutCell] == 'o' ||
+    var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[cellAskedAbout] == 'x' ||
+		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[cellAskedAbout] == 'o' ||
 		    cellStatus == 'safe' && game.fullMap[additionalCell] == 'x' ||
 		    cellStatus == 'not  safe' && game.fullMap[additionalCell] == 'o');
     if(!alreadyRev && !falseAns) {
-      game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
-		       .concat(cells).join('.'));
+      game.socket.send(['answer', msg, timeElapsed, 'human',
+			JSON.stringify(game.gridState)].concat(cells).join('.'));
     } else {
       var errorText = alreadyRev ? 'hmmm, the leader already knows that.' : "hmmm, that's just not true!";
       $('#helperchatarea').append($('<p/>').text(errorText + ' Pick another answer!').attr('id', 'errormsg'));
@@ -198,8 +201,9 @@ var customEvents = function(game) {
   }
   
   game.socket.on('chatMessage', function(data){
+    var partnerRole = _.without(_.values(game.playerRoleNames), game.my_role);
     var source = (data.sender == 'human' ? 'You' :
-		  data.sender == "bot" ? data.source_role :
+		  data.sender == "bot" ? partnerRole :
 		  console.log('unknown source'));
     var color = source === "You" ? "#363636" : "#707070";    
 
@@ -216,7 +220,7 @@ var customEvents = function(game) {
       }, 800);
     
     // bar responses until speaker has uttered at least one message (and vice versa)
-    if(data.source_role == "helper"){
+    if(data.type == "answer"){
       game.selections = data.code;
       UI.reset(game, 'answerReceived');
       updateGridState(game);
@@ -233,14 +237,16 @@ var customEvents = function(game) {
 	  game.bot.ask(data.code);
 	}
       }, 1000);
-    } else {
-      game.askedAboutCell = data.code;
+    } else if (data.type == 'question') {
+      game.cellAskedAbout = data.code;
       game.questionNum += 1;
       UI.fadeInQuestionMark(data.code);
       UI.reset(game, 'questionReceived');
       if(data.sender == 'human') {
 	game.bot.answer(data.code);
       }
+    } else {
+      console.log('unknown chat message type');
     }
   });
 
