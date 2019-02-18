@@ -1,8 +1,8 @@
 {
   "email" : "rxdh@stanford.edu",
   "projectName" : "QA",
-  "experimentName" : "cards",
-  "iterationName" : "single_player_sample",
+  "experimentName" : "spatial",
+  "iterationName" : "testing",
   "anonymizeCSV" : true,
   "bonusAmt" : 5, 
   "dataStore" : ["csv", "mongo"],
@@ -11,7 +11,7 @@
     "role1" : "leader",
     "role2" : "helper"
   },
-  "numRounds" : 8,
+  "numRounds" : 20,
   "numHorizontalCells" : 4,
   "numVerticalCells" : 4,
   "cellDimensions" : {
