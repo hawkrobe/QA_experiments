@@ -102,15 +102,18 @@ var makeTruthfulAnswerPrior = dp.cache(function(question, trueWorld, gridState) 
     return v.length == 1 ? 2/(1+validAnswers.length) : 1/(1+validAnswers.length);
   }, validAnswers);
   return Categorical({vs: validAnswers, ps : ps});
-}, 1000);
+});
 
 //  ------
 // | QUDs |
 //  ------
 
-var qudPrior = function(){
-  var type = flip() ? 'rows' : 'cols';
-  return type == 'cols' ? cols : rows;
+var superQudPrior = function(){
+  return flip() ? rows : cols;
+};
+
+var subQudPrior = function(sup){
+  return uniformDraw(sup);
 };
 
 var QUDPosteriorFromMeaning = function(question) {
@@ -122,11 +125,16 @@ var QUDPosteriorFromMeaning = function(question) {
 
 var QUDPosteriorFromInference = dp.cache(function(question, gridState){
   return Infer({method: 'enumerate'}, function() {
-    var qudName = qudPrior();
-    observe(questioner('explicit', qudName, gridState), question);
-    return qudName;
+    // what if questioner acting w/ super
+    var superQudName = superQudPrior();
+    observe(questioner('explicit', superQudName, gridState), question);    
+
+    // what if questioner acting w/ sub?
+    var subQudName = subQudPrior(superQudName);
+    observe(questioner('explicit', subQudName, gridState), question);
+    return [superQudName].concat(subQudName);
   });
-}, 1000);
+});
 
 //  -------
 // | Models |
@@ -144,7 +152,7 @@ var spatialNameToQUD = function(qudName){
   if(qudName == 'identity') 
     return function(w) {return w;};
   else if(qudName.length > 1) {
-    return function(w) {map(function(qud) { return spatialLocationQUD(qud)(w);}, qudName)};
+    return function(w) {return map(function(qud) {return spatialLocationQUD(qud)(w)}, qudName)};
   } else {
     return spatialLocationQUD(qudName);
   }
@@ -152,12 +160,12 @@ var spatialNameToQUD = function(qudName){
 
 var getPriorProb = dp.cache(function(goal, gridState) {
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-  var qud = spatialNameToQUD(goal);                                              
+  var qud = spatialNameToQUD(goal);  
   return Infer({method: 'enumerate'}, function() {
     var world = sample(consistentWorldPrior);
     return qud(world);
   });
-}, 10000);
+});
 
 // Note that in principle we should be conditioning on hearing back from
 // answerer here, but in this case, they are equivalent
@@ -171,10 +179,10 @@ var getPosteriorProb = dp.cache(function(type, question, answer, goal, gridState
     observe(A, answer);
     return qud(world);
   });
-}, 1000);
+});
 
-var Qrationality = 1000;
-var Arationality = 10;
+var Qrationality = 10;
+var Arationality = 20;
 
 // This takes subset of worlds where the 'known' revealed cells
 // are true (i.e. when people start with a map, or after revealing more)
@@ -183,7 +191,7 @@ var makeConsistentWorldPrior = dp.cache(function(gridState) {
     return (all(function(v) {return w[v] == 'safe';}, gridState['safe']) &&
 	    all(function(v) {return w[v] == 'unsafe';}, gridState['unsafe']));
   }, worldPrior.support())});
-}, 1000);
+});
 
 var makeValidQuestionPrior = dp.cache(function(gridState) {
   return Categorical({vs: filter(function(q) {
@@ -200,7 +208,7 @@ var questioner = dp.cache(function(type, goal, gridState) {
     var trueGoal = goal;    
     var utility = expectation(consistentWorldPrior, function(trueWorld) {
       var possibleAnswer = answerer(type, question, trueWorld, gridState);
-      var exp =  expectation(possibleAnswer, function(answer){
+      var exp = expectation(possibleAnswer, function(answer){
 	var priorProb = getPriorProb(trueGoal, gridState);
 	var posteriorProb = getPosteriorProb(type, question, answer, trueGoal, gridState);
 	return KL(posteriorProb, priorProb);
@@ -210,7 +218,7 @@ var questioner = dp.cache(function(type, goal, gridState) {
     factor(utility.toFixed(8) * Qrationality);
     return question;
   });
-}, 1000);
+});
 
 var interpreter = dp.cache(function(answer, gridState){
   var consistentWorldPrior = makeConsistentWorldPrior(gridState);
@@ -220,7 +228,7 @@ var interpreter = dp.cache(function(answer, gridState){
     condition(answerMeaning(world));
     return world;
   });
-}, 1000);
+});
   
 var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
@@ -235,35 +243,56 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   } else {
     return Infer({method: 'enumerate'}, function(){
       var qudName = sample(qudPosterior);
-      var localQUD = spatialNameToQUD(qudName);
       var answer = sample(truthfulAnswerPrior);
       var possibleWorlds = interpreter(answer, gridState);
-      var newUtility = expectation(possibleWorlds, function(w) {
-	return _.isEqual(localQUD(w), localQUD(trueWorld));
-      });
-      factor(Arationality * newUtility );      
+
+      var newUtility = _.sum(map(function(qud) {
+	var localQUD = spatialNameToQUD(qud);
+	return expectation(possibleWorlds, function(w) {
+	  return _.isEqual(localQUD(w), localQUD(trueWorld));
+	});
+      }, qudName));
+      
+      factor(Arationality * Math.log(newUtility) );      
       return answer;
     });
   }
-}, 1000);
+});
+
+// var example = {
+//   world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"unsafe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+//   initState: {"safe":["B3","C1","C2"],"unsafe":[]}
+// }
+
+// console.log(answerer('pragmatic', 'is_A1_safe?', example.world,example.initState));
+//console.log(questioner('pragmatic', ['1', '2', '3'],example.initState));
+
+// THIS IS WHY YOU CAN'T JUST USE `MAP` QUD (i.e. 'which rows...')
+// We want it to go for the shortest path, i.e. completing row C...
+// var example = {
+//   world: {"A1":"safe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+//   initState: {"safe":["C2"],"unsafe":[]}
+// }
+
+//console.log(answerer('pragmatic', 'is_C1_safe?', example.world,example.initState));
+//console.log(questioner('pragmatic', ['1', '2', '3'],example.initState));
+
 
 // THIS EXAMPLE ILLUSTRATES WHETHER ANSWERER HAS 'SUFFICIENCY' property (i.e. stops with B3 info instead of TMI)
-var example = {
-  world: {"A1":"safe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
-  initState: {"safe":["B1","B2"],"unsafe":[]}
-};
+// var example = {
+//   world: {"A1":"safe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+//   initState: {"safe":["B1","B2"],"unsafe":[]}
+// };
 
-console.log(answerer('pragmatic', 'is_B3_safe?', example.world,example.initState));
-console.log(questioner('explicit', ['1', '2', '3'], example.initState));
+// console.log(answerer('pragmatic', 'is_B3_safe?', example.world,example.initState));
 
-// IN SOME VERSIONS OF THE MODEL, THE ANSWERER PREFERS REVEALING C1 WHEN ASKED ABOUT B3, which is weird...
+// In SOME VERSIONS OF THE MODEL, THE ANSWERER PREFERS REVEALING C1 WHEN ASKED ABOUT B3, which is weird...
 // var example = {
 //   world: {"A1":"unsafe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"unsafe","C2":"safe","C3":"unsafe"},
 //   initState: {"safe":["B1","C2"],"unsafe":['C3']}
 // };
 
-// console.log(questioner('explicit', ['1', '2', '3'], example.initState));
-//console.log(answerer('pragmatic', 'is_B3_safe?', example.world, example.initState));
+// console.log(answerer('pragmatic', 'is_B3_safe?', example.world, example.initState));
 // console.log(answerer('pragmatic', 'is_A2_safe?', example.world, example.initState));
 // console.log(answerer('pragmatic', 'is_C1_safe?', example.world, example.initState));
 // console.log(questioner('pragmatic', ['1', '2', '3'], example.initState));
