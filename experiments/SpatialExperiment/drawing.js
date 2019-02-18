@@ -175,7 +175,6 @@ function drawScreen (game) {
 
 function reset (game, pointInTime) {
   if(pointInTime == 'answerReceived') {
-    $('#question_button').removeAttr('disabled');
     $('#safeness_choice').hide();
     game.answerSent = true;
     game.questionSent = false;
@@ -185,6 +184,7 @@ function reset (game, pointInTime) {
     game.answerSent = false;
     game.questionSent = true;
   } else if (pointInTime == 'newRound') {
+    game.roundOver = false;
     $('#goal_query').hide();
     game.questionNum = 0;
     game.questionSent = false;
