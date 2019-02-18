@@ -4,7 +4,7 @@
   "experimentName" : "spatial",
   "iterationName" : "testing",
   "anonymizeCSV" : true,
-  "bonusAmt" : 5, 
+  "bonusAmt" : 3, 
   "dataStore" : ["csv", "mongo"],
   "playersThreshold" : 1,
   "playerRoleNames" : {
