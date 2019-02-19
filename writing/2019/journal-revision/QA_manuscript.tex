@@ -551,9 +551,13 @@ This asymmetry in question behavior given different goals provides $A_2$ informa
 
 \subsection{Discussion}
 
-In these case studies, we illustrated three empirical answerer-sensitivity effects that serve as desiderata for how our dialogue agent should interpret and respond to questions. They should be sensitive to the question utterance, the context, and the relationship between the questioner's goal and the utterance they produce to fulfill that goal.
+In these case studies, we examined three empirical answerer-sensitivity effects that serve as desiderata for how a dialogue agent ought to interpret and respond to questions. 
+They should be sensitive to the question utterance, the context, and the relationship between the questioner's goal and the utterance they produce to fulfill that goal.
 
-Our simple informative speaker $A_0$ was insensitive to all of these factors: it lacked a listener component that could induce any dependence on its partner's utterance. An informative answerer $A_1$ who also attempted to be relevant to the literal meaning of the question was sensitive to the question utterance but unable to adapt its responses to different contexts or give more or less literal answers to different questions. Finally, our most sophisticated answerer $A_2$, who inferred the questioner's underlying goals and attempted to be directly relevant to those goals, qualitatively captured all three effects.% in the same fashion \citeA{Clark79_IndirectSpeechActs} observed. %In the Appendix, we also show that only $A_2$ captures two additional answerer-sensitivity effects with similar characteristics from \citeA{GroenendijkStokhof84_SemanticsOfQuestions} and  \citeA{GibbsBryant08_OptimalRelevance}.
+A simple informative speaker $A_0$ was insensitive to all of these factors: it lacked a listener component that could induce any dependence on its partner's utterance. 
+An informative answerer $A_1$ who also attempted to be \emph{relevant} with respect to the meaning of the question was sensitive to the question utterance, but it was unable to adapt its responses to different contexts or give more or less literal answers to different questions. 
+Finally, a more sophisticated answerer $A_2$, who inferred the questioner's underlying goals and attempted to be directly relevant to those goals, qualitatively captured all three effects.
+% in the same fashion \citeA{Clark79_IndirectSpeechActs} observed. %In the Appendix, we also show that only $A_2$ captures two additional answerer-sensitivity effects with similar characteristics from \citeA{GroenendijkStokhof84_SemanticsOfQuestions} and  \citeA{GibbsBryant08_OptimalRelevance}.
 
 %can use these mechanisms to explain a range of sophisticated psycholinguistic phenomena, both qualitatively and quantitatively.
 
@@ -563,19 +567,31 @@ Our simple informative speaker $A_0$ was insensitive to all of these factors: it
 
 
 %Of course, making flexible post-hoc assumptions to capture phenomena inside our computational framework does not, by itself, provide a \emph{test} of our model. 
-The above case studies showcase the components of the modeling framework and how they explain prior experimental findings under a unified theoretical framework. 
-However, our framework also makes novel predictions that existing data cannot address.
-In the remainder of the paper, we present three behavioral experiments that provide a more rigorous evaluation and extension of our framework.
-These experiments fill three key gaps.
-First, while there is extensive experimental work on questioner pragmatics is scare.
+These case studies showcase the answerer models and demonstrate how social reasoning explains prior experimental findings under a unified formal framework. 
+However, our framework also generates novel predictions not addressed by existing experimental data.
+Most conspicuously, there is a relative lack of data on how people \emph{choose} questions in the same scenarios as our case studies, when the questioner knows her partner wants to be helpful but may not know exactly what goal she is pursing.
+We therefore designed a new experimental paradigm to probe questioner \emph{and} answerer behavior under such conditions.
+In the remainder of the paper, we present three behavioral experiments in this paradigm that extend and provide a more rigorous evaluation of both questioner and answerer models in our framework.
+
+\section{The Hidden Goal paradigm}
+
+\todo[inline]{Needs work}
+Popular paradigms for studying question-asking, such as \emph{Battleship} \cite{RotheEtAl16_NaturalLanguageQuestions} or \emph{20 questions} games, 
+Similar to the Twenty Questions task commonly used in developmental studies \cite{Siegler77_TwentyQuestions, NelsonDivjak___Meder14_GuessWho, RuggeriEtAl15_HierarchicalTwentyQs} this game creates a knowledge asymmetry between players in order to motivate question-asking. 
+Unlike that task, however, we withhold explicit information about the questioner's goal from the answerer. 
+This additional asymmetry, natural to real-world social situations, provides fertile ground for pragmatic reasoning and allows us to test the necessity of goal inference in our models. 
+
+First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
  directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
 To do so, we must collect data on which question a questioner prefers to ask given a particular goal. 
 Second, we must provide empirical evidence for the assumptions we make about internal model choices: for instance, the priors and spaces of alternative questions, answers, or goals in a particular scenario. 
 Finally, validate the predicted goal inference. 
 
+To satisfy these three requirements, we designed a real-time, multi-player reference game to simultaneously collect data on question-asking behavior \emph{and} answering behavior in interaction, carefully controlling or measuring priors and utterance sets. Since \citeA{Wittgenstein09_PhilosophicalInvestigations}, reference games have provided a simple but productive testbed for eliciting pragmatic behavior: one participant must choose an utterance to communicate the identity of a target object to their partner in a shared context. 
+
   %Our model, following \citeA{VanRooy03_QuestioningDecisionProblems}, however, suggests that the question itself is important in prompting a relevant answer, hence questioner behavior should be treated as a dependent variable.
 
-\section{Experiment 1: \\ }
+\section{Experiment 1: Conceptual knowledge and saliency}
 
 \begin{figure*}[t!]
 \begin{center}
@@ -589,29 +605,38 @@ Finally, validate the predicted goal inference.
 %%%
 
 
-To satisfy these three requirements, we designed a real-time, multi-player reference game to simultaneously collect data on question-asking behavior \emph{and} answering behavior in interaction, carefully controlling or measuring priors and utterance sets. Since \citeA{Wittgenstein09_PhilosophicalInvestigations}, reference games have provided a simple but productive testbed for eliciting pragmatic behavior: one participant must choose an utterance to communicate the identity of a target object to their partner in a shared context. We extend this basic setup to a two-stage Guessing Game using natural objects and scenes as targets. On each trial, four objects are hidden such that only one player -- the \emph{answerer} -- knows each object's true location. The other player -- the \emph{questioner} -- is privately assigned one of the objects to find and is allowed to ask one question to query their knowledgeable partner about its location. After hearing the answerer's response, the questioner makes a guess about the location of the target object, then both players receive feedback and advance to the next trial. 
+We extend this basic setup to a two-stage Guessing Game using natural objects and scenes as targets. On each trial, four objects are hidden such that only one player -- the \emph{answerer} -- knows each object's true location. The other player -- the \emph{questioner} -- is privately assigned one of the objects to find and is allowed to ask one question to query their knowledgeable partner about its location. After hearing the answerer's response, the questioner makes a guess about the location of the target object, then both players receive feedback and advance to the next trial. 
 
-The objects in context on a given trial belong to a conceptual hierarchy (see Fig. \ref{fig:hierarchyStructures} for several examples), introducing a family of indirect questions. For example, a questioner can ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all would be literally true of the Dalmatian. \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. As discussed in detail below, our models make qualitatively and quantitatively different predictions about (1) which of these levels the questioner will choose in different contexts and (2) how answerers will respond to underspecified questions like ``Where is the dog?'' when there are multiple dogs in context.
+The objects in context on a given trial belong to a conceptual hierarchy (see Fig. \ref{fig:hierarchyStructures} for several examples), introducing a family of indirect questions. 
+For example, a questioner can ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all would be literally true of the Dalmatian. \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. 
+As discussed in detail below, our models make qualitatively and quantitatively different predictions about (1) which of these levels the questioner will choose in different contexts and (2) how answerers will respond to underspecified questions like ``Where is the dog?'' when there are multiple dogs in context.
 
-Similar to the Twenty Questions task commonly used in developmental studies \cite{Siegler77_TwentyQuestions, NelsonDivjak___Meder14_GuessWho, RuggeriEtAl15_HierarchicalTwentyQs} this game creates a knowledge asymmetry between players in order to motivate question-asking. Unlike that task, however, we withhold explicit information about the questioner's goal from the answerer. This additional asymmetry, natural to real-world social situations, provides fertile ground for pragmatic reasoning and allows us to test the necessity of goal inference in our models. Critically, both question and answer are selected from restricted sets, such that the alternative set is fixed and in common ground for all participants. In addition to allowing us to avoid ad hoc assumptions about alternative sets when comparing our models, strategic restrictions can block the most obvious, direct question and thus allow for richer pragmatic behavior. In this task, we therefore examine \emph{which} indirect question the questioner will use, and how the answerer chooses to respond. 
+Critically, both question and answer are selected from restricted sets, such that the alternative set is fixed and in common ground for all participants. 
+In addition to allowing us to avoid ad hoc assumptions about alternative sets when comparing our models, strategic restrictions can block the most obvious, direct question and thus allow for richer pragmatic behavior. 
+In this task, we therefore examine \emph{which} indirect question the questioner will use, and how the answerer chooses to respond. 
 %These restrictions were motivated by one of the key features of indirect questioning: when the direct question (e.g. ``may I eat your food?'') is suppressed due to politeness, utterance length, complexity, or some other intervening factor, questioners instead rely on a pragmatic indirect question (e.g. ``are you going to eat that?''). 
 
 \subsection{Methods}
 \subsubsection{Participants} We recruited 199 participants from Amazon's Mechanical Turk to participate in this task. Fifty participants were excluded due to a server crash that terminated the task before completion. Two additional games were excluded because their participants were non-native English speakers. This left 74 unique completed games (148 participants).
 
-\subsubsection{Stimuli \& Procedure} A set of twelve items was created by crossing four conceptual domains (animals, plants, places, and artifacts) with three concept hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}) where our models make different predictions. Each item contains four objects (the leaves of the trees in Figure \ref{fig:hierarchyStructures}) which are hidden behind the four gates and may be assigned to the questioner as goal objects, as well as four question labels drawn from different levels in the concept hierarchy (highlighted in red in Figure \ref{fig:hierarchyStructures}) which the questioner may use to ask about their assigned goal\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \scriptsize\url{https://github.com/hawkrobe/Q\_and\_A/stimuliLabels.pdf}}.
+\subsubsection{Stimuli} 
+A set of twelve items was created by crossing four conceptual domains (animals, plants, places, and artifacts) with three concept hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}) where our models make different predictions. Each item contains four objects (the leaves of the trees in Figure \ref{fig:hierarchyStructures}) which are hidden behind the four gates and may be assigned to the questioner as goal objects, as well as four question labels drawn from different levels in the concept hierarchy (highlighted in red in Figure \ref{fig:hierarchyStructures}) which the questioner may use to ask about their assigned goal\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \scriptsize\url{https://github.com/hawkrobe/Q\_and\_A/stimuliLabels.pdf}}.
+
+\subsubsection{Procedure}
 
 The procedure was designed to accommodate real-time player-to-player interaction following \citeA{Hawkins15_RealTimeWebExperiments}. All players passed a short quiz on the game instructions and were immediately redirected to the game interface where they were paired and randomly assigned to roles. %the first player to join was assigned to be a ``questioner'' (which we called a ``guesser'' in the cover story) and told to wait until a second player was available. Once another player joined, they were assigned to be an ``answerer'' (or ``helper'') and the game began. 
 
 The questioner and answerer interfaces are displayed in Figure \ref{fig:expviews}. %Information was presented on the left side of the screen, and players used the right side as a workspace to view goals, ask questions, and respond with answers. 
-At the beginning of each trial, the questioner was assigned one of the four possible goals at random (Figure \ref{fig:expviews}, left). The questioner used a drag-and-drop interface to select one of four questions for the answerer, who subsequently responded with a location (``The X is behind Gate Y'') by dragging the object they wanted to reveal into a box. Finally, the questioner clicked on one of the gates to make their guess, followed by feedback. Each participant provided one response for each of the twelve items, in random order.
+At the beginning of each trial, the questioner was assigned one of the four possible goals at random (Figure \ref{fig:expviews}, left). The questioner used a drag-and-drop interface to select one of four questions for the answerer, who subsequently responded with a location (``The X is behind Gate Y'') by dragging the object they wanted to reveal into a box. Finally, the questioner clicked on one of the gates to make their guess, followed by feedback. 
+Each participant provided one response for each of the twelve items, in random order.
 
 \subsection{Results}
 \subsubsection{Qualitative Behavioral Results}
 
-Before conducting quantitative model comparisons, we highlight several key qualitative patterns in the behavioral data that bear on our theory. First, we note that there was generally high correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities across domains for both questioners and answerers, with the exception of the `place' domain in answerers ($r = 0.78$; see Supp. Table \ref{table:experiment4correlations}). We thus collapse across domains in the following qualitative analyses, using labels from the ``animal'' domain for concreteness. 
+\todo[inline]{Can we do these with mixed effects models so we don't have to collapse over domains?}
+Before conducting quantitative model comparisons, we highlight several key qualitative patterns in the behavioral data. 
+Because there was high pairwise correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities among different domains for both questioners and answerers, we collapse across domains, using labels from the ``animal'' domain for interpretability. \footnote{with the exception of the `place' domain in answerers ($r = 0.78$; see Supp. Table \ref{table:experiment4correlations})}
 
-Next we highlight several behavioral patterns that qualitatively distinguish between our models.
 Suppose the questioner asks ``Where is the animal?'' in the branching hierarchy, where all four objects are animals. Neither $A_0$ nor $A_1$ have a preference over which of the animals to provide information about. Human answerers do. 94\% of responses provided the location of the ``whale,'' the object that isn't queried by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:results}A).
 
 This strong non-uniform pattern %, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, 
