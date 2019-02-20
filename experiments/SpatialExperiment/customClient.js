@@ -64,7 +64,9 @@ function giveAdditionalInfo(event) {
 }
 
 function goalQueryResponse(event) {
-  event.data.game.socket.send(['goalInference', event.data.response].join(','));
+  var game = event.data.game;
+  game.socket.send(['goalInference', game.cellAskedAbout, event.data.response,
+		    JSON.stringify(game.gridState)].join('.'));
   $('#goal_query').hide();
   $('#safeness_choice').show().css({display: 'inline-block'});
   $('#safe_button').css({opacity : 1}).removeAttr('disabled');
@@ -73,6 +75,8 @@ function goalQueryResponse(event) {
 
 var customEvents = function(game) {
   // Process responses to 'give additional info?' question
+  $('.exitSurveyDropdown').change({game: game}, UI.dropdownTip);
+  $('#surveySubmit').click({game: game}, UI.submit);
   $('#rows_button').click({game: game, response: 'rows'}, goalQueryResponse);
   $('#columns_button').click({game: game, response: 'columns'}, goalQueryResponse);
   $('#not_sure_button').click({game: game, response: 'not sure'}, goalQueryResponse);  
@@ -96,7 +100,8 @@ var customEvents = function(game) {
     var col = $('#chatbox_col').val();
     var code =  row + col;
     var timeElapsed = Date.now() - game.roundStartTime;
-    var msg = ['question', code, timeElapsed, 'human', game.my_role].join('.');
+    var msg = ['question', code, timeElapsed, 'human',
+	       JSON.stringify(game.gridState)].join('.');
     $("#chatbox_row").val('');
     $("#chatbox_col").val('');
     var alreadyRev = _.includes(game.gridState['safe']
@@ -106,7 +111,7 @@ var customEvents = function(game) {
       if(row != '' && col != '') {
 	game.socket.send(msg);
 	game.sentTyping = false;
-	$('#question_button').attr('disabled', 'disabled');
+	$('#leaderchatarea').hide();
       }
     } else {
       $('#leaderchatarea').append($('<p/>').text('hmmm, you already know that... Pick another question!').attr('id', 'errormsg'));
@@ -124,7 +129,7 @@ var customEvents = function(game) {
       // replace button with underlying state
       cell.siblings().show().css({'opacity' : 1});
       cell.remove();
-      return game.checkGrid();
+      game.checkGrid();
     } else {
       console.log('tried to reveal non-existant cell...');
     }
@@ -132,13 +137,13 @@ var customEvents = function(game) {
   
   game.sendAnswer = function() {
     var msg = game.optionSelected;
-    var askedAboutCell = game.askedAboutCell; 
+    var cellAskedAbout = game.cellAskedAbout; 
     var additionalCell = ($('#helper_row option:selected').text() +
 			  $('#helper_col option:selected').text());
     var cellStatus = $('#helper_safe option:selected').text();
 
-    var cells = (additionalCell == '' ? [askedAboutCell] :
-		 [askedAboutCell, additionalCell]);
+    var cells = (additionalCell == '' ? [cellAskedAbout] :
+		 [cellAskedAbout, additionalCell]);
     var timeElapsed = Date.now() - game.roundStartTime;
 
     if(additionalCell != '') {
@@ -148,13 +153,14 @@ var customEvents = function(game) {
     $('#helper_col').val('');
     $('#helper_safe').val('');
     var alreadyRev = _.includes(game.gridState['safe'].concat(game.gridState['unsafe']), additionalCell);
-    var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[askedAboutCell] == 'x' ||
-		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[askedAboutCell] == 'o' ||
+    var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[cellAskedAbout] == 'x' ||
+		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[cellAskedAbout] == 'o' ||
 		    cellStatus == 'safe' && game.fullMap[additionalCell] == 'x' ||
 		    cellStatus == 'not  safe' && game.fullMap[additionalCell] == 'o');
     if(!alreadyRev && !falseAns) {
-      game.socket.send(['answer', msg, timeElapsed, 'human', game.my_role]
-		       .concat(cells).join('.'));
+      var fullMap = _.mapValues(game.fullMap, v => v == 'o' ? 'safe' : 'unsafe');
+      game.socket.send(['answer', msg, timeElapsed, 'human',
+			JSON.stringify(game.gridState), JSON.stringify(fullMap)].concat(cells).join('.'));
     } else {
       var errorText = alreadyRev ? 'hmmm, the leader already knows that.' : "hmmm, that's just not true!";
       $('#helperchatarea').append($('<p/>').text(errorText + ' Pick another answer!').attr('id', 'errormsg'));
@@ -180,26 +186,27 @@ var customEvents = function(game) {
     var completeRow = _.map(['A','B','C'], rowName => {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
-    
-    if(_.includes(goodness, 'x')) {
-      console.log('fail');
-      game.socket.emit('endRound', {outcome: 'fail'});
-      $('.pressable').off('click');
-      return true;
-    } else if (goal == 'rows' && _.some(completeRow, row => row.length == 3) ||
-	       goal == 'columns' && _.some(completeCol, col => col.length == 3)) {
-      console.log('success');
-      game.socket.emit('endRound', {outcome: 'success'});
-      $('.pressable').off('click');
-      return true;
-    } else {
-      return false;
+
+    if(!game.roundOver) {
+      if(_.includes(goodness, 'x')) {
+	console.log('fail');
+	game.socket.emit('endRound', {outcome: 'fail'});
+	$('.pressable').off('click');
+	game.roundOver = true;
+      } else if (goal == 'rows' && _.some(completeRow, row => row.length == 3) ||
+		 goal == 'columns' && _.some(completeCol, col => col.length == 3)) {
+	console.log('success');
+	game.socket.emit('endRound', {outcome: 'success'});
+	$('.pressable').off('click');
+	game.roundOver = true;
+      }
     }
-  }
+  };
   
   game.socket.on('chatMessage', function(data){
+    var partnerRole = _.without(_.values(game.playerRoleNames), game.my_role);
     var source = (data.sender == 'human' ? 'You' :
-		  data.sender == "bot" ? data.source_role :
+		  data.sender == "bot" ? partnerRole :
 		  console.log('unknown source'));
     var color = source === "You" ? "#363636" : "#707070";    
 
@@ -216,7 +223,7 @@ var customEvents = function(game) {
       }, 800);
     
     // bar responses until speaker has uttered at least one message (and vice versa)
-    if(data.source_role == "helper"){
+    if(data.type == "answer"){
       game.selections = data.code;
       UI.reset(game, 'answerReceived');
       updateGridState(game);
@@ -227,20 +234,26 @@ var customEvents = function(game) {
 	var roundOver = [];
 	_.forEach(game.selections, id =>  {
 	  if(game.fullMap[id] == 'o')
-	    roundOver.push(game.revealCell($('#button-' + id)));
+	    game.revealCell($('#button-' + id));
 	});
-	if(data.sender == 'human' && !_.includes(roundOver, true)) {
-	  game.bot.ask(data.code);
+	if(!game.roundOver) {
+	  if(data.sender == 'human') {
+	    game.bot.ask(data.code);
+	  } else {
+	    $('#leaderchatarea').show();
+	  }
 	}
       }, 1000);
-    } else {
-      game.askedAboutCell = data.code;
+    } else if (data.type == 'question') {
+      game.cellAskedAbout = data.code;
       game.questionNum += 1;
       UI.fadeInQuestionMark(data.code);
       UI.reset(game, 'questionReceived');
       if(data.sender == 'human') {
 	game.bot.answer(data.code);
       }
+    } else {
+      console.log('unknown chat message type');
     }
   });
 

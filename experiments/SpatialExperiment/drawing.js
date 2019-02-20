@@ -3,40 +3,41 @@ var confetti = new Confetti(300);
 
 // This gets called when someone selects something in the menu during the 
 // exit survey... collects data from drop-down menus and submits using mmturkey
-function dropdownTip(data){
+function dropdownTip(event){
+  var game = event.data.game;
+  var data = $(this).find('option:selected').val();
+  console.log(data);
   var commands = data.split('::');
   switch(commands[0]) {
-  case 'human' :
-    $('#humanResult').show();
-    globalGame.data = _.extend(globalGame.data, 
-			       {'thinksHuman' : commands[1]}); break;
   case 'language' :
-    globalGame.data = _.extend(globalGame.data, 
-			       {'nativeEnglish' : commands[1]}); break;
+    game.data = _.extend(game.data, {'nativeEnglish' : commands[1]}); break;
   case 'partner' :
-    globalGame.data = _.extend(globalGame.data,
-			       {'ratePartner' : commands[1]}); break;
-  case 'confused' :
-    globalGame.data = _.extend(globalGame.data,
-			       {'confused' : commands[1]}); break;
-  case 'submit' :
-    globalGame.data = _.extend(globalGame.data, 
-			       {'comments' : $('#comments').val(),
-				'strategy' : $('#strategy').val(),
-				'role' : globalGame.my_role,
-				'totalLength' : Date.now() - globalGame.startTime});
-    globalGame.submitted = true;
-    console.log("data is...");
-    console.log(globalGame.data);
-    if(_.size(globalGame.urlParams) >= 4) {
-      globalGame.socket.send("exitSurvey." + JSON.stringify(globalGame.data));
-      window.opener.turk.submit(globalGame.data, true);
-      window.close(); 
-    } else {
-      console.log("would have submitted the following :")
-      console.log(globalGame.data);
-    }
-    break;
+    game.data = _.extend(game.data, {'ratePartner' : commands[1]}); break;
+  case 'didCorrectly' :
+    game.data = _.extend(game.data, {'confused' : commands[1]}); break;
+  }
+}
+
+function submit (event) {
+  $('#button_error').show();
+  var game = event.data.game;
+  game.data = _.extend(game.data, {
+    'comments' : $('#comments').val().trim(),
+    'strategy' : $('#strategy').val().trim(),
+    'role' : game.my_role,
+    'totalLength' : Date.now() - game.startTime
+  });
+  game.submitted = true;
+  console.log("data is...");
+  console.log(game.data);
+  console.log(game.socket);
+  game.socket.send("exitSurvey." + JSON.stringify(game.data));
+  if(_.size(game.urlParams) >= 4) {
+    window.opener.turk.submit(game.data, true);
+    window.close(); 
+  } else {
+    console.log("would have submitted the following :")
+    console.log(game.data);
   }
 }
 
@@ -175,7 +176,6 @@ function drawScreen (game) {
 
 function reset (game, pointInTime) {
   if(pointInTime == 'answerReceived') {
-    $('#question_button').removeAttr('disabled');
     $('#safeness_choice').hide();
     game.answerSent = true;
     game.questionSent = false;
@@ -185,6 +185,7 @@ function reset (game, pointInTime) {
     game.answerSent = false;
     game.questionSent = true;
   } else if (pointInTime == 'newRound') {
+    game.roundOver = false;
     $('#goal_query').hide();
     game.questionNum = 0;
     game.questionSent = false;
@@ -233,5 +234,7 @@ module.exports = {
   drawScreen,
   fadeInQuestionMark,
   fadeInSelections,
+  dropdownTip,
+  submit,
   reset
 };

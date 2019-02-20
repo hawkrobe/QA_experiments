@@ -78,11 +78,11 @@ class ServerGame extends Game {
     return state;
   };
 
-  endGame () {
+  end () {
     setTimeout(() => {
       _.forEach(this.activePlayers(), p => {
 	try {
-	  p.player.instance.emit('disconnect');
+	  p.player.instance.emit('showExitSurvey', {});
 	} catch(err) {
 	  console.log('player did not exist to disconnect');
 	}
@@ -93,8 +93,7 @@ class ServerGame extends Game {
   // This is called on the server side to trigger new round
   newRound (delay) {
     if(this.roundNum == this.numRounds - 1) {
-      this.active = false;
-      this.endGame();
+      this.end();
     } else {
       // Otherwise, get the preset list of tangrams for the new round
       this.roundNum += 1;
@@ -130,10 +129,8 @@ class ClientGame extends Game {
     this.urlParams = getURLParams();
     this.customEvents = customEvents;
     this.startTime = Date.now();
-
     this.data = {
-      score: 0,
-      gameID: this.id
+      score: 0
     };
     
     this.players = [{
@@ -151,13 +148,14 @@ class ClientGame extends Game {
     this.socket.on('joinGame', function(data) {
       this.my_id = data.id;
       this.players[0].id = data.id;
+      this.data.gameID = data.id;
     }.bind(this));
     
     this.socket.on('addPlayer', function(data) {
       this.players.push({id: data.id, player: new player(this)});
     }.bind(this));
     
-    this.socket.on('disconnect', function(data) {
+    this.socket.on('showExitSurvey', function(data) {
       if(this.viewport) {
 	this.viewport.style.display="none";
       } else if (document.getElementById('viewport')) {

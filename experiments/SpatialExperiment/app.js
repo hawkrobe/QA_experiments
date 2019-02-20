@@ -112,6 +112,6 @@ var initialize = function(query, client, id) {
     console.log('\t socket.io:: client id ' + client.userid 
                 + ' disconnected from game id ' + client.game.id);
     if(client.userid && client.game && client.game.id) 
-      refGameServer.endGame(client.game.id, client.userid);            
+      refGameServer.removeGame(client.game.id, client.userid);            
   });
 };
