@@ -259,6 +259,13 @@ var answerer = dp.cache(function(type, question, trueWorld, gridState) {
   }
 });
 
+var example = {
+  world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"safe","B2":"safe","B3":"safe","C1":"unsafe","C2":"safe","C3":"safe"},
+  initState: {"safe":["A2","B3"],"unsafe":[]}
+}
+
+console.log(answerer('pragmatic', 'is_A1_safe?', example.world,example.initState));
+
 // var example = {
 //   world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"unsafe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
 //   initState: {"safe":["B3","C1","C2"],"unsafe":[]}
