@@ -75,6 +75,8 @@ function goalQueryResponse(event) {
 
 var customEvents = function(game) {
   // Process responses to 'give additional info?' question
+  $('.exitSurveyDropdown').change({game: game}, UI.dropdownTip);
+  $('#surveySubmit').click({game: game}, UI.submit);
   $('#rows_button').click({game: game, response: 'rows'}, goalQueryResponse);
   $('#columns_button').click({game: game, response: 'columns'}, goalQueryResponse);
   $('#not_sure_button').click({game: game, response: 'not sure'}, goalQueryResponse);  
