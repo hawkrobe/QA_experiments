@@ -131,8 +131,7 @@ class ServerRefGame extends ServerGame {
     // Everyone starts with a couple catch trials for practice
     var otherRole = this.firstRole == 'leader' ? 'helper' : 'leader';
     var initTypes = ['catch', 'catch', 'random', 'random', 'random', 'random'];
-    var restTypes = ['random', 'random', 'random', 'random', 
-		     'pragmatic', 'blocked', 'empty'];
+    var restTypes = ['random', 'random', 'random', 'random', 'pragmatic', 'blocked', 'empty'];
     var restAsLeader = _.shuffle(restTypes);
     var restAsHelper = _.shuffle(restTypes);    
     var result = initTypes.concat(_.flattenDeep(_.reduce(restAsLeader, (arr, v, i) => {
