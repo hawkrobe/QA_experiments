@@ -73,11 +73,19 @@ class ServerRefGame extends ServerGame {
 	questionerType: 'pragmatic'
       });
       console.log(possibilities);
-      var code = getBestVal(possibilities)['question'];
-      setTimeout(function() {
-	this.onMessage(socket, ["question", code, 5000, 'bot',
-				JSON.stringify(state)].join('.'));
-      }.bind(this), 3000);
+      let code;
+      try {
+	code = getBestVal(possibilities)['question'];
+      } catch(err) {
+	var cells = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+	code = _.sample(_.without(cells, state['safe'].concat(state['unsafe'])));
+      } finally {
+	console.log(code);
+	setTimeout(function() {
+	  this.onMessage(socket, ["question", code, 5000, 'bot',
+				  JSON.stringify(state)].join('.'));
+	}.bind(this), 3000);
+      }
     }.bind(this));
 
     // Pulls out requested answer bot response data from db and retunrs as message
