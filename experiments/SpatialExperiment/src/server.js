@@ -140,7 +140,8 @@ class ReferenceGameServer {
 
   // we are requesting to kill a game in progress.
   // This gets called if someone disconnects
-  endGame (id, userid) {
+  removeGame (id, userid) {
+    console.log('remove game called from ref game server');
     var game = this.games[id];
     try {
       // Remove the person who dropped out
@@ -149,9 +150,7 @@ class ReferenceGameServer {
 
       // If game is ongoing and someone drops out, tell other players and end game
       // If game is over, remove game when last player drops out
-      console.log("active: " + game.active);
       if(game.active || game.get_active_players().length < 1) {
-	game.endGame();
 	delete this.games[id];
 	this.gameCount--;
 	this.log('game removed. there are now ' + this.gameCount + ' games' );
