@@ -50,7 +50,11 @@ class ServerRefGame extends ServerGame {
     socket.game.sendAnswerMsg = function(cellAskedAbout, other, fullMap, state, data) {
       let msg = (fullMap[cellAskedAbout] == 'safe' ? 'Yes, it is safe' :
 		 'No, it is not safe');
-      msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : '';
+      if(other) {
+	let connector = fullMap[cellAskedAbout] != other.split('_')[1] ? 'but' : 'and';
+	msg += [',', connector, other.split('_')[0],
+		'is', other.split('_')[1]].join(' ');
+      }
       let packet = ["answer", msg, 5000, 'bot', JSON.stringify(fullMap),
 		    JSON.stringify(state), cellAskedAbout].join('.');
       packet += other ? '.' + other.split('_')[0] : '';
@@ -63,13 +67,12 @@ class ServerRefGame extends ServerGame {
     socket.on('getQuestion', function(data){
       var state = {'safe' : _.clone(data.state['safe']).sort(),
 		   'unsafe' : _.clone(data.state['unsafe']).sort()};
-      
       var possibilities = _.filter(questionsFromModel, {
-	initState: JSON.stringify(state),
+	gridState: JSON.stringify(state),
 	goal: data.goal,
 	questionerType: 'pragmatic'
       });
-
+      console.log(possibilities);
       var code = getBestVal(possibilities)['question'];
       setTimeout(function() {
 	this.onMessage(socket, ["question", code, 5000, 'bot',

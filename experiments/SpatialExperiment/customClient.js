@@ -147,7 +147,10 @@ var customEvents = function(game) {
     var timeElapsed = Date.now() - game.roundStartTime;
 
     if(additionalCell != '') {
-      msg += " and " + additionalCell + ' is ' + cellStatus;
+      var cell1Positive = game.optionSelected == 'yes, it is safe';
+      var cell2Positive = cellStatus == 'safe';
+      var connector = cell1Positive == cell2Positive ? 'and' : 'but';
+      msg += [',', connector, additionalCell, 'is', cellStatus].join(' ');
     }
     $('#helper_row').val('');
     $('#helper_col').val('');
