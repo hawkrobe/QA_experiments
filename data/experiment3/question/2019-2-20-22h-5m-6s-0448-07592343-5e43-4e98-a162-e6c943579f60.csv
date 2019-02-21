@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729106387	1	practice	1	helper	A1	human	{"safe":["B1","C1"],"unsafe":[]}	9633	columns	question
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729168463	3	random	1	helper	B3	human	{"safe":["A2","A3","C2","C3"],"unsafe":[]}	8435	columns	question

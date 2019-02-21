@@ -1,0 +1,16 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	cellAskedAbout	goalResponse	gridState	eventType
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550730975240	0	practice	1	helper	A1	rows	{"safe":["A2","A3"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731023945	2	random	1	helper	C1	not sure	{"safe":["A1","B3","C2"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731063489	2	random	2	helper	A3	not sure	{"safe":["A1","B3","C2","C3"],"unsafe":["C1"]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731110143	4	random	1	helper	C1	rows	{"safe":["A1","B3","C2","C3"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731138135	4	random	2	helper	A2	rows	{"safe":["A1","B3","C2","C3","A3"],"unsafe":["C1"]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731175435	6	random	1	helper	B1	columns	{"safe":["A1","B3","C1","C2"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731205441	8	pragmatic	1	helper	C3	columns	{"safe":["B3"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731265745	10	random	1	helper	A2	rows	{"safe":["A3","B1","C3"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731304743	10	random	2	helper	C2	rows	{"safe":["A3","B1","C3","A2"],"unsafe":["A1"]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731324277	10	random	3	helper	B3	rows	{"safe":["A3","B1","C3","A2","B2"],"unsafe":["A1","C2"]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731383505	12	random	1	helper	C2	rows	{"safe":["A3","C1","C3"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731412483	14	blocked	1	helper	A3	columns	{"safe":["B3"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731470255	16	random	1	helper	C1	rows	{"safe":["C3"],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731508749	18	empty	1	helper	A3	not sure	{"safe":[],"unsafe":[]}	goalInference
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731526467	18	empty	2	helper	A1	columns	{"safe":["C1"],"unsafe":["A3"]}	goalInference
