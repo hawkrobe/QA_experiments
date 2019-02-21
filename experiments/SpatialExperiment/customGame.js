@@ -23,7 +23,6 @@ var getAnswerBotResponseFromDB = function(postData, successCallback, failCallbac
   }, function(error, res, body) {
     try {
       if (!error && res.statusCode === 200) {
-	console.log("success! Received data " + JSON.stringify(body));
 	successCallback(body);
       } else {
 	throw `${error}`;
@@ -55,6 +54,7 @@ class ServerRefGame extends ServerGame {
 	msg += [',', connector, other.split('_')[0],
 		'is', other.split('_')[1]].join(' ');
       }
+
       let packet = ["answer", msg, 5000, 'bot', JSON.stringify(fullMap),
 		    JSON.stringify(state), cellAskedAbout].join('.');
       packet += other ? '.' + other.split('_')[0] : '';
@@ -72,7 +72,6 @@ class ServerRefGame extends ServerGame {
 	goal: data.goal,
 	questionerType: 'pragmatic'
       });
-      console.log(possibilities);
       let code;
       try {
 	code = getBestVal(possibilities)['question'];
@@ -80,7 +79,6 @@ class ServerRefGame extends ServerGame {
 	var cells = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 	code = _.sample(_.without(cells, state['safe'].concat(state['unsafe'])));
       } finally {
-	console.log(code);
 	setTimeout(function() {
 	  this.onMessage(socket, ["question", code, 5000, 'bot',
 				  JSON.stringify(state)].join('.'));
@@ -90,7 +88,6 @@ class ServerRefGame extends ServerGame {
 
     // Pulls out requested answer bot response data from db and retunrs as message
     socket.on('getAnswer', function(data){
-      console.log('bot getting answer...');
       const state = {'safe' : _.clone(data.state['safe']).sort(),
 		     'unsafe' : _.clone(data.state['unsafe']).sort()};
       
@@ -116,12 +113,17 @@ class ServerRefGame extends ServerGame {
       };
       
       // Now query database
-      getAnswerBotResponseFromDB(postData, successCallback, failCallback);
+      // If it's a practice trial, override bot and just give literal answer
+      if(socket.game.currStim.trialType == 'practice') {
+	failCallback();
+      } else {
+	getAnswerBotResponseFromDB(postData, successCallback, failCallback);
+      }
     }.bind(this));
 
     // Gets called when round is over
     socket.on('endRound', function(data) {
-      console.log('round ended...');
+      console.log('player moving on to ' + socket.game.roundNum);
       var all = socket.game.activePlayers();
       setTimeout(function() {
 	_.map(all, function(p){
@@ -141,7 +143,7 @@ class ServerRefGame extends ServerGame {
   sampleMapSequence () {
     // Everyone starts with a couple catch trials for practice
     var otherRole = this.firstRole == 'leader' ? 'helper' : 'leader';
-    var initTypes = ['catch', 'catch', 'random', 'random', 'random', 'random'];
+    var initTypes = ['practice', 'practice', 'random', 'random', 'random', 'random'];
     var restTypes = ['random', 'random', 'random', 'random', 'pragmatic', 'blocked', 'empty'];
     var restAsLeader = _.shuffle(restTypes);
     var restAsHelper = _.shuffle(restTypes);    
@@ -208,7 +210,6 @@ class ServerRefGame extends ServerGame {
       break;
       
     case 'answer' :
-      console.log(message_parts);
       _.map(all, function(p){
 	p.player.instance.emit('chatMessage', {
 	  user: client.userid,
