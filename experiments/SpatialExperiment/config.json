@@ -2,7 +2,7 @@
   "email" : "rxdh@stanford.edu",
   "projectName" : "QA",
   "experimentName" : "spatial",
-  "iterationName" : "testing",
+  "iterationName" : "full_sample",
   "anonymizeCSV" : true,
   "bonusAmt" : 3, 
   "dataStore" : ["csv", "mongo"],

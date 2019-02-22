@@ -1,0 +1,4 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+pilot0	9875-0371a80a-0b0f-436c-b032-d795fa6fd537	1550728848293	0	practice	1	leader	A1	human	{"safe":["B3","C3"],"unsafe":[]}	7851	columns	question
+pilot0	9875-0371a80a-0b0f-436c-b032-d795fa6fd537	1550728858936	0	practice	2	leader	A2	human	{"safe":["B3","C3"],"unsafe":["A1"]}	18492	columns	question
+pilot0	9875-0371a80a-0b0f-436c-b032-d795fa6fd537	1550728868326	0	practice	3	leader	A3	human	{"safe":["B3","C3"],"unsafe":["A1","A2"]}	27875	columns	question

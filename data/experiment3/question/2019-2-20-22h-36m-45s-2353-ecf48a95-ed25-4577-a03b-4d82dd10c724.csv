@@ -1,0 +1,16 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731005428	1	practice	1	helper	A2	human	{"safe":["B2","C2"],"unsafe":[]}	6330	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731082274	3	random	1	helper	B1	human	{"safe":["A1","A2","C1","C3"],"unsafe":[]}	6881	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731155911	5	random	1	helper	B2	human	{"safe":["A1","A2","B1","C2"],"unsafe":[]}	7614	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731188036	7	random	1	helper	A2	human	{"safe":["A1","B2","C1","C2"],"unsafe":[]}	5062	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731234295	9	random	1	helper	C2	human	{"safe":["A3","B2"],"unsafe":[]}	13101	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731247990	9	random	2	helper	B3	human	{"safe":["A3","B2","C2"],"unsafe":["A2"]}	26820	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731335707	11	blocked	1	helper	B2	human	{"safe":["C2"],"unsafe":[]}	5062	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731350997	11	blocked	2	helper	A3	human	{"safe":["C2","B2"],"unsafe":["A2"]}	20350	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731362326	11	blocked	3	helper	A1	human	{"safe":["C2","B2","C1"],"unsafe":["A2","A3"]}	31682	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731396272	13	random	1	helper	A2	human	{"safe":["B2","B3","C2"],"unsafe":[]}	6327	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731433535	15	empty	1	helper	A1	human	{"safe":[],"unsafe":[]}	8789	rows	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731442541	15	empty	2	helper	B1	human	{"safe":["A1"],"unsafe":["A2"]}	17799	rows	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731453517	15	empty	3	helper	B2	human	{"safe":["A1","B1","B3"],"unsafe":["A2"]}	28763	rows	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731491838	17	random	1	helper	A2	human	{"safe":["A3","B2","C2","C3"],"unsafe":[]}	9922	columns	question
+pilot0	2353-ecf48a95-ed25-4577-a03b-4d82dd10c724	1550731545532	19	pragmatic	1	helper	A2	human	{"safe":["A3"],"unsafe":[]}	6389	rows	question

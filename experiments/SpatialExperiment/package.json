@@ -2,7 +2,7 @@
   "name": "spatial_QA",
   "version": "0.0.1",
   "scripts": {
-    "build": "webpack --mode development ./src/client.js --output ./dist/bundle.js; node app.js"
+    "build": "webpack --mode production ./src/client.js --output ./dist/bundle.js; node app.js"
   },
   "private": true,
   "dependencies": {

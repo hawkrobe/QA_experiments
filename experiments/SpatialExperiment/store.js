@@ -73,7 +73,7 @@ function serve() {
       // hardcoded for now (TODO: get list of collections in db)
       var collectionList = [//'sketchpad_basic','sketchpad_repeated',
 			    //'chatbox_basic', //'chairs_chatbox',
-			    'cards']; 
+	'cards', 'spatial']; 
 
       function checkCollectionForHits(collectionName, query, projection, callback) {
         const collection = database.collection(collectionName);        
@@ -140,7 +140,6 @@ function serve() {
 	if(err) {
 	  console.log(err);
 	} else {
-	  console.log(results);
 	  response.send(results);
 	}
       });

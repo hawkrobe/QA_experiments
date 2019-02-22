@@ -23,7 +23,6 @@ var getAnswerBotResponseFromDB = function(postData, successCallback, failCallbac
   }, function(error, res, body) {
     try {
       if (!error && res.statusCode === 200) {
-	console.log("success! Received data " + JSON.stringify(body));
 	successCallback(body);
       } else {
 	throw `${error}`;
@@ -50,7 +49,12 @@ class ServerRefGame extends ServerGame {
     socket.game.sendAnswerMsg = function(cellAskedAbout, other, fullMap, state, data) {
       let msg = (fullMap[cellAskedAbout] == 'safe' ? 'Yes, it is safe' :
 		 'No, it is not safe');
-      msg += other ? ' and ' + other.split('_')[0] + ' is ' + other.split('_')[1] : '';
+      if(other) {
+	let connector = fullMap[cellAskedAbout] != other.split('_')[1] ? 'but' : 'and';
+	msg += [',', connector, other.split('_')[0],
+		'is', other.split('_')[1]].join(' ');
+      }
+
       let packet = ["answer", msg, 5000, 'bot', JSON.stringify(fullMap),
 		    JSON.stringify(state), cellAskedAbout].join('.');
       packet += other ? '.' + other.split('_')[0] : '';
@@ -63,23 +67,27 @@ class ServerRefGame extends ServerGame {
     socket.on('getQuestion', function(data){
       var state = {'safe' : _.clone(data.state['safe']).sort(),
 		   'unsafe' : _.clone(data.state['unsafe']).sort()};
-      
       var possibilities = _.filter(questionsFromModel, {
-	initState: JSON.stringify(state),
+	gridState: JSON.stringify(state),
 	goal: data.goal,
 	questionerType: 'pragmatic'
       });
-
-      var code = getBestVal(possibilities)['question'];
-      setTimeout(function() {
-	this.onMessage(socket, ["question", code, 5000, 'bot',
-				JSON.stringify(state)].join('.'));
-      }.bind(this), 3000);
+      let code;
+      try {
+	code = getBestVal(possibilities)['question'];
+      } catch(err) {
+	var cells = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+	code = _.sample(_.without(cells, state['safe'].concat(state['unsafe'])));
+      } finally {
+	setTimeout(function() {
+	  this.onMessage(socket, ["question", code, 5000, 'bot',
+				  JSON.stringify(state)].join('.'));
+	}.bind(this), 3000);
+      }
     }.bind(this));
 
     // Pulls out requested answer bot response data from db and retunrs as message
     socket.on('getAnswer', function(data){
-      console.log('bot getting answer...');
       const state = {'safe' : _.clone(data.state['safe']).sort(),
 		     'unsafe' : _.clone(data.state['unsafe']).sort()};
       
@@ -105,12 +113,17 @@ class ServerRefGame extends ServerGame {
       };
       
       // Now query database
-      getAnswerBotResponseFromDB(postData, successCallback, failCallback);
+      // If it's a practice trial, override bot and just give literal answer
+      if(socket.game.currStim.trialType == 'practice') {
+	failCallback();
+      } else {
+	getAnswerBotResponseFromDB(postData, successCallback, failCallback);
+      }
     }.bind(this));
 
     // Gets called when round is over
     socket.on('endRound', function(data) {
-      console.log('round ended...');
+      console.log('player moving on to ' + socket.game.roundNum);
       var all = socket.game.activePlayers();
       setTimeout(function() {
 	_.map(all, function(p){
@@ -130,7 +143,7 @@ class ServerRefGame extends ServerGame {
   sampleMapSequence () {
     // Everyone starts with a couple catch trials for practice
     var otherRole = this.firstRole == 'leader' ? 'helper' : 'leader';
-    var initTypes = ['catch', 'catch', 'random', 'random', 'random', 'random'];
+    var initTypes = ['practice', 'practice', 'random', 'random', 'random', 'random'];
     var restTypes = ['random', 'random', 'random', 'random', 'pragmatic', 'blocked', 'empty'];
     var restAsLeader = _.shuffle(restTypes);
     var restAsHelper = _.shuffle(restTypes);    
@@ -197,7 +210,6 @@ class ServerRefGame extends ServerGame {
       break;
       
     case 'answer' :
-      console.log(message_parts);
       _.map(all, function(p){
 	p.player.instance.emit('chatMessage', {
 	  user: client.userid,
@@ -282,6 +294,7 @@ class ServerRefGame extends ServerGame {
     var goalInferenceOutput = function(client, message_data) {
       return _.extend(
 	commonOutput(client, message_data), {
+	  trueGoal: client.game.currStim.goal,
 	  cellAskedAbout: message_data[1],
 	  goalResponse: message_data[2],
 	  gridState: message_data[3]	  

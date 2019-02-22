@@ -25,7 +25,7 @@ class GameMap {
   }
   
   sampleMap (transformation) {
-    const grid = (this.trialType == 'catch' ? this.sampleCatch() :
+    const grid = (this.trialType == 'practice' ? this.samplePractice() :
 		  this.trialType == 'pragmatic' ? this.samplePragmatic(false) :
 		  this.trialType == 'blocked' ? this.samplePragmatic(true) :
 		  this.trialType == 'empty' ? this.sampleEmpty() :
@@ -45,7 +45,7 @@ class GameMap {
   
   // We pick 1 of the 3 rows to be initiated,
   // and then ensure that row has no bombs...
-  sampleCatch () {
+  samplePractice () {
     const rowToReveal = _.sample([0,1,2]);
     let initRevealed = this.allHidden();
     let underlying = this.allBombs();
@@ -54,7 +54,7 @@ class GameMap {
     underlying[rowToReveal][0] = 'o';
     underlying[rowToReveal][1] = 'o';    
     underlying[rowToReveal][2] = 'o';
-    return (!this.validate(initRevealed, underlying) ? this.sampleCatch() :
+    return (!this.validate(initRevealed, underlying) ? this.samplePractice() :
 	    this.sampleReflection(initRevealed, underlying));
   }
 

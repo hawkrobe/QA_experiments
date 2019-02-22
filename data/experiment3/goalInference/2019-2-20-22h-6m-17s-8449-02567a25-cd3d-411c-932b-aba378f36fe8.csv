@@ -1,0 +1,18 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	cellAskedAbout	goalResponse	gridState	eventType
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729177358	1	practice	1	leader	B1	not sure	{"safe":["B2","B3"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729245398	3	random	1	leader	C3	rows	{"safe":["A1","C1","C2"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729277499	5	random	1	leader	B3	rows	{"safe":["A3","C3"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729315250	7	random	1	leader	B3	columns	{"safe":["C1","C3"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729335731	7	random	2	leader	B1	columns	{"safe":["C1","C3","B3"],"unsafe":["A3"]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729381810	9	empty	1	leader	A2	columns	{"safe":[],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729398465	9	empty	2	leader	A1	columns	{"safe":[],"unsafe":["A2","B2"]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729419360	9	empty	3	leader	B1	columns	{"safe":["A1"],"unsafe":["A2","B2"]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729465152	11	random	1	leader	A1	columns	{"safe":["B1","C1","C3"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729493809	13	random	1	leader	B1	columns	{"safe":["A1","C1"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729538057	15	pragmatic	1	leader	A1	rows	{"safe":["A2"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729574002	17	random	1	leader	C3	columns	{"safe":["A1","A3","B1","B3"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729614105	19	blocked	1	leader	B2	rows	{"safe":["B1"],"unsafe":[]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729630594	19	blocked	2	leader	A3	rows	{"safe":["B1","B2"],"unsafe":["B3"]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729644939	19	blocked	3	leader	A1	rows	{"safe":["B1","B2","A3","A2"],"unsafe":["B3"]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729662274	19	blocked	4	leader	C1	rows	{"safe":["B1","B2","A3","A2"],"unsafe":["B3","A1"]}	goalInference
+pilot0	8449-02567a25-cd3d-411c-932b-aba378f36fe8	1550729676491	19	blocked	5	leader	C3	rows	{"safe":["B1","B2","A3","A2","C1","C2"],"unsafe":["B3","A1"]}	goalInference

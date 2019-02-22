@@ -148,7 +148,7 @@ class ClientGame extends Game {
     this.socket.on('joinGame', function(data) {
       this.my_id = data.id;
       this.players[0].id = data.id;
-      this.data.gameID = data.id;
+      this.data.playerID = data.id;
     }.bind(this));
     
     this.socket.on('addPlayer', function(data) {

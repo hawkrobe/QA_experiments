@@ -24,8 +24,8 @@ function updateState (game, data){
 };
 
 // Update grid state & tell bot about it
-function updateGridState (game) {
-  _.forEach(game.selections, function(cell) {
+function updateGridState (selections, game) {
+  _.forEach(selections, function(cell) {
     var c = game.fullMap[cell] == 'x' ? 'unsafe' : 'safe';
     game.gridState[c].push(cell);
   });
@@ -140,30 +140,40 @@ var customEvents = function(game) {
     var cellAskedAbout = game.cellAskedAbout; 
     var additionalCell = ($('#helper_row option:selected').text() +
 			  $('#helper_col option:selected').text());
-    var cellStatus = $('#helper_safe option:selected').text();
+    var additionalCellStatus = $('#helper_safe option:selected').text();
 
     var cells = (additionalCell == '' ? [cellAskedAbout] :
 		 [cellAskedAbout, additionalCell]);
     var timeElapsed = Date.now() - game.roundStartTime;
 
     if(additionalCell != '') {
-      msg += " and " + additionalCell + ' is ' + cellStatus;
+      var cell1Positive = game.optionSelected == 'yes, it is safe';
+      var cell2Positive = additionalCellStatus == 'safe';
+      var connector = cell1Positive == cell2Positive ? 'and' : 'but';
+      msg += [',', connector, additionalCell, 'is', additionalCellStatus].join(' ');
     }
     $('#helper_row').val('');
     $('#helper_col').val('');
     $('#helper_safe').val('');
-    var alreadyRev = _.includes(game.gridState['safe'].concat(game.gridState['unsafe']), additionalCell);
-    var falseAns = (game.optionSelected == 'yes, it is safe' && game.fullMap[cellAskedAbout] == 'x' ||
-		    game.optionSelected == 'no, it is NOT safe' && game.fullMap[cellAskedAbout] == 'o' ||
-		    cellStatus == 'safe' && game.fullMap[additionalCell] == 'x' ||
-		    cellStatus == 'not  safe' && game.fullMap[additionalCell] == 'o');
+    var revealed = game.gridState['safe'].concat(game.gridState['unsafe']);
+    var alreadyRev = (_.includes(revealed, additionalCell) ||
+		      cellAskedAbout == additionalCell);
+    var mapAsked = game.fullMap[cellAskedAbout];
+    var mapAddl = game.fullMap[additionalCell];    
+    var falseAns = (game.optionSelected == 'yes, it is safe' && mapAsked == 'x' ||
+		    game.optionSelected == 'no, it is NOT safe' && mapAsked == 'o' ||
+		    additionalCellStatus == 'safe' && mapAddl == 'x' ||
+		    additionalCellStatus == 'not safe' && mapAddl == 'o');
     if(!alreadyRev && !falseAns) {
       var fullMap = _.mapValues(game.fullMap, v => v == 'o' ? 'safe' : 'unsafe');
       game.socket.send(['answer', msg, timeElapsed, 'human',
-			JSON.stringify(game.gridState), JSON.stringify(fullMap)].concat(cells).join('.'));
+			JSON.stringify(game.gridState),
+			JSON.stringify(fullMap)].concat(cells).join('.'));
     } else {
-      var errorText = alreadyRev ? 'hmmm, the leader already knows that.' : "hmmm, that's just not true!";
-      $('#helperchatarea').append($('<p/>').text(errorText + ' Pick another answer!').attr('id', 'errormsg'));
+      var errorText = (alreadyRev ? 'hmmm, the leader already knows that.' :
+		       "hmmm, that's just not true!");
+      $('#helperchatarea').append($('<p/>').text(errorText + ' Pick another answer!')
+				  .attr('id', 'errormsg'));
       setTimeout(function() {
 	$('#errormsg').remove();
 	$('#safeness_choice').show().css({display: 'inline-block'});
@@ -178,7 +188,7 @@ var customEvents = function(game) {
   game.checkGrid = function() {
     var goal = this.goal;
     var revealedCells = this.revealedCells;
-
+    
     var goodness = _.map(revealedCells, cell => this.fullMap[cell]);
     var completeCol = _.map(_.range(1,4), colName => {
       return _.filter(revealedCells, cellName => cellName[1] == colName);
@@ -186,7 +196,7 @@ var customEvents = function(game) {
     var completeRow = _.map(['A','B','C'], rowName => {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
-
+    
     if(!game.roundOver) {
       if(_.includes(goodness, 'x')) {
 	console.log('fail');
@@ -224,26 +234,23 @@ var customEvents = function(game) {
     
     // bar responses until speaker has uttered at least one message (and vice versa)
     if(data.type == "answer"){
-      game.selections = data.code;
+      var selections = data.code;
       UI.reset(game, 'answerReceived');
-      updateGridState(game);
+      updateGridState(selections, game);
       
       // Show players the updated common ground
-      UI.fadeInSelections(game.selections);
-      setTimeout(function() {
-	var roundOver = [];
-	_.forEach(game.selections, id =>  {
-	  if(game.fullMap[id] == 'o')
-	    game.revealCell($('#button-' + id));
-	});
-	if(!game.roundOver) {
-	  if(data.sender == 'human') {
-	    game.bot.ask(data.code);
-	  } else {
-	    $('#leaderchatarea').show();
-	  }
+      UI.fadeInSelections(selections);
+      _.forEach(selections, id =>  {
+	if(game.fullMap[id] == 'o')
+	  game.revealCell($('#button-' + id));
+      });
+      if(!game.roundOver) {
+	if(data.sender == 'human') {
+	  game.bot.ask(data.code);
+	} else {
+	  $('#leaderchatarea').show();
 	}
-      }, 1000);
+      }
     } else if (data.type == 'question') {
       game.cellAskedAbout = data.code;
       game.questionNum += 1;
@@ -259,11 +266,11 @@ var customEvents = function(game) {
 
   game.socket.on('updateScore', function(data) {
     console.log(game.questionNum);
-    var rawScore = data.outcome == 'fail' ? 0 : game.bonusAmt - game.questionNum + 1;
+    var rawScore = (data.outcome == 'fail' ? 0 :
+		    _.max([game.bonusAmt - game.questionNum + 1, 0]));
     console.log(rawScore);
     game.data.score += rawScore;    
-    var feedbackMessage = (rawScore == 0 ? "You exploded!" :
-			   "You safely completed your goal in " +
+    var feedbackMessage = ("You safely completed your goal in " +
 			   game.questionNum + " questions.");
     var monetaryScore = (parseFloat(game.data.score) / 100).toFixed(2); 
     $('#feedback').html(feedbackMessage + ' You earned $0.0' + rawScore);
