@@ -1,0 +1,252 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Cards experiment
+
+## Questioner behavior
+
+Sanity check: number complete games
+
+```{r}
+read_tsv('../experiments/CardsExperiment1/data/chatMessage/chatMessage.csv') %>% 
+  filter(iterationName == 'single_player_sample') %>% group_by(gameid, trialNum) %>% tally() %>% 
+  select(-n) %>% group_by(gameid) %>% tally() %>% filter(n == 6)
+```
+
+Pre-processing
+
+```{r}
+d.subjInfo <- read_csv('../experiments/CardsExperiment1/data/exitSurvey/exitSurveyFromMongo.csv') %>% 
+  rename(finalRole = role, understandsInstructions = confused) %>% 
+  filter(iterationName == 'single_player_sample') %>%
+  group_by(gameid) %>% filter(row_number()==1) %>% ungroup()
+
+d.questioner.raw <- read_csv('../experiments/CardsExperiment1/data/chatMessage/chatMessageFromMongo.csv')  %>% 
+  filter(iterationName == 'single_player_sample') %>%
+  group_by(gameid, trialNum) %>%   mutate(i = row_number()) %>% ungroup() %>%
+  left_join(d.subjInfo, by = c('gameid')) %>%
+  mutate(trialType = factor(trialType, levels = c('catch', 'baseline', 'overlap'), 
+                            labels = c('catch', 'baseline', 'overlap'))) %>%
+  mutate(targetGoalSet = gsub('"|\\[|\\]','',targetGoalSet),
+         distractorGoalSet = gsub('"|\\[|\\]','',distractorGoalSet)) %>%
+  separate(targetGoalSet, into = c('target1', 'target2'), by = ',', remove = F) %>%
+  separate(distractorGoalSet, into = c('distractor1', 'distractor2'), by = ',', remove = F)
+
+incompleteIDs <- unique((d.questioner.raw %>%
+                           group_by(gameid) %>% summarize(trialsComplete = max(trialNum) + 1) %>%
+                           filter(trialsComplete != 6))$gameid)
+confused_people <- unique((d.questioner.raw %>% 
+                             filter(understandsInstructions != 'yes'))$gameid)
+nonNative_people <- unique((d.questioner.raw %>% filter(nativeEnglish != 'yes'))$gameid)
+catchTrialFail_people <- unique((d.questioner.raw %>% 
+                                   filter(trialType == 'catch') %>% 
+                                   filter(sender == 'human') %>%
+                                   group_by(gameid) %>%
+                                   summarize(firstIncorrect = first(cardAskedAbout) != first(target1),
+                                             numExchanges = n(),
+                                             cardAskedAbout = first(cardAskedAbout), 
+                                             target1 = first(target1),
+                                             distractor1 = first(distractor1)) %>%
+                                   filter(firstIncorrect))$gameid)
+
+badGames <- unique(c(incompleteIDs, nonNative_people, confused_people, catchTrialFail_people))
+
+d.questioner <- d.questioner.raw %>%
+  filter(!(gameid %in% badGames)) %>%
+  filter(sender == 'human') %>%
+  group_by(gameid, trialNum, trialType) %>%
+  mutate(cardAskedAbout = as.character(cardAskedAbout)) %>%
+  summarize(firstAskedAbout = first(cardAskedAbout), firstRole = first(firstRole.x), firstTarget1 = first(target1), firstTarget2 = first(target2), firstDistractor1 = first(distractor1), firstDistractor2 = first(distractor2), timeElapsed = first(timeFromRoundStart)) %>%
+  mutate(nameAskedAbout = firstAskedAbout,
+         firstAskedAbout = ifelse(firstAskedAbout == firstTarget1, 'target card 1',
+                               ifelse(firstAskedAbout == firstTarget2, 'target card 2',
+                                 ifelse(firstAskedAbout %in% c(firstDistractor1, firstDistractor2), 
+                                        'distractor', 'other')))) 
+
+```
+
+```{r}
+d.questioner %>%
+  group_by(trialType) %>%
+  mutate(total = n()) %>%
+  group_by(trialType, firstAskedAbout) %>%
+  summarize(n = n(), p = n / mean(total)) %>%
+  filter(trialType != 'catch') %>%
+  ggplot(aes(x = trialType, y = p, fill = firstAskedAbout)) +
+    geom_bar(stat = 'identity') +
+    #geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_few() +
+    xlab('trial type') +
+    ylab('% questions about target card')
+  
+ggsave('questionerResults.pdf')
+```
+
+NOTE: Should probably do mixed-effects glmer with participant ID random effects 
+
+```{r}
+d.questioner %>%
+  group_by(trialType) %>%
+  mutate(total = n()) %>%
+  group_by(trialType, firstAskedAbout) %>%
+  summarize(n = n(), p = n / mean(total))
+chisq <- chisq.test(matrix(c(20,22,33,10), nrow = 2))
+chisq
+```
+
+```{r}
+d.questioner %>% group_by(gameid, trialNum, trialType) %>% tally() %>% select(-n) %>% group_by(trialType) %>% tally()
+```
+
+## Answerer behavior
+
+```{r}
+d.answerer.raw <- left_join(read_csv('../experiments/CardsExperiment1/data/reveal/revealFromMongo.csv') %>%
+                          group_by(gameid,trialNum) %>% mutate(i = row_number()) %>% 
+                          ungroup() %>% filter(sender != 'bot'),
+                        d.questioner.raw %>%  select(gameid, trialNum, trialType, target1, target2, distractor1, distractor2, cardAskedAbout, i),
+            by = c('gameid', 'trialNum', 'trialType', 'i')) %>% 
+  filter(iterationName == 'single_player_sample') %>%
+  left_join(d.subjInfo, by = c('gameid')) %>%
+  mutate(trialType = factor(trialType, levels = c('catch', 'baseline', 'overlap'), 
+                            labels = c('catch', 'baseline', 'overlap'))) %>%
+  mutate(revealedObjs = gsub('"|\\[|\\]','',revealedObjs)) %>%
+  separate(revealedObjs, into = c('revealed1', 'revealed2')) 
+
+catchTrialFail_people <- unique((d.answerer.raw %>% 
+                                   filter(trialType == 'catch') %>% 
+                                   group_by(gameid, trialNum, trialType) %>%
+                                   summarize(revealedIncorrect = !(first(cardAskedAbout) %in% c(first(revealed1), first(revealed2)))) %>%
+                                   filter(revealedIncorrect))$gameid)
+
+badGames <- unique(c(incompleteIDs, nonNative_people, confused_people, catchTrialFail_people))
+
+d.answerer <- d.answerer.raw %>%
+  filter(!(gameid %in% badGames)) %>%
+  group_by(gameid, trialNum, trialType) %>%
+  mutate(numRevealed = ifelse(is.na(revealed2), 1, 2)) %>%
+  mutate(firstAskedAbout = ifelse(first(cardAskedAbout) == first(target1), 'target card 1',
+                              ifelse(first(cardAskedAbout == first(target2)), 'target card 2',
+                              ifelse(first(cardAskedAbout) %in% c(first(distractor1), first(distractor2)), 
+                                      'distractor', 'other')))) 
+
+
+```
+
+Break out by question being asked... 
+
+```{r}
+d.answerer %>%
+  filter(trialType != 'catch') %>%
+  filter(i == 1) %>%
+  group_by(gameid, trialNum, trialType) %>%
+  mutate(target1Revealed = ifelse(firstAskedAbout == 'distractor', 
+                                  distractor1 %in% c(revealed1, revealed2),
+                                  target1 %in% c(revealed1, revealed2)),
+         target2Revealed = ifelse(firstAskedAbout == 'distractor', 
+                                  distractor2 %in% c(revealed1, revealed2), 
+                                  target2 %in% c(revealed1, revealed2)),
+         complete = target1Revealed & target2Revealed,
+         literal = cardAskedAbout == revealed1 && numRevealed == 1) %>%
+  summarize(answer = ifelse(first(literal), 'literal', 
+                            ifelse(!(first(literal)) & first(complete), 'pragmatic', 'other')),
+            cardAskedAbout = first(cardAskedAbout), revealed1 = first(revealed1), revealed2 = first(revealed2),
+            targetGoalSet = first(targetGoalSet), distractorGoalSet = first(distractorGoalSet),
+            firstAskedAbout = first(firstAskedAbout),
+            complete = first(complete), literal = first(literal), target1 = first(target1), target2 = first(target2)) %>%
+  filter(firstAskedAbout %in% c('target card 1', 'target card 2', 'distractor')) %>%
+  group_by(trialType, firstAskedAbout) %>%
+  mutate(total = n()) %>%
+  group_by(trialType, firstAskedAbout, answer) %>%
+  summarize(n = n(), p = n / mean(total)) %>%
+  ggplot(aes(x = trialType, y = p, fill = answer)) +
+    geom_bar(stat = 'identity') +
+  facet_wrap(~ firstAskedAbout) +
+    #geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(width = 0.9)) +
+    theme_bw() +
+    ylim(0,1) +
+    xlab('trial type') +
+    ylab('% responding with literal answer')
+```
+
+## Additional analyses
+
+### number of exchanges taken (combined success of questioner/answerer)
+
+Number of exchanges taken on average to complete the goal
+
+```{r}
+d.answerer %>%
+  group_by(gameid, trialNum, trialType) %>%
+  summarize(correct = n() == 1) %>%
+  group_by(trialType) %>%
+  tidyboot_mean(correct) %>%
+  ggplot(aes(x = trialType, y = empirical_stat)) +
+    geom_bar(stat = 'identity') +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_bw() +
+    coord_cartesian(ylim = c(0, 1)) +
+    #ylim(.9, 2) +
+    ylab('% success in single exchange')
+```
+
+```{r}
+summary(lmer(correct ~ trialType + (1 | participantID), data = d.questioner %>%
+  group_by(gameid, trialNum, trialType, participantID) %>%
+  summarize(correct = n() == 1) %>% 
+    filter(trialType != 'catch')
+))
+contrasts(combined$trialType)
+```
+
+### Learning?
+
+```{r}
+d.answerer %>%
+  group_by(gameid, trialNum, trialType) %>%
+  tally() %>%
+  rename(numAttempts = n) %>%
+  group_by(trialNum) %>%
+  tidyboot_mean(numAttempts) %>%
+  ggplot(aes(x = trialNum, y = empirical_stat)) +
+    geom_line() +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0) +
+    theme_bw() +
+    ylab('# attempts')
+```
+
+Check whether some answerers just don't realize they can reveal 2 cards?
+
+```{r}
+d.answerer %>%
+  group_by(gameid, trialNum, trialType) %>%
+  filter(trialType != 'catch') %>%
+  summarize(revealedOne = 1 %in% numRevealed) %>%
+  group_by(gameid) %>%
+  mutate(trialNum = ifelse(trialNum == first(trialNum), 'earlier', 'later')) %>%
+  ungroup() %>%
+  ggplot(aes(x = trialNum, y = 1, fill = revealedOne, group = interaction(trialNum, trialType))) +
+    geom_bar(stat = 'identity') +
+    theme_bw() +
+    facet_wrap(~ gameid) +
+    #ylim(.9, 2) +
+    ylab('# attempts')
+```
+
+Break out by order effect of having been questioner already?
+
+```{r}
+d.questioner %>%
+  group_by(trialType, firstRole) %>%
+  mutate(total = n()) %>%
+  group_by(trialType, firstRole, firstAskedAbout) %>%
+  summarize(n = n(), p = n / mean(total)) %>%
+  ggplot(aes(x = trialType, y = p, fill = firstAskedAbout)) +
+    geom_bar(stat = 'identity') +
+    theme_few() +
+    facet_wrap(~ firstRole) +
+    xlab('trial type') +
+    ylab('% questions about target card')
+```
