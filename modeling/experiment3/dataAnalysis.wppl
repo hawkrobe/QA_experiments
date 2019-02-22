@@ -1,0 +1,16 @@
+var questionerData = require('questionerData.json');
+var questionerPredictions = require('spatialQuestionerOutput.json');
+
+Infer({method: 'enumerate'}, function() {
+  mapData({data: questionerData}, function(response) {
+    var questionerType = flip() ? 'explicit' : 'pragmatic';
+    var prediction = _.find(questionerPredictions, {
+      questionerType: questionerType,
+      goal: response['goal'],
+      world: response['world'],
+      initState: response['initState']
+    });
+    factor(Math.log(prediction['prob']));
+    return questionerType;
+  });
+});
