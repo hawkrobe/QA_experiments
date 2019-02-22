@@ -4,9 +4,9 @@ Modeling directory
 The model is implemented in `webppl`, a probabilistic programming language.
 
 * `qa`: a [webppl package](https://webppl.readthedocs.io/en/master/packages.html) containing utilities shared across all experiments
-* `guessingGame`: contains models for the guessing game task (exp. 1 in manuscript). 
-* `cards`: contains model for the cards experiment (exp. 2)
-* `spatial`: contains model for the spatial experiment (exp. 3)
+* `experiment1`: contains models for the guessing game task (exp. 1 in manuscript). 
+* `experiment2`: contains model for the cards experiment (exp. 2)
+* `experiment3`: contains model for the spatial experiment (exp. 3)
 
 Old 
 ==========
