@@ -99,7 +99,7 @@ What do these exchanges have in common? Q chooses a question that manages to sen
 
 A, in turn, reasons under uncertainty beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the direct question, or to address a different question altogether.  This subtle context-sensitive interplay between a questioner choosing a question to ask and an answerer choosing a response raises two specific questions for formal models of linguistic behavior: What makes a question useful? And what makes an answer helpful? 
 
-We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems} and other recent approaches \cite<see>[for a thorough review]{CoenenNelsonGureckis17_OED}, that the value of a natural-language question is the extent to which it can be expected to elicit useful information. 
+We suggest, following \citeA{VanRooy03_QuestioningDecisionProblems} and other recent approaches \cite<see>[for a thorough review]{coenen2018asking}, that the value of a natural-language question is the extent to which it can be expected to elicit useful information. 
 More specifically, however, the value of a question is the expected information gained relevant to the questioner's interests, given the set of likely answers it may provoke \emph{from another agent}. The value of an answer, then, is the extent to which it resolves questioner uncertainty over the \emph{goal-relevant} aspect of the world. 
 
 This paper makes two key theoretical contributions. First, while psychologists have learned a lot about questioner behavior and answerer behavior by studying the two processes in isolation, we argue that there are significant theoretical benefits in viewing them as deeply intertwined \emph{social} inferences. Second, we formalize this view in a probabilistic model of pragmatic language understanding, bridging the gap between the simple queries used in psychological research on optimal information search and the natural language questions studied by linguistics. 
@@ -137,9 +137,13 @@ When the experimenter mentioned that they had an appointment at a given time, ho
 %In the game, two players were placed in a virtual world where they were instructed to collect cards with six consecutive numbers from the same suit. Each player could only hold three cards at a time, and neither player could see the other, thereby requiring the players to explicitly coordinate their locations. 
 %Using an information-theoretic measure to quantify a response's degree of specificity, Potts found that answers tended to be more specific when the questioner was trying to meet up or direct the answerer to a specific card, and less specific when developing a general search strategy. 
 
-Linguists interested in pragmatic accounts of answerer behavior have noted a number of additional scenarios with more nebulous goals. Questions like ``where are you?'' permit answers at many degrees of specificity: \emph{the United States}, \emph{my apartment}, and \emph{by the big tree} are each perfectly appropriate in some context and highly inappropriate in others \cite{Potts12_CardsDialogueCorpus}. Identification questions like ``who is X?'' can be resolved in many ways  \cite{BoerLycan75_KnowingWho, Gerbrandy00_Identity, Aloni05_ConceptualCovers}. 
-For example, if an undergraduate asked ``Who is Noam Chomsky?'' in an introductory course, it would be appropriate to respond ``The MIT professor who wrote \emph{Aspects of the Theory of Syntax}'' or ``The father of modern linguistics.'' If a potential donor asked the same question at an MIT fundraiser, though, it would be more appropriate to point at Chomsky in the crowd. 
-Similarly, if a child asks ``What's that?'' while pointing at a common household object, a parent's response will be much different than if one of their adult friends asked the same question. More specific \emph{wh}-questions like ``Who passed the examination?'' are also context-sensitive: answers can be understood to mean either an \emph{exhaustive} or \emph{selective} list of relevant entities depending on the scenario \cite{SchulzVanRooij06_ExhaustiveInterpretation}.
+Linguists interested in pragmatic accounts of answerer behavior have noted a number of additional scenarios with more nebulous goals. 
+Questions like ``where are you?'' permit answers at many degrees of specificity: \emph{the United States}, \emph{my apartment}, and \emph{by the big tree} are each perfectly appropriate in some context and highly inappropriate in others \cite{Potts12_CardsDialogueCorpus}. 
+Identification questions like ``who is X?'' can be resolved in many ways  \cite{BoerLycan75_KnowingWho, Gerbrandy00_Identity, Aloni05_ConceptualCovers}. 
+For example, if an undergraduate asked ``Who is Noam Chomsky?'' in an introductory course, it would be appropriate to respond ``The influential scholar who wrote \emph{Aspects of the Theory of Syntax}'' or ``The father of modern linguistics.'' 
+If a potential donor asked the same question at a fundraiser that Chomsky was attending, though, it would be more appropriate to point at him in the crowd. 
+Similarly, if a child asks ``What's that?'' while pointing at a common household object, a parent's response will be much different than if one of their adult friends asked the same question. 
+More specific \emph{wh}-questions like ``Who passed the examination?'' are also context-sensitive: answers can be understood to mean either an \emph{exhaustive} or \emph{selective} list of relevant entities depending on the scenario \cite{SchulzVanRooij06_ExhaustiveInterpretation}.
 
 % "WHY ARE WE DOING THIS?" paragraph
 Taken together, this body of work suggests that \emph{goal-relevance} is a critical feature of question-answering: answerers routinely go beyond the literal meaning of a question to help the questioner achieve their underlying goals. Note that the vast majority of prior work on question-answer behavior has focused on the \emph{answerer}, holding the question constant and investigating the effect of different contexts. 
@@ -181,7 +185,9 @@ generic language \cite{TesslerGoodman16_Generics}, and
 interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}.
 
 % HOW IS GOAL-RELEVANCE FORMALIZED IN RSA?
-RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. Instead of attempting to be maximally informative about the \emph{full} state of the world, the speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. RSA models with relevance have been used to capture non-literal language use like hyperbole \cite{KaoWuBergenGoodman14_NonliteralNumberWords}, metaphor \cite{KaoEtAl2014-Cogsci}, or irony \cite{KaoGoodman15_IronyCogSci}. In the case of hyperbole, for instance, a speaker who says ``It took a million years to get a table'' may be intending to be informative about the topic of their affective state (e.g. their frustration) rather than the exact time it took to get a table. 
+RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. Instead of attempting to be maximally informative about the \emph{full} state of the world, the speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. 
+RSA models with relevance have been used to capture non-literal language use like metaphor, irony, and hyperbole. 
+In the case of hyperbole, for instance, a speaker who says ``It took a million years to get a table'' may be intending to be informative about the topic of their affective state (e.g. their frustration) rather than the exact time it took to get a table \cite{KaoWuBergenGoodman14_NonliteralNumberWords}.
 
 % HOW IS OUR MODEL DIFFERENT FROM PAST MODELS (DIALOGUE!)
 Here, we build upon these recent modeling advances in several novel ways. 
@@ -310,7 +316,7 @@ $$
 In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future and inverting that model to infer the true world the answerer was trying to communicate:
 $$P(w|q,a) \propto P_{A_i}(a| q, w)P(w)$$
 
-Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. It therefore instantiates the same expected information gain measure of usefulness as proposed by current Optimal Experiment Design (OED) models of human inquiry \cite{CoenenNelsonGureckis17_OED}. Critically, in contrast to \citeA{GroenendijkStokhof84_SemanticsOfQuestions} and \citeA{VanRooy03_QuestioningDecisionProblems}, the questioner's behavior is not governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. They may be the same when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
+Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. It therefore instantiates the same expected information gain measure of usefulness as proposed by current Optimal Experiment Design (OED) models of human inquiry \cite{coenen2018asking}. Critically, in contrast to \citeA{GroenendijkStokhof84_SemanticsOfQuestions} and \citeA{VanRooy03_QuestioningDecisionProblems}, the questioner's behavior is not governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. They may be the same when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
 
 \subsection{$A_2$: Goal-Sensitive Answerer}
 
@@ -575,11 +581,11 @@ In the remainder of the paper, we present three behavioral experiments in this p
 
 \section{The Hidden Goal paradigm}
 
-\todo[inline]{Needs work}
+\todo[inline]{Needs  a lot of work}
 Popular paradigms for studying question-asking, such as \emph{Battleship} \cite{RotheEtAl16_NaturalLanguageQuestions} or \emph{20 questions} games, 
 Similar to the Twenty Questions task commonly used in developmental studies \cite{Siegler77_TwentyQuestions, NelsonDivjak___Meder14_GuessWho, RuggeriEtAl15_HierarchicalTwentyQs} this game creates a knowledge asymmetry between players in order to motivate question-asking. 
-Unlike that task, however, we withhold explicit information about the questioner's goal from the answerer. 
-This additional asymmetry, natural to real-world social situations, provides fertile ground for pragmatic reasoning and allows us to test the necessity of goal inference in our models. 
+Unlike that task, however, we withhold information about the questioner's goal from the answerer. 
+This feature of \emph{a priori} uncertainty over the goal, common in real-world social situations, provides fertile ground for pragmatic reasoning and allows us to test the role of goal inference in our models. 
 
 First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
  directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
@@ -587,9 +593,8 @@ To do so, we must collect data on which question a questioner prefers to ask giv
 Second, we must provide empirical evidence for the assumptions we make about internal model choices: for instance, the priors and spaces of alternative questions, answers, or goals in a particular scenario. 
 Finally, validate the predicted goal inference. 
 
-To satisfy these three requirements, we designed a real-time, multi-player reference game to simultaneously collect data on question-asking behavior \emph{and} answering behavior in interaction, carefully controlling or measuring priors and utterance sets. Since \citeA{Wittgenstein09_PhilosophicalInvestigations}, reference games have provided a simple but productive testbed for eliciting pragmatic behavior: one participant must choose an utterance to communicate the identity of a target object to their partner in a shared context. 
-
-  %Our model, following \citeA{VanRooy03_QuestioningDecisionProblems}, however, suggests that the question itself is important in prompting a relevant answer, hence questioner behavior should be treated as a dependent variable.
+To satisfy these three requirements, we designed a reference game to simultaneously collect data on question-asking behavior \emph{and} answering behavior in interaction, carefully controlling or measuring priors and utterance sets. 
+%Since \citeA{Wittgenstein09_PhilosophicalInvestigations}, reference games have provided a simple but productive testbed for eliciting pragmatic behavior: one participant must choose an utterance to communicate the identity of a target object to their partner in a shared context. 
 
 \section{Experiment 1: Conceptual knowledge and saliency}
 
@@ -605,7 +610,9 @@ To satisfy these three requirements, we designed a real-time, multi-player refer
 %%%
 
 
-We extend this basic setup to a two-stage Guessing Game using natural objects and scenes as targets. On each trial, four objects are hidden such that only one player -- the \emph{answerer} -- knows each object's true location. The other player -- the \emph{questioner} -- is privately assigned one of the objects to find and is allowed to ask one question to query their knowledgeable partner about its location. After hearing the answerer's response, the questioner makes a guess about the location of the target object, then both players receive feedback and advance to the next trial. 
+Our first experiment was a simple We designed a Hidden Goal game using natural objects and scenes as targets. 
+On each trial, four objects are hidden such that only one player -- the \emph{answerer} -- knows each object's true location. 
+The other player -- the \emph{questioner} -- is privately assigned one of the objects to find and is allowed to ask one question to query their knowledgeable partner about its location. After hearing the answerer's response, the questioner makes a guess about the location of the target object, then both players receive feedback and advance to the next trial. 
 
 The objects in context on a given trial belong to a conceptual hierarchy (see Fig. \ref{fig:hierarchyStructures} for several examples), introducing a family of indirect questions. 
 For example, a questioner can ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all would be literally true of the Dalmatian. \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. 
@@ -756,7 +763,7 @@ Still, Fig. \ref{fig:results}D makes it clear that $A_2$ and $Q_2$ fail to captu
 
 %To some extent, this is expected from a model with only a single parameter fit for all domains simultaneously. We could have fit separate rationality parameters for each domain to capture domain-level differences. However, we expect that this variability can be accounted for in a more principled way by the saliency prior. Our assumption of uniformity may be incorrect. Indeed, we found that 
 
-We hypothesize that this is a typicality or saliency effect in the interpretation of the definite article \cite{Strawson50_OnReferring, ClarkSchreuderButtrick83_CommonGroundUnderstanding}. A Dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}, hence a questioner considering this knowledge as common ground would know that asking ``Where is the pet?'' would tend to elicit information about the Dalmatian, not the goldfish. If they were looking for information about the goldfish, they would then prefer to ask about the `fish' category, where a goldfish is a highly typical example. 
+We hypothesize that this is a typicality or saliency effect in the interpretation of the definite article \cite{Strawson50_OnReferring, clark1983common}. A Dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}, hence a questioner considering this knowledge as common ground would know that asking ``Where is the pet?'' would tend to elicit information about the Dalmatian, not the goldfish. If they were looking for information about the goldfish, they would then prefer to ask about the `fish' category, where a goldfish is a highly typical example. 
 
 Failing to account for typicality could also potentially invalidate the conclusions of our model comparison. For example, we expect a house cat to be a much more typical exemplar of the category `cat' than a lion. Hence, participants may not be choosing the house cat in this item for pragmatic reasons; they may just be selecting the more salient member of the category. If this were the case, including saliency knowledge should improve the predictions of $A_1$ and $Q_1$, thus `explaining away' any benefit of deeper pragmatics. 
 
