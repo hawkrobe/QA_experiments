@@ -1,0 +1,76 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(tidyboot)
+```
+
+```{r}
+d.subj.raw <- read_csv('../data/experiment3/exitSurveyFromMongo.csv') %>%
+  filter(iterationName == 'full_sample')
+d.goals.raw <- read_csv('../data/experiment3/goalInferenceFromMongo.csv') %>%
+  filter(iterationName == 'full_sample') 
+d.questions.raw <- read_csv('../data/experiment3/questionFromMongo.csv') %>%
+  filter(iterationName == 'full_sample') 
+d.answers.raw <- read_csv('../data/experiment3/answerFromMongo.csv') %>%
+  filter(iterationName == 'full_sample') 
+
+# nonNativeSpeakerIDs <- unique((tangramSubjInfo %>% filter(nativeEnglish != "yes"))$gameid)
+incompleteIDs <- union(unique((d.goals.raw %>% group_by(gameid) %>% 
+                           filter(length(unique(trialNum)) != 10))$gameid),
+                       union(unique((d.questions.raw %>% group_by(gameid) %>% 
+                           filter(length(unique(trialNum)) != 10))$gameid),
+                       unique((d.answers.raw %>% group_by(gameid) %>% 
+                           filter(length(unique(trialNum)) != 10))$gameid)))
+confused <- unique((d.subj %>% filter(confused != 'yes'))$gameid)
+nonNative <- unique((d.subj %>% filter(nativeEnglish != 'yes'))$gameid)
+
+badGames <- c(incompleteIDs, nonNative, confused)
+d.goals <- d.goals.raw %>% filter(!(gameid %in% badGames)) %>% arrange(gameid, trialNum)
+d.answers <- d.answers.raw %>% filter(!(gameid %in% badGames))
+d.questions <- d.questions.raw %>% filter(!(gameid %in% badGames))
+```
+
+Note that if you split out by trueGoal, there seems to be a ROW bias (probably bcecause ROW button was first...)
+ 
+We also exclude 'random' style trials for this analysis since they were all over the place in what goal we predicted people would infer...   
+ 
+```{r}
+goal_response_proportions <- d.goals %>% 
+  filter(questionNumber == 1) %>%
+  filter(!(trialType %in% c('practice', 'random'))) %>%
+  mutate(correct = ifelse(goalResponse == 'not sure', '"not sure"', 
+                          ifelse(trueGoal == goalResponse, 'correct', 'incorrect')),
+         trialType = ifelse(trialType == 'empty', 'empty', 'pragmatic')) %>%
+  group_by(trialType) %>%
+  mutate(total = length(correct)) %>%
+  group_by(trialType, correct) %>% 
+  tidyboot(summary_function = function(x) x %>% summarize(prop = length(total) / mean(total)), 
+           statistics_functions = function(x) x %>%
+           summarise_at(vars(prop), funs(ci_upper, mean, ci_lower))) %>% 
+  ungroup() %>% 
+  mutate(correct = factor(correct, levels = c('correct', 'incorrect',  '"not sure"')),
+         trialType = factor(trialType, levels = c('pragmatic', 'empty')))
+
+dodge = position_dodge(.9)
+ggplot(goal_response_proportions, aes(x = correct, y = empirical_prop, fill = trialType))  +
+  geom_bar(stat = 'identity', position = dodge) +
+  theme_few() +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = dodge) +
+  scale_fill_few() +
+  ylab('% responses') +
+  xlab('')+
+  ggtitle("What goal do you think the leader has?") 
+  
+
+ggsave('../writing/2019/journal-revision/figures/spatialGoalInference.pdf', width=14, height = 10, units='cm')
+```
+
