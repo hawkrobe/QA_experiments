@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789360416	0	practice	1	leader	A2	human	{"safe":["B2","C2"],"unsafe":[]}	17278	columns	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789427543	2	random	1	leader	B3	human	{"safe":["B1","B2","C2","C3"],"unsafe":[]}	18702	rows	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789477104	4	random	1	leader	A2	human	{"safe":["B2","C1","C2"],"unsafe":[]}	10467	columns	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789575802	6	random	1	leader	B2	human	{"safe":["B3"],"unsafe":[]}	10132	rows	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789710257	8	random	1	leader	A2	human	{"safe":["B2","C2"],"unsafe":[]}	10007	columns	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789776301	10	random	1	leader	A2	human	{"safe":["B2"],"unsafe":[]}	8320	columns	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789792311	10	random	2	leader	C3	human	{"safe":["B2","B3"],"unsafe":["A2"]}	24343	columns	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789843465	12	random	1	leader	C1	human	{"safe":["B2","C2","C3"],"unsafe":[]}	10836	rows	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789854163	12	random	2	leader	B3	human	{"safe":["B2","C2","C3","B1"],"unsafe":["C1"]}	21538	rows	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789890816	14	empty	1	leader	A1	human	{"safe":[],"unsafe":[]}	12706	columns	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789901306	14	empty	2	leader	B1	human	{"safe":["A1","C1"],"unsafe":[]}	23220	columns	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550789986061	16	pragmatic	1	leader	A1	human	{"safe":["A3"],"unsafe":[]}	12695	rows	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550790023343	18	blocked	1	leader	C1	human	{"safe":["C3"],"unsafe":[]}	7258	rows	question
+testing	6928-fd278999-f7d0-40b5-aa78-3ea84fd499a9	1550790035723	18	blocked	2	leader	B1	human	{"safe":["C3","B3"],"unsafe":["C1"]}	19637	rows	question

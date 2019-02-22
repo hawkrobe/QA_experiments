@@ -1,0 +1,14 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789079056	1	practice	1	helper	A3	human	{"safe":["A1","A2"],"unsafe":[]}	8506	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789109054	3	random	1	helper	C1	human	{"safe":["A1","A3","B2","C2","C3"],"unsafe":[]}	6676	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789142428	5	random	1	helper	A1	human	{"safe":["A2","A3","B1","C3"],"unsafe":[]}	8405	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789163089	5	random	2	helper	B2	human	{"safe":["A2","A3","B1","C3","B3"],"unsafe":["A1"]}	29066	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789209435	7	random	1	helper	A3	human	{"safe":["A1","A2","B2","C3"],"unsafe":[]}	7064	columns	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789229819	7	random	2	helper	C2	human	{"safe":["A1","A2","B2","C3","C1"],"unsafe":["A3"]}	27452	columns	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789280643	9	random	1	helper	C2	human	{"safe":["A1","B2","C1","C3"],"unsafe":[]}	8730	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789360210	11	pragmatic	1	helper	A2	human	{"safe":["A1"],"unsafe":[]}	7565	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789404106	13	blocked	1	helper	B1	human	{"safe":["B2"],"unsafe":[]}	8447	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789452769	15	empty	1	helper	B1	human	{"safe":[],"unsafe":[]}	8092	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789462724	15	empty	2	helper	A1	human	{"safe":["A3"],"unsafe":["B1"]}	18044	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789495022	17	random	1	helper	B1	human	{"safe":["A1","B2","B3","C2"],"unsafe":[]}	9405	rows	question
+testing	5686-c9a60b18-3cb8-4d76-9150-85c620a93c7c	1550789529851	19	random	1	helper	A2	human	{"safe":["B2","C1","C2"],"unsafe":[]}	7948	columns	question

@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784319113	1	practice	1	helper	A1	human	{"safe":["A2","A3"],"unsafe":[]}	9468	rows	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784388673	3	random	1	helper	A1	human	{"safe":["B1","C1"],"unsafe":[]}	7214	columns	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784452774	5	random	1	helper	A3	human	{"safe":["B3"],"unsafe":[]}	10098	columns	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784539876	7	random	1	helper	C1	human	{"safe":["A1","A2","B1","C2"],"unsafe":[]}	9659	columns	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784572575	9	pragmatic	1	helper	A2	human	{"safe":["A3"],"unsafe":[]}	6784	rows	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784610711	11	random	1	helper	A3	human	{"safe":["B1","B3","C3"],"unsafe":[]}	7372	columns	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784667834	13	empty	1	helper	A1	human	{"safe":[],"unsafe":[]}	27262	rows	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784680812	13	empty	2	helper	A3	human	{"safe":["A1"],"unsafe":["C3"]}	40240	rows	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784714375	15	random	1	helper	C3	human	{"safe":["C1","C2"],"unsafe":[]}	6300	rows	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784753333	17	random	1	helper	A1	human	{"safe":["A3","B1","C1"],"unsafe":[]}	5810	columns	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784763218	17	random	2	helper	C3	human	{"safe":["A3","B1","C1","B3"],"unsafe":["A1"]}	15695	columns	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784795701	19	blocked	1	helper	A1	human	{"safe":["A3"],"unsafe":[]}	5274	rows	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784806441	19	blocked	2	helper	B1	human	{"safe":["A3","A1"],"unsafe":["A2"]}	16017	rows	question
+testing	3392-1f7b3ff5-1fcb-491e-88e9-ff1b86d587da	1550784820832	19	blocked	3	helper	B2	human	{"safe":["A3","A1","B1","C1"],"unsafe":["A2"]}	30409	rows	question

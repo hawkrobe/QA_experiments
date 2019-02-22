@@ -1,0 +1,2 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	3206-ea492734-1566-46cc-868c-966128fd5928	1550774990540	0	practice	1	leader	C3	human	{"safe":["A3","B3"],"unsafe":[]}	11069	columns	question

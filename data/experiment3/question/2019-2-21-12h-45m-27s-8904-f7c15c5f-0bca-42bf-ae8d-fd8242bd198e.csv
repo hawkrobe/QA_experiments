@@ -1,0 +1,14 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550781927732	1	practice	1	helper	A2	human	{"safe":["B2","C2"],"unsafe":[]}	6969	columns	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550781965516	3	random	1	helper	A2	human	{"safe":["A3","B1","C1"],"unsafe":[]}	12318	rows	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782004173	5	random	1	helper	B2	human	{"safe":["A2","B3","C2"],"unsafe":[]}	7136	columns	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782059971	7	random	1	helper	B2	human	{"safe":["A1","B1","B3"],"unsafe":[]}	8955	rows	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782089183	9	blocked	1	helper	B2	human	{"safe":["B1"],"unsafe":[]}	7784	rows	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782124903	11	empty	1	helper	A1	human	{"safe":[],"unsafe":[]}	5715	columns	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782136251	11	empty	2	helper	A3	human	{"safe":["A1"],"unsafe":["C1"]}	17064	columns	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782148506	11	empty	3	helper	B2	human	{"safe":["A1","A3","A2"],"unsafe":["C1"]}	29319	columns	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782163083	11	empty	4	helper	C2	human	{"safe":["A1","A3","A2","B2","B3"],"unsafe":["C1"]}	43895	columns	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782227523	13	random	1	helper	A1	human	{"safe":["B1"],"unsafe":[]}	6599	columns	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782259125	15	random	1	helper	A3	human	{"safe":["A1","A2","C2"],"unsafe":[]}	4815	rows	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782317059	17	pragmatic	1	helper	A1	human	{"safe":["A3"],"unsafe":[]}	5056	rows	question
+testing	8904-f7c15c5f-0bca-42bf-ae8d-fd8242bd198e	1550782348892	19	random	1	helper	C2	human	{"safe":["A1","A2","B2","C3"],"unsafe":[]}	7126	columns	question

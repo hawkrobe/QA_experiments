@@ -1,0 +1,3 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	6135-1b049e2a-565c-47c4-9926-61c37a69d174	1550782490096	0	practice	1	leader	A3	human	{"safe":["A1","A2"],"unsafe":[]}	12970	rows	question
+testing	6135-1b049e2a-565c-47c4-9926-61c37a69d174	1550782822490	2	random	1	leader	A2	human	{"safe":["A1","A3","B1","B3"],"unsafe":[]}	17297	rows	question

@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789196240	1	practice	1	leader	columns	A3	rows	{"safe":["B3","C3"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789241606	3	random	1	leader	columns	C3	columns	{"safe":["A2","A3","B1","B3"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789293833	5	random	1	leader	rows	B3	rows	{"safe":["A1","B1","B2"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789332515	7	random	1	leader	rows	A1	rows	{"safe":["A2","A3","B3"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789373081	9	random	1	leader	columns	B2	columns	{"safe":["A2","C3"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789403562	9	random	2	leader	columns	B3	rows	{"safe":["A2","C3"],"unsafe":["B2","C2"]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789423284	9	random	3	leader	columns	B1	rows	{"safe":["A2","C3","A1"],"unsafe":["B2","C2","B3"]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789484577	11	pragmatic	1	leader	rows	B2	rows	{"safe":["B1"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789519428	13	random	1	leader	rows	B2	rows	{"safe":["B3"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789570454	15	empty	1	leader	rows	B3	rows	{"safe":[],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789592166	15	empty	2	leader	rows	A2	rows	{"safe":["B3"],"unsafe":["B2"]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789610837	15	empty	3	leader	rows	A1	rows	{"safe":["B3","A2","A3"],"unsafe":["B2"]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789641774	17	random	1	leader	columns	B3	columns	{"safe":["A3","C3"],"unsafe":[]}	goalInference
+testing	4038-0da3abb9-6138-4694-8712-cba9e6af2aa8	1550789688980	19	blocked	1	leader	rows	B1	rows	{"safe":["B3"],"unsafe":[]}	goalInference

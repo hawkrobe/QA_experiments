@@ -1,0 +1,4 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	sender	underlyingWorld	timeFromMessage	gridState	cellAskedAbout	answer	eventType
+testing	4491-ae81709d-c733-4018-b02b-8951d1e7abdd	1550737776632	0	practice	1	helper	human	{"A1":"safe","A2":"unsafe","A3":"safe","B1":"unsafe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"}	6735	{"safe":["C2","C3"],"unsafe":[]}	C1	C1	answer
+testing	4491-ae81709d-c733-4018-b02b-8951d1e7abdd	1550737830052	2	random	1	helper	human	{"A1":"unsafe","A2":"safe","A3":"unsafe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"}	8673	{"safe":["B2","C1","C3"],"unsafe":[]}	C2	C2	answer
+testing	4491-ae81709d-c733-4018-b02b-8951d1e7abdd	1550737860748	4	random	1	helper	human	{"A1":"safe","A2":"unsafe","A3":"safe","B1":"safe","B2":"safe","B3":"unsafe","C1":"safe","C2":"safe","C3":"safe"}	11866	{"safe":["B2","C1"],"unsafe":[]}	A1	A1,B1	answer

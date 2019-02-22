@@ -1,0 +1,14 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550789716417	1	practice	1	leader	columns	C2	rows	{"safe":["A2","B2"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550789802008	3	random	1	leader	columns	A3	rows	{"safe":["A1","B2","B3","C3"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550789824769	3	random	2	leader	columns	C2	columns	{"safe":["A1","B2","B3","C3","A2"],"unsafe":["A3"]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550789879392	5	random	1	leader	rows	A3	rows	{"safe":["A1","A2","B3"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550789925313	7	empty	1	leader	columns	C1	not sure	{"safe":[],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550789944249	7	empty	2	leader	columns	A1	columns	{"safe":["C1","C2"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550789984331	9	random	1	leader	rows	A1	rows	{"safe":["A3"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550790042690	11	random	1	leader	columns	C2	columns	{"safe":["A2","B2","C1"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550790089153	13	random	1	leader	rows	A3	rows	{"safe":["A1","C2"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550790150074	15	blocked	1	leader	columns	A3	columns	{"safe":["C3"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550790166058	15	blocked	2	leader	columns	A2	columns	{"safe":["C3","B2"],"unsafe":["A3"]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550790209154	17	pragmatic	1	leader	rows	C1	rows	{"safe":["C2"],"unsafe":[]}	goalInference
+testing	8918-511a4c0d-814e-4112-af01-32c8e07e070f	1550790242458	19	random	1	leader	columns	B3	columns	{"safe":["A2","A3","C1"],"unsafe":[]}	goalInference

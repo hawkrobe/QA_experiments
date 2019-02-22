@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774102379	1	practice	1	leader	columns	C3	columns	{"safe":["A3","B3"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774147883	3	random	1	leader	columns	A3	rows	{"safe":["A2","B3","C2","C3"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774238509	5	random	1	leader	rows	B3	rows	{"safe":["A2","B1","B2","C1","C3"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774290121	7	random	1	leader	columns	C1	columns	{"safe":["A1","B1","B2","C3"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774334084	9	random	1	leader	rows	A2	rows	{"safe":["A1","A3","B2"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774384098	11	random	1	leader	rows	B1	rows	{"safe":["A3","B2","B3","C2"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774412164	11	random	2	leader	rows	A1	rows	{"safe":["A3","B2","B3","C2","A2"],"unsafe":["B1"]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774479093	13	blocked	1	leader	columns	B1	columns	{"safe":["C1"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774501810	13	blocked	2	leader	columns	A2	columns	{"safe":["C1","C2"],"unsafe":["B1"]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774514263	13	blocked	3	leader	columns	B2	columns	{"safe":["C1","C2","A2"],"unsafe":["B1"]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774556926	15	pragmatic	1	leader	rows	B2	rows	{"safe":["B3"],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774607075	17	empty	1	leader	columns	C3	columns	{"safe":[],"unsafe":[]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774641442	17	empty	2	leader	columns	A2	columns	{"safe":["C2"],"unsafe":["C3"]}	goalInference
+testing	1305-1ac82870-378e-4cea-9a1d-d0456a4bde0d	1550774693227	19	random	1	leader	columns	A2	columns	{"safe":["A3","B1","B2","C2"],"unsafe":[]}	goalInference

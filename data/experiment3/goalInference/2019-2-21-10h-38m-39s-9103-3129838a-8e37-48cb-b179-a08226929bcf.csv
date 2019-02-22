@@ -1,0 +1,14 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774319447	1	practice	1	leader	rows	C1	rows	{"safe":["C2","C3"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774365302	3	random	1	leader	columns	A3	columns	{"safe":["B3","C2"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774408357	5	random	1	leader	columns	C2	columns	{"safe":["A2","B2","B3"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774452603	7	blocked	1	leader	rows	B3	rows	{"safe":["B2"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774501075	9	random	1	leader	rows	A1	rows	{"safe":["A2"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774546510	11	random	1	leader	columns	B3	columns	{"safe":["A3"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774578434	13	random	1	leader	columns	B3	columns	{"safe":["C3"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774603591	13	random	2	leader	columns	A2	columns	{"safe":["C3","C2"],"unsafe":["B3"]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774617374	13	random	3	leader	columns	A1	columns	{"safe":["C3","C2","B1"],"unsafe":["B3","A2"]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774647448	15	random	1	leader	rows	A3	rows	{"safe":["A1","A2","B1"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774685215	17	pragmatic	1	leader	columns	C1	columns	{"safe":["B1"],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774716543	19	empty	1	leader	columns	B1	not sure	{"safe":[],"unsafe":[]}	goalInference
+testing	9103-3129838a-8e37-48cb-b179-a08226929bcf	1550774729739	19	empty	2	leader	columns	C1	columns	{"safe":["B1","A1"],"unsafe":[]}	goalInference

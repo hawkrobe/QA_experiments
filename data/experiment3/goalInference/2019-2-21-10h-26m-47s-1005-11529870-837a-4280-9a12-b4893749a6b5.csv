@@ -1,0 +1,14 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773607910	1	practice	1	leader	rows	A3	rows	{"safe":["A1","A2"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773659400	3	random	1	leader	columns	B3	rows	{"safe":["A2","A3","C2","C3"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773699600	5	random	1	leader	columns	C2	columns	{"safe":["A2","B1"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773722245	5	random	2	leader	columns	C1	columns	{"safe":["A2","B1","C2"],"unsafe":["B2"]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773772287	7	random	1	leader	rows	C3	rows	{"safe":["A3","B3","C1","C2"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773804079	9	random	1	leader	columns	B3	columns	{"safe":["A3"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773843279	11	blocked	1	leader	rows	C3	rows	{"safe":["C1"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773889059	13	pragmatic	1	leader	rows	A3	rows	{"safe":["A1"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773921687	15	empty	1	leader	rows	A1	rows	{"safe":[],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773946613	15	empty	2	leader	rows	A3	columns	{"safe":["A1","B1"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773961317	15	empty	3	leader	rows	B3	rows	{"safe":["A1","B1","C1"],"unsafe":["A3"]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550773997375	17	random	1	leader	columns	B3	columns	{"safe":["A1","A3","B2","C3"],"unsafe":[]}	goalInference
+testing	1005-11529870-837a-4280-9a12-b4893749a6b5	1550774036042	19	random	1	leader	rows	B1	rows	{"safe":["A3","B2","B3"],"unsafe":[]}	goalInference

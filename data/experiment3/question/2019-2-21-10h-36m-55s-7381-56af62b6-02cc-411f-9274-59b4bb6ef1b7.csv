@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+2557	columns	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774232711	1	practice	2	helper	A1	human	{"safe":["A2","B2","A3"],"unsafe":[]}	29697	columns	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774264841	1	practice	3	helper	C2	human	{"safe":["A2","B2","A3"],"unsafe":["A1"]}	61825	columns	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774320151	3	random	1	helper	A2	human	{"safe":["A1","A3","B3","C1"],"unsafe":[]}	9865	rows	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774419168	5	random	1	helper	B3	human	{"safe":["A2","B1","B2"],"unsafe":[]}	13049	rows	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774526576	7	pragmatic	1	helper	B2	human	{"safe":["A2"],"unsafe":[]}	15230	columns	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774582132	9	blocked	1	helper	B3	human	{"safe":["B2"],"unsafe":[]}	12556	rows	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774600954	9	blocked	2	helper	C1	human	{"safe":["B2","C3"],"unsafe":["B3"]}	31376	rows	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774705290	11	random	1	helper	C3	human	{"safe":["B1","B3"],"unsafe":[]}	15115	columns	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774781302	13	random	1	helper	A2	human	{"safe":["A1","A3","B1","B3"],"unsafe":[]}	9594	rows	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774837055	15	random	1	helper	A2	human	{"safe":["A1","A3","B1","C3"],"unsafe":[]}	10934	rows	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774898521	17	empty	1	helper	A1	human	{"safe":[],"unsafe":[]}	21666	columns	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774912147	17	empty	2	helper	A3	human	{"safe":["A1","A2"],"unsafe":[]}	35289	columns	question
+testing	7381-56af62b6-02cc-411f-9274-59b4bb6ef1b7	1550774928476	17	empty	3	helper	B1	human	{"safe":["A1","A2","A3"],"unsafe":["B2"]}	51620	columns	question

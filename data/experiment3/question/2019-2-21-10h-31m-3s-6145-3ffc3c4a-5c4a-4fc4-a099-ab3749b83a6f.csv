@@ -1,0 +1,14 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550773863906	1	practice	1	helper	A3	human	{"safe":["A1","A2"],"unsafe":[]}	7470	rows	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550773909165	3	random	1	helper	C1	human	{"safe":["A1","B1","C3"],"unsafe":[]}	4930	rows	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550773928205	3	random	2	helper	C2	human	{"safe":["A1","B1","C3","C1"],"unsafe":["B3"]}	23975	rows	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550773991507	5	random	1	helper	C3	human	{"safe":["A3","B1","B2"],"unsafe":[]}	10508	columns	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774052209	7	random	1	helper	A1	human	{"safe":["A3","B1","C1","C3"],"unsafe":[]}	5975	columns	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774088277	9	random	1	helper	C1	human	{"safe":["A1","B1","B2"],"unsafe":[]}	5133	columns	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774121711	11	random	1	helper	B3	human	{"safe":["A1","B1","B2"],"unsafe":[]}	5255	rows	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774134009	11	random	2	helper	A2	human	{"safe":["A1","B1","B2","A3"],"unsafe":["B3"]}	17549	rows	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774168372	13	random	1	helper	C2	human	{"safe":["A2","A3","B1","B2"],"unsafe":[]}	5458	columns	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774195917	15	pragmatic	1	helper	B3	human	{"safe":["C3"],"unsafe":[]}	6823	columns	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774227068	17	blocked	1	helper	B1	human	{"safe":["A1"],"unsafe":[]}	5370	columns	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774260269	19	empty	1	helper	B1	human	{"safe":[],"unsafe":[]}	5671	rows	question
+testing	6145-3ffc3c4a-5c4a-4fc4-a099-ab3749b83a6f	1550774272165	19	empty	2	helper	B2	human	{"safe":["B1","A1"],"unsafe":[]}	17562	rows	question

@@ -1,0 +1,14 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789512566	1	practice	1	leader	columns	C2	rows	{"safe":["A2","B2"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789579929	3	random	1	leader	columns	C1	columns	{"safe":["A1","B2"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789638836	5	random	1	leader	columns	B3	columns	{"safe":["A1","A3","C1","C3"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789709911	7	random	1	leader	rows	B2	rows	{"safe":["A1","B1","B3","C2"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789739734	7	random	2	leader	rows	C3	rows	{"safe":["A1","B1","B3","C2","C1"],"unsafe":["B2"]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789813546	9	random	1	leader	columns	B2	columns	{"safe":["A2","B1","C1","C2"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789862305	11	blocked	1	leader	columns	C2	columns	{"safe":["A2"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789952945	13	random	1	leader	columns	B3	not sure	{"safe":["A2","C1","C3"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550789977822	13	random	2	leader	columns	B2	columns	{"safe":["A2","C1","C3","C2"],"unsafe":["B3"]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550790014738	15	pragmatic	1	leader	columns	A1	not sure	{"safe":["C1"],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550790061466	17	empty	1	leader	columns	C2	not sure	{"safe":[],"unsafe":[]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550790082068	17	empty	2	leader	columns	B1	columns	{"safe":["C1"],"unsafe":["C2"]}	goalInference
+testing	0443-7523f002-3863-4efe-ae92-7a14ea2e3112	1550790120226	19	random	1	leader	rows	B2	columns	{"safe":["A2","B1","B3","C3"],"unsafe":[]}	goalInference

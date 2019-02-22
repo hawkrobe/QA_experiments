@@ -1,0 +1,16 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775123777	0	practice	1	helper	columns	A3	columns	{"safe":["B3","C3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775158461	2	random	1	helper	rows	B2	rows	{"safe":["A1","B1","B3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775189076	4	random	1	helper	columns	A3	columns	{"safe":["B3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775213841	4	random	2	helper	columns	C2	rows	{"safe":["B3","A3"],"unsafe":["C3"]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775229973	4	random	3	helper	columns	B1	columns	{"safe":["B3","A3","C2","C1"],"unsafe":["C3"]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775244577	4	random	4	helper	columns	B2	columns	{"safe":["B3","A3","C2","C1","A1"],"unsafe":["C3","B1"]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775289967	6	random	1	helper	columns	C1	columns	{"safe":["A1","B1","C3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775330406	8	random	1	helper	rows	B2	rows	{"safe":["B1","B3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775347055	8	random	2	helper	rows	A3	rows	{"safe":["B1","B3","A1"],"unsafe":["B2"]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775379696	10	empty	1	helper	columns	B2	not sure	{"safe":[],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775396592	10	empty	2	helper	columns	C3	columns	{"safe":["B2","B3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775424192	12	blocked	1	helper	rows	A2	rows	{"safe":["A3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775464904	14	random	1	helper	rows	B3	rows	{"safe":["A3","B1","B2","C2"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775494476	16	pragmatic	1	helper	columns	B3	columns	{"safe":["C3"],"unsafe":[]}	goalInference
+testing	7059-7aa0b2e4-700e-4574-8ae7-81f2dedd30e9	1550775523920	18	random	1	helper	rows	C1	rows	{"safe":["C2","C3"],"unsafe":[]}	goalInference

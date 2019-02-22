@@ -516,8 +516,29 @@ var pickClosestNewspaperCafe = function(world) {
   }
 };
 
+// Used these to speed stuff up...
+
+//var answererModelOutput = readCSV('./spatialAnswererOutput_HierarchicalVersion.csv');
+// var questionerModelOutput = require('../experiment3/spatialQuestionerOutput_HierarchicalVersion.json');
+
+// function getQuestionerOutput(type, goal, gridState) {
+//   var goalString = _.includes(goal, '1') ? 'columns': 'rows';
+
+//   return _.filter(questionerModelOutput, {
+//     questionerType : type,
+//     gridState: JSON.stringify(gridState),
+//     goal: goalString
+//   });
+// }
+
+// function alreadyInOutput(world) {
+//   return _.find(answererModelOutput, {world: world}) ? true : false;
+// }
+
 module.exports = {
   arraysEqual: arraysEqual,
+  // alreadyInOutput : alreadyInOutput,
+  // getQuestionerOutput : getQuestionerOutput,
   setsEqual: setsEqual,
   powerset: powerset,
   flatten: flatten,

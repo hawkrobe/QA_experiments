@@ -1,0 +1,4 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	cellAskedAbout	goalResponse	gridState	eventType
+testing	4491-ae81709d-c733-4018-b02b-8951d1e7abdd	1550737774919	0	practice	1	helper	C1	rows	{"safe":["C2","C3"],"unsafe":[]}	goalInference
+testing	4491-ae81709d-c733-4018-b02b-8951d1e7abdd	1550737828380	2	random	1	helper	C2	rows	{"safe":["B2","C1","C3"],"unsafe":[]}	goalInference
+testing	4491-ae81709d-c733-4018-b02b-8951d1e7abdd	1550737854351	4	random	1	helper	A1	columns	{"safe":["B2","C1"],"unsafe":[]}	goalInference

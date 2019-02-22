@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782358018	0	practice	1	leader	A2	human	{"safe":["B2","C2"],"unsafe":[]}	11613	columns	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782394893	2	random	1	leader	B3	human	{"safe":["A1","A3","B2","C3"],"unsafe":[]}	7982	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782419964	2	random	2	leader	A2	human	{"safe":["A1","A3","B2","C3","B3"],"unsafe":["B1"]}	33055	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782488656	4	random	1	leader	C3	human	{"safe":["A2","C1","C2"],"unsafe":[]}	8357	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782523497	6	random	1	leader	C3	human	{"safe":["B1","B3","C1","C2"],"unsafe":[]}	9480	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782553041	8	random	1	leader	B1	human	{"safe":["A2","B2","B3"],"unsafe":[]}	6361	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782589229	10	random	1	leader	C2	human	{"safe":["A1","B1","C3"],"unsafe":[]}	11473	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782602593	10	random	2	leader	B2	human	{"safe":["A1","B1","C3","B3"],"unsafe":["C2"]}	24836	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782694820	12	random	1	leader	C1	human	{"safe":["A1","C2"],"unsafe":[]}	8431	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782763467	14	pragmatic	1	leader	B2	human	{"safe":["B3"],"unsafe":[]}	5735	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782818890	16	blocked	1	leader	B2	human	{"safe":["A2"],"unsafe":[]}	5758	columns	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782829007	16	blocked	2	leader	B3	human	{"safe":["A2","A3"],"unsafe":["B2"]}	15877	columns	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782884976	18	empty	1	leader	B2	human	{"safe":[],"unsafe":[]}	5866	rows	question
+testing	5389-de8b97ca-e8af-41c3-af43-ac3c41a40c3e	1550782895823	18	empty	2	leader	B1	human	{"safe":["B2","C2"],"unsafe":[]}	16710	rows	question
