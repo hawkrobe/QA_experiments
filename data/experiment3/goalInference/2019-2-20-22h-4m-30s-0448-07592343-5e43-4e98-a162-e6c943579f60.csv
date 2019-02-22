@@ -1,0 +1,17 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	cellAskedAbout	goalResponse	gridState	eventType
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729070847	0	practice	1	helper	C1	not sure	{"safe":["C2","C3"],"unsafe":[]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729144612	2	random	1	helper	C2	not sure	{"safe":["A3","B2","C1","C3"],"unsafe":[]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729235386	4	random	1	helper	C3	not sure	{"safe":["A2","B1","B3"],"unsafe":[]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729260094	4	random	2	helper	A1	rows	{"safe":["A2","B1","B3"],"unsafe":["C3"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729273559	4	random	3	helper	C1	not sure	{"safe":["A2","B1","B3","A1"],"unsafe":["C3"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729302312	4	random	4	helper	C2	rows	{"safe":["A2","B1","B3","A1","C1"],"unsafe":["C3"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729316465	4	random	5	helper	B2	columns	{"safe":["A2","B1","B3","A1","C1"],"unsafe":["C3","C2"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729329123	4	random	6	helper	A3	not sure	{"safe":["A2","B1","B3","A1","C1","B2"],"unsafe":["C3","C2"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729340504	4	random	7	helper	B1	not sure	{"safe":["A2","B1","B3","A1","C1","B2","A3"],"unsafe":["C3","C2"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729349051	4	random	8	helper	B3	not sure	{"safe":["A2","B1","B3","A1","C1","B2","A3","B1"],"unsafe":["C3","C2"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729359551	4	random	9	helper	B2	columns	{"safe":["A2","B1","B3","A1","C1","B2","A3","B1","B3"],"unsafe":["C3","C2"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729371358	4	random	10	helper	A2	not sure	{"safe":["A2","B1","B3","A1","C1","B2","A3","B1","B3","B2"],"unsafe":["C3","C2"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729381157	4	random	11	helper	C3	not sure	{"safe":["A2","B1","B3","A1","C1","B2","A3","B1","B3","B2","A2"],"unsafe":["C3","C2"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729407798	4	random	12	helper	B1	rows	{"safe":["A2","B1","B3","A1","C1","B2","A3","B1","B3","B2","A2"],"unsafe":["C3","C2","C3"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729421474	4	random	13	helper	B3	rows	{"safe":["A2","B1","B3","A1","C1","B2","A3","B1","B3","B2","A2","B1"],"unsafe":["C3","C2","C3"]}	goalInference
+pilot0	0448-07592343-5e43-4e98-a162-e6c943579f60	1550729428148	4	random	14	helper	A3	columns	{"safe":["A2","B1","B3","A1","C1","B2","A3","B1","B3","B2","A2","B1","B3"],"unsafe":["C3","C2","C3"]}	goalInference

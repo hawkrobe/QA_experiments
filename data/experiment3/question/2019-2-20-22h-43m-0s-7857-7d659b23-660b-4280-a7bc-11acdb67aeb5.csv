@@ -1,0 +1,16 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731380852	0	practice	1	leader	A1	human	{"safe":["A2","B2"],"unsafe":[]}	13072	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731397070	0	practice	2	leader	C2	human	{"safe":["A2","B2","A1"],"unsafe":[]}	27716	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731461786	2	random	1	leader	C3	human	{"safe":["A3","B3","C2"],"unsafe":[]}	10768	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731478446	2	random	2	leader	B2	human	{"safe":["A3","B3","C2","A2"],"unsafe":["C3"]}	25742	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731540590	4	random	1	leader	A3	human	{"safe":["A2","B3","C1"],"unsafe":[]}	17143	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731587727	6	random	1	leader	A1	human	{"safe":["A2","A3","B3"],"unsafe":[]}	8813	rows	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731600485	6	random	2	leader	B1	human	{"safe":["A2","A3","B3","B2"],"unsafe":["A1"]}	20648	rows	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731675787	8	random	1	leader	B2	human	{"safe":["A2"],"unsafe":[]}	8847	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731715647	10	random	1	leader	C1	human	{"safe":["A1","B1","C2","C3"],"unsafe":[]}	7808	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731829639	12	empty	1	leader	A1	human	{"safe":[],"unsafe":[]}	11270	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731848015	12	empty	2	leader	B1	human	{"safe":["A1"],"unsafe":["B3"]}	28152	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731903990	14	random	1	leader	B2	human	{"safe":["B1","C3"],"unsafe":[]}	8111	rows	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731943422	16	pragmatic	1	leader	A2	human	{"safe":["A1"],"unsafe":[]}	8592	rows	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731978148	18	blocked	1	leader	B1	human	{"safe":["A1"],"unsafe":[]}	8948	columns	question
+pilot0	7857-7d659b23-660b-4280-a7bc-11acdb67aeb5	1550731994264	18	blocked	2	leader	B2	human	{"safe":["A1","A2"],"unsafe":["B1"]}	23722	columns	question
