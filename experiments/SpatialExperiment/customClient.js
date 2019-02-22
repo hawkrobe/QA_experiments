@@ -24,8 +24,8 @@ function updateState (game, data){
 };
 
 // Update grid state & tell bot about it
-function updateGridState (game) {
-  _.forEach(game.selections, function(cell) {
+function updateGridState (selections, game) {
+  _.forEach(selections, function(cell) {
     var c = game.fullMap[cell] == 'x' ? 'unsafe' : 'safe';
     game.gridState[c].push(cell);
   });
@@ -188,7 +188,7 @@ var customEvents = function(game) {
   game.checkGrid = function() {
     var goal = this.goal;
     var revealedCells = this.revealedCells;
-
+    
     var goodness = _.map(revealedCells, cell => this.fullMap[cell]);
     var completeCol = _.map(_.range(1,4), colName => {
       return _.filter(revealedCells, cellName => cellName[1] == colName);
@@ -196,7 +196,7 @@ var customEvents = function(game) {
     var completeRow = _.map(['A','B','C'], rowName => {
       return _.filter(revealedCells, cellName => cellName[0] == rowName);
     });
-
+    
     if(!game.roundOver) {
       if(_.includes(goodness, 'x')) {
 	console.log('fail');
@@ -234,26 +234,23 @@ var customEvents = function(game) {
     
     // bar responses until speaker has uttered at least one message (and vice versa)
     if(data.type == "answer"){
-      game.selections = data.code;
+      var selections = data.code;
       UI.reset(game, 'answerReceived');
-      updateGridState(game);
+      updateGridState(selections, game);
       
       // Show players the updated common ground
-      UI.fadeInSelections(game.selections);
-      setTimeout(function() {
-	var roundOver = [];
-	_.forEach(game.selections, id =>  {
-	  if(game.fullMap[id] == 'o')
-	    game.revealCell($('#button-' + id));
-	});
-	if(!game.roundOver) {
-	  if(data.sender == 'human') {
-	    game.bot.ask(data.code);
-	  } else {
-	    $('#leaderchatarea').show();
-	  }
+      UI.fadeInSelections(selections);
+      _.forEach(selections, id =>  {
+	if(game.fullMap[id] == 'o')
+	  game.revealCell($('#button-' + id));
+      });
+      if(!game.roundOver) {
+	if(data.sender == 'human') {
+	  game.bot.ask(data.code);
+	} else {
+	  $('#leaderchatarea').show();
 	}
-      }, 1000);
+      }
     } else if (data.type == 'question') {
       game.cellAskedAbout = data.code;
       game.questionNum += 1;
@@ -269,11 +266,11 @@ var customEvents = function(game) {
 
   game.socket.on('updateScore', function(data) {
     console.log(game.questionNum);
-    var rawScore = data.outcome == 'fail' ? 0 : game.bonusAmt - game.questionNum + 1;
+    var rawScore = (data.outcome == 'fail' ? 0 :
+		    _.max([game.bonusAmt - game.questionNum + 1, 0]));
     console.log(rawScore);
     game.data.score += rawScore;    
-    var feedbackMessage = (rawScore == 0 ? "You exploded!" :
-			   "You safely completed your goal in " +
+    var feedbackMessage = ("You safely completed your goal in " +
 			   game.questionNum + " questions.");
     var monetaryScore = (parseFloat(game.data.score) / 100).toFixed(2); 
     $('#feedback').html(feedbackMessage + ' You earned $0.0' + rawScore);
