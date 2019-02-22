@@ -1,0 +1,16 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550774627665	1	practice	1	helper	C1	human	{"safe":["A1","B1"],"unsafe":[]}	12204	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550774673660	3	random	1	helper	A2	human	{"safe":["A1"],"unsafe":[]}	7292	rows	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550774777586	5	random	1	helper	A1	human	{"safe":["A3","B1","C1"],"unsafe":[]}	7322	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550774820945	7	random	1	helper	B2	human	{"safe":["A2","B1","B3","C2"],"unsafe":[]}	6485	rows	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550774910660	9	random	1	helper	A3	human	{"safe":["A2","B3","C1","C3"],"unsafe":[]}	5661	rows	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550774953791	11	random	1	helper	A2	human	{"safe":["A3","B2","C2","C3"],"unsafe":[]}	5995	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775033957	13	random	1	helper	C1	human	{"safe":["B2","C2","C3"],"unsafe":[]}	7446	rows	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775114138	15	pragmatic	1	helper	A2	human	{"safe":["C2"],"unsafe":[]}	8961	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775168898	17	blocked	1	helper	B3	human	{"safe":["B1"],"unsafe":[]}	7303	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775181663	17	blocked	2	helper	C1	human	{"safe":["B1","B3"],"unsafe":["B2"]}	20069	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775205928	17	blocked	3	helper	C3	human	{"safe":["B1","B3","A3"],"unsafe":["B2","C1"]}	44335	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775298795	19	empty	1	helper	C2	human	{"safe":[],"unsafe":[]}	6020	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775308082	19	empty	2	helper	C3	human	{"safe":["C2","C1"],"unsafe":[]}	15308	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775328220	19	empty	3	helper	A1	human	{"safe":["C2","C1","C3"],"unsafe":["B3"]}	35446	columns	question
+testing	8334-a317b274-4182-4e70-bfa4-88c96da25945	1550775340520	19	empty	4	helper	B1	human	{"safe":["C2","C1","C3","A1"],"unsafe":["B3","A2"]}	47745	columns	question

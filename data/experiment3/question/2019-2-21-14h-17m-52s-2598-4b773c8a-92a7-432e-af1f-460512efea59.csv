@@ -1,0 +1,17 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787472417	0	practice	1	leader	A1	human	{"safe":["B1","C1"],"unsafe":[]}	15622	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787515107	2	random	1	leader	A2	human	{"safe":["A1","A3","B3","C1"],"unsafe":[]}	7490	rows	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787554341	4	random	1	leader	A1	human	{"safe":["A2","A3","C2"],"unsafe":[]}	10468	rows	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787607889	6	random	1	leader	A1	human	{"safe":["A3","C1"],"unsafe":[]}	10784	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787623349	6	random	2	leader	B3	human	{"safe":["A3","C1","C3"],"unsafe":["A1"]}	26230	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787728866	8	pragmatic	1	leader	B2	human	{"safe":["A2"],"unsafe":[]}	7059	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787779325	10	random	1	leader	A1	human	{"safe":["A2","A3","B1","B3"],"unsafe":[]}	8535	rows	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787821017	12	blocked	1	leader	B1	human	{"safe":["B2"],"unsafe":[]}	7461	rows	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787839094	12	blocked	2	leader	C1	human	{"safe":["B2"],"unsafe":["B1"]}	25538	rows	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787848280	12	blocked	3	leader	A1	human	{"safe":["B2","C1"],"unsafe":["B1"]}	34708	rows	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787857927	12	blocked	4	leader	C2	human	{"safe":["B2","C1","A1","C3"],"unsafe":["B1"]}	44371	rows	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787895128	14	empty	1	leader	A1	human	{"safe":[],"unsafe":[]}	8205	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787906681	14	empty	2	leader	A2	human	{"safe":["B2"],"unsafe":["A1"]}	19759	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787950587	16	random	1	leader	B3	human	{"safe":["A3","C2"],"unsafe":[]}	8643	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550787963465	16	random	2	leader	B2	human	{"safe":["A3","C2","A2"],"unsafe":["B3"]}	21515	columns	question
+testing	2598-4b773c8a-92a7-432e-af1f-460512efea59	1550788000036	18	random	1	leader	A1	human	{"safe":["A2","A3","B1","C1","C2"],"unsafe":[]}	6261	columns	question

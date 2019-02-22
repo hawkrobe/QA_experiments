@@ -1,0 +1,29 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789603641	1	practice	1	leader	rows	C3	not sure	{"safe":["C1","C2"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789694371	3	random	1	leader	rows	C2	not sure	{"safe":["C3"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789709411	3	random	2	leader	rows	C1	rows	{"safe":["C3","C2"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789733561	3	random	3	leader	rows	B1	columns	{"safe":["C3","C2"],"unsafe":["C1"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789746371	3	random	4	leader	rows	B2	columns	{"safe":["C3","C2","B1"],"unsafe":["C1"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789758611	3	random	5	leader	rows	B3	columns	{"safe":["C3","C2","B1","B2"],"unsafe":["C1"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789790051	5	random	1	leader	columns	A1	rows	{"safe":["B1","C1","C2"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789854833	7	pragmatic	1	leader	columns	B2	columns	{"safe":["A2"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789865131	7	pragmatic	2	leader	columns	C2	columns	{"safe":["A2","B2"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789890012	9	random	1	leader	rows	B3	columns	{"safe":["A2","A3","B1","B2"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789918908	11	random	1	leader	columns	A3	rows	{"safe":["B1","B3","C2","C3"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789935319	11	random	2	leader	columns	A2	columns	{"safe":["B1","B3","C2","C3"],"unsafe":["A3"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550789943001	11	random	3	leader	columns	B2	rows	{"safe":["B1","B3","C2","C3","A2"],"unsafe":["A3"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790005801	13	blocked	1	leader	columns	B3	rows	{"safe":["C3"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790017831	13	blocked	2	leader	columns	B1	rows	{"safe":["C3"],"unsafe":["B3"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790025351	13	blocked	3	leader	columns	A1	columns	{"safe":["C3","B1"],"unsafe":["B3"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790031332	13	blocked	4	leader	columns	C1	columns	{"safe":["C3","B1","A1"],"unsafe":["B3"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790068960	15	random	1	leader	rows	C1	columns	{"safe":["A1","C2","C3"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790129789	17	empty	1	leader	columns	B2	columns	{"safe":[],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790136597	17	empty	2	leader	columns	A2	rows	{"safe":["B2"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790149561	17	empty	3	leader	columns	A1	rows	{"safe":["B2"],"unsafe":["A2"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790162639	17	empty	4	leader	columns	C1	columns	{"safe":["B2","A1"],"unsafe":["A2"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790169560	17	empty	5	leader	columns	B1	columns	{"safe":["B2","A1","C1"],"unsafe":["A2"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790180541	17	empty	6	leader	columns	B3	rows	{"safe":["B2","A1","C1"],"unsafe":["A2","B1"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790191001	17	empty	7	leader	columns	A3	columns	{"safe":["B2","A1","C1","B3"],"unsafe":["A2","B1"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790201471	17	empty	8	leader	columns	C3	not sure	{"safe":["B2","A1","C1","B3","A3"],"unsafe":["A2","B1"]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790288171	19	random	1	leader	rows	C2	columns	{"safe":["A1","B2","C3"],"unsafe":[]}	goalInference
+testing	4022-896f6c56-7463-48b6-89b7-09f98bfdf913	1550790294801	19	random	2	leader	rows	C1	columns	{"safe":["A1","B2","C3","C2"],"unsafe":[]}	goalInference

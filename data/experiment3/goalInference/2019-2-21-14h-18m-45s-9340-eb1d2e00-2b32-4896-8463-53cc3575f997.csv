@@ -1,0 +1,17 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787525514	0	practice	1	helper	rows	C1	rows	{"safe":["C2","C3"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787606079	2	random	1	helper	columns	A2	columns	{"safe":["A3","B2","C1","C2"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787655004	4	random	1	helper	rows	B3	rows	{"safe":["B1","B2"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787733426	6	random	1	helper	columns	C1	columns	{"safe":["A2","B1","C3"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787772932	6	random	2	helper	columns	C2	columns	{"safe":["A2","B1","C3"],"unsafe":["C1"]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787787764	6	random	3	helper	columns	B2	columns	{"safe":["A2","B1","C3","C2"],"unsafe":["C1"]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787835462	8	pragmatic	1	helper	columns	A1	rows	{"safe":["B1"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787851490	8	pragmatic	2	helper	columns	C1	columns	{"safe":["B1","A1"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787915976	10	random	1	helper	columns	A3	columns	{"safe":["A1","B2","B3","C1","C3"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550787990015	12	random	1	helper	columns	C2	columns	{"safe":["A2","B2"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550788028285	14	random	1	helper	rows	C2	rows	{"safe":["A2","C1","C3"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550788074945	16	empty	1	helper	columns	A1	columns	{"safe":[],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550788097755	16	empty	2	helper	columns	B3	columns	{"safe":["A3"],"unsafe":["A1"]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550788150192	18	blocked	1	helper	rows	A2	columns	{"safe":["A3"],"unsafe":[]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550788172704	18	blocked	2	helper	rows	C1	columns	{"safe":["A3","A2"],"unsafe":["A1"]}	goalInference
+testing	9340-eb1d2e00-2b32-4896-8463-53cc3575f997	1550788195255	18	blocked	3	helper	rows	B2	rows	{"safe":["A3","A2","B1"],"unsafe":["A1","C1"]}	goalInference

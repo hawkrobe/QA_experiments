@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550775893849	1	practice	1	leader	columns	A1	columns	{"safe":["B1","C1"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550775937825	3	random	1	leader	columns	A1	columns	{"safe":["B1","B2","C1"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550775991224	5	random	1	leader	rows	B3	rows	{"safe":["B1","B2","C3"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776028197	7	pragmatic	1	leader	columns	C1	columns	{"safe":["A1"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776078350	9	random	1	leader	rows	C2	columns	{"safe":["A1","C1","C3"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776158903	11	random	1	leader	rows	A1	rows	{"safe":["A3"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776200531	13	random	1	leader	rows	B2	rows	{"safe":["A3","B1","B3"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776250138	15	empty	1	leader	rows	A3	not sure	{"safe":[],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776278920	15	empty	2	leader	rows	C3	rows	{"safe":["C2"],"unsafe":["A3"]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776339690	17	random	1	leader	rows	A1	rows	{"safe":["A2","B2","C3"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776368631	17	random	2	leader	rows	B3	rows	{"safe":["A2","B2","C3","B1"],"unsafe":["A1"]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776441800	19	blocked	1	leader	rows	C2	rows	{"safe":["C1"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776463389	19	blocked	2	leader	rows	C3	rows	{"safe":["C1","C2","A2"],"unsafe":[]}	goalInference
+testing	1722-6f887658-ca87-42c2-8577-06acd2b3fac6	1550776479549	19	blocked	3	leader	rows	A3	rows	{"safe":["C1","C2","A2","A1"],"unsafe":["C3"]}	goalInference

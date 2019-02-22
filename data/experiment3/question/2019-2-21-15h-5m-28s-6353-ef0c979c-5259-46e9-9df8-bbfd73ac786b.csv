@@ -1,0 +1,8 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	6353-ef0c979c-5259-46e9-9df8-bbfd73ac786b	1550790328010	1	practice	1	helper	A1	human	{"safe":["B2","B3"],"unsafe":[]}	4757	rows	question
+testing	6353-ef0c979c-5259-46e9-9df8-bbfd73ac786b	1550790342536	1	practice	2	helper	A2	human	{"safe":["B2","B3","A1"],"unsafe":[]}	19278	rows	question
+testing	6353-ef0c979c-5259-46e9-9df8-bbfd73ac786b	1550790350765	1	practice	3	helper	C1	human	{"safe":["B2","B3","A1"],"unsafe":["A2"]}	27497	rows	question
+testing	6353-ef0c979c-5259-46e9-9df8-bbfd73ac786b	1550790358301	1	practice	4	helper	A3	human	{"safe":["B2","B3","A1","C1"],"unsafe":["A2"]}	35048	rows	question
+testing	6353-ef0c979c-5259-46e9-9df8-bbfd73ac786b	1550790366243	1	practice	5	helper	B1	human	{"safe":["B2","B3","A1","C1"],"unsafe":["A2","A3"]}	42991	rows	question
+testing	6353-ef0c979c-5259-46e9-9df8-bbfd73ac786b	1550790402561	1	practice	6	helper	C2	human	{"safe":["B2","B3","A1","C1","B1"],"unsafe":["A2","A3"]}	79303	rows	question
+testing	6353-ef0c979c-5259-46e9-9df8-bbfd73ac786b	1550790483851	1	practice	7	helper	C3	human	{"safe":["B2","B3","A1","C1","B1"],"unsafe":["A2","A3","C2"]}	160594	rows	question

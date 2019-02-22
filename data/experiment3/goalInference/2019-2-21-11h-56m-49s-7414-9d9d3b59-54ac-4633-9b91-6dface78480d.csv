@@ -1,0 +1,11 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779009276	0	practice	1	helper	columns	C3	columns	{"safe":["A3","B3"],"unsafe":[]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779036348	2	random	1	helper	columns	A1	columns	{"safe":["B1","B3","C1"],"unsafe":[]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779120437	4	random	1	helper	columns	C1	not sure	{"safe":["A1"],"unsafe":[]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779132186	4	random	2	helper	columns	C3	columns	{"safe":["A1"],"unsafe":["C1"]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779146328	4	random	3	helper	columns	B3	rows	{"safe":["A1","C3"],"unsafe":["C1"]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779173601	4	random	4	helper	columns	A3	rows	{"safe":["A1","C3","B3"],"unsafe":["C1"]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779226081	6	random	1	helper	rows	A1	not sure	{"safe":["A2","A3","B1","C1"],"unsafe":[]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779243886	6	random	2	helper	rows	C2	rows	{"safe":["A2","A3","B1","C1"],"unsafe":["A1","B2"]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779258390	6	random	3	helper	rows	C3	rows	{"safe":["A2","A3","B1","C1","C2","B3"],"unsafe":["A1","B2"]}	goalInference
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779309061	8	pragmatic	1	helper	rows	A2	rows	{"safe":["A3"],"unsafe":[]}	goalInference

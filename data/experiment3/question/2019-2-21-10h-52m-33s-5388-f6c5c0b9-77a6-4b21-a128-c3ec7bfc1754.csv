@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775153401	1	practice	1	helper	A2	human	{"safe":["B2","C2"],"unsafe":[]}	6896	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775209122	3	random	1	helper	A3	human	{"safe":["B3","C3"],"unsafe":[]}	6222	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775252816	5	random	1	helper	A2	human	{"safe":["A3"],"unsafe":[]}	12601	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775273607	5	random	2	helper	B3	human	{"safe":["A3","A2"],"unsafe":["A1"]}	33395	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775337590	7	random	1	helper	A1	human	{"safe":["A3","B1","C2"],"unsafe":[]}	19782	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775438048	9	random	1	helper	C1	human	{"safe":["A1","A3","B1"],"unsafe":[]}	8683	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775482083	11	blocked	1	helper	A2	human	{"safe":["B2"],"unsafe":[]}	11452	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775510617	11	blocked	2	helper	A3	human	{"safe":["B2"],"unsafe":["A2"]}	40036	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775524195	11	blocked	3	helper	C3	human	{"safe":["B2","A3"],"unsafe":["A2"]}	53612	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775571249	13	pragmatic	1	helper	B2	human	{"safe":["B1"],"unsafe":[]}	8779	rows	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775647777	15	random	1	helper	B3	human	{"safe":["A3","C3"],"unsafe":[]}	9322	columns	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775692472	17	empty	1	helper	A2	human	{"safe":[],"unsafe":[]}	10851	rows	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775705711	17	empty	2	helper	A1	human	{"safe":["A2","A3"],"unsafe":[]}	24091	rows	question
+testing	5388-f6c5c0b9-77a6-4b21-a128-c3ec7bfc1754	1550775735648	19	random	1	helper	B2	human	{"safe":["A2","B3","C2"],"unsafe":[]}	8034	columns	question

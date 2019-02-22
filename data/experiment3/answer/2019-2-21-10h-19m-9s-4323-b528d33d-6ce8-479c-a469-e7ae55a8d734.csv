@@ -1,0 +1,2 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	sender	underlyingWorld	timeFromMessage	gridState	cellAskedAbout	answer	eventType
+testing	4323-b528d33d-6ce8-479c-a469-e7ae55a8d734	1550773149900	0	practice	1	helper	human	{"A1":"safe","A2":"safe","A3":"safe","B1":"safe","B2":"unsafe","B3":"safe","C1":"safe","C2":"safe","C3":"unsafe"}	19040	{"safe":["A2","A3"],"unsafe":[]}	A1	A1	answer

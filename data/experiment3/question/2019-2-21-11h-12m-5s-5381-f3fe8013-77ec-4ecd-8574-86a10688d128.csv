@@ -1,0 +1,6 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	5381-f3fe8013-77ec-4ecd-8574-86a10688d128	1550776325326	1	practice	1	helper	A3	human	{"safe":["A1","A2"],"unsafe":[]}	4481	rows	question
+testing	5381-f3fe8013-77ec-4ecd-8574-86a10688d128	1550776352853	3	random	1	helper	B2	human	{"safe":["A2","B1","B3"],"unsafe":[]}	4461	rows	question
+testing	5381-f3fe8013-77ec-4ecd-8574-86a10688d128	1550776449277	5	random	1	helper	A3	human	{"safe":["A1","A2"],"unsafe":[]}	9716	columns	question
+testing	5381-f3fe8013-77ec-4ecd-8574-86a10688d128	1550776480566	5	random	2	helper	B2	human	{"safe":["A1","A2","A3"],"unsafe":["B1"]}	41001	columns	question
+testing	5381-f3fe8013-77ec-4ecd-8574-86a10688d128	1550776491065	5	random	3	helper	C3	human	{"safe":["A1","A2","A3","B2"],"unsafe":["B1","C2"]}	51493	columns	question

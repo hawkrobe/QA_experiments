@@ -1,0 +1,11 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777690622	1	practice	1	leader	columns	C3	rows	{"safe":["A3","B3"],"unsafe":[]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777773016	3	random	1	leader	columns	C2	not sure	{"safe":[],"unsafe":[]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777794675	3	random	2	leader	columns	A2	rows	{"safe":["C2","C1"],"unsafe":[]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777813676	3	random	3	leader	columns	B1	rows	{"safe":["C2","C1"],"unsafe":["A2","B2"]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777821927	3	random	4	leader	columns	A1	rows	{"safe":["C2","C1","B1"],"unsafe":["A2","B2"]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777854315	5	random	1	leader	columns	A3	columns	{"safe":["B2","B3","C1","C3"],"unsafe":[]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777898625	7	pragmatic	1	leader	columns	A3	columns	{"safe":["B3"],"unsafe":[]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777906651	7	pragmatic	2	leader	columns	C3	columns	{"safe":["B3","A3"],"unsafe":[]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777938604	9	random	1	leader	columns	C3	columns	{"safe":["A2","A3","B1","B3","C1"],"unsafe":[]}	goalInference
+testing	8547-92b2d07c-449d-4366-8392-d88113daddec	1550777954721	9	random	2	leader	columns	C2	columns	{"safe":["A2","A3","B1","B3","C1"],"unsafe":["C3","A1"]}	goalInference

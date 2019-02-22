@@ -1,0 +1,17 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550789839807	1	practice	1	leader	columns	C1	columns	{"safe":["A1","B1"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550789917818	3	random	1	leader	rows	A3	rows	{"safe":["A2","C2"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550789935620	3	random	2	leader	rows	B1	rows	{"safe":["A2","C2"],"unsafe":["A3","C3"]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550789944915	3	random	3	leader	rows	B3	rows	{"safe":["A2","C2","B1"],"unsafe":["A3","C3"]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550789977139	5	random	1	leader	rows	C2	rows	{"safe":["A1","C1","C3"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790070652	7	blocked	1	leader	columns	A2	columns	{"safe":["C2"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790095000	7	blocked	2	leader	columns	A1	columns	{"safe":["C2"],"unsafe":["A2","C3"]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790110269	7	blocked	3	leader	columns	C1	columns	{"safe":["C2","A1","A3"],"unsafe":["A2","C3"]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790150262	9	pragmatic	1	leader	columns	A2	columns	{"safe":["C2"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790201573	11	random	1	leader	rows	C1	rows	{"safe":["A2","B1","B3","C2","C3"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790237273	13	random	1	leader	columns	C3	columns	{"safe":["A3","B1","C2"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790270682	15	random	1	leader	columns	A3	columns	{"safe":["C1","C3"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790314399	17	empty	1	leader	columns	A1	columns	{"safe":[],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790332971	17	empty	2	leader	columns	C2	columns	{"safe":["A1","A2"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790394803	19	random	1	leader	rows	A3	rows	{"safe":["A2","B1","C2"],"unsafe":[]}	goalInference
+testing	2192-5d203077-3641-458d-af0a-692e3bdf5a8a	1550790413625	19	random	2	leader	rows	B3	rows	{"safe":["A2","B1","C2","B2"],"unsafe":["A3"]}	goalInference

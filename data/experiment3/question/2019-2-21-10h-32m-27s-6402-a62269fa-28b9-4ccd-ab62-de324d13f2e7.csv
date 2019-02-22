@@ -1,0 +1,16 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550773947463	1	practice	1	helper	A1	human	{"safe":["A2","B2"],"unsafe":[]}	8860	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550773956902	1	practice	2	helper	B1	human	{"safe":["A2","B2"],"unsafe":["A1"]}	18301	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550773972270	1	practice	3	helper	A3	human	{"safe":["A2","B2"],"unsafe":["A1","B1"]}	33668	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550773984910	1	practice	4	helper	B3	human	{"safe":["A2","B2","A3"],"unsafe":["A1","B1"]}	46308	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550773995622	1	practice	5	helper	C1	human	{"safe":["A2","B2","A3"],"unsafe":["A1","B1","B3"]}	57021	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774004029	1	practice	6	helper	C2	human	{"safe":["A2","B2","A3","C1"],"unsafe":["A1","B1","B3"]}	65428	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774101150	3	random	1	helper	A2	human	{"safe":["A1","B2","C2"],"unsafe":[]}	23096	rows	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774123445	3	random	2	helper	A3	human	{"safe":["A1","B2","C2","A2"],"unsafe":["B1"]}	45391	rows	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774154630	5	random	1	helper	A3	human	{"safe":["A1","A2","C1"],"unsafe":[]}	6030	rows	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774227694	7	random	1	helper	C1	human	{"safe":[],"unsafe":[]}	7938	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774247581	7	random	2	helper	A1	human	{"safe":["C1","B1"],"unsafe":[]}	27828	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774286822	9	random	1	helper	C2	human	{"safe":["A2","B2","B3"],"unsafe":[]}	9513	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774353715	11	blocked	1	helper	A1	human	{"safe":["A2"],"unsafe":[]}	12748	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774368197	11	blocked	2	helper	B1	human	{"safe":["A2","A1","A3"],"unsafe":[]}	27229	columns	question
+testing	6402-a62269fa-28b9-4ccd-ab62-de324d13f2e7	1550774386076	11	blocked	3	helper	C1	human	{"safe":["A2","A1","A3","B1"],"unsafe":["B3"]}	45108	columns	question

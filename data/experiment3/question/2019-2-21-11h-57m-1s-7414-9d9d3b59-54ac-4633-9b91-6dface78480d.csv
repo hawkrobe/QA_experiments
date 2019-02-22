@@ -1,0 +1,11 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	question	sender	gridState	timeFromMessage	goal	eventType
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779021578	1	practice	1	helper	A2	human	{"safe":["B2","C2"],"unsafe":[]}	4694	columns	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779101101	3	random	1	helper	A1	human	{"safe":["A2","A3","B1","B3"],"unsafe":[]}	57809	rows	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779191820	5	random	1	helper	B1	human	{"safe":["A1","C1","C3"],"unsafe":[]}	7151	rows	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779210572	5	random	2	helper	C2	human	{"safe":["A1","C1","C3","B1"],"unsafe":["B3"]}	25900	rows	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779270510	7	empty	1	helper	A1	human	{"safe":[],"unsafe":[]}	4993	columns	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779283052	7	empty	2	helper	B2	human	{"safe":["A1","A3"],"unsafe":[]}	17536	columns	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779293159	7	empty	3	helper	C1	human	{"safe":["A1","A3","B2"],"unsafe":["C2"]}	27644	columns	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779337836	9	random	1	helper	A2	human	{"safe":["A1","B2","C3"],"unsafe":[]}	17807	columns	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779347093	9	random	2	helper	C1	human	{"safe":["A1","B2","C3","B1"],"unsafe":["A2"]}	27065	columns	question
+testing	7414-9d9d3b59-54ac-4633-9b91-6dface78480d	1550779373332	9	random	3	helper	C2	human	{"safe":["A1","B2","C3","B1","C1"],"unsafe":["A2","A3"]}	53306	columns	question

@@ -1,0 +1,6 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	6135-1b049e2a-565c-47c4-9926-61c37a69d174	1550782518831	1	practice	1	leader	columns	C3	columns	{"safe":["A3","B3"],"unsafe":[]}	goalInference
+testing	6135-1b049e2a-565c-47c4-9926-61c37a69d174	1550782842612	3	random	1	leader	columns	C2	columns	{"safe":["B1","B2"],"unsafe":[]}	goalInference
+testing	6135-1b049e2a-565c-47c4-9926-61c37a69d174	1550782885537	3	random	2	leader	columns	C1	columns	{"safe":["B1","B2","C2"],"unsafe":["A2"]}	goalInference
+testing	6135-1b049e2a-565c-47c4-9926-61c37a69d174	1550782919722	3	random	3	leader	columns	C3	columns	{"safe":["B1","B2","C2"],"unsafe":["A2","C1","A1"]}	goalInference
+testing	6135-1b049e2a-565c-47c4-9926-61c37a69d174	1550782942106	3	random	4	leader	columns	B3	not sure	{"safe":["B1","B2","C2","C3","A3"],"unsafe":["A2","C1","A1"]}	goalInference

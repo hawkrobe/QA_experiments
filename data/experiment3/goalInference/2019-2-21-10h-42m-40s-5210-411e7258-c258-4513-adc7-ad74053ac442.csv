@@ -1,0 +1,16 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550774560545	0	practice	1	helper	rows	B3	rows	{"safe":["B1","B2"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550774649982	2	random	1	helper	rows	A1	not sure	{"safe":["A2","B3"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550774779957	4	random	1	helper	rows	B2	columns	{"safe":["B3"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550774839620	4	random	2	helper	rows	A1	rows	{"safe":["B3","A3"],"unsafe":["B2"]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550774889063	6	random	1	helper	rows	C1	rows	{"safe":["A2","C3"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550774983279	8	random	1	helper	rows	A1	rows	{"safe":["A2","A3"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775076153	10	pragmatic	1	helper	rows	C1	rows	{"safe":["C2"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775122043	12	blocked	1	helper	rows	B3	rows	{"safe":["B1"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775175955	12	blocked	2	helper	rows	A3	rows	{"safe":["B1"],"unsafe":["B3","C1"]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775212207	12	blocked	3	helper	rows	A2	rows	{"safe":["B1","A3","A1"],"unsafe":["B3","C1"]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775256115	14	random	1	helper	rows	A3	rows	{"safe":["A1","A2","B1"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775305850	16	empty	1	helper	columns	A3	rows	{"safe":[],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775354021	16	empty	2	helper	columns	C3	columns	{"safe":["A3","A1"],"unsafe":[]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775385237	16	empty	3	helper	columns	C1	columns	{"safe":["A3","A1"],"unsafe":["C3","B3"]}	goalInference
+testing	5210-411e7258-c258-4513-adc7-ad74053ac442	1550775454759	18	random	1	helper	rows	A1	rows	{"safe":["A2","A3","B1"],"unsafe":[]}	goalInference

@@ -1,0 +1,2 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	4323-b528d33d-6ce8-479c-a469-e7ae55a8d734	1550773141618	0	practice	1	helper	rows	A1	rows	{"safe":["A2","A3"],"unsafe":[]}	goalInference

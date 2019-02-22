@@ -1,0 +1,15 @@
+iterationName	gameid	time	trialNum	trialType	questionNumber	firstRole	trueGoal	cellAskedAbout	goalResponse	gridState	eventType
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790459354	1	practice	1	leader	columns	C3	columns	{"safe":["A3","B3"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790528718	3	random	1	leader	columns	C2	columns	{"safe":["B2"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790629645	5	random	1	leader	rows	B3	rows	{"safe":["B1","B2","C1"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790687472	7	empty	1	leader	rows	C3	not sure	{"safe":[],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790711125	7	empty	2	leader	rows	A3	rows	{"safe":["C2"],"unsafe":["C3"]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790726356	7	empty	3	leader	rows	A1	rows	{"safe":["C2","A3","A2"],"unsafe":["C3"]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790761866	9	random	1	leader	rows	B2	rows	{"safe":["B1","B3","C1"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790802542	11	random	1	leader	rows	C1	rows	{"safe":["A2","B3","C3"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790823262	11	random	2	leader	rows	B1	rows	{"safe":["A2","B3","C3","C1"],"unsafe":["C2"]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790855283	13	random	1	leader	rows	A2	rows	{"safe":["A3"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790891904	15	random	1	leader	columns	A1	columns	{"safe":["C1"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790925349	17	blocked	1	leader	columns	B2	columns	{"safe":["A2"],"unsafe":[]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790945756	17	blocked	2	leader	columns	C3	columns	{"safe":["A2","B3"],"unsafe":["B2"]}	goalInference
+testing	2825-c6547ae9-de59-42e1-8332-2f3151569020	1550790978720	19	pragmatic	1	leader	rows	C2	rows	{"safe":["C3"],"unsafe":[]}	goalInference
