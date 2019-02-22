@@ -294,6 +294,7 @@ class ServerRefGame extends ServerGame {
     var goalInferenceOutput = function(client, message_data) {
       return _.extend(
 	commonOutput(client, message_data), {
+	  trueGoal: client.game.currStim.goal,
 	  cellAskedAbout: message_data[1],
 	  goalResponse: message_data[2],
 	  gridState: message_data[3]	  
