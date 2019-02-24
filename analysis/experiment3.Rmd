@@ -39,6 +39,10 @@ d.answers <- d.answers.raw %>% filter(!(gameid %in% badGames))
 d.questions <- d.questions.raw %>% filter(!(gameid %in% badGames))
 ```
 
+```{r}
+write_csv(d.answers, '../data/experiment3/answerFromMongo_clean.csv')
+```
+
 Note that if you split out by trueGoal, there seems to be a ROW bias (probably bcecause ROW button was first...)
  
 We also exclude 'random' style trials for this analysis since they were all over the place in what goal we predicted people would infer...   
@@ -74,3 +78,48 @@ ggplot(goal_response_proportions, aes(x = correct, y = empirical_prop, fill = tr
 ggsave('../writing/2019/journal-revision/figures/spatialGoalInference.pdf', width=14, height = 10, units='cm')
 ```
 
+# Qualitative model predictions
+
+See how often people *answer* with extra info
+
+```{r}
+answer_info <- d.answers %>% 
+  filter(questionNumber == 1) %>%
+  filter(!(trialType %in% c('random'))) %>%
+  rowwise() %>%
+  mutate(additionalInfo = ifelse(nchar(answer) == 11, 1, 0)) %>%
+  mutate(trialType = ifelse(trialType == 'blocked', 'pragmatic', trialType)) %>%
+  group_by(trialType) %>%
+  tidyboot_mean(additionalInfo) %>% 
+  ungroup() %>% 
+  mutate(trialType = factor(trialType, levels = c('practice', 'pragmatic', 'empty')))
+
+ggplot(answer_info, aes(x = trialType, y = empirical_stat))  +
+  geom_bar(stat = 'identity', position = dodge) +
+  theme_few() +
+  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = dodge) +
+  scale_fill_few() +
+  ylab('% answerers give additional info') +
+  xlab('')+
+  ggtitle("What goal do you think the leader has?") 
+```
+
+# Quantitative model comparison
+
+First, since it's pretty expensive to run the model for board in the dataset (without some symmetry collapsing tricks which we may want to do later anyway), we'll score the data under a particular rationality param setting. The relative likelihood of the explicit & pragmatic models shouldn't be affected that much by the rationality (just the absolute fits).
+
+Begin by pruning huge csv of predictions
+
+```{r}
+uniqueWorldsInData <- unique(d.answers$underlyingWorld)
+uniqueStatesInData <- unique(d.answers$gridState)
+
+d.answer_predictions <- read_csv('../modeling/experiment3/spatialAnswererOutput_HierarchicalVersion.csv')
+
+d.answer_predictions_trimmed <- d.answer_predictions %>% 
+  rowwise() %>% 
+  filter(world %in% uniqueWorldsInData) %>%
+  filter(initState %in% uniqueStatesInData)
+  
+write_csv(d.answer_predictions_trimmed, '../modeling/experiment3/relevantAnswererOutput.csv')
+```
