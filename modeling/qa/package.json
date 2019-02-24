@@ -3,6 +3,7 @@
   "main": "qa.js",
   "webppl": {
     "wppl": [
+      "spatialModel.wppl",
       "guessingGameCore.wppl",
       "guessingGameWorldKnowledge.wppl"
     ]
