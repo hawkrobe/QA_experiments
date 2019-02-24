@@ -8,6 +8,10 @@ function readCSV(filename){
   return babyparse.parse(fs.readFileSync(filename, 'utf8'), {header: true}).data;
 };
 
+function readJSON(filename){
+  return require(filename);
+};
+
 function writeCSV(jsonCSV, filename){
   fs.writeFileSync(filename, babyparse.unparse(jsonCSV) + '\n');
 }
@@ -557,6 +561,7 @@ module.exports = {
   butLast: butLast,
   printERP: printERP,
   readCSV: readCSV,
+  readJSON: readJSON,
   writeCSV: writeCSV,
   writeSpatialQuestioner: writeSpatialQuestioner,
   writeSpatialAnswerer: writeSpatialAnswerer,  
