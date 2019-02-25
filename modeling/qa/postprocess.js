@@ -25,7 +25,18 @@ function diffRowsCols(state) {
   }
 }
 
-function mapQuestion(goal, question, state) {
+// Tests for scenario where you have 2 in same row/col and are trying to get 3rd
+function sameRowsCols(state) {
+  if (state['safe'].length != 2 || state['unsafe'].length != 0) {
+    return false;
+  } else {
+    var safe1 = state['safe'][0];
+    var safe2 = state['safe'][1];
+    return safe1[0] == safe2[0] || safe1[1] == safe2[1];
+  }
+}
+
+function mapQuestionDiff(goal, question, state) {
   var safe = state['safe'];
   var getRelevantPart = goal == 'rows' ? v => v[0] : v => v[1];
   var getOtherPart = goal == 'rows' ? v => v[1] : v => v[0];
@@ -43,28 +54,67 @@ function mapQuestion(goal, question, state) {
     return 'other';
   }
 }
+function mapQuestionSame(goal, question, state) {
+  var safe = state['safe'];
+  var getRelevantPart = goal == 'rows' ? v => v[0] : v => v[1];
+  var getOtherPart = goal == 'rows' ? v => v[1] : v => v[0];
+  var relevantPartOfQuestion = getRelevantPart(question);
+  var otherPartOfQuestion = getOtherPart(question);  
+  var relevantPartOfState = _.uniq(_.map(safe, getRelevantPart));
+  var otherPartOfState = _.uniq(_.map(safe, getOtherPart));
+  var info = relevantPartOfState.length == 1 ? {withinGoal: true} : {withinGoal: false}
+  console.log(relevantPartOfState)
+  console.log(relevantPartOfQuestion);
+  if(info.withinGoal && relevantPartOfState[0] == relevantPartOfQuestion) {
+    return _.extend({question: 'easy'}, info);
+  } else if(_.includes(relevantPartOfState, relevantPartOfQuestion)) {
+    return _.extend({question: 'hard'}, info);
+  } else {
+    return _.extend({question: 'other'}, info);
+  }
+}
 var answererData = readCSV('../../data/experiment3/answerFromMongo_clean.csv');
 var questionerData = readCSV('../../data/experiment3/questionFromMongo_clean.csv');
 
-console.log('pull out simple pragmatic cases');
 var annotatedQuestionerData = _.map(questionerData, function(response) {
   var state = JSON.parse(response['gridState']);
-  // Handle 'pragmatic' cases
+  var rowGoal = response['goal'] == 'rows';
+  var origQ = response['question'];
+  // Remap all simple cases (e.g. single cell revealed)
+  // to canonical case w/ upper-left hand corner
   if(state['safe'].length == 1 && state['unsafe'].length == 0) {
-    var orig = response['question'];
-    var onGoal = (response['goal'] == 'rows' ?
-		  orig[0] == state['safe'][0][0] :
-		  orig[1] == state['safe'][0][1]);
+    var onGoal = (rowGoal ?
+		  origQ[0] == state['safe'][0][0] :
+		  origQ[1] == state['safe'][0][1]);
     return _.extend({}, response, {
+      gridState: JSON.stringify({safe: ['A1'], unsafe: []}),
+      question: onGoal ? 'A2': 'C3',
+      goal: 'rows',
       qualitativeQuestion: onGoal ? 'onGoal' : 'offGoal',
       qualitativeTrialType : 'singleCell'
     });
+  } else if(sameRowsCols(state)) {
+    var info = mapQuestionSame(response['goal'], response['question'], state);    
+    var out = _.extend({}, response, {
+      gridState: (info.withinGoal ?
+		  JSON.stringify({safe: ['A1', 'A2'], unsafe: []}) :
+		  JSON.stringify({safe: ['A1', 'B1'], unsafe: []})),
+      question: (info.question == 'easy' || info.question == 'hard' ? 'A3' : 'C3'),
+      goal: 'rows',
+      qualitativeQuestion: info.question,
+      qualitativeTrialType : '2C_straight'
+    });
+    return out
   } else if(diffRowsCols(state)) {
-    var question = mapQuestion(response['goal'], response['question'], state);
-    console.log(question);
+    var question = mapQuestionDiff(response['goal'], response['question'], state);
     return _.extend({}, response, {
+      gridState: JSON.stringify({safe: ['A2', 'B1'], unsafe: []}),
+      question: (question == 'confusing' ? 'A1' :
+		 question == 'pragmatic' ? 'A3' :
+		 'C1'),
+      goal: 'rows',
       qualitativeQuestion: question,
-      qualitativeTrialType : 'ambiguous'
+      qualitativeTrialType : '2C_ambiguous'
     });
   } else {
     return _.extend({}, response, {qualitativeQuestion: 'none', qualitativeTrialType: 'other'});
