@@ -41,6 +41,7 @@ d.questions <- d.questions.raw %>% filter(!(gameid %in% badGames))
 
 ```{r}
 write_csv(d.answers, '../data/experiment3/answerFromMongo_clean.csv')
+write_csv(d.questions, '../data/experiment3/questionFromMongo_clean.csv')
 ```
 
 Note that if you split out by trueGoal, there seems to be a ROW bias (probably bcecause ROW button was first...)
@@ -80,6 +81,24 @@ ggsave('../writing/2019/journal-revision/figures/spatialGoalInference.pdf', widt
 
 # Qualitative model predictions
 
+## Questioner
+
+```{r}
+qualitativeQ <- read_csv('../modeling/qa/questionFromMongo_qualitative.csv')
+qualitativeQ %>%
+  filter(qualitativeTrialType != 'other') %>%
+  group_by(qualitativeTrialType, goal) %>%
+  mutate(total = length(qualitativeQuestion)) %>%
+  group_by(qualitativeTrialType, goal, qualitativeQuestion) %>%
+  tidyboot(summary_function = function(x) x %>% summarize(prop = length(total) / mean(total)), 
+           statistics_functions = function(x) x %>%
+           summarise_at(vars(prop), funs(ci_upper, mean, ci_lower))) %>% 
+  ungroup() %>%
+  
+```
+
+## Answerer
+
 See how often people *answer* with extra info
 
 ```{r}
@@ -99,9 +118,10 @@ ggplot(answer_info, aes(x = trialType, y = empirical_stat))  +
   theme_few() +
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = dodge) +
   scale_fill_few() +
+  ylim(0,1) +
   ylab('% answerers give additional info') +
   xlab('')+
-  ggtitle("What goal do you think the leader has?") 
+  ggtitle("") 
 ```
 
 # Quantitative model comparison
