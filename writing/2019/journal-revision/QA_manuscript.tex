@@ -465,7 +465,7 @@ Finally, we see that $A_2$ is context-dependent in the same way as \citeA{Clark7
 
 \begin{figure*}[t]
 \begin{center}
-\includegraphics[scale=.5]{clarkExampleFig}
+\includegraphics[scale=.5]{simulations/clarkExampleFig}
 \end{center}
 \vspace{-2cm}
 \caption{Illustration of how $A_2$ uses the questioner's utterance as a cue to their underlying goal and responds relevantly, thus producing the sensitivity reported by Clark (1979). We set the optimality parameter $\alpha = 100$ to make the effect clearer; the middle column is the marginal posterior projected to the number of cards in the goal.}
@@ -548,7 +548,7 @@ This asymmetry in question behavior given different goals provides $A_2$ informa
 
 \begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale = .35]{hierarchyStructureExamples.png}
+\includegraphics[scale = .35]{Exp1/hierarchyStructureExamples.png}
 \end{center}
 \caption{Example of each type of conceptual hierarchy used in our experiment. The bottom row served as the goal and answer spaces, and the labels in the questioner space highlighted in red.}
 \label{fig:hierarchyStructures}
@@ -575,21 +575,26 @@ Finally, a more sophisticated answerer $A_2$, who inferred the questioner's unde
 %Of course, making flexible post-hoc assumptions to capture phenomena inside our computational framework does not, by itself, provide a \emph{test} of our model. 
 These case studies showcase the answerer models and demonstrate how social reasoning explains prior experimental findings under a unified formal framework. 
 However, our framework also generates novel predictions not addressed by existing experimental data.
-Most conspicuously, there is a relative lack of data on how people \emph{choose} questions in the same scenarios as our case studies, when the questioner knows her partner wants to be helpful but may not know exactly what goal she is pursing.
-We therefore designed a new experimental paradigm to probe questioner \emph{and} answerer behavior under such conditions.
-In the remainder of the paper, we present three behavioral experiments in this paradigm that extend and provide a more rigorous evaluation of both questioner and answerer models in our framework.
+Most conspicuously, there is a relative lack of data on how people \emph{choose questions} in the same kinds of social scenarios as our case studies, when the questioner knows her partner wants to be helpful but may not know ahead of time exactly what goal she is pursing.
+We therefore designed a new experimental paradigm -- the \emph{Hidden Goal} paradigm -- to probe questioner \emph{and} answerer behavior under such conditions.
+In the remainder of the paper, we present three behavioral experiments in this paradigm that provide a more rigorous evaluation of both questioner and answerer models in our framework.
+
+Each experiment additionally demonstrates how the core computational mechanisms of our theory can be elegantly composed with other linguistic and cognitive primitives to capture more sophisticated question and answer behaviors.
+In Experiment 1, we provide an underlying formal account of demonstrative reference in questions (the ``where is \emph{the} dog?'') which uses graded knowledge of category typicality.
+In Experiment 2, we show how the model extends to more structured spaces of hierarchical goals.
+And finally, in Experiment 3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
 
 \section{The Hidden Goal paradigm}
 
-\todo[inline]{Needs  a lot of work}
-Popular paradigms for studying question-asking, such as \emph{Battleship} \cite{RotheEtAl16_NaturalLanguageQuestions} or \emph{20 questions} games, 
-Similar to the Twenty Questions task commonly used in developmental studies \cite{Siegler77_TwentyQuestions, NelsonDivjak___Meder14_GuessWho, RuggeriEtAl15_HierarchicalTwentyQs} this game creates a knowledge asymmetry between players in order to motivate question-asking. 
+The basic functional purpose 
+Prominent paradigms for studying question-asking, such as \emph{Battleship} \cite{RotheEtAl16_NaturalLanguageQuestions, rothe2018people} or \emph{20 Questions} \cite{Siegler77_TwentyQuestions, NelsonDivjak___Meder14_GuessWho, RuggeriEtAl15_HierarchicalTwentyQs}, have been ideal for investigating how people select queries from a large space of po
+Similar to the Twenty Questions task commonly used in developmental studies this game creates a knowledge asymmetry between players in order to motivate question-asking. 
 Unlike that task, however, we withhold information about the questioner's goal from the answerer. 
 This feature of \emph{a priori} uncertainty over the goal, common in real-world social situations, provides fertile ground for pragmatic reasoning and allows us to test the role of goal inference in our models. 
 
-First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
- directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
-To do so, we must collect data on which question a questioner prefers to ask given a particular goal. 
+%First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
+% directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
+% To do so, we must collect data on which question a questioner prefers to ask given a particular goal. 
 Second, we must provide empirical evidence for the assumptions we make about internal model choices: for instance, the priors and spaces of alternative questions, answers, or goals in a particular scenario. 
 Finally, validate the predicted goal inference. 
 
@@ -600,8 +605,8 @@ To satisfy these three requirements, we designed a reference game to simultaneou
 
 \begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale = .213]{Exp4GuesserViewStart}
-\includegraphics[scale = .105]{Exp4HelperViewStart}
+\includegraphics[scale = .213]{Exp1/GuesserViewStart}
+\includegraphics[scale = .105]{Exp1/HelperViewStart}
 \end{center}
 \caption{Experiment interfaces for the questioner (left) and answerer (right).}
 \label{fig:expviews}
@@ -684,7 +689,7 @@ The proportion of participants asking each possible question in this scenario, c
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .77]{ResultsFig.pdf}
+\includegraphics[scale = .77]{Exp1/ResultsFig.pdf}
 \end{center}
 \vspace{-2cm}
 \caption{(A-B) Key qualitative results for branching condition (answerers) and overlapping condition (questioners). Labels shown from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% CIs. (C) Quantitative model comparison; marginal likelihoods shown on log scale. Insert zooms in on $Q_1$ and $Q_2$. (D) Posterior predictives for each model (excluding $A_0$ and $Q_0$). Colored dots indicate overlapping condition.}
