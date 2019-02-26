@@ -556,15 +556,6 @@ This asymmetry in question behavior given different goals provides $A_2$ informa
 
 % Similarly, when asked "Do you accept credit cards?'' the pragmatic answerer reasons that if the questioner were interested in a particular card $c$, they would have asked the more direct question ``Do you accept card $c$?'' and because they did not ask this question, it must not have been the goal. This inference also rules out goals where the questioner has one common card $c$ plus one or more rarer cards, since these goals also lead to the question ``Do you accept card $c$?'' With all these goals ruled out, we are left with five goals in which the caller has \emph{both} common cards (Visa and MasterCard) along with various other less common cards (see Figure \ref{fig:clarkExperiment5posteriors}, bottom panel). The answerer is uncertain as to which set of less common cards are owned. Thus, for any world where the restaurant does not accept Visa or MasterCard, an exhaustive list of accepted cards is determined to be the most informative answer on average. Note that these inferences are made purely on the basis of the questioner model's behavior under possible goals, rather than cues from context as in the previous simulations.
 
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .35]{Exp1/hierarchyStructureExamples.png}
-\end{center}
-\caption{Example of each type of conceptual hierarchy used in our experiment. The bottom row served as the goal and answer spaces, and the labels in the questioner space highlighted in red.}
-\label{fig:hierarchyStructures}
-\end{figure*}
-
-
 \subsection{Discussion}
 
 In these case studies, we examined three empirical answerer-sensitivity effects that serve as desiderata for how a dialogue agent ought to interpret and respond to questions. 
@@ -588,6 +579,15 @@ Most conspicuously, there is a relative lack of data on how people \emph{choose 
 We therefore designed a new experimental paradigm---the \emph{Hidden Goal} paradigm---to simultaneously probe questioner and answerer behavior under such conditions.
 This paradigm allows us to rigorously compare our different models, and to empirically justify modeling assumptions.
 
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .35]{Exp1/hierarchyStructureExamples.png}
+\end{center}
+\caption{Example of each type of conceptual hierarchy used in our experiment. The bottom row served as the goal and answer spaces, and the possible questions are highlighted in red. }
+\label{fig:hierarchyStructures}
+\end{figure*}
+
+
 \section{The Hidden Goal paradigm}
 
 The functional motivations for asking (epistemic) questions lie in two sources of informational asymmetry. 
@@ -604,9 +604,9 @@ This simplification---fixing a single goal and limiting the expected behavior of
 
 We developed the \emph{Hidden Goal} paradigm to address the challenge of creating the functional conditions for question and answer pragmatics in a controlled lab setting.
 There are two key features that distinguish this paradigm from those used in prior work.
-First, it establishes a \emph{joint goal} shared by both participations, thus emphasizing the need for cooperation. 
-Second, while preserving the asymmetry in world knowledge between questioner and answerer used in prior work, it \emph{also} explicitly introduces an asymmetry in knowledge about \emph{goals}.
+First, while preserving the asymmetry in world knowledge between questioner and answerer used in prior work, it \emph{also} explicitly introduces an asymmetry in knowledge about \emph{goals}.
 We privately assign one of several possible goals to the questioner and withhold information about the identity of goal from the answerer, thus inducing uncertainty. 
+Second, it establishes a \emph{joint task} shared by both participants---the answerer is only rewarded when the questioner meets their goal---thus emphasizing the need for cooperation in combining these different sources of private knowledge. 
 
 %First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
 % directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
@@ -636,8 +636,7 @@ And finally, in Experiment 3, we show how the same framework straightforwardly e
 
 %%%
 
-
-Our first experiment was a simple We designed a Hidden Goal game using natural objects and scenes as targets. 
+Our first experiment is a 
 On each trial, four objects are hidden such that only one player -- the \emph{answerer} -- knows each object's true location. 
 The other player -- the \emph{questioner} -- is privately assigned one of the objects to find and is allowed to ask one question to query their knowledgeable partner about its location. After hearing the answerer's response, the questioner makes a guess about the location of the target object, then both players receive feedback and advance to the next trial. 
 
