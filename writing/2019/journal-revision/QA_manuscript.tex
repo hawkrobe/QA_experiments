@@ -579,15 +579,6 @@ Most conspicuously, there is a relative lack of data on how people \emph{choose 
 We therefore designed a new experimental paradigm---the \emph{Hidden Goal} paradigm---to simultaneously probe questioner and answerer behavior under such conditions.
 This paradigm allows us to rigorously compare our different models, and to empirically justify modeling assumptions.
 
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .35]{Exp1/hierarchyStructureExamples.png}
-\end{center}
-\caption{Example of each type of conceptual hierarchy used in our experiment. The bottom row served as the goal and answer spaces, and the possible questions are highlighted in red. }
-\label{fig:hierarchyStructures}
-\end{figure*}
-
-
 \section{The Hidden Goal paradigm}
 
 The functional motivations for asking (epistemic) questions lie in two sources of informational asymmetry. 
@@ -622,20 +613,17 @@ Each experiment additionally demonstrates how the core computational mechanisms 
 In Experiment 1, we provide an underlying formal account of demonstrative reference in questions (the ``where is \emph{the} dog?'') which uses graded knowledge of category typicality.
 In Experiment 2, we show how the model extends to more structured spaces of hierarchical goals.
 And finally, in Experiment 3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
-
-\section{Experiment 1: Conceptual knowledge and saliency}
-
 \begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale = .213]{Exp1/GuesserViewStart}
-\includegraphics[scale = .105]{Exp1/HelperViewStart}
+\includegraphics[scale = 1]{Exp1/Exp1Task.pdf}
 \end{center}
-\caption{Experiment interfaces for the questioner (left) and answerer (right).}
+\caption{Task display and procedure for Experiment 1. (A) Questioner is privately assigned a goal object to find, but does not know which objects are behind which doors. (B) Answerer is privately shown the locations of objects but does not know \emph{a priori} which object the questioner is trying to find. Possible questions are shared. (C) Example of a single trial proceeding through 3 phases: goal assignment, question selection, and answer selection.}
 \label{fig:expviews}
 \end{figure*}
+\section{Experiment 1: Conceptual knowledge and saliency}
 
 %%%
-
+\todo[inline]{Introduce motivation behind experiment, i.e. very simple case with restricted spaces...}
 Our first experiment is a 
 On each trial, four objects are hidden such that only one player -- the \emph{answerer} -- knows each object's true location. 
 The other player -- the \emph{questioner} -- is privately assigned one of the objects to find and is allowed to ask one question to query their knowledgeable partner about its location. After hearing the answerer's response, the questioner makes a guess about the location of the target object, then both players receive feedback and advance to the next trial. 
@@ -654,6 +642,22 @@ In this task, we therefore examine \emph{which} indirect question the questioner
 
 \subsubsection{Stimuli} 
 A set of twelve items was created by crossing four conceptual domains (animals, plants, places, and artifacts) with three concept hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}) where our models make different predictions. Each item contains four objects (the leaves of the trees in Figure \ref{fig:hierarchyStructures}) which are hidden behind the four gates and may be assigned to the questioner as goal objects, as well as four question labels drawn from different levels in the concept hierarchy (highlighted in red in Figure \ref{fig:hierarchyStructures}) which the questioner may use to ask about their assigned goal\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \scriptsize\url{https://github.com/hawkrobe/Q\_and\_A/stimuliLabels.pdf}}.
+
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .35]{Exp1/hierarchyStructureExamples.png}
+\end{center}
+\caption{Example of each type of conceptual hierarchy used in our experiment. The bottom row served as the goal and answer spaces, and the possible questions are highlighted in red. }
+\label{fig:hierarchyStructures}
+\end{figure*}
+
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = 1]{Exp1/QualitativePredictions.pdf}
+\end{center}
+\caption{Experiment interfaces for the questioner (left) and answerer (right).}
+\label{fig:expviews}
+\end{figure*}
 
 \subsubsection{Procedure}
 
