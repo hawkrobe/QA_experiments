@@ -84,17 +84,42 @@ ggsave('../writing/2019/journal-revision/figures/spatialGoalInference.pdf', widt
 ## Questioner
 
 ```{r}
-qualitativeQ <- read_csv('../modeling/qa/questionFromMongo_qualitative.csv')
-qualitativeQ %>%
+qualitativeQ <- read_csv('../modeling/qa/questionFromMongo_qualitative.csv') %>%
   filter(qualitativeTrialType != 'other') %>%
-  group_by(qualitativeTrialType, goal) %>%
-  mutate(total = length(qualitativeQuestion)) %>%
-  group_by(qualitativeTrialType, goal, qualitativeQuestion) %>%
-  tidyboot(summary_function = function(x) x %>% summarize(prop = length(total) / mean(total)), 
+  group_by(qualitativeTrialType) %>%
+  mutate(total = length(qualitativeQuestion)) 
+
+qualitativeQ %>%
+  group_by(qualitativeTrialType, qualitativeQuestion) %>%
+  tidyboot(summary_function = function(x) x %>% summarize(prop = length(total) / mean(total)),
            statistics_functions = function(x) x %>%
-           summarise_at(vars(prop), funs(ci_upper, mean, ci_lower))) %>% 
+           summarise_at(vars(prop), funs(ci_upper, mean, ci_lower)))
+```
+
+```{r}
+diffScore <- function(data, indices) {
+  d <- data[indices,] %>%
+    group_by(qualitativeQuestion) %>%
+    summarize(count = n()) %>%
+    ungroup() %>%
+    mutate(prob = count / sum(count)) %>%
+    select(-count) %>%
+    spread(qualitativeQuestion, prob)
+  return(d$pragmatic - d$confusing)
+}
+
+bootRes <- qualitativeQ %>% 
+  filter(qualitativeTrialType == "ambiguous") %>%
   ungroup() %>%
-  
+  boot::boot(diffScore, R = 1000)
+
+estimate <- round(bootRes$t0,2)
+lowerDiffScore <- round(boot::boot.ci(bootRes, type = "perc")$percent[4],2)
+upperDiffScore <- round(boot::boot.ci(bootRes, type = "perc")$percent[5],2)
+cat(paste0(c('\npragmatic-confusing = ', estimate,
+             '[', lowerDiffScore, 
+             ', ', upperDiffScore, ']')))
+
 ```
 
 ## Answerer
