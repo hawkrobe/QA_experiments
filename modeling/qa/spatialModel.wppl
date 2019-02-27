@@ -203,26 +203,18 @@ var SpatialModel = function(Qrationality, Arationality) {
   });
 
   var questioner = dp.cache(function(type, goal, gridState) {
-    // Use shortcut if possible
-    // if(goal.length == 3) {
-    //   var output = qa.getQuestionerOutput(type, goal, gridState);
-    //   return Categorical({vs: map(function(v) {return "is_" + v['question'] + "_safe?"}, output),
-    // 			ps: map(function(v) {return _.toNumber(v['prob'])}, output)});
-    // } 
     var consistentWorldPrior = makeConsistentWorldPrior(gridState);
     var validQuestionPrior = makeValidQuestionPrior(gridState);
-    console.log(gridState);
     return Infer({method: 'enumerate'}, function() {
       var question = sample(validQuestionPrior);
       var trueGoal = goal;
       var utility = expectation(consistentWorldPrior, function(trueWorld) {
 	var possibleAnswer = answerer(type, question, trueWorld, gridState);
-	var exp = expectation(possibleAnswer, function(answer){
+	return expectation(possibleAnswer, function(answer){
   	  var priorProb = getPriorProb(trueGoal, gridState);
   	  var posteriorProb = getPosteriorProb(type, question, answer, trueGoal, gridState);
   	  return KL(posteriorProb, priorProb);
 	});
-	return exp;
       });
       // console.log(question)
       // console.log(utility * Qrationality);
