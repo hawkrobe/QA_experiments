@@ -5,7 +5,11 @@ var fs = require('fs');
 var babyparse = require('babyparse');
 
 function readCSV(filename){
-  return babyparse.parse(fs.readFileSync(filename, 'utf8'), {header: true}).data;
+  return babyparse.parse(fs.readFileSync(filename, 'utf8'), {
+    header: true,
+    keepEmptyRows:false,
+    skipEmptyLines: true
+  }).data;
 };
 
 function readJSON(filename){
