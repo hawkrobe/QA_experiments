@@ -138,7 +138,7 @@ var SpatialModel = function(Qrationality, Arationality) {
       factor(_.isFinite(subQuestionProb) ? subQuestionProb : -1000)
       return [superQudName].concat(subQudName);
     });
-  }, 1000);
+  }, 10000);
 
   //  -------
   // | Models |
@@ -221,7 +221,7 @@ var SpatialModel = function(Qrationality, Arationality) {
       factor(utility.toFixed(8) * Qrationality);
       return question;
     });
-  }, 1000);
+  }, 10000);
 
   var interpreter = dp.cache(function(answer, gridState){
     var consistentWorldPrior = makeConsistentWorldPrior(gridState);
@@ -232,7 +232,6 @@ var SpatialModel = function(Qrationality, Arationality) {
       return world;
     });
   }, 1000);
-
   
   var answerer = dp.cache(function(type, question, trueWorld, gridState) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
