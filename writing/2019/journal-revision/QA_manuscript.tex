@@ -167,7 +167,10 @@ In the second proposal, the meaning of a question is \emph{underspecified} and i
 
 % WHAT PROBLEMS NEED TO BE SOLVED IN DIALOGUE?
 %We begin by presenting a general computational framework for agents in dialogue, then focus on the problem of question-asking and answering in particular. 
-Broadly speaking, an agent must solve two problems to participate in a dialogue. First, they must \emph{listen}, interpreting the meaning of their partner's utterance and updating their own beliefs accordingly. Then they must \emph{speak}, producing an utterance that informatively addresses the current goal or topic of conversation. At either stage, the utterance may be a statement, a question, or another more exotic kind of speech act. 
+Broadly speaking, an agent must solve two problems to participate in a dialogue. 
+First, they must \emph{listen}, interpreting the meaning of their partner's utterance and updating their own beliefs accordingly. 
+Then they must \emph{speak}, producing an utterance that informatively addresses the current goal or topic of conversation. 
+At either stage, the utterance may be a statement, a question, or another more exotic kind of speech act. 
 
 \begin{figure*}[t]
 \begin{center}
@@ -178,33 +181,40 @@ Broadly speaking, an agent must solve two problems to participate in a dialogue.
 \end{figure*}
 
 % HOW ARE THESE ADDRESSED IN RSA?
-Both the listening problem and the speaking problem have been addressed separately within the Rational Speech Act (RSA) framework \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature, GoodmanFrank16_RSATiCS}, in which language understanding is formalized as recursive Bayesian inference. Pragmatic speaker agents choose utterances to maximize their partner's surprisal about the true state of the world -- a basic epistemic goal -- and pragmatic listener agents interpret utterances by inverting the speaker model. This basic framework has been used to account for a number of diverse pragmatic phenomena including 
+The listening problem and the speaking problem have been addressed separately in prior work within the Rational Speech Act (RSA) framework \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature, GoodmanFrank16_RSATiCS}, in which language understanding is formalized as recursive Bayesian inference. 
+Pragmatic speaker agents choose utterances to maximize their partner's surprisal about the true state of the world -- a basic epistemic goal -- and pragmatic listener agents interpret utterances by inverting the speaker model. 
+This basic framework has been used to account for a number of diverse pragmatic phenomena including 
 scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, %prosody \cite{BergenGoodman15_StrategicUseOfNoise},
 %the acquisition of word meanings \cite{FrankGoodman14_InferringWordMeanings}, and
 generic language \cite{TesslerGoodman16_Generics}, and
 interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}.
 
 % HOW IS GOAL-RELEVANCE FORMALIZED IN RSA?
-RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. Instead of attempting to be maximally informative about the \emph{full} state of the world, the speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. 
+RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. 
+Instead of attempting to be maximally informative about the \emph{full} state of the world, a goal-relevant speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. 
 RSA models with relevance have been used to capture non-literal language use like metaphor, irony, and hyperbole. 
 In the case of hyperbole, for instance, a speaker who says ``It took a million years to get a table'' may be intending to be informative about the topic of their affective state (e.g. their frustration) rather than the exact time it took to get a table \cite{KaoWuBergenGoodman14_NonliteralNumberWords}.
 
 % HOW IS OUR MODEL DIFFERENT FROM PAST MODELS (DIALOGUE!)
-Here, we build upon these recent modeling advances in several novel ways. 
-First, by unifying the listening problem and speaking problem in a single rational agent, we provide a principled cognitive connection between linguistic input and output: different kinds of input shift an agent's beliefs in different ways, motivating different kinds of responses. 
+Although the social interplay between questioner and answerer may superficially resemble that of the \emph{speaker} and \emph{listener} agents in previous RSA models, the minimal form of dialogue introduced by a question-answer pair present fundamentally new challenges.
+Here, we build upon these recent modeling advances in several ways. 
+
+First, while the role of a speaker in prior models is limited to production, and the role of listener is limited to interpretation, question-answer dialogue requires unifying the listening problem and speaking problem in a single agent. 
+Addressing this problem in a rational model requires derivating of the appropriate contingency between linguistic input and output.
+Different kinds of input shift an agent's beliefs in different ways, motivating different kinds of responses. 
+
+Second, the utilities considered in previous rational models of language use cannot straightforwardly capture the utility of a question, since questions -- as utterances -- don't provide direct information about the world to the listener.
+While a declarative statement in our framework provides evidence about the true state of the world, as in previous models, we conjecture that a question provides evidence about the \emph{speaker's goals}. 
+Rather than defining the meaning of a question in terms of its possible answers, as in traditional linguistic theories, we treat it as a \emph{signal} that the listener can use to update their beliefs about the goals of the question-asker. 
+When it is the listener's turn to speak, they can then generate statements that better address the goal-relevant aspects of the world. 
+In the next section, we review the basic RSA framework and explore several different proposals for how agents interpret and respond to questions within this framework.
+
 %This is a first step toward chaining together more complex multi-utterance discourse phenomena.
 
 % HOW IS OUR MODEL DIFFERENT FROM PAST MODELS (QUESTIONS!)
-Additionally, questions have previously posed a challenge for rational models of language use, since questions -- as utterances -- don't provide direct information about the world to the listener.
-The crucial motivation to ask questions in the first place, of course, is an asymmetry between speaker and listener knowledge; agents have \emph{private goals} in addition to private knowledge about the true state of the world. 
 %\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. 
-While a declarative statement in our framework provides evidence about the true state of the world, we conjecture that a question provides evidence about the \emph{speaker's goals}. 
 
-Rather than defining the meaning of a question in terms of its possible answers, as in traditional linguistic theories, we treat it as a \emph{signal} that the listener can use to update their beliefs about the speaker's goals. 
-When it is the listener's turn to speak, they can then generate statements that address the goal-relevant aspects of the world. In the next section, we review the basic RSA framework and explore several different proposals for how agents interpret and respond to questions within this framework.
  %This diverges from previous RSA models in that the value of a question depends on information gained by the speaker (rather than listener), and that this information comes later in the (very short) conversation. 
-
-
 
 %The account of questioner and answerer behavior we propose in this section is a an effort to synthesize linguistic theories of question semantics with rich, quantitative cognitive models of language understanding. 
 %We jointly model the questioner's choice of question and the and answerer's choice of answer through recursive social reasoning, allowing the answerer to \emph{infer} the questioner's private goal from observing the context and question utterance. 
@@ -465,7 +475,7 @@ Finally, we see that $A_2$ is context-dependent in the same way as \citeA{Clark7
 
 \begin{figure*}[t]
 \begin{center}
-\includegraphics[scale=.5]{clarkExampleFig}
+\includegraphics[scale=.5]{simulations/clarkExampleFig}
 \end{center}
 \vspace{-2cm}
 \caption{Illustration of how $A_2$ uses the questioner's utterance as a cue to their underlying goal and responds relevantly, thus producing the sensitivity reported by Clark (1979). We set the optimality parameter $\alpha = 100$ to make the effect clearer; the middle column is the marginal posterior projected to the number of cards in the goal.}
@@ -546,15 +556,6 @@ This asymmetry in question behavior given different goals provides $A_2$ informa
 
 % Similarly, when asked "Do you accept credit cards?'' the pragmatic answerer reasons that if the questioner were interested in a particular card $c$, they would have asked the more direct question ``Do you accept card $c$?'' and because they did not ask this question, it must not have been the goal. This inference also rules out goals where the questioner has one common card $c$ plus one or more rarer cards, since these goals also lead to the question ``Do you accept card $c$?'' With all these goals ruled out, we are left with five goals in which the caller has \emph{both} common cards (Visa and MasterCard) along with various other less common cards (see Figure \ref{fig:clarkExperiment5posteriors}, bottom panel). The answerer is uncertain as to which set of less common cards are owned. Thus, for any world where the restaurant does not accept Visa or MasterCard, an exhaustive list of accepted cards is determined to be the most informative answer on average. Note that these inferences are made purely on the basis of the questioner model's behavior under possible goals, rather than cues from context as in the previous simulations.
 
-\begin{figure*}[t!]
-\begin{center}
-\includegraphics[scale = .35]{hierarchyStructureExamples.png}
-\end{center}
-\caption{Example of each type of conceptual hierarchy used in our experiment. The bottom row served as the goal and answer spaces, and the labels in the questioner space highlighted in red.}
-\label{fig:hierarchyStructures}
-\end{figure*}
-
-
 \subsection{Discussion}
 
 In these case studies, we examined three empirical answerer-sensitivity effects that serve as desiderata for how a dialogue agent ought to interpret and respond to questions. 
@@ -571,46 +572,59 @@ Finally, a more sophisticated answerer $A_2$, who inferred the questioner's unde
 
 %This raises concerns that our model could fit \emph{any} question-answer data by choosing the appropriate set of priors. Indeed, we regard all of these choices as scientific hypotheses, not free parameters. For the experiments presented later in this paper, we test these hypotheses or fix them via our experiment design. The choices in the computational experiments above were simply intended to be reasonable enough to illustrate how our model framework accommodates various results from the literature on question-answer pragmatics.
 
-
 %Of course, making flexible post-hoc assumptions to capture phenomena inside our computational framework does not, by itself, provide a \emph{test} of our model. 
 These case studies showcase the answerer models and demonstrate how social reasoning explains prior experimental findings under a unified formal framework. 
 However, our framework also generates novel predictions not addressed by existing experimental data.
-Most conspicuously, there is a relative lack of data on how people \emph{choose} questions in the same scenarios as our case studies, when the questioner knows her partner wants to be helpful but may not know exactly what goal she is pursing.
-We therefore designed a new experimental paradigm to probe questioner \emph{and} answerer behavior under such conditions.
-In the remainder of the paper, we present three behavioral experiments in this paradigm that extend and provide a more rigorous evaluation of both questioner and answerer models in our framework.
+Most conspicuously, there is a relative lack of data on how people \emph{choose questions} in the same kinds of social scenarios as our case studies, when the questioner knows her partner wants to be helpful but may not know ahead of time exactly what goal she is pursing.
+We therefore designed a new experimental paradigm---the \emph{Hidden Goal} paradigm---to simultaneously probe questioner and answerer behavior under such conditions.
+This paradigm allows us to rigorously compare our different models, and to empirically justify modeling assumptions.
 
 \section{The Hidden Goal paradigm}
 
-\todo[inline]{Needs  a lot of work}
-Popular paradigms for studying question-asking, such as \emph{Battleship} \cite{RotheEtAl16_NaturalLanguageQuestions} or \emph{20 questions} games, 
-Similar to the Twenty Questions task commonly used in developmental studies \cite{Siegler77_TwentyQuestions, NelsonDivjak___Meder14_GuessWho, RuggeriEtAl15_HierarchicalTwentyQs} this game creates a knowledge asymmetry between players in order to motivate question-asking. 
-Unlike that task, however, we withhold information about the questioner's goal from the answerer. 
-This feature of \emph{a priori} uncertainty over the goal, common in real-world social situations, provides fertile ground for pragmatic reasoning and allows us to test the role of goal inference in our models. 
+The functional motivations for asking (epistemic) questions lie in two sources of informational asymmetry. 
+Agents have both (1) private goals and (2) private knowledge about the world. 
+If the questioner already knew the relevant information about the world, there would be no need to ask about it.
+Similarly, if a cooperative answerer already knew the questioner's goal, they would just provide the necessary information without needing to hear a question.
+Thus, studying how people ask and answer questions in dialogue requires an experimental paradigm that can induce and manipulate these two forms of uncertainty.
 
-First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
- directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
-To do so, we must collect data on which question a questioner prefers to ask given a particular goal. 
-Second, we must provide empirical evidence for the assumptions we make about internal model choices: for instance, the priors and spaces of alternative questions, answers, or goals in a particular scenario. 
-Finally, validate the predicted goal inference. 
+Prominent paradigms for studying question asking in the lab, including \emph{Battleship} \cite{RotheEtAl16_NaturalLanguageQuestions, rothe2018people} or \emph{20 Questions}-style games \cite{Siegler77_TwentyQuestions, cohen2016searching, NelsonDivjak___Meder14_GuessWho, RuggeriEtAl15_HierarchicalTwentyQs}, have been ideal for investigating how people select between different possible queries.
+By withholding from the questioner the ground truth location of the ships in \emph{Battleship}, or the identity of the object that their partner is thinking of in \emph{20 Questions}, they effectively induce an asymmetry in knowledge about the world.
 
-To satisfy these three requirements, we designed a reference game to simultaneously collect data on question-asking behavior \emph{and} answering behavior in interaction, carefully controlling or measuring priors and utterance sets. 
+However, by design, the answerer in these paradigms knows the questioner's true goal with certainty (e.g. to ``find all battleships'') and is constrained to respond truthfully but otherwise uncooperatively.
+This simplification---fixing a single goal and limiting the expected behavior of the answerer---is desirable for measuring question preferences over large, unbounded spaces \cite{cohen2016searching, rothe2017question} or probing developmental change in basic informational search \cite{RuggeriEtAl15_HierarchicalTwentyQs, ruggeri2016sources}, but severely limits the pragmatic interplay that is characteristic of real-world dialogue. 
+
+We developed the \emph{Hidden Goal} paradigm to address the challenge of creating the functional conditions for question and answer pragmatics in a controlled lab setting.
+There are two key features that distinguish this paradigm from those used in prior work.
+First, while preserving the asymmetry in world knowledge between questioner and answerer used in prior work, it \emph{also} explicitly introduces an asymmetry in knowledge about \emph{goals}.
+We privately assign one of several possible goals to the questioner and withhold information about the identity of goal from the answerer, thus inducing uncertainty. 
+Second, it establishes a \emph{joint task} shared by both participants---the answerer is only rewarded when the questioner meets their goal---thus emphasizing the need for cooperation in combining these different sources of private knowledge. 
+
+%First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
+% directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
+% To do so, we must collect data on which question a questioner prefers to ask given a particular goal. 
+%Second, we must provide empirical evidence for the assumptions we make about internal model choices: for instance, the priors and spaces of alternative questions, answers, or goals in a particular scenario. 
+%Finally, validate the predicted goal inference. 
+
+%To satisfy these three requirements, we designed a reference game to simultaneously collect data on question-asking behavior \emph{and} answering behavior in interaction, carefully controlling or measuring priors and utterance sets. 
 %Since \citeA{Wittgenstein09_PhilosophicalInvestigations}, reference games have provided a simple but productive testbed for eliciting pragmatic behavior: one participant must choose an utterance to communicate the identity of a target object to their partner in a shared context. 
 
-\section{Experiment 1: Conceptual knowledge and saliency}
-
+In the remainder of the paper, we present three behavioral experiments in this paradigm that provide a more rigorous evaluation of both questioner and answerer models in our framework.
+Each experiment additionally demonstrates how the core computational mechanisms of our theory can be elegantly composed with other linguistic and cognitive primitives to capture more sophisticated question and answer behaviors.
+In Experiment 1, we provide an underlying formal account of demonstrative reference in questions (the ``where is \emph{the} dog?'') which uses graded knowledge of category typicality.
+In Experiment 2, we show how the model extends to more structured spaces of hierarchical goals.
+And finally, in Experiment 3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
 \begin{figure*}[t!]
 \begin{center}
-\includegraphics[scale = .213]{Exp4GuesserViewStart}
-\includegraphics[scale = .105]{Exp4HelperViewStart}
+\includegraphics[scale = 1]{Exp1/Exp1Task.pdf}
 \end{center}
-\caption{Experiment interfaces for the questioner (left) and answerer (right).}
+\caption{Task display and procedure for Experiment 1. (A) Questioner is privately assigned a goal object to find, but does not know which objects are behind which doors. (B) Answerer is privately shown the locations of objects but does not know \emph{a priori} which object the questioner is trying to find. Possible questions are shared. (C) Example of a single trial proceeding through 3 phases: goal assignment, question selection, and answer selection.}
 \label{fig:expviews}
 \end{figure*}
+\section{Experiment 1: Conceptual knowledge and saliency}
 
 %%%
-
-
-Our first experiment was a simple We designed a Hidden Goal game using natural objects and scenes as targets. 
+\todo[inline]{Introduce motivation behind experiment, i.e. very simple case with restricted spaces...}
+Our first experiment is a 
 On each trial, four objects are hidden such that only one player -- the \emph{answerer} -- knows each object's true location. 
 The other player -- the \emph{questioner} -- is privately assigned one of the objects to find and is allowed to ask one question to query their knowledgeable partner about its location. After hearing the answerer's response, the questioner makes a guess about the location of the target object, then both players receive feedback and advance to the next trial. 
 
@@ -628,6 +642,22 @@ In this task, we therefore examine \emph{which} indirect question the questioner
 
 \subsubsection{Stimuli} 
 A set of twelve items was created by crossing four conceptual domains (animals, plants, places, and artifacts) with three concept hierarchy structures (``branching'', ``overlapping'', and ``equivocal''; see Figure \ref{fig:hierarchyStructures}) where our models make different predictions. Each item contains four objects (the leaves of the trees in Figure \ref{fig:hierarchyStructures}) which are hidden behind the four gates and may be assigned to the questioner as goal objects, as well as four question labels drawn from different levels in the concept hierarchy (highlighted in red in Figure \ref{fig:hierarchyStructures}) which the questioner may use to ask about their assigned goal\footnote{A document containing these mappings for all items, as well as their hierarchical relationships, is available online at \scriptsize\url{https://github.com/hawkrobe/Q\_and\_A/stimuliLabels.pdf}}.
+
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .35]{Exp1/hierarchyStructureExamples.png}
+\end{center}
+\caption{Example of each type of conceptual hierarchy used in our experiment. The bottom row served as the goal and answer spaces, and the possible questions are highlighted in red. }
+\label{fig:hierarchyStructures}
+\end{figure*}
+
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = 1]{Exp1/QualitativePredictions.pdf}
+\end{center}
+\caption{Experiment interfaces for the questioner (left) and answerer (right).}
+\label{fig:expviews}
+\end{figure*}
 
 \subsubsection{Procedure}
 
@@ -684,7 +714,7 @@ The proportion of participants asking each possible question in this scenario, c
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .77]{ResultsFig.pdf}
+\includegraphics[scale = .77]{Exp1/ResultsFig.pdf}
 \end{center}
 \vspace{-2cm}
 \caption{(A-B) Key qualitative results for branching condition (answerers) and overlapping condition (questioners). Labels shown from `animals' domain; probabilities estimated across all domains. Error bars represent bootstrapped 95\% CIs. (C) Quantitative model comparison; marginal likelihoods shown on log scale. Insert zooms in on $Q_1$ and $Q_2$. (D) Posterior predictives for each model (excluding $A_0$ and $Q_0$). Colored dots indicate overlapping condition.}
