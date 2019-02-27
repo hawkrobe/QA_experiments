@@ -1,71 +1,80 @@
-var runQuestioner = function() {
-  var questionerData = qa.readCSV('../../data/experiment3/questionFromMongo.csv')
-  var questionerPredictions = qa.readJSON('../experiment3/spatialQuestionerOutput_HierarchicalVersion.json');
+var runAnalysis = function() {
+  // don't condition on 'practice' trials (because they're practice)
+  var f = function(v) {
+    var state = JSON.parse(v['gridState']);
+    return (!(_.includes(['practice'], v['trialType']))
+	    && (state['safe'].length + state['unsafe'].length) > 0);
+  };
+
+  var questionerData = filter(f, qa.readCSV('../qa/questionFromMongo_qualitative.csv'));
+  var answererData = filter(f, qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv'));
 
   return Infer({method: 'enumerate'}, function() {
-    var rationality = uniformDraw([1, 2, 4, 8, 16]);
-    var model = SpatialModel(rationality, rationality);
+    var Arationality = uniformDraw(_.range(1,10));
+    var Qrationality = uniformDraw(_.range(1,10));    
+    var model = SpatialModel(Qrationality, Arationality);
     var questioner = model.questioner;
-    var type = flip() ? 'explicit' : 'pragmatic';
+    var answerer = model.answerer;
+    var questionerType = flip() ? 'explicit' : 'pragmatic';
+    var answererType = flip() ? 'explicit' : 'pragmatic';
+    globalStore.score = 0;
+    console.log(questionerType, answererType, Qrationality, Arationality);
+
     mapData({data: questionerData}, function(response) {
+      console.log(_.pick(response, ['trialType', 'gridState']));
       var rawState = JSON.parse(response['gridState']);
-      console.log(type, rationality, response)
       var state = {'safe' : sort(rawState['safe']),
 		   'unsafe' : sort(rawState['unsafe'])};
       var goal = response['goal'] == 'columns' ? ['1', '2', '3'] : ['A', 'B', 'C'];
-      var prediction = questioner(type, goal, state);
-      console.log(prediction);
+      var prediction = questioner(questionerType, goal, state);
       var score = prediction.score('is_' + response['question'] + '_safe?');
-      console.log(score)
-      factor(score);
+      globalStore.score += score;
+      console.log(score);
+      factor(_.isFinite(score) ? score : -10);
     });
 
-    return {type, rationality};
-  });
-};
-
-var runAnswerer = function() {
-  var answererData = qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv');
-  console.log('data loaded');
-
-  Infer({method: 'enumerate'}, function() {
-    var rationality = uniformDraw([1, 2, 4, 8, 16]);
-    var model = SpatialModel(rationality, rationality);
-    var answerer = model.answerer;
-    var type = flip() ? 'explicit' : 'pragmatic';
-    console.log(type, rationality);
     mapData({data: answererData}, function(response) {
-      console.log(response['gridState']);
       var rawState = JSON.parse(response['gridState']);
       var state = {'safe' : sort(rawState['safe']),
 		   'unsafe' : sort(rawState['unsafe'])};
       var world = JSON.parse(response['underlyingWorld']);
       var question = 'is_' + response['cellAskedAbout'] + '_safe?';
       var trueAnswer = map(function(v) {return v + '_' + world[v]},
-			   JSON.parse(response['answer']))
-      var prediction = answerer(type, question, world, state);
-      // console.log(prediction);
-      // console.log(trueAnswer);      
+			   JSON.parse(response['answer']));
+      var prediction = answerer(answererType, question, world, state);
       var score = prediction.score(trueAnswer);
-      factor(_.isFinite(score) ? score : -1000);
+      globalStore.score += score;
+      factor(_.isFinite(score) ? score : -10);
     });
 
-    return {type, rationality};
+    return {
+      questionerType,
+      answererType,
+      Qrationality,
+      Arationality,
+      likelihood: globalStore.score
+    };
   });
 };
 
-// results:
-    // {"type":"pragmatic","rationality":4} : 1
-    // {"type":"pragmatic","rationality":8} : 4.882392096787725e-30
-    // {"type":"pragmatic","rationality":2} : 1.9159778996963667e-36
-    // {"type":"pragmatic","rationality":1} : 5.089514107245257e-65
-    // {"type":"explicit","rationality":16} : 5.4485340424468476e-86
-    // {"type":"explicit","rationality":8} : 5.4485340424468476e-86
-    // {"type":"explicit","rationality":4} : 5.4485340424468476e-86
-    // {"type":"explicit","rationality":2} : 5.4485340424468476e-86
-    // {"type":"explicit","rationality":1} : 5.4485340424468476e-86
-    // {"type":"pragmatic","rationality":16} : 2.7949559144260474e-306
+console.log(runAnalysis());
 
+// {"type":"pragmatic","rationality":5,"likelihood":-2686.8779172324985} : 0.9998496471766977
+// {"type":"pragmatic","rationality":4,"likelihood":-2696.159849506417} : 0.00009307707561047157
+// {"type":"pragmatic","rationality":6,"likelihood":-2696.645400143719} : 0.000057275747688521864
+// {"type":"pragmatic","rationality":7,"likelihood":-2723.044777529897} : 1.9627583913275898e-16
+// {"type":"pragmatic","rationality":3,"likelihood":-2726.5551796825025} : 5.8656825946626095e-18
+// {"type":"pragmatic","rationality":2,"likelihood":-2778.4026847093246} : 1.7833361983811204e-40
+// {"type":"pragmatic","rationality":1,"likelihood":-2844.2006981852896} : 4.73717089380836e-69
+// {"type":"explicit","rationality":7,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+// {"type":"explicit","rationality":1,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+// {"type":"explicit","rationality":3,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+// {"type":"explicit","rationality":5,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+// {"type":"explicit","rationality":2,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+// {"type":"explicit","rationality":6,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+// {"type":"explicit","rationality":4,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+
+// TODO: generate predictives from MAP param val
 var getPredictions = function() {
   var bestRationality = 4;
   var model = SpatialModel(bestRationality, bestRationality);
@@ -76,4 +85,4 @@ var getPredictions = function() {
   });
 
 }
-runAnswerer();
+
