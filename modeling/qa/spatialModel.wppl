@@ -100,9 +100,6 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
       }, answer);
       return isTrue && responds && !alreadyRevealed;
     }, answerPrior.support());
-    // var ps = map(function(v) {
-    //   return v.length == 1 ? 2/(1+validAnswers.length) : 1/(1+validAnswers.length);
-    // }, validAnswers);
     return Categorical({vs: validAnswers}); // , ps : ps
   }, 1000);
 
@@ -128,15 +125,21 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
   var QUDPosteriorFromInference = dp.cache(function(question, gridState){
     return Infer({method: 'enumerate'}, function() {
       // what if questioner acting w/ super
-      var superQudName = superQudPrior();
-      var superQuestionProb = questioner('explicit', superQudName, gridState).score(question)
-      factor(_.isFinite(superQuestionProb) ? superQuestionProb : -10);    
+
+      var supQudName = superQudPrior();
+      var supQuestionP = questioner('explicit', supQudName, gridState).score(question);
+      factor(_.isFinite(supQuestionP) ? supQuestionP : -1000);
 
       // what if questioner acting w/ sub?
-      var subQudName = subQudPrior(superQudName);
-      var subQuestionProb = questioner('explicit', superQudName, gridState).score(question)
-      factor(_.isFinite(subQuestionProb) ? subQuestionProb : -10)
-      return [superQudName].concat(subQudName);
+      var subQudName = subQudPrior(supQudName);
+      var subQuestionP = questioner('explicit', subQudName, gridState).score(question);
+      factor(_.isFinite(subQuestionP) ? subQuestionP : -1000);
+
+      var unsafeRows = map(function(cell) {return cell[0]}, gridState['unsafe']);
+      var unsafeCols = map(function(cell) {return cell[1]}, gridState['unsafe']);      
+      condition(!_.includes(unsafeRows.concat(unsafeCols), subQudName));
+
+      return [supQudName].concat(subQudName);
     });
   }, 10000);
 
@@ -164,11 +167,8 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
   var getPriorProb = dp.cache(function(goal, gridState) {
     var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-    var qud = spatialNameToQUD(goal);  
-    return Infer({method: 'enumerate'}, function() {
-      var world = sample(consistentWorldPrior);
-      return qud(world);
-    });
+    var qud = spatialNameToQUD(goal);
+    return marginalize(consistentWorldPrior, function(world) {return qud(world);});
   }, 1000);
 
   // Note that in principle we should be conditioning on hearing back from
@@ -207,17 +207,14 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
     var validQuestionPrior = makeValidQuestionPrior(gridState);
     return Infer({method: 'enumerate'}, function() {
       var question = sample(validQuestionPrior);
-      var trueGoal = goal;
       var utility = expectation(consistentWorldPrior, function(trueWorld) {
 	var possibleAnswer = answerer(type, question, trueWorld, gridState);
 	return expectation(possibleAnswer, function(answer){
-  	  var priorProb = getPriorProb(trueGoal, gridState);
-  	  var posteriorProb = getPosteriorProb(type, question, answer, trueGoal, gridState);
+  	  var priorProb = getPriorProb(goal, gridState);
+  	  var posteriorProb = getPosteriorProb(type, question, answer, goal, gridState);
   	  return KL(posteriorProb, priorProb);
 	});
       });
-      // console.log(question)
-      // console.log(utility * Qrationality);
       factor(utility.toFixed(8) * Qrationality);
       return question;
     });
@@ -241,14 +238,22 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 	type === 'literal' ? Delta({v: 'identity'}) :
 	console.error('type not recognized')
     );
+    console.log('got qudposterior');
     if(type == 'explicit') {
       return truthfulAnswerPrior;
     } else {
+      // console.log(question);
+      // console.log(gridState);
+      console.log(qudPosterior);
       return Infer({method: 'enumerate'}, function(){
-	var qudName = sample(qudPosterior);
 	var answer = sample(truthfulAnswerPrior);
+	var qudName = sample(qudPosterior);
+	// var newUtility = expectation(qudPosterior, function(qudName) {
+	//   console.log(qudname)
+	//   return (qa.spatialInterpreterScore(trueWorld, answer, qudName[0], consistentWorldPrior) +
+	// 	  qa.spatialInterpreterScore(trueWorld, answer, qudName[1], consistentWorldPrior))
+	// });
 	var possibleWorlds = interpreter(answer, gridState);
-
 	var newUtility = _.sum(map(function(qud) {
 	  var localQUD = spatialNameToQUD(qud);
 	  return expectation(possibleWorlds, function(w) {
