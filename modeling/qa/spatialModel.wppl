@@ -152,7 +152,7 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
     if(qudName == 'identity') 
       return function(w) {return w;};
     else if(qudName.length > 1) {
-      return function(w) {return any(function(qud) {
+      return function(w) {return map(function(qud) {
 	return spatialLocationQUD(qud)(w);
       }, qudName);};
     } else {
