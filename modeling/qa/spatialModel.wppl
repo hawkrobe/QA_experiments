@@ -234,13 +234,13 @@ var SpatialModel = function(Qrationality, Arationality) {
   
   var answerer = dp.cache(function(type, question, trueWorld, gridState) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
+    var consistentWorldPrior = makeConsistentWorldPrior(gridState);
     var qudPosterior = (
       type === 'pragmatic' ? QUDPosteriorFromInference(question, gridState) :
 	type === 'explicit' ? QUDPosteriorFromMeaning(question) :
 	type === 'literal' ? Delta({v: 'identity'}) :
 	console.error('type not recognized')
     );
-    console.log('got qudposterior');
     if(type == 'explicit') {
       return truthfulAnswerPrior;
     } else {
@@ -249,21 +249,22 @@ var SpatialModel = function(Qrationality, Arationality) {
       console.log(qudPosterior);
       return Infer({method: 'enumerate'}, function(){
 	var answer = sample(truthfulAnswerPrior);
-	var qudName = sample(qudPosterior);
 	// var newUtility = expectation(qudPosterior, function(qudName) {
-	//   console.log(qudname)
 	//   return (qa.spatialInterpreterScore(trueWorld, answer, qudName[0], consistentWorldPrior) +
 	// 	  qa.spatialInterpreterScore(trueWorld, answer, qudName[1], consistentWorldPrior))
 	// });
-	var possibleWorlds = interpreter(answer, gridState);
-	var newUtility = _.sum(map(function(qud) {
-	  var localQUD = spatialNameToQUD(qud);
-	  return expectation(possibleWorlds, function(w) {
-	    return _.isEqual(localQUD(w), localQUD(trueWorld));
-	  });
-	}, qudName));
-	
-	factor(Arationality * Math.log(newUtility) );      
+
+	//var possibleWorlds = interpreter(answer, gridState);
+	// var newUtility = expectation(qudPosterior, function(qudName) {
+	//   return _.sum(map(function(qud) {
+	//     var localQUD = spatialNameToQUD(qud);
+	//     return Math.log(expectation(possibleWorlds, function(w) {
+	//       return _.isEqual(localQUD(w), localQUD(trueWorld));
+	//     }));
+	//   }, qudName));
+	// });
+
+	factor(Arationality * newUtility );      
 	return answer;
       });
     }
