@@ -10,16 +10,6 @@ var KL = function(erpTrue, erpApprox){
     }, values)));
 };
 
-var foreach = function(lst, fn) {
-  var foreach_ = function(i) {
-    if (i < lst.length) {
-      fn(lst[i]);
-      foreach_(i + 1);
-    }
-  };
-  foreach_(0);
-};
-
 var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
   //   ---------------
@@ -124,20 +114,23 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
   var QUDPosteriorFromInference = dp.cache(function(question, gridState){
     return Infer({method: 'enumerate'}, function() {
-      // what if questioner acting w/ super
-
+      // Sample super-QUD & sub-QUD
       var supQudName = superQudPrior();
+      var subQudName = subQudPrior(supQudName);
+
+      // stricly exclude 'impossible' sub-QUDs for computational efficiency
+      // e.g. if B2 is unsafe, then row B & column 2 aren't possible ways to win
+      var unsafeRows = map(function(cell) {return cell[0]}, gridState['unsafe']);
+      var unsafeCols = map(function(cell) {return cell[1]}, gridState['unsafe']);      
+      condition(!_.includes(unsafeRows.concat(unsafeCols), subQudName));
+
+      // what if questioner acting w/ super
       var supQuestionP = questioner('explicit', supQudName, gridState).score(question);
       factor(_.isFinite(supQuestionP) ? supQuestionP : -1000);
 
       // what if questioner acting w/ sub?
-      var subQudName = subQudPrior(supQudName);
       var subQuestionP = questioner('explicit', subQudName, gridState).score(question);
       factor(_.isFinite(subQuestionP) ? subQuestionP : -1000);
-
-      var unsafeRows = map(function(cell) {return cell[0]}, gridState['unsafe']);
-      var unsafeCols = map(function(cell) {return cell[1]}, gridState['unsafe']);      
-      condition(!_.includes(unsafeRows.concat(unsafeCols), subQudName));
 
       return [supQudName].concat(subQudName);
     });
@@ -159,7 +152,9 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
     if(qudName == 'identity') 
       return function(w) {return w;};
     else if(qudName.length > 1) {
-      return function(w) {return any(function(qud) {return spatialLocationQUD(qud)(w)}, qudName)};
+      return function(w) {return any(function(qud) {
+	return spatialLocationQUD(qud)(w);
+      }, qudName);};
     } else {
       return spatialLocationQUD(qudName);
     }
@@ -238,13 +233,9 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 	type === 'literal' ? Delta({v: 'identity'}) :
 	console.error('type not recognized')
     );
-    console.log('got qudposterior');
     if(type == 'explicit') {
       return truthfulAnswerPrior;
     } else {
-      // console.log(question);
-      // console.log(gridState);
-      console.log(qudPosterior);
       return Infer({method: 'enumerate'}, function(){
 	var answer = sample(truthfulAnswerPrior);
 	var qudName = sample(qudPosterior);
@@ -265,7 +256,7 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 	return answer;
       });
     }
-  }, 1000);
+  }, 10000);
 
   return {
     answerer: answerer,
