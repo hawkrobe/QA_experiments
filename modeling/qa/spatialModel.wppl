@@ -10,17 +10,7 @@ var KL = function(erpTrue, erpApprox){
     }, values)));
 };
 
-var foreach = function(lst, fn) {
-  var foreach_ = function(i) {
-    if (i < lst.length) {
-      fn(lst[i]);
-      foreach_(i + 1);
-    }
-  };
-  foreach_(0);
-};
-
-var SpatialModel = function(Qrationality, Arationality) {
+var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
   //   ---------------
   // | World knowledge |
@@ -99,11 +89,8 @@ var SpatialModel = function(Qrationality, Arationality) {
 		_.includes(gridState['unsafe'], v.split('_')[0]));
       }, answer);
       return isTrue && responds && !alreadyRevealed;
-    }, shortAnswers.concat(longAnswers));
-    var ps = map(function(v) {
-      return v.length == 1 ? 2/(1+validAnswers.length) : 1/(1+validAnswers.length);
-    }, validAnswers);
-    return Categorical({vs: validAnswers, ps: ps});
+    }, answerPrior.support());
+    return Categorical({vs: validAnswers}); // , ps : ps
   }, 1000);
 
   //  ------
@@ -127,19 +114,23 @@ var SpatialModel = function(Qrationality, Arationality) {
 
   var QUDPosteriorFromInference = dp.cache(function(question, gridState){
     return Infer({method: 'enumerate'}, function() {
-      // what if questioner acting w/ super
+      // Sample super-QUD & sub-QUD
       var supQudName = superQudPrior();
+      var subQudName = subQudPrior(supQudName);
+
+      // stricly exclude 'impossible' sub-QUDs for computational efficiency
+      // e.g. if B2 is unsafe, then row B & column 2 aren't possible ways to win
+      var unsafeRows = map(function(cell) {return cell[0]}, gridState['unsafe']);
+      var unsafeCols = map(function(cell) {return cell[1]}, gridState['unsafe']);      
+      condition(!_.includes(unsafeRows.concat(unsafeCols), subQudName));
+
+      // what if questioner acting w/ super
       var supQuestionP = questioner('explicit', supQudName, gridState).score(question);
       factor(_.isFinite(supQuestionP) ? supQuestionP : -1000);
 
       // what if questioner acting w/ sub?
-      var subQudName = subQudPrior(supQudName);
       var subQuestionP = questioner('explicit', subQudName, gridState).score(question);
       factor(_.isFinite(subQuestionP) ? subQuestionP : -1000);
-
-      var unsafeRows = map(function(cell) {return cell[0]}, gridState['unsafe']);
-      var unsafeCols = map(function(cell) {return cell[1]}, gridState['unsafe']);      
-      condition(!_.includes(unsafeRows.concat(unsafeCols), subQudName));
 
       return [supQudName].concat(subQudName);
     });
@@ -161,7 +152,9 @@ var SpatialModel = function(Qrationality, Arationality) {
     if(qudName == 'identity') 
       return function(w) {return w;};
     else if(qudName.length > 1) {
-      return function(w) {return map(function(qud) {return spatialLocationQUD(qud)(w)}, qudName)};
+      return function(w) {return map(function(qud) {
+	return spatialLocationQUD(qud)(w);
+      }, qudName);};
     } else {
       return spatialLocationQUD(qudName);
     }
@@ -234,7 +227,6 @@ var SpatialModel = function(Qrationality, Arationality) {
   
   var answerer = dp.cache(function(type, question, trueWorld, gridState) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
-    var consistentWorldPrior = makeConsistentWorldPrior(gridState);
     var qudPosterior = (
       type === 'pragmatic' ? QUDPosteriorFromInference(question, gridState) :
 	type === 'explicit' ? QUDPosteriorFromMeaning(question) :
@@ -244,31 +236,26 @@ var SpatialModel = function(Qrationality, Arationality) {
     if(type == 'explicit') {
       return truthfulAnswerPrior;
     } else {
-      // console.log(question);
-      // console.log(gridState);
-      console.log(qudPosterior);
       return Infer({method: 'enumerate'}, function(){
 	var answer = sample(truthfulAnswerPrior);
-	// var newUtility = expectation(qudPosterior, function(qudName) {
-	//   return (qa.spatialInterpreterScore(trueWorld, answer, qudName[0], consistentWorldPrior) +
-	// 	  qa.spatialInterpreterScore(trueWorld, answer, qudName[1], consistentWorldPrior))
-	// });
+	var possibleWorlds = interpreter(answer, gridState);
+	var utility = expectation(qudPosterior, function(qudName) {
+	  var term1 = Math.log(expectation(possibleWorlds, function(w) {
+	    var localQUD = spatialNameToQUD(qudName[0]);
+	    return _.isEqual(localQUD(w), localQUD(trueWorld));
+	  }));
+	  var term2 = Math.log(expectation(possibleWorlds, function(w) {
+	    var localQUD = spatialNameToQUD(qudName[1]);
+	    return _.isEqual(localQUD(w), localQUD(trueWorld));
+	  }));
+	  return term1 + term2;
+	});
 
-	//var possibleWorlds = interpreter(answer, gridState);
-	// var newUtility = expectation(qudPosterior, function(qudName) {
-	//   return _.sum(map(function(qud) {
-	//     var localQUD = spatialNameToQUD(qud);
-	//     return Math.log(expectation(possibleWorlds, function(w) {
-	//       return _.isEqual(localQUD(w), localQUD(trueWorld));
-	//     }));
-	//   }, qudName));
-	// });
-
-	factor(Arationality * newUtility );      
+	factor(Arationality * utility - answerCost * answer.length);      
 	return answer;
       });
     }
-  }, 1000);
+  }, 10000);
 
   return {
     answerer: answerer,
