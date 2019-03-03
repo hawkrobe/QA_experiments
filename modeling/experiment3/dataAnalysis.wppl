@@ -1,3 +1,10 @@
+// Fix some configuration options
+var config = {
+  'Qrationality' : argv.Qrationality,
+  'Arationality' : argv.Arationality,
+  'answerCost' : argv.answerCost
+};
+
 var runAnalysis = function() {
   // don't condition on 'practice' trials (because they're practice)
   var f = function(v) {
@@ -5,23 +12,23 @@ var runAnalysis = function() {
     return (!(_.includes(['practice'], v['trialType']))
 	    && (state['safe'].length + state['unsafe'].length) > 0);
   };
-
+  
   var questionerData = filter(f, qa.readCSV('../qa/questionFromMongo_qualitative.csv'));
   var answererData = filter(f, qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv'));
 
   return Infer({method: 'enumerate'}, function() {
-    var Arationality = uniformDraw(_.range(1,10));
-    var Qrationality = uniformDraw(_.range(1,10));    
-    var model = SpatialModel(Qrationality, Arationality);
+    var Arationality = config.Arationality;
+    var Qrationality = config.Qrationality;
+    var answerCost = config.answerCost;
+    var model = SpatialModel(Qrationality, Arationality, answerCost);
+
     var questioner = model.questioner;
     var answerer = model.answerer;
+    
     var questionerType = flip() ? 'explicit' : 'pragmatic';
-    var answererType = flip() ? 'explicit' : 'pragmatic';
     globalStore.score = 0;
-    console.log(questionerType, answererType, Qrationality, Arationality);
 
     mapData({data: questionerData}, function(response) {
-      console.log(_.pick(response, ['trialType', 'gridState']));
       var rawState = JSON.parse(response['gridState']);
       var state = {'safe' : sort(rawState['safe']),
 		   'unsafe' : sort(rawState['unsafe'])};
@@ -29,9 +36,10 @@ var runAnalysis = function() {
       var prediction = questioner(questionerType, goal, state);
       var score = prediction.score('is_' + response['question'] + '_safe?');
       globalStore.score += score;
-      console.log(score);
       factor(_.isFinite(score) ? score : -10);
     });
+
+    var answererType = flip() ? 'explicit' : 'pragmatic';
 
     mapData({data: answererData}, function(response) {
       var rawState = JSON.parse(response['gridState']);
@@ -46,33 +54,19 @@ var runAnalysis = function() {
       globalStore.score += score;
       factor(_.isFinite(score) ? score : -10);
     });
-
-    return {
+    console.log({
       questionerType,
       answererType,
       Qrationality,
       Arationality,
+      answerCost,
       likelihood: globalStore.score
-    };
+    });
+    return;
   });
 };
 
-console.log(runAnalysis());
-
-// {"type":"pragmatic","rationality":5,"likelihood":-2686.8779172324985} : 0.9998496471766977
-// {"type":"pragmatic","rationality":4,"likelihood":-2696.159849506417} : 0.00009307707561047157
-// {"type":"pragmatic","rationality":6,"likelihood":-2696.645400143719} : 0.000057275747688521864
-// {"type":"pragmatic","rationality":7,"likelihood":-2723.044777529897} : 1.9627583913275898e-16
-// {"type":"pragmatic","rationality":3,"likelihood":-2726.5551796825025} : 5.8656825946626095e-18
-// {"type":"pragmatic","rationality":2,"likelihood":-2778.4026847093246} : 1.7833361983811204e-40
-// {"type":"pragmatic","rationality":1,"likelihood":-2844.2006981852896} : 4.73717089380836e-69
-// {"type":"explicit","rationality":7,"likelihood":-2892.486820914448} : 5.071336150355087e-90
-// {"type":"explicit","rationality":1,"likelihood":-2892.486820914448} : 5.071336150355087e-90
-// {"type":"explicit","rationality":3,"likelihood":-2892.486820914448} : 5.071336150355087e-90
-// {"type":"explicit","rationality":5,"likelihood":-2892.486820914448} : 5.071336150355087e-90
-// {"type":"explicit","rationality":2,"likelihood":-2892.486820914448} : 5.071336150355087e-90
-// {"type":"explicit","rationality":6,"likelihood":-2892.486820914448} : 5.071336150355087e-90
-// {"type":"explicit","rationality":4,"likelihood":-2892.486820914448} : 5.071336150355087e-90
+runAnalysis();
 
 // TODO: generate predictives from MAP param val
 var getPredictions = function() {
