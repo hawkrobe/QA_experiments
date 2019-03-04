@@ -940,10 +940,24 @@ For example, if we know an agent takes the same route home every day, but one da
 
 The hierarchical structure of goals has also long been recognized in linguistic theories of questions in discourse  \cite{Kuppevelt95_TopicalityDiscourse,Roberts96_InformationStructureDiscourse,Buring03_DtreesBeansBaccents,Groenendijk99_LogicOfInterrogation,rojas2014discourse}.
 For instance, if a traveler asks \emph{Are there window seat tickets to Berlin at 7:00?} and there are no such tickets available, it would be more helpful for the travel agent to respond \emph{the next available tickets are for 10:00} than \emph{no} \cite{rojas2013roadsigns}.
-This can be understood as a recognition by the agent that the specific flight and seat preference mentioned by the traveler are subgoals in a hierarchy below the broader goal of getting to Berlin. 
+This has been understood as a recognition by the agent that the specific flight and seat preference mentioned by the traveler are subgoals in a hierarchy below the broader goal of getting to Berlin. 
 
-To show that more structured goals of this type are naturally accommodated by our framework, we designed a simple Hidden Goal collection game inspired by recent work in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
-Furthermore, it was 
+Structured goals of this type are naturally accommodated by our framework. 
+To show this, we designed a simple Hidden Goal collection game inspired by recent experiments in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
+Furthermore, this task presented the opportunity to more strongly test the pragmatic questioner model $Q_2$.
+
+As in Experiment 1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information about the world state.
+Unlike in Experiment 1, however, each goal was a \emph{set} of multiple objects that must be collected.
+More specifically, the questioner was assigned a hand of playing cards to find, which were scattered with other cards around a grid that only the answerer can see.
+These multi-object goals induce a hierarchy where the ultimate goal of collecting the full set was decomposed into subgoals of finding each individual object in the set.
+A pragmatic answerer, then, ought to infer and relevantly respond not only to the questioner's current subgoal but also their likely ultimate goal.
+A pragmatic questioner, in turn, ought to be sensitive to which questions best signal the ultimate goal.
+
+\subsection{Methods}
+\subsubsection{Participants}
+\subsubsection{Stimuli \& Procedure}
+\subsection{Results}
+
 
 \begin{figure*}[tbh!]
 \begin{center}
@@ -951,7 +965,7 @@ Furthermore, it was
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
-\label{fig:exp1predictives}
+\label{fig:exp2answerer}
 \end{figure*}
 
 \section{Experiment 3: Multi-round dialogue}
