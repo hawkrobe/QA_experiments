@@ -107,7 +107,7 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
   var QUDPosteriorFromMeaning = function(question) {
     if(_.includes(questionPrior.support(), question))
-      return Delta({v: [qa.butLast(question).split('_')[1]]});
+      return Delta({v: [[qa.butLast(question).split('_')[1]]]});
     else
       console.error('unknown question' + question);
   };
@@ -233,28 +233,20 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 	type === 'literal' ? Delta({v: 'identity'}) :
 	console.error('type not recognized')
     );
-    if(type == 'explicit') {
-      return truthfulAnswerPrior;
-    } else {
-      return Infer({method: 'enumerate'}, function(){
-	var answer = sample(truthfulAnswerPrior);
-	var possibleWorlds = interpreter(answer, gridState);
-	var utility = expectation(qudPosterior, function(qudName) {
-	  var term1 = Math.log(expectation(possibleWorlds, function(w) {
-	    var localQUD = spatialNameToQUD(qudName[0]);
+    return Infer({method: 'enumerate'}, function(){
+      var answer = sample(truthfulAnswerPrior);
+      var possibleWorlds = interpreter(answer, gridState);
+      var utility = expectation(qudPosterior, function(qudName) {
+	return _.sum(map(function(name) {
+	  return Math.log(expectation(possibleWorlds, function(w) {
+	    var localQUD = spatialNameToQUD(name);
 	    return _.isEqual(localQUD(w), localQUD(trueWorld));
 	  }));
-	  var term2 = Math.log(expectation(possibleWorlds, function(w) {
-	    var localQUD = spatialNameToQUD(qudName[1]);
-	    return _.isEqual(localQUD(w), localQUD(trueWorld));
-	  }));
-	  return term1 + term2;
-	});
-
-	factor(Arationality * utility - answerCost * answer.length);      
-	return answer;
+	}, qudName));
       });
-    }
+      factor(Arationality * (utility - answerCost * answer.length));      
+      return answer;
+    });
   }, 10000);
 
   return {
