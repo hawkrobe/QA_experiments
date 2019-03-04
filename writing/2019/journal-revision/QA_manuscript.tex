@@ -936,13 +936,14 @@ For example, in the Stroop task commonly used to study cognitive mechanisms of g
 However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
 We often need to achieve multiple subgoals in pursuit of a larger, more abstract goal. 
 These more structured representations have also been key to explaining third-party goal inferences in Bayesian models of theory of mind \cite{BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. 
-For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we infer that they intend to run this errand as a subgoal of their ultimate goal of getting home. 
+For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we simply infer that they intend to run this errand as a subgoal of their ultimate goal of getting home. 
 
-The hierarchical structure of goals has also long been recognized by linguistics working on discourse and relevance \cite{Kuppevelt95_TopicalityDiscourse,Roberts96_InformationStructureDiscourse,Buring03_DtreesBeansBaccents,Groenendijk99_LogicOfInterrogation,rojas2014discourse}
+The hierarchical structure of goals has also long been recognized in linguistic theories of questions in discourse  \cite{Kuppevelt95_TopicalityDiscourse,Roberts96_InformationStructureDiscourse,Buring03_DtreesBeansBaccents,Groenendijk99_LogicOfInterrogation,rojas2014discourse}.
+For instance, if a traveler asks \emph{Are there window seat tickets to Berlin at 7:00?} and there are no such tickets available, it would be more helpful for the travel agent to respond \emph{the next available tickets are for 10:00} than \emph{no} \cite{rojas2013roadsigns}.
+This can be understood as a recognition by the agent that the specific flight and seat preference mentioned by the traveler are subgoals in a hierarchy below the broader goal of getting to Berlin. 
 
-
-We thus designed a simple task, inspired by tasks used in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
-Since is at the heart of
+To show that more structured goals of this type are naturally accommodated by our framework, we designed a simple Hidden Goal collection game inspired by recent work in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
+Furthermore, it was 
 
 \begin{figure*}[tbh!]
 \begin{center}
