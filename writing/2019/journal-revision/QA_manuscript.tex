@@ -930,15 +930,16 @@ In Experiment 2, we design a more targeted experiment to test our pragmatic ques
 
 \section{Experiment 2: Structured goals}
 
-The central construct of a \emph{goal representation} has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
+The construct of a \emph{goal} has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
 The simplest spaces of goals, like those used in Experiment 1, are discrete sets of projections on the world state.
-For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read words or (2) name the color in which they are written \cite{miller2001integrative}.
+For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read the presented word or (2) name the color in which they are written \cite{miller2001integrative}.
 However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
 We often need to achieve multiple subgoals in pursuit of a larger, more abstract goal. 
 These more structured representations have also been key to explaining third-party goal inferences in Bayesian models of theory of mind \cite{BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. 
-For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we infer that they intend to run this errand as a subgoal along the way of their ultimate goal of getting home. 
+For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we infer that they intend to run this errand as a subgoal of their ultimate goal of getting home. 
 
-The hierarchical structure of goals has also long been recognized by linguistics working on discourse and relevance.
+The hierarchical structure of goals has also long been recognized by linguistics working on discourse and relevance \cite{Kuppevelt95_TopicalityDiscourse,Roberts96_InformationStructureDiscourse,Buring03_DtreesBeansBaccents,Groenendijk99_LogicOfInterrogation,rojas2014discourse}
+
 
 We thus designed a simple task, inspired by tasks used in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
 Since is at the heart of
@@ -1000,8 +1001,15 @@ We provided several lines of evidence supporting this theory---formalized in our
 
 A major formal advance of the models considered here is synthesizing current approaches to optimal question asking and answering from AI and linguistics with the recursive social reasoning captured in the Rational Speech Act framework. In addition to introducing pragmatics into the former approaches, this moves RSA models beyond production or interpretation of single utterances (in context) to consider the dynamics of simple dialogs where both listening and speaking---linguistic input and output---must be integrated within the same agent. 
 
-Our formalization also has implications for the treatment of question semantics in linguistics. First, while the projection-based question semantics we use in our interpreter function is equivalent to classic partition-based proposals \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions}, %the meaning of the question can technically be described as its set of possible ``answers,'' i.e. the set of states in the image of its projection map, 
-our \emph{answerer} agent chooses from an independent set of declarative utterances $\mathcal{A}$, not from any set of cells induced by the question. This dissociation of the space of questions and space of answers is what allows for indirect, pragmatic responses. Second, our direct identification of question meanings with goals or QUDs raises the interesting possibility that the set of vocalizable question utterances is effectively a \emph{subset} of the possible goals one might have: there may not exist an easy-to-express question utterance for every underlying goal an agent may need to address, thus the need for pragmatics.
+Our computational framework also has implications for the theoretical treatment of question and answer meanings in linguistics and philosophy of language. 
+First, while the projection-based question semantics we use as the explicit meaning of questions is equivalent to classic partition-based proposals \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions}, %the meaning of the question can technically be described as its set of possible ``answers,'' i.e. the set of states in the image of its projection map, 
+our \emph{answerer} agent chooses from an independent set of declarative utterances $\mathcal{A}$, not from any set of cells constrained by the question. 
+This critical dissociation of question meanings, which are informative about \emph{goals} or QUDs, and answer meanings, which are informative about the state of the \emph{world}, is conceptually similar to recent proposals for an \emph{inquisitive semantics} specified in formal logic \cite{ciardelli2013inquisitive, roelofsen2013algebraic}.
+The precise relationship between fundamental notions of meaning in inquisitive semantics and meanings in our framework requires further exploration. 
+Still, we conjecture that our further dissociation between underlying semantic meaning and recursive probabilistic mechanisms for goal inference and signaling \emph{given} these meanings may be key to grounding pragmatic question and answer behavior in basic social cognitive mechanisms.
+
+\todo[inline]{Need to tune this up; maybe read inquisitive semantics stuff more closely?}
+Second, our dissociation of question meanings and goals or QUDs raises the interesting possibility that the set of utterable questions is effectively a \emph{subset} of the possible goals one might have: there may not exist an easy-to-express question utterance for every underlying goal an agent may need to address, thus the need for pragmatics.
 %The formulation of these utilities provides a useful connection to current game-theoretic and decision-theoretic models \cite{VogelBodoiaPottsJurafsky13_GricePOMDP, VanRooy03_QuestioningDecisionProblems}, which also emphasize the importance of goals and speaker beliefs in communication.
 %Here, we focused specifically on two sub-cases that are of particular interest for psychological science: (1) selecting a question in the absence of any input, and (2) selecting a declarative statement in response to a question. 
 %In principle this framework allows a dialogue agent to update their beliefs after hearing any type of utterance, then to select any type of utterance in response. 
