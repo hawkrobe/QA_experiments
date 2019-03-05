@@ -930,7 +930,7 @@ In Experiment 2, we design a more targeted experiment to test our pragmatic ques
 
 \section{Experiment 2: Structured goals}
 
-The construct of a \emph{goal} has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
+The construct of a goal has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
 The simplest spaces of goals, like those used in Experiment 1, are discrete sets of projections on the world state.
 For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read the presented word or (2) name the color in which they are written \cite{miller2001integrative}.
 However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
@@ -946,18 +946,61 @@ Structured goals of this type are naturally accommodated by our framework.
 To show this, we designed a simple Hidden Goal collection game inspired by recent experiments in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
 Furthermore, this task presented the opportunity to more strongly test the pragmatic questioner model $Q_2$.
 
-As in Experiment 1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information about the world state.
-Unlike in Experiment 1, however, each goal was a \emph{set} of multiple objects that must be collected.
-More specifically, the questioner was assigned a hand of playing cards to find, which were scattered with other cards around a grid that only the answerer can see.
+\begin{figure*}[tbh!]
+\begin{center}
+\includegraphics[scale = .7]{Exp2Task.pdf}
+\end{center}
+\caption{(A) Task displays and (B) procedure for Experiment 2.}
+%\vspace{-1cm}
+\label{fig:exp2task}
+\end{figure*}
+
+
+As in Experiment 1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
+Unlike in Experiment 1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
+More specifically, the questioner was privately assigned a hand of playing cards to find (Fig. \ref{fig:exp2task}A, left). 
+The cards were scattered around a grid, and only the answerer had visibility of where the cards were located (Fig. \ref{fig:exp2task}A, right).
+The possible hands of cards the questioner might be assigned were shared in common ground.
+
 These multi-object goals induce a hierarchy where the ultimate goal of collecting the full set was decomposed into subgoals of finding each individual object in the set.
 A pragmatic answerer, then, ought to infer and relevantly respond not only to the questioner's current subgoal but also their likely ultimate goal.
-A pragmatic questioner, in turn, ought to be sensitive to which questions best signal the ultimate goal.
+A pragmatic questioner, in turn, ought to be sensitive to which questions best signal the ultimate goal, beyond any particular subgoal.
+
 
 \subsection{Methods}
 \subsubsection{Participants}
-\subsubsection{Stimuli \& Procedure}
+
+We recruited 62 participants from Amazon Mechanical Turk to play a communication game.
+We excluded 4 participants who disconnected before completion, 10 participants who failed pre-specified catch trials (see below), and 3 additional participants who self-reported confusion about the instructions.
+This left 45 participants in our final sample, each of whom provided responses in both the questioner role and the answerer role.
+
+\subsubsection{Stimuli}
+
+Stimuli were constructed from a standard deck of 52 playing cards (4 suits $\times$ 13 ranks). 
+For each trial, we randomly sampled between 5 and 9 cards from the desk. 
+These cards were randomly assigned to locations in the grid. 
+
+We constructed the space of goal \emph{combos} on each trial in two different ways, leading to two conditions where our questioner models made qualitatively different predictions.
+In the \emph{baseline} condition, we sampled two cards to form one combo and then formed the other by sampling two additional cards from those remaining. 
+In this case, both models predict that the questioner should have no preference over which card to ask about.
+In the \emph{overlapping} condition, however, one card appeared in both combos along with distinct distractor cards. 
+In this condition, our pragmatic model predicts that the questioner will avoid asking about the overlapping card; although it is a necessary subgoal, it would provide an ambiguous signal to a pragmatic answerer about the ultimate goal.
+Finally, we constructed catch trials using single-object goals. 
+Because there is only one card required, questioners ought to ask about this card.
+
+\subsubsection{Procedure}
+
+Unlike Experiment 1, which used a real-time multi-player design to (truthfully) convince players they were playing with a real partner, we decided in this experiment that the benefit of minimal interaction did not outweigh the loss in control over the input seen by each participant.
+Thus, rather than being paired with another partner, after passing a comprehension quiz, participants were paired with a simple artificial partner.
+
+Participants were either assigned to the role of the questioner or answerer and saw each of the three trial types (baseline, overlapping, and catch trials) once in a random sequence before switching roles and repeating the three trial types, for a total of six trials. 
+The starting role was counterbalanced across participants. 
+
 \subsection{Results}
 
+\subsubsection{Questioner behavior}
+
+\subsubsection{Answerer behavior}
 
 \begin{figure*}[tbh!]
 \begin{center}
