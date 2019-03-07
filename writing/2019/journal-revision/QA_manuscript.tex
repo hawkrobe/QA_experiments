@@ -980,27 +980,55 @@ Stimuli were constructed from a standard deck of 52 playing cards (4 suits $\tim
 For each trial, we randomly sampled between 5 and 9 cards from the desk. 
 These cards were randomly assigned to locations in the grid. 
 
-We constructed the space of goal \emph{combos} on each trial in two different ways, leading to two conditions where our questioner models made qualitatively different predictions.
-In the \emph{baseline} condition, we sampled two cards to form one combo and then formed the other by sampling two additional cards from those remaining. 
+We constructed the space of goal ``combos'' on each trial in two different ways, leading to two conditions where our questioner models made qualitatively different predictions.
+In the \emph{baseline} condition, we sampled two disjoint sets containing two cards each. 
 In this case, both models predict that the questioner should have no preference over which card to ask about.
-In the \emph{overlapping} condition, however, one card appeared in both combos along with distinct distractor cards. 
-In this condition, our pragmatic model predicts that the questioner will avoid asking about the overlapping card; although it is a necessary subgoal, it would provide an ambiguous signal to a pragmatic answerer about the ultimate goal.
+In the \emph{overlapping} condition, we again sampled two sets containing two cards each but ensured that one card appears in both sets. 
+Here, our pragmatic model predicts that the questioner will avoid asking about this card; although it is a necessary subgoal, it would provide an ambiguous signal to a pragmatic answerer about the ultimate goal.
+
 Finally, we constructed catch trials using single-object goals. 
-Because there is only one card required, questioners ought to ask about this card.
+Because there is only one card that must be found to complete the hand, questioners ought to ask about this card.
+If they instead asked about a card from one of the possible but un-assigned goals, or a random card not even in the game, we took this as a grounds for exclusion due to inattentiveness.
 
 \subsubsection{Procedure}
 
-Unlike Experiment 1, which used a real-time multi-player design to (truthfully) convince players they were playing with a real partner, we decided in this experiment that the benefit of minimal interaction did not outweigh the loss in control over the input seen by each participant.
-Thus, rather than being paired with another partner, after passing a comprehension quiz, participants were paired with a simple artificial partner.
+Each trial proceeded through the same four phases as Experiment 1. 
+Questioners were first assigned a ``combo'' to complete out of a shared list of possible alternatives and used dropdown menus to choose a suit and rank to ask about (e.g. ``Where is the king of hearts?'').
+Upon seeing this question, the answerer selected either one or two cards to reveal to the questioner and the questioner was then shown the locations of these cards.
 
-Participants were either assigned to the role of the questioner or answerer and saw each of the three trial types (baseline, overlapping, and catch trials) once in a random sequence before switching roles and repeating the three trial types, for a total of six trials. 
-The starting role was counterbalanced across participants. 
+If all of the cards in their combo were revealed, participants advanced to the next trial; if not, the questioner was prompted to ask a follow-up question.
+It was always possible to complete the combo in a single question.
+To incentivize performance, we therefore gave a bonus when the exact cards in the combo were revealed. 
 
-\subsection{Results}
+The trial sequence was thus constructed such that each participant saw each of the three trial types (baseline, overlapping, and catch trials) once as questioner and once as answerer for a total of six trials.
+Trials thus appeared in two blocks corresponding to each role, with the sequence of conditions randomized within each block. 
+The starting role was counterbalanced across participants.
 
-\subsubsection{Questioner behavior}
+Unlike Experiment 1, which used a real-time multi-player methodology to ensure participants knew they were playing with a real partner, we decided in this experiment that the benefit of such minimal interaction was not worth the loss in control over the input given to participants.
+Instead, participants were paired with an artificial agent that played the opposite role.
+When in the questioner role, this agent selected question stimulus with maximum probability according to $Q_2$. 
+This choice ensured that we densely sampled answer responses in the cases where the answerer models made diverging predictions.
+In the answerer role, the artificial agent similarly responded according to $A_2$, which was intended to minimize participant frustration.
 
-\subsubsection{Answerer behavior}
+Using our models directly in the task admittedly presents a potential for `contamination' where participants imitate or learn from the model's behavior. 
+We addressed this concern in two ways. 
+First, the experiment is limited to only six trials, minimizing the potential for learning.
+Second, because we counterbalanced the order in which roles were assigned, we will empirically test whether patterns of responses differed for participants who had already seen their partner respond in arole.
+
+\subsection{Predictions and results}
+
+\subsubsection{Model setup}
+
+Experiment 2 was designed to provide a strong \emph{qualitative} test of the questioner models in a scenario with more structured goals.
+We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}_{i=1}^k$ to a set of tuples $\{(g_i, g_i^{(j)})\}_{i=1}^k$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
+In the case of our task, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
+We assume that the questioner attempts to maximize information gain under the ultimate goal $g_i$ of finding their assigned combo.
+
+
+
+\subsubsection{Questioner results}
+
+\subsubsection{Answerer results}
 
 \begin{figure*}[tbh!]
 \begin{center}
@@ -1013,6 +1041,7 @@ The starting role was counterbalanced across participants.
 
 \section{Experiment 3: Multi-round dialogue}
 
+Our final experiment tests the extent to which 
 
 \begin{figure*}[tbh!]
 \begin{center}
