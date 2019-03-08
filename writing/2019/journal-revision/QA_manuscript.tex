@@ -1039,14 +1039,26 @@ $$U_{A_2}(a; q, w) = \sum_{g_{ij} \in \mathcal{G}} P(g_{ij}|q) \sum_{g\in \{g_i,
 While this presentation was written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
 The simpler goal spaces considered earlier in the paper are a special case of this more general formulation where the goal tuples are singletons.
 
-Given this generalization to more structured goal spaces, we can derive model predictions for Experiment 2. 
+Given this generalization of the model to more structured goal spaces, we can derive predictions for Experiment 2. 
 The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
 Questions in the question space $\mathcal{Q}$ were of the same form as in Experiment 1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of saliency do not arise. 
-Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in the mentioned location and false otherwise.
+Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at location that was mentioned, and false otherwise.
+
+\subsubsection{Answerer results}
+
+Although the different conditions of the experiment were primarily designed as a stronger qualitative test of the questioner model, it also provides another opportunity to test the answerer models. 
+To begin, consider the simple catch trials, where each goal contained only one card.
+Here, both $A_1$ and $A_2$ make the same prediction: that participants will reveal the single card that was asked about with high probability and, with lower probability, they may be ``overinformative'' by revealing both the card that was asked about along with another card.
+The extent to which the models predict such overinformative responses depends on a ``cost'' parameter penalizing answer length.
+
+In the \emph{baseline} and \emph{overlapping} conditions with hierarchical goals, however, $A_1$ and $A_2$ make different predictions. 
+$A_1$ treats these conditions the same as the catch trial, since it attempts to be informative with respect to the goal inherent in the question, and all questions are about a single card.
+$A_2$, on the other hand, goes beyond the literal question to infer that the questioner asked about just one subgoal of one of the ultimate goals.
+When asked about a card that appears in one goal combo but not the other, $A_2$ infers with high probability which of the two ultimate goals is most likely the hidden goal. 
+It is thus much more likely to respond with \emph{both cards} than about only the single card that was asked about (or any other combination of cards). 
 
 \subsubsection{Questioner results}
 
-\subsubsection{Answerer results}
 
 \begin{figure*}[tbh!]
 \begin{center}
