@@ -709,7 +709,7 @@ Thus, some answerer behavior is obvious and predicted by both $A_1$ and $A_2$: w
 Other questions, however, lead to sharp qualitative differences.
 Suppose the questioner asks ``Where is the \emph{animal}?''. 
 Neither $A_0$ nor $A_1$ have a preference over which of the animals to provide information about, because all four satisfy the literal meaning of the question. 
-Human participants, on the other hand, have a strong preference: 94\% provided the location of the ``whale,'' the object that isn't queried by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}).
+Human participants, on the other hand, have a strong preference: 94\% provided the location of the ``whale,'' the object that isn't queried by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}A).
 
 This strong non-uniform pattern %, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, 
 is only consistent with $A_2$. 
@@ -741,7 +741,7 @@ Thus, we have a pair of sharply distinguishable predictions: $Q_0$ predicts all 
 %\label{fig:Exp4ZoomedIn}
 %\end{figure}
 
-The counts of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:exp1qualitative}. 
+The counts of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:exp1qualitative}B. 
 We find that the pragmatic model $Q_2$ makes the correct qualitative prediction -- the empirical probability of asking ``Cat?'' ($\hat{p} = 0.64$) is significantly different from the  probability of asking ``Pet?'' ($\hat{p} = 0.25$; bootstrapped $95\%$ CI on difference: $[0.17, 0.58]$). 
 This critical condition thus provides qualitative evidence for $Q_2$: in some cases, questioners consider the answerer's inference about their goals when selecting their question. 
 
@@ -1020,11 +1020,29 @@ Second, because we counterbalanced the order in which roles were assigned, we wi
 \subsubsection{Model setup}
 
 Experiment 2 was designed to provide a strong \emph{qualitative} test of the questioner models in a scenario with more structured goals.
-We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}_{i=1}^k$ to a set of tuples $\{(g_i, g_i^{(j)})\}_{i=1}^k$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
-In the case of our task, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
-We assume that the questioner attempts to maximize information gain under the ultimate goal $g_i$ of finding their assigned combo.
+We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}$ to a set of ordered pairs $\{g_{ij}\} = \{(g_i, g_i^{(j)})\}$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
+In the case of Experiment 2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
 
+The primary computational consequences of introducing a hierarchical goal space emerge from the pragmatic answerer $A_2$. 
+Upon hearing a question, $A_2$ must jointly infer the ultimate goal along with the current subgoal.
+First, we assume that a questioner acting under an ordered pair $g_{ij} = (g_i, g_i^{(j)})$ attempts to gain information towards both goals:
+$$P_{Q}(q | g_{ij}) = \prod_{g\in \{g_i, g_i^{(j)}\}} P(q | g)$$
+In other words, a question is preferred if it is both good for the current subgoal and the ultimate goal.
+% of finding the entire privately assigned combo $i$.
+Combining this assumption about the questioner $Q_1$ with the dependence between subgoal and ultimate goal, $A_2$'s goal inference factors as:
+$$\begin{array}{rcl}
+P(g_{ij} | q) & \propto & P(q | g_{ij})P(g_{ij}) \\
+ & = & P(q | g_i)P(g_i) \cdot P(q | g_i^{(j)}) P(g_i^{(j)} | g_i)
+ \end{array}$$
+Given a posterior over the goal tuple $g_{ij}$, we then assume the answerer attempts to be informative with respect to both goals in the tuple: 
+$$U_{A_2}(a; q, w) = \sum_{g_{ij} \in \mathcal{G}} P(g_{ij}|q) \sum_{g\in \{g_i, g_i^{(j)}\}}\widehat{P^g_I}(w|\,a)$$
+While this presentation was written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
+The simpler goal spaces considered earlier in the paper are a special case of this more general formulation where the goal tuples are singletons.
 
+Given this generalization to more structured goal spaces, we can derive model predictions for Experiment 2. 
+The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
+Questions in the question space $\mathcal{Q}$ were of the same form as in Experiment 1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of saliency do not arise. 
+Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in the mentioned location and false otherwise.
 
 \subsubsection{Questioner results}
 
