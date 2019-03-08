@@ -10,73 +10,102 @@ var KL = function(erpTrue, erpApprox){
     }, values));                                             
 };
 
+var bernoulliKL = function(p, q){
+  if(p == 1) {
+    return Math.log(1/q);
+  } else if (p == 0) {
+    return Math.log(1/(1-q));
+  } else {
+    return p * Math.log(p/q) + (1-p) * Math.log((1-p)/(1-q));
+  }
+};                                                           
+
+///
+
 //   ---------------
 // | World knowledge |
 //   ---------------
 
 // Questioner assumes all these cards are somewhere...
-var ranks = ['K', 'A'];//, 'J', 'Q', 'K', 'A'];
-var suits = ['hearts', 'diamonds', 'clubs', 'spades'];
-var cards = _.flatten(map(function(suit) {
-  return map(function(rank) {
-    return {suit, rank};
-  }, ranks);
-}, suits));
+var objs = ['o1', 'o2', 'o3', 'o4']//, 'o4']//['10', 'J', 'Q', 'K', 'A'];
     
-var isSuit = function(card, x){
-  return card.suit == x;
-};
-
-var isRank = function(card, x){
-  return card.rank == x;
-};
-
 // In principle, we have uncertainty over exact locations in a grid-world
 // but to reduce computational complexity, we simply represent whether same
 // or difference from the "true" world
-var trueWorld = map(function(card) {extend(card, {location: true})}, cards);
-var worldPrior = Infer({method: 'enumerate'}, function(){
-  var trueSeq = [0,1,2,3,4,5,6,7];
-  var possibleSeq = uniformDraw(qa.permute(_.range(cards.length)));
-  return map2(function(i, j) {
-    return extend(cards[i], {location: i == j});
-  }, trueSeq, possibleSeq);
+var slow_trueWorld = [{'obj' : 'o1', location : 0},
+		     {'obj' : 'o2', location : 1},
+		     {'obj' : 'o3', location : 2},
+		     {'obj' : 'o4', location : 3}
+		    ];
+var slow_worldPrior = Infer({method: 'enumerate'}, function(){
+  var possibleSeq = uniformDraw(qa.permute(_.range(objs.length)));
+  return map2(function(obj, i) {
+    return {obj: obj, location: i};
+  }, objs, possibleSeq);
 });
 
-console.log(worldPrior);
+var fast_trueWorld = map(function(obj) {return {obj: obj, location: true}}, objs);
+var fast_worldPrior = Infer({method: 'enumerate'}, function(){
+  var trueSeq = _.range(objs.length);
+  var possibleSeq = uniformDraw(qa.permute(_.range(objs.length)));
+  return map2(function(i, j) {
+    return {obj: objs[i], location: i == j};
+  }, trueSeq, possibleSeq);
+});
 //  -------------------
 // | Question knowledge |
 //  -------------------
 
 var questionPrior = Infer({method: 'enumerate'}, function(){
-  var rank = uniformDraw(ranks);
-  var suit = uniformDraw(suits);  
-  return 'where_is_' + rank + '_of_' + suit + '?';
+  var obj = uniformDraw(objs);
+  return 'where_is_' + obj + '?';
 });
 
 //  -----------------
 // | Answer knowledge |
 //  -----------------
 
-var cardSets = map(function(v) {map(function(k){return k.rank + '_of_' + k.suit;}, v);},
-		   qa.powerset(cards));
-var answers = filter(function(v) {return v.length < 5 && v.length > 0;},
-		    cardSets);
-var answerPrior = Infer({method: 'enumerate'}, function() {
-  return uniformDraw(answers);
+//var objSets = qa.powerset(objs);
+var fast_answers = qa.powerset(objs);
+var slow_answers = Infer({method: 'enumerate'}, function() {
+  var objSet = uniformDraw(qa.powerset(objs));
+  
+  var locSet = uniformDraw(qa.powerset(_.range(objs.length)));
+  condition(objSet.length == locSet.length);
+  var locSeq = uniformDraw(qa.permute(locSet));
+  return map2(function(obj, loc) {obj + '@' + loc}, objSet, locSeq);
+}).support();
+
+var fast_answerPrior = Infer({method: 'enumerate'}, function() {
+  var answer = uniformDraw(fast_answers);
+  condition(answer.length > 0 && answer.length < 3);
+  return answer;
 });
 
-var cardMatch = function(x, rank, suit) {
-  return isRank(x, rank) && isSuit(x, suit);
-};
+var slow_answerPrior = Infer({method: 'enumerate'}, function() {
+  var answer = uniformDraw(slow_answers);
+  condition(answer.length > 0 && answer.length < 3);
+  return answer;
+});
+
 
 // Meaning of answer is locations of all cards mentioned
-var locationAnswerMeaning = function(utterance){
+var fast_locationAnswerMeaning = function(utterance){
   return function(world){
     all(function(v) {
-      var components = v.split('_of_');
-      return filter(function(x) {return cardMatch(x, components[0], components[1]);},
+      return filter(function(x) {return x.obj == v;},
 		    world)[0]['location'];
+    }, utterance);
+  };
+};
+
+var slow_locationAnswerMeaning = function(utterance){
+  return function(world){
+    all(function(v) {
+      var obj = v.split('@')[0];
+      var loc = v.split('@')[1];
+      return filter(function(x) {return x.obj == obj;},
+		    world)[0]['location'] == loc;
     }, utterance);
   };
 };
@@ -85,125 +114,202 @@ var locationAnswerMeaning = function(utterance){
 // | Interpreter |
 //   -----------
 
-var meaning = function(utterance){
-  return (_.includes(answerPrior.support(), utterance) ? locationAnswerMeaning(utterance) :
-          console.error('unknown utterance!', utterance));
+var interpreter = function(answer, version){
+  return Infer({method: 'enumerate'}, function(){
+    var worldPrior = version == 'fast' ? fast_worldPrior : slow_worldPrior;
+    var world = sample(worldPrior);
+    var answerMeaning = meaning(answer, version);
+    condition(answerMeaning(world));
+    return world;
+  });                                                                         
+};
+
+var meaning = function(utterance, version){
+  if(version == 'fast')
+    return fast_locationAnswerMeaning(utterance);
+  else
+    return slow_locationAnswerMeaning(utterance);
 };
 
 //  ------
 // | QUDs |
 //  ------
 
+// Project down to subspace of location of card in question
+var locationQUD = function(qudName) {
+  return function(world){
+    return _.find(world, {obj: qudName})['location'];
+  };
+};
+
 var qudPrior = function(goalSets){
   return uniformDraw(goalSets);
 };
 
-// Project down to subspace of location of card in question
-var locationQUD = function(qudName) {
-  var components = qudName.split("_of_");
-  return function(world){
-    return _.map(filter(function(x) {x.rank == components[0] & x.suit == components[1]}, world),
-		 'location')[0];
-  };
-};
+var QUDPosteriorFromInference = dp.cache(function(question, context, version){
+  return Infer({method: 'enumerate'}, function() {
+    var supQudName = uniformDraw(context);
+    var subQudName = uniformDraw(supQudName);
+
+    // what if questioner acting w/ super
+    var supQuestionP = Q('explicit', supQudName, context, version).score(question);
+    factor(_.isFinite(supQuestionP) ? supQuestionP : -1000);
+
+    // what if questioner acting w/ sub?
+    var subQuestionP = Q('explicit', subQudName, context, version).score(question);
+    factor(_.isFinite(subQuestionP) ? subQuestionP : -1000);
+
+    return [supQudName].concat(subQudName);
+  });
+});
 
 var QUDPosteriorFromMeaning = function(question) {
   if(_.includes(questionPrior.support(), question))
-    return Delta({v: qa.butLast(question).split('_is_')[1]});
+    return Delta({v: [qa.butLast(question).split('_is_')[1]]});
   else
     console.error('unknown question' + question);
 };
 
-var QUDPosteriorFromInference = dp.cache(function(question, context){
-  return Infer({method: 'enumerate'}, function() {
-    var qudName = qudPrior(context);
-    observe(questioner('explicit', qudName), question);
-    return uniformDraw(qudName);
-  });
-});
-
 var nameToQUD = function(qudName){
   if(qudName == 'identity') 
     return function(w) {return w;};
+  else if(_.isArray(qudName))
+    return function(w) {map(function(qud) {locationQUD(qud)(w)}, qudName);};
   else 
-    return locationQUD(qudName);
+    return function(w) {[locationQUD(qudName)(w)]};
 };
-
-//  -------
-// | Models |
-//  -------
 
 // Note that because answerer is symmetric across worlds,
 // and worlds have equal probability, we can just say
 // same or different from true world?
 
-var getPriorProb = dp.cache(function(goal) {
-  var qud = nameToQUD(goal);                                              
-  return Infer({method: 'enumerate'}, function() {
-    var world = sample(worldPrior);
-    return qud(world) ? 0 : uniformDraw(_.range(1,cards.length));
-  });
-});
+//  -------
+// | Models |
+//  -------
 
-// Simplification for this simple problem...
-var getPosteriorProb = dp.cache(function(type, answer, goal) {
-  var qud = nameToQUD(goal);
-  var likelihood = Infer({method: 'enumerate'}, function() {
-    var w = sample(worldPrior);
-    condition(meaning(answer)(w));
-    return qud(w);
-  }).score(true);
-  return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
-});
-
-var Qrationality = 10;
-var Arationality = 3;
-var goalContext = [['A_of_hearts', 'K_of_spades', 'K_of_hearts', 'K_of_clubs'],
-		   ['A_of_hearts', 'K_of_spades', 'K_of_diamonds', 'A_of_diamonds'],
-		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_clubs', 'A_of_clubs'],
-//		   ['K_of_diamonds', 'A_of_diamonds', 'K_of_', 'K_of_clubs']
-		  ];
-
-var questioner = dp.cache(function(type, trueGoal) {
-  return Infer({method: 'enumerate'}, function() {
-    var question = sample(questionPrior);
-    var goal = uniformDraw(trueGoal);
-//    console.log('thinking about question ' + question + ' with goal ' + goal);
-    // Note here that probabilities of diff. possible worlds is already reflected in
-    // definition of true world (and alternatives)
-    var possibleAnswer = answerer(type, question, trueWorld, goalContext);
-
-    var infGain = expectation(possibleAnswer, function(answer){
-      var priorProb = getPriorProb(goal);
-      console.log(priorProb)
-      var posteriorProb = getPosteriorProb(type, answer, goal);
-      console.log(posteriorProb);
-      return KL(posteriorProb, priorProb);
-    });
-    factor(infGain * Qrationality);
-    return question;
-  });
-});
-
-var answerer = dp.cache(function(type, question, trueWorld, context) {
-  var qudPosterior = (type === 'pragmatic' ? QUDPosteriorFromInference(question, context) :
-                      type === 'explicit' ? QUDPosteriorFromMeaning(question) :
-                      type === 'literal' ? Delta({v: 'identity'}) :
-                      console.error('type not recognized'));
-  if(type == 'pragmatic') {
-    console.log('qud posterior for question ' + question);
-    console.log(qudPosterior);
-  }
+var makeTruthfulAnswerPrior = dp.cache(function(answerPrior, trueWorld, version) {
   return Infer({method: 'enumerate'}, function(){
     var answer = sample(answerPrior);
-    var newUtility = expectation(qudPosterior, function(qudName) {
-      return qa.cardsInterpreterScore(trueWorld, answer, qudName, worldPrior);
-    });
-    factor(newUtility * Arationality - answer.length);      
+    condition(_.isFinite(interpreter(answer, version).score(trueWorld)));
     return answer;
   });
 });
 
-//questioner('explicit', goalContext[0]);
-//answerer('pragmatic', 'where_is_K_of_spades?', trueWorld, goalContext);
-//questioner('pragmatic', goalContext[0]);
+// For prior & posterior, need to break out true/false into actual locations and
+var getPriorProb = dp.cache(function(goal, version) {
+  var qud = nameToQUD(goal);
+  var worldPrior = version == 'fast' ? fast_worldPrior : slow_worldPrior;
+  return Infer({method: 'enumerate'}, function() {
+    var world = sample(worldPrior);
+    var numObjects = Math.pow(objs.length, qud(world).length);
+    //    console.log(numObjects);
+    return (version == 'slow' ? qud(world) :
+	    (uniformDraw(_.range(0,numObjects)))); //qud(world) ? 0 : 
+  });                                                                        
+});                                                                           
+
+// Takes a coarse-grained true/false world and converts back to original space (with symmetry)
+// TODO: is there some way of breaking down the possible locations corresponding to
+// the 'false' world here? 
+var getSubsetOfWorlds = dp.cache(function(answer, goal, version) {
+  // console.log('in subsetof worlds');
+  // console.log(goal);
+  var qud = nameToQUD(goal);
+  var worldPrior = version == 'fast' ? fast_worldPrior : slow_worldPrior;
+  var likelihood = Infer({method: 'enumerate'}, function() {
+    var w = sample(worldPrior);
+    condition(meaning(answer, 'fast')(w));
+    return qud(w);
+  }).score(repeat(qud(fast_trueWorld).length, function(){return true;}));
+//  console.log(1/Math.exp(likelihood));
+  return RandomInteger({n: Math.round(1/Math.exp(likelihood))});
+});
+
+var getPosteriorProb = dp.cache(function(question, answer, goal,
+					 goalContext, version, type) {
+  var qud = nameToQUD(goal);
+  var worldPrior = version == 'fast' ? Delta({v:fast_trueWorld}) : slow_worldPrior;
+  return Infer({method: 'enumerate'}, function() {
+    var world = sample(worldPrior);
+    observe(A(type, question, world, goalContext, version), answer);
+    return qud(world);
+  });
+});
+
+var rationality = 10;
+
+var Q = dp.cache(function(type, goal, goalContext, version) {
+  var worldPrior = version == 'fast' ? fast_worldPrior : slow_worldPrior;
+  return Infer({method: 'enumerate'}, function() {
+//    var goal = uniformDraw(goalSet);
+    var question = sample(questionPrior);
+    var possibleAnswer = (
+      version == 'fast' ?
+	A(type, question, fast_trueWorld, goalContext, version) :
+	Infer({method: 'enumerate'}, function() {
+	  var trueWorld = sample(worldPrior);
+	  return sample(A(type, question, trueWorld, goalContext, version));
+	})
+    );
+//    console.log(goal);
+    var infGain = expectation(possibleAnswer, function(answer){
+      var priorProb = getPriorProb(goal, version);
+      var posteriorProb = (version == 'slow' ?
+			   getPosteriorProb(question, answer, goal,
+					    goalContext, version, type) :
+			   getSubsetOfWorlds(answer,goal,version));
+      // console.log(priorProb);
+      // console.log(posteriorProb);
+      return KL(posteriorProb, priorProb);
+    });
+    factor(infGain * rationality);
+    return question;
+  });
+});
+
+var A = dp.cache(function(type, question, trueWorld, goalContext, version) {
+  var qudPosterior = (type == 'explicit' ? QUDPosteriorFromMeaning(question) :
+		      QUDPosteriorFromInference(question, goalContext, version));
+  var answerPrior = version == 'slow' ? slow_answerPrior : fast_answerPrior;
+  return Infer({method: 'enumerate'}, function(){
+    var answer = (version == 'slow' ?
+		  sample(makeTruthfulAnswerPrior(answerPrior, trueWorld, version)) :
+		  sample(answerPrior));
+    console.log(qudPosterior);
+    var utility = expectation(qudPosterior, function(qudName) {
+      return _.sum(map(function(name) {
+	return Math.log(expectation(interpreter(answer, version), function(w) {
+	  var qud = nameToQUD(name);
+	  return _.isEqual(qud(w), qud(trueWorld));
+	}));
+      }, qudName));
+    });
+    factor(utility * rationality - answer.length);      
+    return answer;
+  });
+});
+
+
+// NOTES:
+// 1. collapsing worlds & answer space equivalent to restricting to only 'true' answers...
+
+var goalContext = [
+  ['o2', 'o3'],
+  ['o1', 'o2']
+];
+var version = 'fast';
+var trueWorld = version == 'slow' ? slow_trueWorld : fast_trueWorld;
+A('pragmatic', 'where_is_o1?', trueWorld, goalContext, version);
+Q('pragmatic', ['o2', 'o3'], goalContext, version);
+
+// print('A0:');
+// viz.table(answerer('literal', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
+// viz.table(answerer('literal', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
+
+// print('A1:');
+// viz.table(answerer('explicit', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
+// viz.table(answerer('explicit', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
+
+// print('A2:')
+// viz.table(answerer('pragmatic', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
+// viz.table(answerer('pragmatic', isMoreThanFiveQuestion, world,  spendFiveDollarsContext))
