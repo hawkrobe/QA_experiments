@@ -308,7 +308,7 @@ HPDlo<- function(s){
 # renormalize posterior for fixed beta/modelType
 # (returns full joint posterior if none specified)
 getRawParams = function(name, chosenBeta=NA, chosenModelType=NA) {
-  inputName <- paste0("../modeling/guessingGame/Bayesian/data/", name, '.csv')
+  inputName <- paste0("../modeling/experiment1/Bayesian/data/", name, '.csv')
   
   raw <- read_csv(inputName) 
     #filter(posteriorProb != '-Inf')
@@ -394,7 +394,7 @@ recode <- function(samples, QorA){
 }
 
 getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
-  inputName <- paste0("../modeling/guessingGame/Bayesian/data/", name, '.csv')
+  inputName <- paste0("../modeling/experiment1/Bayesian/data/", name, '.csv')
   
   raw <- read_csv(inputName) %>%
     mutate(t = floor((row_number()-1)/160)) %>%
