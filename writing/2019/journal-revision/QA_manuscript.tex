@@ -1078,7 +1078,7 @@ The $Q_1$ and $Q_2$ models make qualitatively different predictions about which 
 $Q_1$ predicts no difference in behavior across these two conditions.
 Because it reasons that $A_1$ will always provide a literal or (indiscriminately) overinformative response, as we saw in the previous section, then asking about either card is equally useful for completing the target combo.
 
-$Q_2$, on the other hand, recognizes that certain questions may provide better signals about the ultimate goal than others.
+The pragmatic questioner $Q_2$, on the other hand, recognizes that certain questions may provide better signals about the ultimate goal than others.
 In particular, for the \emph{overlap} condition, $Q_2$ reasons that if they asked about the card appearing in both combos, $A_2$ would not be able to infer which of the two combos is their ultimate goal.
 If they instead asked about the unique card, however, $A_2$ would infer their true goal with high probability and subsequently be more likely to reveal the needed information.
 Thus, $Q_2$ predicts that participants will prefer to ask about the unique card.
@@ -1093,12 +1093,25 @@ To address this concern, we examined these response patterns for the subset of p
 
 \subsection{Discussion}
 
-Experiment 2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to generalize our model to more sophisticated spaces of goals.
-To achieve both of these aims, we \dots
+Experiment 2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to demonstrate how our core framework generalizes to more structured spaces of goals.
+To meet these challenges, we designed a Hidden Goal task where questioners were privately assigned a set of \emph{multiple} objects to find, inducing a hierarchy of subgoals.
+By manipulating whether objects overlapped or differed across sets in the space of possible goals, we constructed scenarios where our pragmatic models made sharply different predictions than prior models. 
+As predicted by $A_2$, we found that answerers reasoned beyond the literal subgoal prompted by the question to respond helpfully to the inferred ultimate goal above it in the hierarchy.
+Questioners, in turn, chose to ask about the objects that would most clearly signal their ultimate goal to their partner, even though these different questions would have equal expected information gain under traditional models. 
 
-Subgoals raises questions about planning which are outside the scope of this paper.
-Planning is also key for a general theory of dialogue.
-In the next section, we take a first pass by looking at some features of multi-round dialogue that do not require planning.
+The minimal goal hierarchy modeled in this experiment is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering.
+However, it is also important to note that handling more sophisticated goal structures will require composing our core computational framework with additional mechanisms.
+In particular, the more general form of the model we introduced relies on a simplifying assumption of different subgoals being conditionally independent given their parent in the hierarchy: this assumption justifies representing subgoals as tuples with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal.
+
+\todo[inline]{Finish this sketch\dots}
+This assumption is clearly violated in certain cases.
+For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on. 
+These subgoals unfold in time, creating sequential dependencies are introduced.
+If we are in an unfamiliar kitchen, it may be important to ask certain questions before others: knowing \dots
+
+Deciding how to ask and answer questions in the presence of such dependences therefore requires a \emph{planning} mechanism.
+While introducing such a planning mechanism is outside the scope of this paper, we \dots 
+In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
 \section{Experiment 3: Multi-round dialogue}
 
