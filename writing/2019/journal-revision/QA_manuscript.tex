@@ -948,7 +948,7 @@ Furthermore, this task presented the opportunity to more strongly test the pragm
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{Exp2Task.pdf}
+\includegraphics[scale = .7]{Exp2/task.pdf}
 \end{center}
 \caption{(A) Task displays and (B) procedure for Experiment 2.}
 %\vspace{-1cm}
@@ -987,8 +987,8 @@ In the \emph{overlapping} condition, we again sampled two sets containing two ca
 Here, our pragmatic model predicts that the questioner will avoid asking about this card; although it is a necessary subgoal, it would provide an ambiguous signal to a pragmatic answerer about the ultimate goal.
 
 Finally, we constructed catch trials using single-object goals. 
-Because there is only one card that must be found to complete the hand, questioners ought to ask about this card.
-If they instead asked about a card from one of the possible but un-assigned goals, or a random card not even in the game, we took this as a grounds for exclusion due to inattentiveness.
+Because there is only one card that must be found to complete the hand, questioners ought to ask about this card and answerers hearing this question ought to (at least) reveal the requested card.
+If the questioner asked about a different card, or the answerer failed to reveal the card that was asked about, we took this as a grounds for exclusion due to inattentiveness.
 
 \subsubsection{Procedure}
 
@@ -1023,6 +1023,16 @@ Experiment 2 was designed to provide a strong \emph{qualitative} test of the que
 We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}$ to a set of ordered pairs $\{g_{ij}\} = \{(g_i, g_i^{(j)})\}$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
 In the case of Experiment 2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
 
+
+\begin{figure*}[th!]
+\begin{center}
+\includegraphics[scale = 1]{Exp2/qualitativeResults.pdf}
+\end{center}
+\caption{Results for Experiment 2. (A) Answerers are more likely to go beyond the literal question and reveal additional cards in the baseline and overlap conditions. (B) Questioners are more likely to ask about the non-overlapping card relative to baseline. Dotted line is chance, and error bars are bootstrapped 95\% CIs.}
+%\vspace{-1cm}
+\label{fig:exp2results}
+\end{figure*}
+
 The primary computational consequences of introducing a hierarchical goal space emerge from the pragmatic answerer $A_2$. 
 Upon hearing a question, $A_2$ must jointly infer the ultimate goal along with the current subgoal.
 First, we assume that a questioner acting under an ordered pair $g_{ij} = (g_i, g_i^{(j)})$ attempts to gain information towards both goals:
@@ -1037,37 +1047,58 @@ P(g_{ij} | q) & \propto & P(q | g_{ij})P(g_{ij}) \\
 Given a posterior over the goal tuple $g_{ij}$, we then assume the answerer attempts to be informative with respect to both goals in the tuple: 
 $$U_{A_2}(a; q, w) = \sum_{g_{ij} \in \mathcal{G}} P(g_{ij}|q) \sum_{g\in \{g_i, g_i^{(j)}\}}\widehat{P^g_I}(w|\,a)$$
 While this presentation was written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
-The simpler goal spaces considered earlier in the paper are a special case of this more general formulation where the goal tuples are singletons.
+The simpler goal spaces considered earlier in the paper are special cases of this more general formulation taking goal tuples to be singletons.
 
 Given this generalization of the model to more structured goal spaces, we can derive predictions for Experiment 2. 
 The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
 Questions in the question space $\mathcal{Q}$ were of the same form as in Experiment 1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of saliency do not arise. 
 Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at location that was mentioned, and false otherwise.
 
+
 \subsubsection{Answerer results}
 
 Although the different conditions of the experiment were primarily designed as a stronger qualitative test of the questioner model, it also provides another opportunity to test the answerer models. 
 To begin, consider the simple catch trials, where each goal contained only one card.
-Here, both $A_1$ and $A_2$ make the same prediction: that participants will reveal the single card that was asked about with high probability and, with lower probability, they may be ``overinformative'' by revealing both the card that was asked about along with another card.
-The extent to which the models predict such overinformative responses depends on a ``cost'' parameter penalizing answer length.
+Here, both $A_1$ and $A_2$ make the same prediction: that participants will reveal the single card that was asked about with high probability and, with lower probability, they may be ``overinformative'' by revealing both the card that was asked about along with some other card.
+Indeed, we found that 83\% of participants responded literally with the exact card asked about, while the remaining 17\% gave overinformative responses (Fig. \ref{fig:exp2results}A).
+The precise probability the models put on such overinformative responses depends on the optimality parameter $\alpha$ and a cost parameter penalizing longer answers; at a cost penalty of $1$, the empirical response distribution is obtained with moderate values of $\alpha=3$ for $A_2$ and $\alpha = 3.5$ for $A_1$.
 
-In the \emph{baseline} and \emph{overlapping} conditions with hierarchical goals, however, $A_1$ and $A_2$ make different predictions. 
-$A_1$ treats these conditions the same as the catch trial, since it attempts to be informative with respect to the goal inherent in the question, and all questions are about a single card.
+In the \emph{baseline} and \emph{overlapping} conditions, however, $A_1$ and $A_2$ make diverging predictions. 
+$A_1$ treats these conditions the same as the catch trial, since it attempts to be directly informative with respect to the goal inherent in the question, and all questions are about a single card.
 $A_2$, on the other hand, goes beyond the literal question to infer that the questioner asked about just one subgoal of one of the ultimate goals.
 When asked about a card that appears in one goal combo but not the other, $A_2$ infers with high probability which of the two ultimate goals is most likely the hidden goal. 
 It is thus much more likely to respond with \emph{both cards} than about only the single card that was asked about (or any other combination of cards). 
+We found that only 23\% of participants gave literal answers in each of these conditions, which is significantly different than the proportion (83\%) in catch trials, $\chi^2(1) = 35, p < 0.001$, Fig. \ref{fig:exp2results}A.
+The empirical response distributions for these conditions are thus consistent with the predictions of $A_2$ and strongly falsify $A_1$.
 
 \subsubsection{Questioner results}
 
+Next, we turn to questioner behavior, the primary focus of Experiment 2.
+The $Q_1$ and $Q_2$ models make qualitatively different predictions about which questions participants chose in the \emph{overlap} and \emph{baseline} conditions.
+$Q_1$ predicts no difference in behavior across these two conditions.
+Because it reasons that $A_1$ will always provide a literal or (indiscriminately) overinformative response, as we saw in the previous section, then asking about either card is equally useful for completing the target combo.
 
-\begin{figure*}[tbh!]
-\begin{center}
-\includegraphics[scale = .5]{cardsQuestionerResultsWithGraphics.pdf}
-\end{center}
-\caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
-%\vspace{-1cm}
-\label{fig:exp2answerer}
-\end{figure*}
+$Q_2$, on the other hand, recognizes that certain questions may provide better signals about the ultimate goal than others.
+In particular, for the \emph{overlap} condition, $Q_2$ reasons that if they asked about the card appearing in both combos, $A_2$ would not be able to infer which of the two combos is their ultimate goal.
+If they instead asked about the unique card, however, $A_2$ would infer their true goal with high probability and subsequently be more likely to reveal the needed information.
+Thus, $Q_2$ predicts that participants will prefer to ask about the unique card.
+The \emph{baseline} condition serves as a control where both cards are unique, hence both questioner models predict no preference over the two cards.
+
+We found that 77\% of participants asked about the unique card in the overlap condition, which is significantly different from the null probability of 50\% predicted by $Q_1$, $\chi^2(1) = 11.3, p < 0.001$. 
+Meanwhile, the proportion of participants (48\%) who asked about the card in the same position in baseline trials did not differ from chance: the Bayes Factor for binomial proportions  \cite{morey2016philosophy, morey2015package} shows weak evidence in favor of the null, $BF = 0.37$, Fig. \ref{fig:exp2results}B. 
+This qualitative pattern of responses is consistent with the predictions of $Q_2$ but cannot be explained by $Q_1$.
+
+It was possible, however, that this pattern was driven by participants who had already seen their partner ask about the unique card on a previous trial and were copying their behavior. 
+To address this concern, we examined these response patterns for the subset of participants who were assigned the role of the questioner on the first half of trials and thus had no opportunity to learn from their partner: 18 of these 21 participants (87\%) asked about the unique card, which remained significantly different from chance: $\chi^2(1) = 9.3, p = 0.002$.
+
+\subsection{Discussion}
+
+Experiment 2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to generalize our model to more sophisticated spaces of goals.
+To achieve both of these aims, we \dots
+
+Subgoals raises questions about planning which are outside the scope of this paper.
+Planning is also key for a general theory of dialogue.
+In the next section, we take a first pass by looking at some features of multi-round dialogue that do not require planning.
 
 \section{Experiment 3: Multi-round dialogue}
 
@@ -1075,7 +1106,7 @@ Our final experiment tests the extent to which
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{spatialDemo.pdf}
+\includegraphics[scale = .7]{Exp3/spatialDemo.pdf}
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
@@ -1084,7 +1115,7 @@ Our final experiment tests the extent to which
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{spatialGoalInference_final.pdf}
+\includegraphics[scale = .7]{Exp3/spatialGoalInference_final.pdf}
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
@@ -1093,7 +1124,7 @@ Our final experiment tests the extent to which
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{spatialQualitativeQuestioner.pdf}
+\includegraphics[scale = .7]{Exp3/spatialQualitativeQuestioner.pdf}
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
