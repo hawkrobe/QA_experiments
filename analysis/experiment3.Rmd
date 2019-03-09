@@ -168,3 +168,11 @@ d.answer_predictions_trimmed <- d.answer_predictions %>%
   
 write_csv(d.answer_predictions_trimmed, '../modeling/experiment3/relevantAnswererOutput.csv')
 ```
+
+```{r}
+library(jsonlite)
+out = fromJSON( '../modeling/experiment3/dataAnalysisOutQ_only.json', flatten = T)
+out %>% 
+  group_by(questionerType) %>% 
+  summarize(prob = reduce(likelihood, sumlogprob) - log(length(likelihood)))
+```
