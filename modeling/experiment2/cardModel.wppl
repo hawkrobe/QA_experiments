@@ -236,7 +236,8 @@ var getPosteriorProb = dp.cache(function(question, answer, goal,
   });
 });
 
-var rationality = 10;
+var rationality = 3;
+var answerCost = 1;
 
 var Q = dp.cache(function(type, goal, goalContext, version) {
   var worldPrior = version == 'fast' ? fast_worldPrior : slow_worldPrior;
@@ -275,7 +276,6 @@ var A = dp.cache(function(type, question, trueWorld, goalContext, version) {
     var answer = (version == 'slow' ?
 		  sample(makeTruthfulAnswerPrior(answerPrior, trueWorld, version)) :
 		  sample(answerPrior));
-    console.log(qudPosterior);
     var utility = expectation(qudPosterior, function(qudName) {
       return _.sum(map(function(name) {
 	return Math.log(expectation(interpreter(answer, version), function(w) {
@@ -284,7 +284,7 @@ var A = dp.cache(function(type, question, trueWorld, goalContext, version) {
 	}));
       }, qudName));
     });
-    factor(utility * rationality - answer.length);      
+    factor(rationality * (utility - answerCost * answer.length));      
     return answer;
   });
 });
@@ -292,15 +292,38 @@ var A = dp.cache(function(type, question, trueWorld, goalContext, version) {
 
 // NOTES:
 // 1. collapsing worlds & answer space equivalent to restricting to only 'true' answers...
-
-var goalContext = [
-  ['o2', 'o3'],
-  ['o1', 'o2']
-];
 var version = 'fast';
 var trueWorld = version == 'slow' ? slow_trueWorld : fast_trueWorld;
-A('pragmatic', 'where_is_o1?', trueWorld, goalContext, version);
-Q('pragmatic', ['o2', 'o3'], goalContext, version);
+
+console.log('catch');
+var goalContext = [
+  ['o2'],
+  ['o1']
+];
+console.log('A1', A('explicit', 'where_is_o2?', trueWorld, goalContext, version));
+console.log('A2', A('pragmatic', 'where_is_o2?', trueWorld, goalContext, version));
+console.log('Q1', Q('explicit', ['o2'], goalContext, version))
+console.log('Q2', Q('pragmatic', ['o2'], goalContext, version))
+
+// console.log('overlapping condition');
+// var goalContext = [
+//   ['o2', 'o3'],
+//   ['o1', 'o2']
+// ];
+// console.log('A1', A('explicit', 'where_is_o3?', trueWorld, goalContext, version));
+// console.log('A2', A('pragmatic', 'where_is_o3?', trueWorld, goalContext, version));
+// console.log('Q1', Q('explicit', ['o2', 'o3'], goalContext, version))
+// console.log('Q2', Q('pragmatic', ['o2', 'o3'], goalContext, version))
+
+// console.log('baseline condition');
+// var goalContext = [
+//   ['o2', 'o3'],
+//   ['o1', 'o4']
+// ];
+// console.log('A1', A('explicit', 'where_is_o3?', trueWorld, goalContext, version));
+// console.log('A2', A('pragmatic', 'where_is_o3?', trueWorld, goalContext, version));
+// console.log('Q1', Q('explicit', ['o2', 'o3'], goalContext, version))
+// console.log('Q2', Q('pragmatic', ['o2', 'o3'], goalContext, version))
 
 // print('A0:');
 // viz.table(answerer('literal', isMoreThanFiveQuestion, world,  buyWhiskeyContext))
