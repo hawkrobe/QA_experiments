@@ -10,52 +10,36 @@ var runAnalysis = function() {
   var f = function(v) {
     var state = JSON.parse(v['gridState']);
     return (!(_.includes(['practice'], v['trialType']))
-	    && (state['safe'].length + state['unsafe'].length) > 0);
+  	    && (state['safe'].length + state['unsafe'].length) > 0);
   };
   
-  var questionerData = filter(f, qa.readCSV('../qa/questionFromMongo_qualitative.csv'));
   var answererData = filter(f, qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv'));
 
-  return Infer({method: 'enumerate'}, function() {
+  return Infer({method: 'enumerate', model: function() {
     var Arationality = config.Arationality;
     var Qrationality = config.Qrationality;
     var answerCost = config.answerCost;
     var model = SpatialModel(Qrationality, Arationality, answerCost);
 
-    var questioner = model.questioner;
     var answerer = model.answerer;
-    
-    var questionerType = flip() ? 'explicit' : 'pragmatic';
-    globalStore.score = 0;
-
-    mapData({data: questionerData}, function(response) {
-      var rawState = JSON.parse(response['gridState']);
-      var state = {'safe' : sort(rawState['safe']),
-		   'unsafe' : sort(rawState['unsafe'])};
-      var goal = response['goal'] == 'columns' ? ['1', '2', '3'] : ['A', 'B', 'C'];
-      var prediction = questioner(questionerType, goal, state);
-      var score = prediction.score('is_' + response['question'] + '_safe?');
-      globalStore.score += score;
-      factor(_.isFinite(score) ? score : -10);
-    });
 
     var answererType = flip() ? 'explicit' : 'pragmatic';
-
+    globalStore.score = 0;
+    
     mapData({data: answererData}, function(response) {
       var rawState = JSON.parse(response['gridState']);
       var state = {'safe' : sort(rawState['safe']),
-		   'unsafe' : sort(rawState['unsafe'])};
+    		   'unsafe' : sort(rawState['unsafe'])};
       var world = JSON.parse(response['underlyingWorld']);
       var question = 'is_' + response['cellAskedAbout'] + '_safe?';
       var trueAnswer = map(function(v) {return v + '_' + world[v]},
-			   JSON.parse(response['answer']));
+    			   JSON.parse(response['answer']));
       var prediction = answerer(answererType, question, world, state);
       var score = prediction.score(trueAnswer);
       globalStore.score += score;
       factor(_.isFinite(score) ? score : -10);
     });
-    console.log({
-      questionerType,
+    console.log({		
       answererType,
       Qrationality,
       Arationality,
@@ -63,20 +47,8 @@ var runAnalysis = function() {
       likelihood: globalStore.score
     });
     return;
-  });
+  }});
 };
 
-runAnalysis();
-
-// TODO: generate predictives from MAP param val
-var getPredictions = function() {
-  var bestRationality = 4;
-  var model = SpatialModel(bestRationality, bestRationality);
-  foreach(modelOutput.support(), function(s){
-    var key = _.values(_.omit(c, 'context')).concat(s);
-    var newPair = _.zipObject([key], [modelOutput.score(s)]);
-    globalStore.predictives = extend(globalStore.predictives, newPair);
-  });
-
-}
+console.log(runAnalysis());
 
