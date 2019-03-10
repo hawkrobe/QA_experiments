@@ -47,13 +47,24 @@
 
 \makeatother
 
-\title{Questions and answers in dialogue}
-\shorttitle{}
+\title{Reason to the goal: \\Social inference and signaling in questions and answers}
+\shorttitle{Questions and answers in dialogue}
 \author{Robert X.D. Hawkins, Noah D. Goodman}
 \affiliation{Stanford University} 
 
-
-\abstract{What makes a question useful? What makes an answer helpful? Asking questions is one of our most efficient and reliable means of learning about the world. Yet we do not often pose these questions to an impartial oracle; we ask other agents, in dialogue. In this paper, we reconcile formal models of optimal question-asking with classic psycholinguistic effects of social context by extending recent probabilistic cognitive models of goal-relevant communication to dialogue. Agents hear an utterance, update their beliefs through social reasoning, and select an utterance in response. The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal upon hearing an answer from their partner. Critically, this suggests that the question itself can be a signal to the speaker's underlying goals, and that a helpful answerer should be informative with respect to inferred goals, beyond the literal meaning of the question. We compare models of both the questioner and answerer within this framework based on three pieces of evidence: First, we account for classic effects in psycholinguistics showing that the same question can yield different answers depending on the context. Second, we run a real-time, multi-player communication game to jointly test predictions made by the questioner and answerer components of our model. Third, we show that the salience of goals affects both asking and answering questions. We find that sophisticated pragmatic reasoning in dialogue is needed to account for critical aspects of the data. \\ 
+\abstract{
+What makes a question useful? What makes an answer helpful? 
+Asking questions is one of our most efficient and reliable means of learning about the world. 
+Yet we do not often pose these questions to an impartial oracle; we ask other social agents, in dialogue. 
+In this paper, we reconcile formal models of optimal question-asking with classic psycholinguistic effects of social context by extending recent probabilistic cognitive models of goal-relevant communication. 
+Agents hear an utterance, update their beliefs through social reasoning, and select an utterance in response. 
+The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal upon hearing an answer from their partner. 
+Critically, this suggests that the question itself can be a signal to the speaker's underlying goals, and that a helpful answerer should be informative with respect to inferred goals, beyond the literal meaning of the question. 
+We evaluate models of both the questioner and answerer within this framework based on both computational simulations and novel empirical data.
+First, we account for classic effects in psycholinguistics showing that the same question can yield different answers depending on the context.  
+Second, we introduce a Hidden Goal paradigm for eliciting both questioner and answerer behavior in scenarios where there is uncertainty about the questioner's goal. 
+We report data from three experiments in this paradigm and show how our core computational framework can be composed with more sophisticated question semantics, hierarchical goal spaces, and a persistent state over which repeated dialogue can unfold.
+We find that social reasoning is needed to account for critical aspects of the data. \\ 
 \hl{DRAFT 2/13//2018: THIS PAPER HAS NOT BEEN PEER REVIEWED. PLEASE DO NOT COPY OR CITE WITHOUT AUTHOR'S PERMISSION}
 }
 
@@ -709,7 +720,7 @@ Thus, some answerer behavior is obvious and predicted by both $A_1$ and $A_2$: w
 Other questions, however, lead to sharp qualitative differences.
 Suppose the questioner asks ``Where is the \emph{animal}?''. 
 Neither $A_0$ nor $A_1$ have a preference over which of the animals to provide information about, because all four satisfy the literal meaning of the question. 
-Human participants, on the other hand, have a strong preference: 94\% provided the location of the ``whale,'' the object that isn't queried by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}).
+Human participants, on the other hand, have a strong preference: 94\% provided the location of the ``whale,'' the object that isn't queried by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}A).
 
 This strong non-uniform pattern %, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, 
 is only consistent with $A_2$. 
@@ -741,7 +752,7 @@ Thus, we have a pair of sharply distinguishable predictions: $Q_0$ predicts all 
 %\label{fig:Exp4ZoomedIn}
 %\end{figure}
 
-The counts of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:exp1qualitative}. 
+The counts of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:exp1qualitative}B. 
 We find that the pragmatic model $Q_2$ makes the correct qualitative prediction -- the empirical probability of asking ``Cat?'' ($\hat{p} = 0.64$) is significantly different from the  probability of asking ``Pet?'' ($\hat{p} = 0.25$; bootstrapped $95\%$ CI on difference: $[0.17, 0.58]$). 
 This critical condition thus provides qualitative evidence for $Q_2$: in some cases, questioners consider the answerer's inference about their goals when selecting their question. 
 
@@ -930,7 +941,7 @@ In Experiment 2, we design a more targeted experiment to test our pragmatic ques
 
 \section{Experiment 2: Structured goals}
 
-The construct of a \emph{goal} has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
+The construct of a goal has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
 The simplest spaces of goals, like those used in Experiment 1, are discrete sets of projections on the world state.
 For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read the presented word or (2) name the color in which they are written \cite{miller2001integrative}.
 However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
@@ -940,26 +951,186 @@ For example, if we know an agent takes the same route home every day, but one da
 
 The hierarchical structure of goals has also long been recognized in linguistic theories of questions in discourse  \cite{Kuppevelt95_TopicalityDiscourse,Roberts96_InformationStructureDiscourse,Buring03_DtreesBeansBaccents,Groenendijk99_LogicOfInterrogation,rojas2014discourse}.
 For instance, if a traveler asks \emph{Are there window seat tickets to Berlin at 7:00?} and there are no such tickets available, it would be more helpful for the travel agent to respond \emph{the next available tickets are for 10:00} than \emph{no} \cite{rojas2013roadsigns}.
-This can be understood as a recognition by the agent that the specific flight and seat preference mentioned by the traveler are subgoals in a hierarchy below the broader goal of getting to Berlin. 
+This has been understood as a recognition by the agent that the specific flight and seat preference mentioned by the traveler are subgoals in a hierarchy below the broader goal of getting to Berlin. 
 
-To show that more structured goals of this type are naturally accommodated by our framework, we designed a simple Hidden Goal collection game inspired by recent work in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
-Furthermore, it was 
+Structured goals of this type are naturally accommodated by our framework. 
+To show this, we designed a simple Hidden Goal collection game inspired by recent experiments in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
+Furthermore, this task presented the opportunity to more strongly test the pragmatic questioner model $Q_2$.
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .5]{cardsQuestionerResultsWithGraphics.pdf}
+\includegraphics[scale = .7]{Exp2/task.pdf}
 \end{center}
-\caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
+\caption{(A) Task displays and (B) procedure for Experiment 2.}
 %\vspace{-1cm}
-\label{fig:exp1predictives}
+\label{fig:exp2task}
 \end{figure*}
+
+
+As in Experiment 1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
+Unlike in Experiment 1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
+More specifically, the questioner was privately assigned a hand of playing cards to find (Fig. \ref{fig:exp2task}A, left). 
+The cards were scattered around a grid, and only the answerer had visibility of where the cards were located (Fig. \ref{fig:exp2task}A, right).
+The possible hands of cards the questioner might be assigned were shared in common ground.
+
+These multi-object goals induce a hierarchy where the ultimate goal of collecting the full set was decomposed into subgoals of finding each individual object in the set.
+A pragmatic answerer, then, ought to infer and relevantly respond not only to the questioner's current subgoal but also their likely ultimate goal.
+A pragmatic questioner, in turn, ought to be sensitive to which questions best signal the ultimate goal, beyond any particular subgoal.
+
+
+\subsection{Methods}
+\subsubsection{Participants}
+
+We recruited 62 participants from Amazon Mechanical Turk to play a communication game.
+We excluded 4 participants who disconnected before completion, 10 participants who failed pre-specified catch trials (see below), and 3 additional participants who self-reported confusion about the instructions.
+This left 45 participants in our final sample, each of whom provided responses in both the questioner role and the answerer role.
+
+\subsubsection{Stimuli}
+
+Stimuli were constructed from a standard deck of 52 playing cards (4 suits $\times$ 13 ranks). 
+For each trial, we randomly sampled between 5 and 9 cards from the desk. 
+These cards were randomly assigned to locations in the grid. 
+
+We constructed the space of goal ``combos'' on each trial in two different ways, leading to two conditions where our questioner models made qualitatively different predictions.
+In the \emph{baseline} condition, we sampled two disjoint sets containing two cards each. 
+In this case, both models predict that the questioner should have no preference over which card to ask about.
+In the \emph{overlapping} condition, we again sampled two sets containing two cards each but ensured that one card appears in both sets. 
+Here, our pragmatic model predicts that the questioner will avoid asking about this card; although it is a necessary subgoal, it would provide an ambiguous signal to a pragmatic answerer about the ultimate goal.
+
+Finally, we constructed catch trials using single-object goals. 
+Because there is only one card that must be found to complete the hand, questioners ought to ask about this card and answerers hearing this question ought to (at least) reveal the requested card.
+If the questioner asked about a different card, or the answerer failed to reveal the card that was asked about, we took this as a grounds for exclusion due to inattentiveness.
+
+\subsubsection{Procedure}
+
+Each trial proceeded through the same four phases as Experiment 1. 
+Questioners were first assigned a ``combo'' to complete out of a shared list of possible alternatives and used dropdown menus to choose a suit and rank to ask about (e.g. ``Where is the king of hearts?'').
+Upon seeing this question, the answerer selected either one or two cards to reveal to the questioner and the questioner was then shown the locations of these cards.
+
+If all of the cards in their combo were revealed, participants advanced to the next trial; if not, the questioner was prompted to ask a follow-up question.
+It was always possible to complete the combo in a single question.
+To incentivize performance, we therefore gave a bonus when the exact cards in the combo were revealed. 
+
+The trial sequence was thus constructed such that each participant saw each of the three trial types (baseline, overlapping, and catch trials) once as questioner and once as answerer for a total of six trials.
+Trials thus appeared in two blocks corresponding to each role, with the sequence of conditions randomized within each block. 
+The starting role was counterbalanced across participants.
+
+Unlike Experiment 1, which used a real-time multi-player methodology to ensure participants knew they were playing with a real partner, we decided in this experiment that the benefit of such minimal interaction was not worth the loss in control over the input given to participants.
+Instead, participants were paired with an artificial agent that played the opposite role.
+When in the questioner role, this agent selected question stimulus with maximum probability according to $Q_2$. 
+This choice ensured that we densely sampled answer responses in the cases where the answerer models made diverging predictions.
+In the answerer role, the artificial agent similarly responded according to $A_2$, which was intended to minimize participant frustration.
+
+Using our models directly in the task admittedly presents a potential for `contamination' where participants imitate or learn from the model's behavior. 
+We addressed this concern in two ways. 
+First, the experiment is limited to only six trials, minimizing the potential for learning.
+Second, because we counterbalanced the order in which roles were assigned, we will empirically test whether patterns of responses differed for participants who had already seen their partner respond in arole.
+
+\subsection{Predictions and results}
+
+\subsubsection{Model setup}
+
+Experiment 2 was designed to provide a strong \emph{qualitative} test of the questioner models in a scenario with more structured goals.
+We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}$ to a set of ordered pairs $\{g_{ij}\} = \{(g_i, g_i^{(j)})\}$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
+In the case of Experiment 2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
+
+
+\begin{figure*}[th!]
+\begin{center}
+\includegraphics[scale = 1]{Exp2/qualitativeResults.pdf}
+\end{center}
+\caption{Results for Experiment 2. (A) Answerers are more likely to go beyond the literal question and reveal additional cards in the baseline and overlap conditions. (B) Questioners are more likely to ask about the non-overlapping card relative to baseline. Dotted line is chance, and error bars are bootstrapped 95\% CIs.}
+%\vspace{-1cm}
+\label{fig:exp2results}
+\end{figure*}
+
+The primary computational consequences of introducing a hierarchical goal space emerge from the pragmatic answerer $A_2$. 
+Upon hearing a question, $A_2$ must jointly infer the ultimate goal along with the current subgoal.
+First, we assume that a questioner acting under an ordered pair $g_{ij} = (g_i, g_i^{(j)})$ attempts to gain information towards both goals:
+$$P_{Q}(q | g_{ij}) = \prod_{g\in \{g_i, g_i^{(j)}\}} P(q | g)$$
+In other words, a question is preferred if it is both good for the current subgoal and the ultimate goal.
+% of finding the entire privately assigned combo $i$.
+Combining this assumption about the questioner $Q_1$ with the dependence between subgoal and ultimate goal, $A_2$'s goal inference factors as:
+$$\begin{array}{rcl}
+P(g_{ij} | q) & \propto & P(q | g_{ij})P(g_{ij}) \\
+ & = & P(q | g_i)P(g_i) \cdot P(q | g_i^{(j)}) P(g_i^{(j)} | g_i)
+ \end{array}$$
+Given a posterior over the goal tuple $g_{ij}$, we then assume the answerer attempts to be informative with respect to both goals in the tuple: 
+$$U_{A_2}(a; q, w) = \sum_{g_{ij} \in \mathcal{G}} P(g_{ij}|q) \sum_{g\in \{g_i, g_i^{(j)}\}}\widehat{P^g_I}(w|\,a)$$
+While this presentation was written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
+The simpler goal spaces considered earlier in the paper are special cases of this more general formulation taking goal tuples to be singletons.
+
+Given this generalization of the model to more structured goal spaces, we can derive predictions for Experiment 2. 
+The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
+Questions in the question space $\mathcal{Q}$ were of the same form as in Experiment 1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of saliency do not arise. 
+Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at location that was mentioned, and false otherwise.
+
+
+\subsubsection{Answerer results}
+
+Although the different conditions of the experiment were primarily designed as a stronger qualitative test of the questioner model, it also provides another opportunity to test the answerer models. 
+To begin, consider the simple catch trials, where each goal contained only one card.
+Here, both $A_1$ and $A_2$ make the same prediction: that participants will reveal the single card that was asked about with high probability and, with lower probability, they may be ``overinformative'' by revealing both the card that was asked about along with some other card.
+Indeed, we found that 83\% of participants responded literally with the exact card asked about, while the remaining 17\% gave overinformative responses (Fig. \ref{fig:exp2results}A).
+The precise probability the models put on such overinformative responses depends on the optimality parameter $\alpha$ and a cost parameter penalizing longer answers; at a cost penalty of $1$, the empirical response distribution is obtained with moderate values of $\alpha=3$ for $A_2$ and $\alpha = 3.5$ for $A_1$.
+
+In the \emph{baseline} and \emph{overlapping} conditions, however, $A_1$ and $A_2$ make diverging predictions. 
+$A_1$ treats these conditions the same as the catch trial, since it attempts to be directly informative with respect to the goal inherent in the question, and all questions are about a single card.
+$A_2$, on the other hand, goes beyond the literal question to infer that the questioner asked about just one subgoal of one of the ultimate goals.
+When asked about a card that appears in one goal combo but not the other, $A_2$ infers with high probability which of the two ultimate goals is most likely the hidden goal. 
+It is thus much more likely to respond with \emph{both cards} than about only the single card that was asked about (or any other combination of cards). 
+We found that only 23\% of participants gave literal answers in each of these conditions, which is significantly different than the proportion (83\%) in catch trials, $\chi^2(1) = 35, p < 0.001$, Fig. \ref{fig:exp2results}A.
+The empirical response distributions for these conditions are thus consistent with the predictions of $A_2$ and strongly falsify $A_1$.
+
+\subsubsection{Questioner results}
+
+Next, we turn to questioner behavior, the primary focus of Experiment 2.
+The $Q_1$ and $Q_2$ models make qualitatively different predictions about which questions participants chose in the \emph{overlap} and \emph{baseline} conditions.
+$Q_1$ predicts no difference in behavior across these two conditions.
+Because it reasons that $A_1$ will always provide a literal or (indiscriminately) overinformative response, as we saw in the previous section, then asking about either card is equally useful for completing the target combo.
+
+The pragmatic questioner $Q_2$, on the other hand, recognizes that certain questions may provide better signals about the ultimate goal than others.
+In particular, for the \emph{overlap} condition, $Q_2$ reasons that if they asked about the card appearing in both combos, $A_2$ would not be able to infer which of the two combos is their ultimate goal.
+If they instead asked about the unique card, however, $A_2$ would infer their true goal with high probability and subsequently be more likely to reveal the needed information.
+Thus, $Q_2$ predicts that participants will prefer to ask about the unique card.
+The \emph{baseline} condition serves as a control where both cards are unique, hence both questioner models predict no preference over the two cards.
+
+We found that 77\% of participants asked about the unique card in the overlap condition, which is significantly different from the null probability of 50\% predicted by $Q_1$, $\chi^2(1) = 11.3, p < 0.001$. 
+Meanwhile, the proportion of participants (48\%) who asked about the card in the same position in baseline trials did not differ from chance: the Bayes Factor for binomial proportions  \cite{morey2016philosophy, morey2015package} shows weak evidence in favor of the null, $BF = 0.37$, Fig. \ref{fig:exp2results}B. 
+This qualitative pattern of responses is consistent with the predictions of $Q_2$ but cannot be explained by $Q_1$.
+
+It was possible, however, that this pattern was driven by participants who had already seen their partner ask about the unique card on a previous trial and were copying their behavior. 
+To address this concern, we examined these response patterns for the subset of participants who were assigned the role of the questioner on the first half of trials and thus had no opportunity to learn from their partner: 18 of these 21 participants (87\%) asked about the unique card, which remained significantly different from chance: $\chi^2(1) = 9.3, p = 0.002$.
+
+\subsection{Discussion}
+
+Experiment 2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to demonstrate how our core framework generalizes to more structured spaces of goals.
+To meet these challenges, we designed a Hidden Goal task where questioners were privately assigned a set of \emph{multiple} objects to find, inducing a hierarchy of subgoals.
+By manipulating whether objects overlapped or differed across sets in the space of possible goals, we constructed scenarios where our pragmatic models made sharply different predictions than prior models. 
+As predicted by $A_2$, we found that answerers reasoned beyond the literal subgoal prompted by the question to respond helpfully to the inferred ultimate goal above it in the hierarchy.
+Questioners, in turn, chose to ask about the objects that would most clearly signal their ultimate goal to their partner, even though these different questions would have equal expected information gain under traditional models. 
+
+The minimal goal hierarchy modeled in this experiment is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering.
+However, it is also important to note that handling more sophisticated goal structures will require composing our core computational framework with additional mechanisms.
+In particular, the more general form of the model we introduced relies on a simplifying assumption of different subgoals being conditionally independent given their parent in the hierarchy: this assumption justifies representing subgoals as tuples with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal.
+
+\todo[inline]{Finish this sketch\dots}
+This assumption is clearly violated in certain cases.
+For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on. 
+These subgoals unfold in time, creating sequential dependencies are introduced.
+If we are in an unfamiliar kitchen, it may be important to ask certain questions before others: knowing \dots
+
+Deciding how to ask and answer questions in the presence of such dependences therefore requires a \emph{planning} mechanism.
+While introducing such a planning mechanism is outside the scope of this paper, we \dots 
+In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
 \section{Experiment 3: Multi-round dialogue}
 
+Our final experiment tests the extent to which 
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{spatialDemo.pdf}
+\includegraphics[scale = .7]{Exp3/spatialDemo.pdf}
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
@@ -968,7 +1139,7 @@ Furthermore, it was
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{spatialGoalInference_final.pdf}
+\includegraphics[scale = .7]{Exp3/spatialGoalInference_final.pdf}
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
@@ -977,7 +1148,7 @@ Furthermore, it was
 
 \begin{figure*}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{spatialQualitativeQuestioner.pdf}
+\includegraphics[scale = .7]{Exp3/spatialQualitativeQuestioner.pdf}
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
