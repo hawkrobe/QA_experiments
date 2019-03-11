@@ -1122,8 +1122,8 @@ These subgoals unfold in time, introducing sequential dependencies.
 If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied.
 Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
 
-Deciding how to ask and answer questions in the presence of such temporal dependences requires a \emph{planning} mechanism over a persistent state.
-A planning mechanism may also be necessary for integrating the pragmatics of question asking and answering into more general framework for dialogue.
+Deciding how to ask and answer questions in the presence of such sequential dependences requires a \emph{planning} mechanism over a persistent state.
+Planning may also be necessary for integrating the pragmatics of question asking and answering into longer sequences of questions \cite{nelson_meder_jones_2018}.
 While introducing such a planning mechanism into our model is outside the scope of this paper, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time.
 %In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
@@ -1171,7 +1171,7 @@ Goals were sampled from a space of two ultimate objectives: complete any \emph{r
 Because these goals are logical disjunctions, they could be satisfied in as many ways as there are rows or columns, inducing a hierarchical goal space with each row/column as a possible subgoal the questioner could pursue.
 This goal space was intended to be intuitive for participants, given its resemblance to the win conditions of well-known games like Tic-Tac-Toe or Connect Four.
 
-Underlying bomb maps were rejection sampled from the space of all 2^9 assignments of bombs to locations, subject to the constraint that it was possible to win given either goal. 
+Underlying bomb maps were rejection sampled from the space of all $2^9$ assignments of bombs to locations, subject to the constraint that it was possible to win given either goal. 
 We included this constraint so that the arrangement of bombs did not give the answerer any cues to the questioner's goal.
 
 Finally, the initial state was chosen from four different conditions to create a variety of different scenarios (see Fig. \ref{fig:exp3task}B for examples).
