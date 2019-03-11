@@ -1106,36 +1106,79 @@ To address this concern, we examined these response patterns for the subset of p
 
 Experiment 2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to demonstrate how our core framework generalizes to more structured spaces of goals.
 To meet these challenges, we designed a Hidden Goal task where questioners were privately assigned a set of \emph{multiple} objects to find, inducing a hierarchy of subgoals.
-By manipulating whether objects overlapped or differed across sets in the space of possible goals, we constructed scenarios where our pragmatic models made sharply different predictions than prior models. 
-As predicted by $A_2$, we found that answerers reasoned beyond the literal subgoal prompted by the question to respond helpfully to the inferred ultimate goal above it in the hierarchy.
+By manipulating whether objects overlapped or differed across sets in the space of possible goals, we constructed scenarios where our different models made sharply different predictions. 
+
+We found that answerers reasoned beyond the literal subgoal prompted by the question to respond helpfully to the inferred ultimate goal in the hierarchy.
 Questioners, in turn, chose to ask about the objects that would most clearly signal their ultimate goal to their partner, even though these different questions would have equal expected information gain under traditional models. 
 
-The minimal goal hierarchy modeled in this experiment is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering.
-However, it is also important to note that handling more sophisticated goal structures will require composing our core computational framework with additional mechanisms.
-In particular, the more general form of the model we introduced relies on a simplifying assumption of different subgoals being conditionally independent given their parent in the hierarchy: this assumption justifies representing subgoals as tuples with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal.
+The minimal goal hierarchy studied in Experiment 2 is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering. 
+However, handling more complex goal structures will require composing our core computational framework with additional mechanisms.
+In particular, we relied on the simplifying assumption of different subgoals being \emph{conditionally independent} given their parent in the hierarchy. 
+This assumption justified the representation of subgoals as ordered pairs with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal. 
 
-\todo[inline]{Finish this sketch\dots}
-This assumption is clearly violated in certain cases.
-For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on. 
-These subgoals unfold in time, creating sequential dependencies are introduced.
-If we are in an unfamiliar kitchen, it may be important to ask certain questions before others: knowing \dots
+This assumption is clearly violated in certain real-world cases.
+For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on \cite{jackendoff2007language}. 
+These subgoals unfold in time, introducing sequential dependencies.
+If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied.
+Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
 
-Deciding how to ask and answer questions in the presence of such dependences therefore requires a \emph{planning} mechanism.
-While introducing such a planning mechanism is outside the scope of this paper, we \dots 
-In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
+Deciding how to ask and answer questions in the presence of such temporal dependences requires a \emph{planning} mechanism over a persistent state.
+A planning mechanism may also be necessary for integrating the pragmatics of question asking and answering into more general framework for dialogue.
+While introducing such a planning mechanism into our model is outside the scope of this paper, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time.
+%In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
-\section{Experiment 3: Multi-round dialogue}
+\section{Experiment 3: Extended dialogue}
 
-Our final experiment tests the extent to which 
+In our computational framework, an answerer updates their beliefs about the questioner's goals after hearing a question, and a questioner updates their beliefs about the world state after hearing an answer. 
+In principle, this step can be repeated multiple times until the questioner's goal is resolved, allowing for an extended sequence of questions and answers: the questioner's posterior over worlds after hearing an answer to their first question becomes the prior for selecting their second, and so on.
+
+In Experiment 3, we developed a final task in the Hidden Goal paradigm to investigate how the pragmatics of asking and answering questions unfolded over multiple exchanges.
+This task was designed with several desiderata in mind.
+First, we needed a larger and more natural space of goals that weren't always possible to satisfy in a single round.
+This would allow us to test our models' predictions about how the answer to one question may influence the choice of a subsequent question, or how the answerer's beliefs about the questioner's goal may shift after hearing additional questions.
+Second, although $A_2$'s internal goal inference mechanism was implicit in the success of our model predictions in Experiments 1 and 2, we sought explicit validation of this model component by directly eliciting answerers' beliefs about the questioner's goal.
 
 \begin{figure*}[tbh!]
 \begin{center}
 \includegraphics[scale = .7]{Exp3/spatialDemo.pdf}
 \end{center}
-\caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
+\caption{Task design and procedure for Experiment 3.}
 %\vspace{-1cm}
-\label{fig:exp1predictives}
+\label{fig:exp3task}
 \end{figure*}
+
+The \emph{Don't Explode} task is a cooperative communication game inspired by Battleship and Minesweeper (see Fig. \ref{fig:exp3task}). 
+Participants are presented with a shared $3 \times 3$ grid and told that some tiles are safe but others contain bombs.
+One player---the questioner---is privately assigned a particular goal pattern they must complete by revealing tiles.
+The other player---the answerer---is given a map showing where the bombs are.
+As in our previous experiments in this paradigm, the answerer has uncertainty about the questioner's goal, and the questioner has uncertainty about the map.
+To succeed, then, the questioner must ask questions (e.g. \emph{Is tile X safe?}) and the answerer choose what information to reveal in response.
+By manipulating the state of the initial grid, we generated a large number of items where our models make different predictions. 
+
+\subsection{Methods}
+
+\subsubsection{Participants}
+
+We recruited 124 participants from Amazon Mechanical Turk. 
+21 participants were excluded for disconnecting before the end of the task, leaving 104 participants in our final sample. 
+All participants were self-reported native English speakers.
+
+\subsubsection{Stimuli}
+
+On each trial, the questioner was assigned one of two goals: complete any \emph{row} or complete any \emph{column}. 
+Because each of these goals can be satisfied in as many ways as there are rows or columns, this induces a hierarchical goal space where different 
+In addition to this goal, each trial was defined by two sets: an underlying `map' assigning bombs to locations and an `initial state' indicating which tiles were shown as safe to both players at the outset of the trial.
+We sampled trials in five different conditions to create a variety of different scenarios.
+In the \emph{empty} condition, no tiles were were
+
+\subsubsection{Procedure}
+
+\subsection{Results}
+
+\subsubsection{Model predictions}
+
+\subsubsection{Goal inference results}
+
 
 \begin{figure*}[tbh!]
 \begin{center}
@@ -1146,6 +1189,11 @@ Our final experiment tests the extent to which
 \label{fig:exp1predictives}
 \end{figure*}
 
+
+\subsubsection{Answerer model comparison}
+
+\subsubsection{Questioner model comparison}
+
 \begin{figure*}[tbh!]
 \begin{center}
 \includegraphics[scale = .7]{Exp3/spatialQualitativeQuestioner.pdf}
@@ -1154,6 +1202,10 @@ Our final experiment tests the extent to which
 %\vspace{-1cm}
 \label{fig:exp1predictives}
 \end{figure*}
+
+\subsection{Discussion}
+
+\cite<e.g>{khani2018planning,young2013pomdp,gao2019neural}
 
 \section{General discussion}
 \label{sec:gd}
