@@ -1119,12 +1119,12 @@ This assumption justified the representation of subgoals as ordered pairs with t
 This assumption is clearly violated in certain real-world cases.
 For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on \cite{jackendoff2007language}. 
 These subgoals unfold in time, introducing sequential dependencies.
-If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied.
-Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
+If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied, leading to more or less optimal sequences of questions.
+Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your coffee beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
 
-Deciding how to ask and answer questions in the presence of such sequential dependences requires a \emph{planning} mechanism over a persistent state.
-Planning may also be necessary for integrating the pragmatics of question asking and answering into longer sequences of questions \cite{nelson_meder_jones_2018}.
-While introducing such a planning mechanism into our model is outside the scope of this paper, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time.
+Deciding how to ask and answer questions in the presence of such sequential dependences in the goal space likely requires a \emph{planning} mechanism over a persistent state.
+Planning may also be necessary for integrating the pragmatics of question asking and answering into longer dialogue sequences, as it has been for other domains \cite<e.g.>{bramley2015conservative}.
+While introducing such a planning mechanism into our model is outside the scope of this paper\footnote{The optimality of asking questions based on global planning policies, compared to locally `greedy' policies, is not yet well-understood even in the non-social case of querying an oracle, though see \cite{nelson_meder_jones_2018} for recent theoretical progress.}, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time in a step-wise manner.
 %In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
 \section{Experiment 3: Extended dialogue}
@@ -1142,7 +1142,7 @@ Second, although $A_2$'s internal goal inference mechanism was implicit in the s
 \begin{center}
 \includegraphics[scale = .7]{Exp3/spatialDemo.pdf}
 \end{center}
-\caption{Task design and procedure for Experiment 3.}
+\caption{(A) Task design and procedure for Experiment 3. Answerers are shown a private map with bomb locations, while questioners are assigned a private goal. Both participants see a common board over which extended dialogues can take place. (B) Examples of initial board states in different conditions.}
 %\vspace{-1cm}
 \label{fig:exp3task}
 \end{figure*}
@@ -1185,7 +1185,13 @@ Finally, the initial state was chosen from four different conditions to create a
 \subsubsection{Procedure}
 
 The procedure was similar to that of Experiment 2. 
-\todo[inline]{Mention goal inference question}
+After seeing their goal, questioners selected a cell to ask about from a dropdown menu. 
+This was sent to a chat box messaging display on the answerer's screen.
+In order to elicit goal inferences from answerers, we first asked ``Which goal do you think your partner has?'' and provided three response options: ``rows,'' ``columns,'' or ``not sure.'' 
+After clicking one of these options, participants were prompted to give a yes/no answer to the question asked and then chose between ``send more info'' or ``that's all.'' 
+If they chose the latter, their yes/no response was immediately sent to the questioner; if they elected to send more information, we showed dropdown menus with all possible cells, allowing for responses like ``no, X is not safe, but Y is.'' 
+This extra step made providing additional information somewhat costlier.
+
 Participants alternated between the roles of questioner and answerer for 20 trials. 
 To acquaint participants how the task worked, all trial sequences began with two practice trials, one in each role. 
 Practice trials were constructed by including two of the three cells of a goal-relevant column or row in the initial state, such that it should be clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
