@@ -1199,17 +1199,14 @@ No feedback was provided for this response.
 For the other responses, answerers were prevented from sending blatantly false information (e.g. saying there was a bomb when there was no bomb), and questioners were prevented from asking about tiles that had already been revealed.
 
 Participants alternated between the roles of questioner and answerer for a sequence of 20 trials. 
-To acquaint participants how the task worked, all trial sequences began with two practice trials, one in each role. 
+To acquaint participants how the task worked, all trial sequences began with two practice trials, followed by four random trials.
 Practice trials were constructed by including two of the three cells of a goal-relevant column or row in the initial state. 
-It was clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
-These two practice trials were followed by four random trials, then a scrambled sequence where each participants saw each condition once in each role, interspersed with random trials as fillers.
+It should have been clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
+After these initial six trials, we constructed a scrambled sequence where each condition appeared once in each role and these critical trials were interspersed with more random trials.
+As in Experiment 2, participants were paired with an artificial agent playing the opposite role. 
+This agent responded deterministically according to the output of our $Q_2$ and $A_2$ models. 
 
 \subsection{Results}
-
-\subsubsection{Model predictions}
-
-\subsubsection{Goal inference results}
-
 
 \begin{figure*}[tbh!]
 \begin{center}
@@ -1217,8 +1214,15 @@ These two practice trials were followed by four random trials, then a scrambled 
 \end{center}
 \caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
 %\vspace{-1cm}
-\label{fig:exp1predictives}
+\label{fig:exp3goalinference}
 \end{figure*}
+
+\subsubsection{Goal inference results}
+
+The core mechanism driving pragmatic behavior in our models is the goal inference performed by the pragmatic answerer $A_2$, conditioned on the question. 
+While the success of $A_2$ in predicting the results of Experiments 1 and 2 provided indirect evidence for this mechanism, the goal belief elicitation step included in the design Experiment 3 provides the opportunity for a more direct test of this mechanism.
+How accurately can answerers recover the questioner's true hidden goal from their question utterance?
+
 
 
 \subsubsection{Answerer model comparison}
