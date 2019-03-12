@@ -3,9 +3,6 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
 ```{r}
 library(tidyverse)
@@ -34,8 +31,12 @@ confused <- unique((d.subj.raw %>% filter(confused != 'yes'))$gameid)
 nonNative <- unique((d.subj.raw %>% filter(nativeEnglish != 'yes'))$gameid)
 
 badGames <- c(incompleteIDs, nonNative, confused)
-d.goals <- d.goals.raw %>% filter(!(gameid %in% badGames)) %>% arrange(gameid, trialNum)
-d.answers <- d.answers.raw %>% filter(!(gameid %in% badGames))
+d.answers <- left_join(
+  d.answers.raw %>% filter(!(gameid %in% badGames)), 
+  d.goals.raw %>% filter(!(gameid %in% badGames)) %>% arrange(gameid, trialNum),
+  by = c('iterationName', 'gameid', 'trialNum', 'questionNumber', 'trialType', 'cellAskedAbout', 'firstRole', 'gridState')
+) %>%
+  select(-time.x, -time.y)
 d.questions <- d.questions.raw %>% filter(!(gameid %in% badGames))
 ```
 
@@ -50,19 +51,21 @@ write_csv(d.answers, '../data/experiment3/answerFromMongo_clean.csv')
 write_csv(d.questions, '../data/experiment3/questionFromMongo_clean.csv')
 ```
 
+## Goal inference 
+
 Note that if you split out by trueGoal, there seems to be a ROW bias (probably bcecause ROW button was first...)
  
-We also exclude 'random' style trials for this analysis since they were all over the place in what goal we predicted people would infer...   
+We also exclude 'random' style trials for this qualitative analysis since they were all over the place in what goal we predicted people would infer...   
  
 ```{r}
-goal_response_proportions <- d.goals %>% 
+goal_response_proportions <- d.answers %>% 
   filter(!(trialType %in% c('practice', 'random'))) %>%
   mutate(correct = ifelse(goalResponse == 'not sure', '"not sure"', 
                           ifelse(trueGoal == goalResponse, 'correct', 'incorrect')),
          trialType = ifelse(trialType == 'empty', 'empty', 'pragmatic')) %>%
   filter(questionNumber < 4) 
 
-goal_response_proportions.boot <- map_dfr(seq_len(1000), ~goal_response_proportions %>%
+goal_response_proportions.boot <- map_dfr(seq_len(5000), ~goal_response_proportions %>%
     group_by(trialType, questionNumber) %>%
     mutate(total = length(correct)) %>%
     do(sample_n(., nrow(.), replace=TRUE)) %>%
@@ -98,6 +101,7 @@ ggsave('../writing/2019/journal-revision/figures/spatialGoalInference.pdf', widt
 ```
 
 ```{r}
+goal_response_proportions.boot
 goal_response_proportions %>% group_by(questionNumber, trialType, correct) %>% tally()
 chisq.test(matrix(c(33, 40, 31, 9, 79, 16), nrow = 3))
 ```
@@ -170,6 +174,15 @@ ggplot(answer_info, aes(x = trialType, y = empirical_stat))  +
   ylab('% answerers give additional info') +
   xlab('')+
   ggtitle("") 
+```
+
+Look specifically at 'blocked' trials -- how do people respond?
+
+```{r}
+ d.answers %>% 
+  #filter(questionNumber == 1) %>%
+  filter(trialType == 'blocked') %>%
+  rowwise()
 ```
 
 # Quantitative model comparison
