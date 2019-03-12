@@ -119,12 +119,12 @@ This is the first time that such pragmatic language models have been extended be
 %
 
 The rest of this paper is structured as follows. 
-First, we review previous experimental and formal modeling efforts to situate question-asking and question-answering in a social context. 
-We then lay out the details of our computational framework, formalizing different hypotheses in distinct questioner and answerer models. 
-Finally, we evaluate these models in two ways: through a set of computational experiments capturing three classic \emph{answerer} sensitivity effects, and through three novel behavioral experiments addressing a longstanding paucity of data on social reasoning in \emph{questioner} behavior. 
-These behavioral experiments develop a novel cooperative communication paradigm where different questioner and answerer models can be rigorously distinguished through both qualitative predictions and quantitative model comparison. 
-In particular, this paradigm addresses the experimental challenge of inducing uncertainty for the answerer over the questioner's private goal.
-By showing how the model handles graded concept knowledge, structured goals, and multi-round dialogue, we demonstrate how our core computational framework can be elegantly composed with different cognitive components and representations to capture a wide variety of phenomena.
+After reviewing previous experimental and formal modeling efforts to situate question-asking and question-answering in a social context, we lay out the details of our computational framework, formalizing different hypotheses in distinct questioner and answerer models. 
+We then evaluate these models in two ways: through a set of computational experiments capturing three classic \emph{answerer} sensitivity effects, and through three novel behavioral experiments addressing a longstanding paucity of data on social reasoning in \emph{questioner} behavior. 
+
+These behavioral experiments introduce and develop the \emph{Hidden Goal} paradigm, a novel family of cooperative communication tasks inducing uncertainty for the answerer over the questioner's private goal. 
+In this paradigm, different questioner and answerer models can be rigorously distinguished through both qualitative predictions and quantitative model comparison. 
+Additionally, each experiment demonstrates how our core computational framework can be elegantly composed with different cognitive components and representations, including more sophisticated question semantics, structured goals, and multi-round dialogue. 
 
 % Finally, we demonstrate how smoothly our framework interfaces with insights from linguistics: incorporating \emph{salience} into the interpretation of the definite article improves predictions on our experimental data.
 %we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
@@ -1171,12 +1171,12 @@ Goals were sampled from a space of two ultimate objectives: complete any \emph{r
 Because these goals are logical disjunctions, they could be satisfied in as many ways as there are rows or columns, inducing a hierarchical goal space with each row/column as a possible subgoal the questioner could pursue.
 This goal space was intended to be intuitive for participants, given its resemblance to the win conditions of well-known games like Tic-Tac-Toe or Connect Four.
 
-Underlying bomb maps were rejection sampled from the space of all $2^9$ assignments of bombs to locations, subject to the constraint that it was possible to win given either goal. 
+Underlying bomb maps were sampled from the space of all assignments of bombs to locations,  subject to the constraint that it was possible to win given either goal. 
 We included this constraint so that the arrangement of bombs did not give the answerer any cues to the questioner's goal.
 Finally, the initial state of the shared board was chosen from four different conditions to create a variety of different scenarios (see Fig. \ref{fig:exp3task}B for examples).
 Cells in the shared board were labeled with coordinates (A1, A2, $\dots$ ) for easy reference.
 \begin{itemize}
-\item In the \emph{empty} condition, no tiles were included in the initial state%, such that a single question could provide no information to the answerer about the goal.
+\item In the \emph{empty} condition, no tiles were included in the initial state.
 \item In the \emph{pragmatic} condition, a single tile was included in the initial state. This tile was chosen from a completely safe row or column, depending on the goal.%, such that asking another question in that row or column would provide a clear signal of the goal and allow the answerer to complete the goal after a single question.
 \item The \emph{blocked} condition was similar to the pragmatic condition, except a bomb was placed in the row or column partially completed by the initially revealed cell. %This set the grounds for a scenario where questioners may have to adjust their subgoal upon hearing a response.
 \item The \emph{random} condition randomly sampled a subset of safe tiles from the map, under the constraint that they did not fully complete a row or column. 
@@ -1223,7 +1223,7 @@ The core mechanism driving pragmatic behavior in our models is the goal inferenc
 While the success of $A_2$ in predicting the results of Experiments 1 and 2 provided indirect evidence for this mechanism, the goal belief elicitation step included in the design Experiment 3 provides the opportunity for a more direct test of this mechanism.
 How accurately can answerers recover the questioner's true hidden goal from their question utterance?
 
-
+We tested such that a single question could provide no information to the answerer about the goal.
 
 \subsubsection{Answerer model comparison}
 
