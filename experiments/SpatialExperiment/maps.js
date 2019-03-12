@@ -102,7 +102,7 @@ class GameMap {
       underlying[rowToReveal][1] = 'o';    
       underlying[rowToReveal][2] = 'o';
     }
-    return (!this.validate(initRevealed, underlying) ? this.samplePragmatic() :
+    return (!this.validate(initRevealed, underlying) ? this.samplePragmatic(blocked) :
 	    this.sampleReflection(initRevealed, underlying));
   }
   
