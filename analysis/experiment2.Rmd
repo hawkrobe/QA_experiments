@@ -110,14 +110,8 @@ ggplot(d.answerer.boot, aes(x = trialType, y = mean_prop, fill = answer)) +
     ylab('% responding with answer type')
 ```
 
-```{r}
-d.answerer.plot %>% group_by(trialType, answer) %>% tally()
-chisq <- chisq.test(matrix(c(20,22,33,10), nrow = 2))
-chisq
-```
-
 ```{R}
-ggplot(d.answerer.boot %>% filter(answer == 'literal'), aes(x = trialType, y = empirical_prop)) +
+ggplot(d.answerer.boot %>% filter(answer == 'literal'), aes(x = trialType, y = mean_prop)) +
     geom_bar(stat = 'identity') +
     geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = position_dodge(width = 0.9)) +
     theme_bw() +
@@ -129,6 +123,13 @@ ggplot(d.answerer.boot %>% filter(answer == 'literal'), aes(x = trialType, y = e
 
 ggsave('../writing/2019/journal-revision/figures/Exp2/answererQualitative.pdf', width=14, height = 10, units='cm')
 ```
+
+
+```{r}
+d.answerer.plot %>% group_by(trialType, answer) %>% tally()
+prop.test(c(43,12), c(43+9, 40+12))
+```
+
 
 ## Questioner behavior
 
