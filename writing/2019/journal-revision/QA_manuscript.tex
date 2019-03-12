@@ -1173,29 +1173,36 @@ This goal space was intended to be intuitive for participants, given its resembl
 
 Underlying bomb maps were rejection sampled from the space of all $2^9$ assignments of bombs to locations, subject to the constraint that it was possible to win given either goal. 
 We included this constraint so that the arrangement of bombs did not give the answerer any cues to the questioner's goal.
-
-Finally, the initial state was chosen from four different conditions to create a variety of different scenarios (see Fig. \ref{fig:exp3task}B for examples).
+Finally, the initial state of the shared board was chosen from four different conditions to create a variety of different scenarios (see Fig. \ref{fig:exp3task}B for examples).
+Cells in the shared board were labeled with coordinates (A1, A2, $\dots$ ) for easy reference.
 \begin{itemize}
-\item In the \emph{empty} condition, no tiles were included in the initial state, such that a single question could provide no information to the answerer about the goal.
-\item In the \emph{pragmatic} condition, a single tile was included in the initial state. This tile was chosen from a completely safe row or column, depending on the goal, such that asking another question in that row or column would provide a clear signal of the goal and allow the answerer to complete the goal after a single question.
-\item The \emph{blocked} condition was similar to the pragmatic condition, except a bomb was placed in the row or column partially completed by the initially revealed cell. This set the grounds for a scenario where questioners may have to adjust their subgoal upon hearing a response.
+\item In the \emph{empty} condition, no tiles were included in the initial state%, such that a single question could provide no information to the answerer about the goal.
+\item In the \emph{pragmatic} condition, a single tile was included in the initial state. This tile was chosen from a completely safe row or column, depending on the goal.%, such that asking another question in that row or column would provide a clear signal of the goal and allow the answerer to complete the goal after a single question.
+\item The \emph{blocked} condition was similar to the pragmatic condition, except a bomb was placed in the row or column partially completed by the initially revealed cell. %This set the grounds for a scenario where questioners may have to adjust their subgoal upon hearing a response.
 \item The \emph{random} condition randomly sampled a subset of safe tiles from the map, under the constraint that they did not fully complete a row or column. 
 \end{itemize}
 
 \subsubsection{Procedure}
 
-The procedure was similar to that of Experiment 2. 
-After seeing their goal, questioners selected a cell to ask about from a dropdown menu. 
-This was sent to a chat box messaging display on the answerer's screen.
-In order to elicit goal inferences from answerers, we first asked ``Which goal do you think your partner has?'' and provided three response options: ``rows,'' ``columns,'' or ``not sure.'' 
-After clicking one of these options, participants were prompted to give a yes/no answer to the question asked and then chose between ``send more info'' or ``that's all.'' 
-If they chose the latter, their yes/no response was immediately sent to the questioner; if they elected to send more information, we showed dropdown menus with all possible cells, allowing for responses like ``no, X is not safe, but Y is.'' 
-This extra step made providing additional information somewhat costlier.
+The task procedure was adapted from that of Experiments 1 and 2 to support extended exchanges. 
+First, questioners were shown their assigned goal and selected a cell label from a dropdown menu to ask a question of the form ``Is X safe?''. 
+Answerers selected a yes/no answer to this question and were presented with the option to either send more information or to continue with only this yes/no answer.
+If they chose to send more information, we showed dropdown menus with all possible cells, allowing for responses like ``no, X is not safe, but Y is.''
+Finally, this answer was shown to the questioner.
+If the new information fulfilled the goal, participants advanced to the next trial.
+If the goal was not fulfilled, the questioner was prompted to ask another question, and the cycle repeated.
+Participants received a bonus on each trial related to the number of exchanges taken before completing the goal: one cent was subtracted from a total of \$0.05 for each additional question, down to a minimum of \$0.00.
 
-Participants alternated between the roles of questioner and answerer for 20 trials. 
+We elicited the answerer's beliefs about the hidden goal after they saw the questioner's message but before they made their response.
+Three response options (``rows,'' ``columns,'' or ``not sure'') were provided to the prompt ``Which goal do you think your partner has?'' 
+No feedback was provided for this response.
+For the other responses, answerers were prevented from sending blatantly false information (e.g. saying there was a bomb when there was no bomb), and questioners were prevented from asking about tiles that had already been revealed.
+
+Participants alternated between the roles of questioner and answerer for a sequence of 20 trials. 
 To acquaint participants how the task worked, all trial sequences began with two practice trials, one in each role. 
-Practice trials were constructed by including two of the three cells of a goal-relevant column or row in the initial state, such that it should be clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
-These practice trials were followed by four random trials, then a scrambled sequence where each participants saw each condition once in each role, interspersed with random trials as fillers.
+Practice trials were constructed by including two of the three cells of a goal-relevant column or row in the initial state. 
+It was clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
+These two practice trials were followed by four random trials, then a scrambled sequence where each participants saw each condition once in each role, interspersed with random trials as fillers.
 
 \subsection{Results}
 
