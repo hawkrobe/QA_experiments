@@ -1,4 +1,8 @@
 .DS_Store
+data/experiment3/answer/
+data/experiment3/question
+data/experiment3/goalInference
+data/experiment3/exitSurvey
 bundle.js
 *.nb.html
 .RData
