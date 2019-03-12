@@ -1209,18 +1209,18 @@ Practice trials were constructed by including two of the three cells of a goal-r
 It should have been clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
 After these initial six trials, we constructed a scrambled sequence where each condition appeared once in each role and these critical trials were interspersed with more random trials.
 As in Experiment 2, participants were paired with an artificial agent playing the opposite role. 
-This agent responded deterministically according to the output of our $Q_2$ and $A_2$ models. 
+This agent responded according to the output of our $Q_2$ and $A_2$ models, with the optimality parameter set high ($\alpha = 100$). 
 
 \subsection{Results}
 
-\begin{figure*}[tbh!]
+\begin{figure}[tbh!]
 \begin{center}
-\includegraphics[scale = .7]{Exp3/spatialGoalInference_final.pdf}
+\includegraphics[scale = .8]{Exp3/spatialGoalInference_final.pdf}
 \end{center}
-\caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
+\caption{Empirical answerer responses to ``Which goal do you think your partner has?''  after hearing the $k$th question in different conditions. Error ribbons are bootstrapped 95\% CIs.}
 %\vspace{-1cm}
 \label{fig:exp3goalinference}
-\end{figure*}
+\end{figure}
 
 \subsubsection{Goal inference results}
 
@@ -1228,13 +1228,24 @@ A primary internal mechanism driving pragmatic behavior in our models is $A_2$'s
 While the overall success of $A_2$ in predicting answerer behavior in Experiments 1 and 2 provided indirect evidence for this mechanism, the goal belief elicitation step included in the design Experiment 3 provides the opportunity for a more direct test of this mechanism.
 Do participants' inferences about the questioner's true goal match those internally predicted by the model?
 
-We examined participants' goal inferences in the \emph{empty} condition, which was designed to compare how the answerer's beliefs about the hidden goal may change over repeated exchanges. 
-The first question could provide no information about the hidden goal: the questioner is equally likely to ask about any cell in either case.
-In the context of the information revealed in the first exchange, however, the second question ought to license stronger inferences.
-We compared responses in these two cases against those collected after the first question of the \emph{pragmatic} condition. 
-The pragmatic condition served as a baseline where $A_2$ predicts that sufficient context is already available to make a strong goal inference.
+We examined participants' goal inferences in the \emph{empty} condition, which was designed to measure the changes in answerer's beliefs about the hidden goal over repeated exchanges. 
+$A_2$ predicts that the first question should provide no information about the hidden goal: $Q_1$ is equally likely to ask about any cell under either goal.
+In the context of the information revealed in the first exchange, however, $A_2$ predicts that the second question ought to license stronger inferences.
+We compared these shifts in the empty condition against those in the \emph{pragmatic} condition, which served as a baseline.
+In the pragmatic condition, $A_2$ predicts that sufficient context is already available from the initial state to make a strong goal inference.
+
+We collapsed across goals for each condition and question by classifying responses as `correct' if matched the true goal and `incorrect' if they differed.
+We found that after the first question in the ``empty'' condition, participants were roughly at chance between the response options, only guessing the true goal with 39\% accuracy\footnote{Apparently some proportion of participants simply guessed instead of using the ``not sure'' option, which received 31\% of responses.}.
+After the second question, however, they were able to infer the true goal with 82\% accuracy (see Fig. \ref{fig:exp3goalinference}).
+The distribution over the response variables changed significantly from the first to second question, $\chi^2(2) = 31, p < 0.001$.
+
+Furthermore, answerers' goal inferences after the second question in the empty condition were close to those observed after the \emph{first} question in the baseline pragmatic condition (82\%), where we initialized participants with similar information in common ground.
+These results provide a simple demonstration of how answerers systematically use context to make accurate inferences about their partner's goals, whether that context is provided in the initial common ground or by earlier question-answer exchanges.
 
 \subsubsection{Answerer model comparison}
+
+
+
 
 \subsubsection{Questioner model comparison}
 
