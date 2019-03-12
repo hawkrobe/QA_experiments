@@ -80,7 +80,7 @@ d_q = d %>%
       mutate(response=ordered(questionNodes, levels=c("Q1","Q2","Q3","Q4"))) %>%
       mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
       group_by(domain, type, goal) %>%
-      do(getProbsAndCIs(data = ., QorA = 'q', R = 1000, FALSE)) %>%
+      do(suppressWarnings(getProbsAndCIs(data = ., QorA = 'q', R = 1000, FALSE))) %>%
       select(goal, type, response, domain, count, lower_ci, upper_ci,
              groupSize, empProb) %>%
       ungroup() %>%
@@ -173,9 +173,9 @@ models = rbind(A0, A1, A2) %>%
   rename(question = parameter, answer = value, type = item1, domain = item2) %>%
   do(mutate(., answer = vectorizedMapAnswer(type, gsub(".$", "", answer)))) %>%
   do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-  filter(type == 'branching' & question == "Q4") %>%
-  select(domain, answer, prediction, source) %>%
-  group_by(answer, source) %>%
+  #filter(type == 'branching' & question == "Q4") %>%
+  select(domain, answer, type, question, prediction, source) %>%
+  group_by(answer, source, type, question) %>%
   summarize(prob = mean(prediction)) %>%
   ungroup() %>%
   mutate(lower_ci = NA, upper_ci = NA) 
@@ -252,9 +252,9 @@ models = rbind(Q0, Q1, Q2) %>%
   do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
   do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
   mutate(goal = ordered(goal, levels = gs)) %>%
-  filter(type == 'overlapping' & goal == "G2") %>%
-  select(domain, question, prediction, source) %>%
-  group_by(question, source) %>%
+  #filter(type == 'overlapping' & goal == "G2") %>%
+  select(domain, question, type, goal, prediction, source) %>%
+  group_by(question, source, type, goal) %>%
   summarize(prob = mean(prediction)) %>%
   ungroup() %>%
   mutate(lower_ci = NA, upper_ci = NA) 
@@ -333,7 +333,6 @@ cat(paste0(c('\nQ3-Q2 = ', estimate,
 modelComparison <- function(name, useTypicality) {
   # beta <- ifelse(useTypicality, NA, 0)
   data <- getRawParams(name)#, chosenBeta = beta)
-  View(data)
   return(data %>% 
     group_by(modelType) %>% 
     summarize(prob = reduce(logLikelihood, sumlogprob) - log(length(logLikelihood)))
@@ -350,12 +349,12 @@ comp.ans = modelComparison("answerer_modelComparisonParams")%>%
   spread(modelType, prob) 
 cat('\nBF (beta=0, answerer)', exp(comp.ans$A2_unif - comp.ans$A1_unif))
 
-modelComparison("answerer_modelComparisonParams")%>% 
+comp.ans.splitout <- modelComparison("answerer_modelComparisonParams")%>% 
   arrange(prob) %>%
   separate(col = modelType, into = c('model', 'saliency')) %>%
   mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
-  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) %>%
-  ggplot(aes(x = model, y = prob, alpha=saliency, fill = model)) +
+  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) 
+ggplot(comp.ans.splitout, aes(x = model, y = prob, alpha=saliency, fill = model)) +
     geom_bar(stat = 'identity', position = 'dodge', width = .75) +
     guides(alpha=guide_legend(title="Saliency prior")) +
     ylab('log-likelihood') +
@@ -374,6 +373,12 @@ modelComparison("answerer_modelComparisonParams")%>%
 
 ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoods.pdf", 
        width = 2, height=3)
+```
+
+Make little latex table
+
+```{r}
+comp.ans.splitout %>% spread(saliency, prob)
 ```
 zoomed in facet
 

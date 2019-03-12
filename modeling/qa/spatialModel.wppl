@@ -10,17 +10,7 @@ var KL = function(erpTrue, erpApprox){
     }, values)));
 };
 
-var foreach = function(lst, fn) {
-  var foreach_ = function(i) {
-    if (i < lst.length) {
-      fn(lst[i]);
-      foreach_(i + 1);
-    }
-  };
-  foreach_(0);
-};
-
-var SpatialModel = function(Qrationality, Arationality) {
+var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
   //   ---------------
   // | World knowledge |
@@ -100,10 +90,7 @@ var SpatialModel = function(Qrationality, Arationality) {
       }, answer);
       return isTrue && responds && !alreadyRevealed;
     }, answerPrior.support());
-    var ps = map(function(v) {
-      return v.length == 1 ? 2/(1+validAnswers.length) : 1/(1+validAnswers.length);
-    }, validAnswers);
-    return Categorical({vs: validAnswers, ps : ps});
+    return Categorical({vs: validAnswers}); // , ps : ps
   }, 1000);
 
   //  ------
@@ -120,23 +107,32 @@ var SpatialModel = function(Qrationality, Arationality) {
 
   var QUDPosteriorFromMeaning = function(question) {
     if(_.includes(questionPrior.support(), question))
-      return Delta({v: [qa.butLast(question).split('_')[1]]});
+      return Delta({v: [[qa.butLast(question).split('_')[1]]]});
     else
       console.error('unknown question' + question);
   };
 
   var QUDPosteriorFromInference = dp.cache(function(question, gridState){
     return Infer({method: 'enumerate'}, function() {
+      // Sample super-QUD & sub-QUD
+      var supQudName = superQudPrior();
+      var subQudName = subQudPrior(supQudName);
+
+      // stricly exclude 'impossible' sub-QUDs for computational efficiency
+      // e.g. if B2 is unsafe, then row B & column 2 aren't possible ways to win
+      var unsafeRows = map(function(cell) {return cell[0]}, gridState['unsafe']);
+      var unsafeCols = map(function(cell) {return cell[1]}, gridState['unsafe']);      
+      condition(!_.includes(unsafeRows.concat(unsafeCols), subQudName));
+
       // what if questioner acting w/ super
-      var superQudName = superQudPrior();
-      var superQuestionProb = questioner('explicit', superQudName, gridState).score(question)
-      factor(_.isFinite(superQuestionProb) ? superQuestionProb : -1000);    
+      var supQuestionP = questioner('explicit', supQudName, gridState).score(question);
+      factor(_.isFinite(supQuestionP) ? supQuestionP : -1000);
 
       // what if questioner acting w/ sub?
-      var subQudName = subQudPrior(superQudName);
-      var subQuestionProb = questioner('explicit', superQudName, gridState).score(question)
-      factor(_.isFinite(subQuestionProb) ? subQuestionProb : -1000)
-      return [superQudName].concat(subQudName);
+      var subQuestionP = questioner('explicit', subQudName, gridState).score(question);
+      factor(_.isFinite(subQuestionP) ? subQuestionP : -1000);
+
+      return [supQudName].concat(subQudName);
     });
   }, 10000);
 
@@ -156,7 +152,9 @@ var SpatialModel = function(Qrationality, Arationality) {
     if(qudName == 'identity') 
       return function(w) {return w;};
     else if(qudName.length > 1) {
-      return function(w) {return map(function(qud) {return spatialLocationQUD(qud)(w)}, qudName)};
+      return function(w) {return map(function(qud) {
+	return spatialLocationQUD(qud)(w);
+      }, qudName);};
     } else {
       return spatialLocationQUD(qudName);
     }
@@ -164,11 +162,8 @@ var SpatialModel = function(Qrationality, Arationality) {
 
   var getPriorProb = dp.cache(function(goal, gridState) {
     var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-    var qud = spatialNameToQUD(goal);  
-    return Infer({method: 'enumerate'}, function() {
-      var world = sample(consistentWorldPrior);
-      return qud(world);
-    });
+    var qud = spatialNameToQUD(goal);
+    return marginalize(consistentWorldPrior, function(world) {return qud(world);});
   }, 1000);
 
   // Note that in principle we should be conditioning on hearing back from
@@ -207,18 +202,14 @@ var SpatialModel = function(Qrationality, Arationality) {
     var validQuestionPrior = makeValidQuestionPrior(gridState);
     return Infer({method: 'enumerate'}, function() {
       var question = sample(validQuestionPrior);
-      var trueGoal = goal;
       var utility = expectation(consistentWorldPrior, function(trueWorld) {
 	var possibleAnswer = answerer(type, question, trueWorld, gridState);
-	var exp = expectation(possibleAnswer, function(answer){
-  	  var priorProb = getPriorProb(trueGoal, gridState);
-  	  var posteriorProb = getPosteriorProb(type, question, answer, trueGoal, gridState);
+	return expectation(possibleAnswer, function(answer){
+  	  var priorProb = getPriorProb(goal, gridState);
+  	  var posteriorProb = getPosteriorProb(type, question, answer, goal, gridState);
   	  return KL(posteriorProb, priorProb);
 	});
-	return exp;
       });
-      // console.log(question)
-      // console.log(utility * Qrationality);
       factor(utility.toFixed(8) * Qrationality);
       return question;
     });
@@ -242,26 +233,21 @@ var SpatialModel = function(Qrationality, Arationality) {
 	type === 'literal' ? Delta({v: 'identity'}) :
 	console.error('type not recognized')
     );
-    if(type == 'explicit') {
-      return truthfulAnswerPrior;
-    } else {
-      return Infer({method: 'enumerate'}, function(){
-	var qudName = sample(qudPosterior);
-	var answer = sample(truthfulAnswerPrior);
-	var possibleWorlds = interpreter(answer, gridState);
-
-	var newUtility = _.sum(map(function(qud) {
-	  var localQUD = spatialNameToQUD(qud);
-	  return expectation(possibleWorlds, function(w) {
+    return Infer({method: 'enumerate'}, function(){
+      var answer = sample(truthfulAnswerPrior);
+      var possibleWorlds = interpreter(answer, gridState);
+      var utility = expectation(qudPosterior, function(qudName) {
+	return _.sum(map(function(name) {
+	  return Math.log(expectation(possibleWorlds, function(w) {
+	    var localQUD = spatialNameToQUD(name);
 	    return _.isEqual(localQUD(w), localQUD(trueWorld));
-	  });
+	  }));
 	}, qudName));
-	
-	factor(Arationality * Math.log(newUtility) );      
-	return answer;
       });
-    }
-  }, 1000);
+      factor(Arationality * (utility - answerCost * answer.length));      
+      return answer;
+    });
+  }, 10000);
 
   return {
     answerer: answerer,

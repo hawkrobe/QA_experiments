@@ -1,0 +1,54 @@
+// Fix some configuration options
+var config = {
+  'Qrationality' : argv.Qrationality,
+  'Arationality' : argv.Arationality,
+  'answerCost' : argv.answerCost
+};
+
+var runAnalysis = function() {
+  // don't condition on 'practice' trials (because they're practice)
+  var f = function(v) {
+    var state = JSON.parse(v['gridState']);
+    return (!(_.includes(['practice'], v['trialType']))
+  	    && (state['safe'].length + state['unsafe'].length) > 0);
+  };
+  
+  var answererData = filter(f, qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv'));
+
+  return Infer({method: 'enumerate', model: function() {
+    var Arationality = config.Arationality;
+    var Qrationality = config.Qrationality;
+    var answerCost = config.answerCost;
+    var model = SpatialModel(Qrationality, Arationality, answerCost);
+
+    var answerer = model.answerer;
+
+    var answererType = flip() ? 'explicit' : 'pragmatic';
+    globalStore.score = 0;
+    
+    mapData({data: answererData}, function(response) {
+      var rawState = JSON.parse(response['gridState']);
+      var state = {'safe' : sort(rawState['safe']),
+    		   'unsafe' : sort(rawState['unsafe'])};
+      var world = JSON.parse(response['underlyingWorld']);
+      var question = 'is_' + response['cellAskedAbout'] + '_safe?';
+      var trueAnswer = map(function(v) {return v + '_' + world[v]},
+    			   JSON.parse(response['answer']));
+      var prediction = answerer(answererType, question, world, state);
+      var score = prediction.score(trueAnswer);
+      globalStore.score += score;
+      factor(_.isFinite(score) ? score : -10);
+    });
+    console.log({		
+      answererType,
+      Qrationality,
+      Arationality,
+      answerCost,
+      likelihood: globalStore.score
+    });
+    return;
+  }});
+};
+
+console.log(runAnalysis());
+

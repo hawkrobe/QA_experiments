@@ -392,7 +392,7 @@ var cols = ['1', '2', '3'];
 var spatialLocationQUD = function(qudName) {
   return function(world){
     return (_.includes(cols, qudName) ? completeCol(qudName, world) :
-	    _.includes(cols, qudName) ? completeRow(qudName, world) :
+	    _.includes(rows, qudName) ? completeRow(qudName, world) :
 	    cellMatch(qudName, world));
   };
 };
@@ -400,7 +400,11 @@ var spatialLocationQUD = function(qudName) {
 var spatialNameToQUD = function(qudName){
   if(qudName == 'identity') 
     return function(w) {return w;};
-  else 
+  else if(qudName.length > 1) {
+    return function(w) {return _.map(qudName, function(qud) {
+      return spatialLocationQUD(qud)(w);
+    });};
+  }  else 
     return spatialLocationQUD(qudName);
 };
 
