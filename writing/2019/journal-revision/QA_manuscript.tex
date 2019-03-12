@@ -1213,16 +1213,31 @@ This agent responded according to the output of our $Q_2$ and $A_2$ models, with
 
 \subsection{Results}
 
-\begin{figure}[tbh!]
+\subsubsection{Model setup}
+
+\todo[inline]{Finish explaining how worlds/questions/answers were represented}
+Goals were again represented hierarchically, with a joint inference over rows vs. columns and \emph{which} row or column.
+The top-level row (column) goals projected worlds (i.e. locations of bombs) to an array of booleans representing which rows (columns) contained bombs and which were safe.
+The subgoal representing a particular row (column) projected worlds to a single boolean representing whether that particular row (column) was safe.
+
+\todo[inline]{Finish explaining incorporation of 'state' into model}
+The key model innovation required to account for extended sequences is an explicit representation $s_t$ of the \emph{state} at a given time. 
+For the purposes of this experiment, $s_t$ can be thought of as the literal board state shared in common ground at time $t$, since all relevant information was maintained visually.
+More generally, however, this may represent an agent's general beliefs about the world, or about their partner's goals, at a given time (this is how we are setting a foundation for possible later integration with a POMDP).
+Rather than taking expected information gain relative to a general prior, then, we take it relative to the beliefs about the world given the state: 
+$$MATH$$
+
+\subsubsection{Hidden goal inferences}
+
+
+\begin{figure}[t!]
 \begin{center}
 \includegraphics[scale = .8]{Exp3/spatialGoalInference_final.pdf}
 \end{center}
-\caption{Empirical answerer responses to ``Which goal do you think your partner has?''  after hearing the $k$th question in different conditions. Error ribbons are bootstrapped 95\% CIs.}
+\caption{Empirical answerer responses to ``Which goal do you think your partner has?''  after hearing the $k$th question on a given trial. Error ribbons are bootstrapped 95\% CIs.}
 %\vspace{-1cm}
 \label{fig:exp3goalinference}
 \end{figure}
-
-\subsubsection{Goal inference results}
 
 A primary internal mechanism driving pragmatic behavior in our models is $A_2$'s Bayesian inference about the hidden goal conditioned on the question. 
 While the overall success of $A_2$ in predicting answerer behavior in Experiments 1 and 2 provided indirect evidence for this mechanism, the goal belief elicitation step included in the design Experiment 3 provides the opportunity for a more direct test of this mechanism.
@@ -1240,14 +1255,23 @@ After the second question, however, they were able to infer the true goal with 8
 The distribution over the response variables changed significantly from the first to second question, $\chi^2(2) = 31, p < 0.001$.
 
 Furthermore, answerers' goal inferences after the second question in the empty condition were close to those observed after the \emph{first} question in the baseline pragmatic condition (82\%), where we initialized participants with similar information in common ground.
-These results provide a simple demonstration of how answerers systematically use context to make accurate inferences about their partner's goals, whether that context is provided in the initial common ground or by earlier question-answer exchanges.
+These results provide a direct validation of the internal mechanism of goal inference.
+Answerers systematically use context to make accurate inferences about their partner's goals, whether that context is provided in the initial common ground or by earlier question-answer exchanges.
 
 \subsubsection{Answerer model comparison}
 
+\todo[inline]{First report `holistic' model comparison w/ likelihoods; predictives?}
 
+While the primary aim of Experiment 3 was to elucidate qualitative features of extended dialogue, it also provided another opportunity to conduct a formal model comparison over a wide variety of items.
+
+\todo[inline]{Next report some qualitative thing just looking at `blocked' trials? like, how does model predict answerers deal with blockage? what do they reveal instead?}
 
 
 \subsubsection{Questioner model comparison}
+
+\todo[inline]{Give a disclaimer about questioner models being very close together again in this task, so full model comparison wasn't super reliable? Still show predictives for absolute fit?}
+
+\todo[inline]{Next report some qualitative thing just looking at `blocked' trials? like, how does question distribution shift after hearing about blockage?}
 
 \begin{figure*}[tbh!]
 \begin{center}
@@ -1260,7 +1284,7 @@ These results provide a simple demonstration of how answerers systematically use
 
 \subsection{Discussion}
 
-\cite<e.g>{khani2018planning,young2013pomdp,gao2019neural}
+%\cite<e.g>{khani2018planning,young2013pomdp,gao2019neural}
 
 \section{General discussion}
 \label{sec:gd}
@@ -1280,14 +1304,17 @@ We provided several lines of evidence supporting this theory---formalized in our
 
 A major formal advance of the models considered here is synthesizing current approaches to optimal question asking and answering from AI and linguistics with the recursive social reasoning captured in the Rational Speech Act framework. In addition to introducing pragmatics into the former approaches, this moves RSA models beyond production or interpretation of single utterances (in context) to consider the dynamics of simple dialogs where both listening and speaking---linguistic input and output---must be integrated within the same agent. 
 
+\todo[inline]{Make note that we sorta derived something like inquisitive semantics from purely projective semantics plus generic gricean mechanism? inquisitive semantics explicitly builds in the goal `raising' as part of the meaning of the question, we only get it at $Q_2$}
+
 Our computational framework also has implications for the theoretical treatment of question and answer meanings in linguistics and philosophy of language. 
 First, while the projection-based question semantics we use as the explicit meaning of questions is equivalent to classic partition-based proposals \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions}, %the meaning of the question can technically be described as its set of possible ``answers,'' i.e. the set of states in the image of its projection map, 
 our \emph{answerer} agent chooses from an independent set of declarative utterances $\mathcal{A}$, not from any set of cells constrained by the question. 
 This critical dissociation of question meanings, which are informative about \emph{goals} or QUDs, and answer meanings, which are informative about the state of the \emph{world}, is conceptually similar to recent proposals for an \emph{inquisitive semantics} specified in formal logic \cite{ciardelli2013inquisitive, roelofsen2013algebraic}.
+
 The precise relationship between fundamental notions of meaning in inquisitive semantics and meanings in our framework requires further exploration. 
 Still, we conjecture that our further dissociation between underlying semantic meaning and recursive probabilistic mechanisms for goal inference and signaling \emph{given} these meanings may be key to grounding pragmatic question and answer behavior in basic social cognitive mechanisms.
 
-\todo[inline]{Need to tune this up; maybe read inquisitive semantics stuff more closely?}
+\todo[inline]{Need to say this better}
 Second, our dissociation of question meanings and goals or QUDs raises the interesting possibility that the set of utterable questions is effectively a \emph{subset} of the possible goals one might have: there may not exist an easy-to-express question utterance for every underlying goal an agent may need to address, thus the need for pragmatics.
 %The formulation of these utilities provides a useful connection to current game-theoretic and decision-theoretic models \cite{VogelBodoiaPottsJurafsky13_GricePOMDP, VanRooy03_QuestioningDecisionProblems}, which also emphasize the importance of goals and speaker beliefs in communication.
 %Here, we focused specifically on two sub-cases that are of particular interest for psychological science: (1) selecting a question in the absence of any input, and (2) selecting a declarative statement in response to a question. 
