@@ -124,7 +124,7 @@ We then evaluate these models in two ways: through a set of computational experi
 
 These behavioral experiments introduce and develop the \emph{Hidden Goal} paradigm, a novel family of cooperative communication tasks inducing uncertainty for the answerer over the questioner's private goal. 
 In this paradigm, different questioner and answerer models can be rigorously distinguished through both qualitative predictions and quantitative model comparison. 
-Additionally, each experiment demonstrates how our core computational framework can be elegantly composed with different cognitive components and representations, including more sophisticated question semantics, structured goals, and multi-round dialogue. 
+Additionally, each experiment demonstrates how our core computational framework can be composed and extended with additional elements to capture more sophisticated behaviors, including more complex question semantics, structured hierarchical goals, and multi-round dialogue. 
 
 % Finally, we demonstrate how smoothly our framework interfaces with insights from linguistics: incorporating \emph{salience} into the interpretation of the definite article improves predictions on our experimental data.
 %we specify a family of questioner and answerer agents, highlighting some points of divergence from previous RSA models. 
@@ -135,11 +135,16 @@ Additionally, each experiment demonstrates how our core computational framework 
 \subsection{Empirical background}
 
 A number of psycholinguistic studies have provided evidence that answerers are both sensitive to a questioner's goals and attempt to be informative with respect to those goals.
-For instance, in Clark's \citeyear{Clark79_IndirectSpeechActs} classic study, researchers called liquor merchants and asked ``Does a fifth of Jim Beam cost more than \$5?'' Before asking the question, they provided some context for their call by saying either ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). 
-These contexts were designed to signal different speaker goals. In the uninformative condition, the goal is simply to buy whiskey, hence the exact price would be useful information; in the five dollar condition, the goal was literally to find out whether or not the speaker could \emph{afford} the whiskey, so a yes/no answer would suffice. 
-If merchants inferred these goals from the context signal and responded with respect to these goals, we would expect different types of answers in the two conditions. Indeed, merchants gave a literal yes/no answer more often in the latter condition than the former, where an exact price was more common. 
+In \cite{Clark79_IndirectSpeechActs}, for instance, researchers called liquor merchants and asked ``Does a fifth of Jim Beam cost more than \$5?'' 
+Before asking the question, they provided some context for their call by saying either ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). 
+These contexts were designed to signal different speaker goals. 
+In the uninformative condition, the goal is simply to buy whiskey, hence the exact price would be useful information; in the five dollar condition, the goal was literally to find out whether or not the speaker could \emph{afford} the whiskey, so a yes/no answer would suffice. 
+If merchants inferred these goals from the context signal and responded with respect to these goals, we would expect different types of answers in the two conditions. 
+Indeed, merchants gave a literal yes/no answer more often in the latter condition than the former, where an exact price was more common. 
 
-Goals can also be inferred from non-linguistic environmental cues. For instance, \citeA{DerHenstCarlesSperber02_RelevanceTellingTime} investigated answers to questions like ``Do you have the time?'' that permit answers with different degrees of approximation to the true time \cite<see also>{GibbsBryant08_OptimalRelevance}. In a baseline condition, participants approached in public typically rounded their answers to the nearest 5 or 10 minute interval even when they were wearing a digital watch. 
+Goals can also be inferred from non-linguistic environmental cues. 
+For instance, \citeA{DerHenstCarlesSperber02_RelevanceTellingTime} investigated answers to questions like ``Do you have the time?'' that permit answers with different degrees of approximation to the true time \cite<see also>{GibbsBryant08_OptimalRelevance}. 
+In a baseline condition, participants approached in public typically rounded their answers to the nearest 5 or 10 minute interval even when they were wearing a digital watch. 
 %This showed that answerers were not simply reducing their \emph{own} effort, since rounding a time displayed on a digital watch requires an extra processing step. 
 When the experimenter mentioned that they had an appointment at a given time, however, answers became more precise as the true time approached the appointment time, indicating sensitivity to implicit time-related goals like being on time.  
 %In a later study,  introduced a condition in which this question was preceded by the statement ``My watch stopped,'' and found that answerers were more likely to make their response precise to the minute. 
@@ -1191,7 +1196,7 @@ If they chose to send more information, we showed dropdown menus with all possib
 Finally, this answer was shown to the questioner.
 If the new information fulfilled the goal, participants advanced to the next trial.
 If the goal was not fulfilled, the questioner was prompted to ask another question, and the cycle repeated.
-Participants received a bonus on each trial related to the number of exchanges taken before completing the goal: one cent was subtracted from a total of \$0.05 for each additional question, down to a minimum of \$0.00.
+Participants received a bonus on each trial related to the number of exchanges taken before completing the goal: one cent was subtracted from a total of \$0.05 for each additional question.%, down to a minimum of \$0.00.
 
 We elicited the answerer's beliefs about the hidden goal after they saw the questioner's message but before they made their response.
 Three response options (``rows,'' ``columns,'' or ``not sure'') were provided to the prompt ``Which goal do you think your partner has?'' 
@@ -1219,11 +1224,15 @@ This agent responded deterministically according to the output of our $Q_2$ and 
 
 \subsubsection{Goal inference results}
 
-The core mechanism driving pragmatic behavior in our models is the goal inference performed by the pragmatic answerer $A_2$, conditioned on the question. 
-While the success of $A_2$ in predicting the results of Experiments 1 and 2 provided indirect evidence for this mechanism, the goal belief elicitation step included in the design Experiment 3 provides the opportunity for a more direct test of this mechanism.
-How accurately can answerers recover the questioner's true hidden goal from their question utterance?
+A primary internal mechanism driving pragmatic behavior in our models is $A_2$'s Bayesian inference about the hidden goal conditioned on the question. 
+While the overall success of $A_2$ in predicting answerer behavior in Experiments 1 and 2 provided indirect evidence for this mechanism, the goal belief elicitation step included in the design Experiment 3 provides the opportunity for a more direct test of this mechanism.
+Do participants' inferences about the questioner's true goal match those internally predicted by the model?
 
-We tested such that a single question could provide no information to the answerer about the goal.
+We examined participants' goal inferences in the \emph{empty} condition, which was designed to compare how the answerer's beliefs about the hidden goal may change over repeated exchanges. 
+The first question could provide no information about the hidden goal: the questioner is equally likely to ask about any cell in either case.
+In the context of the information revealed in the first exchange, however, the second question ought to license stronger inferences.
+We compared responses in these two cases against those collected after the first question of the \emph{pragmatic} condition. 
+The pragmatic condition served as a baseline where $A_2$ predicts that sufficient context is already available to make a strong goal inference.
 
 \subsubsection{Answerer model comparison}
 
