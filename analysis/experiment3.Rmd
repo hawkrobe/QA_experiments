@@ -30,13 +30,19 @@ incompleteIDs <- union(unique((d.goals.raw %>% group_by(gameid) %>%
                            filter(length(unique(trialNum)) != 10))$gameid),
                        unique((d.answers.raw %>% group_by(gameid) %>% 
                            filter(length(unique(trialNum)) != 10))$gameid)))
-confused <- unique((d.subj %>% filter(confused != 'yes'))$gameid)
-nonNative <- unique((d.subj %>% filter(nativeEnglish != 'yes'))$gameid)
+confused <- unique((d.subj.raw %>% filter(confused != 'yes'))$gameid)
+nonNative <- unique((d.subj.raw %>% filter(nativeEnglish != 'yes'))$gameid)
 
 badGames <- c(incompleteIDs, nonNative, confused)
 d.goals <- d.goals.raw %>% filter(!(gameid %in% badGames)) %>% arrange(gameid, trialNum)
 d.answers <- d.answers.raw %>% filter(!(gameid %in% badGames))
 d.questions <- d.questions.raw %>% filter(!(gameid %in% badGames))
+```
+
+```{r}
+cat(length(unique((d.questions.raw %>% group_by(gameid) %>% tally())$gameid)), 'initially recruited')
+cat(length(incompleteIDs), 'were incomplete')
+cat(length(unique((d.questions %>% group_by(gameid) %>% tally())$gameid)), 'left')
 ```
 
 ```{r}
@@ -50,33 +56,50 @@ We also exclude 'random' style trials for this analysis since they were all over
  
 ```{r}
 goal_response_proportions <- d.goals %>% 
-  filter(questionNumber == 1) %>%
   filter(!(trialType %in% c('practice', 'random'))) %>%
   mutate(correct = ifelse(goalResponse == 'not sure', '"not sure"', 
                           ifelse(trueGoal == goalResponse, 'correct', 'incorrect')),
          trialType = ifelse(trialType == 'empty', 'empty', 'pragmatic')) %>%
-  group_by(trialType) %>%
-  mutate(total = length(correct)) %>%
-  group_by(trialType, correct) %>% 
-  tidyboot(summary_function = function(x) x %>% summarize(prop = length(total) / mean(total)), 
-           statistics_functions = function(x) x %>%
-           summarise_at(vars(prop), funs(ci_upper, mean, ci_lower))) %>% 
-  ungroup() %>% 
-  mutate(correct = factor(correct, levels = c('correct', 'incorrect',  '"not sure"')),
-         trialType = factor(trialType, levels = c('pragmatic', 'empty')))
+  filter(questionNumber < 4) 
+
+goal_response_proportions.boot <- map_dfr(seq_len(1000), ~goal_response_proportions %>%
+    group_by(trialType, questionNumber) %>%
+    mutate(total = length(correct)) %>%
+    do(sample_n(., nrow(.), replace=TRUE)) %>%
+    group_by(correct, trialType, questionNumber) %>%
+    summarize(prop = length(total)/mean(total)) %>%
+    mutate(sample_num = .x)) %>%
+    group_by(trialType, questionNumber, correct) %>%
+    summarize(empirical_prop = mean(prop), ci_upper = ci_upper(prop), ci_lower = ci_lower(prop)) %>%
+    ungroup() %>%
+    mutate(correct = factor(correct, levels = c('correct', 'incorrect',  '"not sure"')),
+          trialType = factor(trialType, levels = c('empty', 'pragmatic')),
+          questionNumber = as.character(questionNumber)) %>%
+    complete(questionNumber, trialType, correct, 
+           fill = list(empirical_prop = 0.002, ci_upper = 0.003,ci_lower =0.001 )) #%>%
 
 dodge = position_dodge(.9)
-ggplot(goal_response_proportions, aes(x = correct, y = empirical_prop, fill = trialType))  +
-  geom_bar(stat = 'identity', position = dodge) +
+ggplot(goal_response_proportions.boot, aes(x = questionNumber, y = empirical_prop, color = correct, fill = correct, group=correct))  +
+  #geom_bar(stat = 'identity', position = dodge) +
+  geom_line() +
   theme_few() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0, position = dodge) +
-  scale_fill_few() +
-  ylab('% responses') +
-  xlab('')+
-  ggtitle("What goal do you think the leader has?") 
+  facet_wrap(~ trialType) +
+  geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper), alpha = .2,color = NA) +#, width = 0, position = dodge) +
+  scale_fill_colorblind() +
+  scale_color_colorblind() +
   
-
+  ylab('% responses') +
+  #xlab('')+
+  ylim(0, 1) +
+  ggtitle("What goal do you think the leader has?")  +
+  theme(aspect.ratio = 1)
+  
 ggsave('../writing/2019/journal-revision/figures/spatialGoalInference.pdf', width=14, height = 10, units='cm')
+```
+
+```{r}
+goal_response_proportions %>% group_by(questionNumber, trialType, correct) %>% tally()
+chisq.test(matrix(c(33, 40, 31, 9, 79, 16), nrow = 3))
 ```
 
 # Qualitative model predictions
@@ -171,7 +194,7 @@ write_csv(d.answer_predictions_trimmed, '../modeling/experiment3/relevantAnswere
 
 ```{r}
 library(jsonlite)
-out = fromJSON( '../modeling/experiment3/dataAnalysisOutQ_only.json', flatten = T)
+out = fromJSON( '../modeling/experiment3/dataAnalysisOut_guessing.txt', flatten = T)
 out %>% 
   group_by(questionerType) %>% 
   summarize(prob = reduce(likelihood, sumlogprob) - log(length(likelihood)))
