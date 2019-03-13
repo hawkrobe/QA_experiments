@@ -73,21 +73,74 @@ function mapQuestionSame(goal, question, state) {
     return _.extend({question: 'other'}, info);
   }
 }
+
+function getValueOfPart(cell, world, getRelevantPart) {
+  var part = getRelevantPart(cell);
+  var othersWithPart = _.filter(_.keys(world), s => getRelevantPart(s) == part);
+  return _.map(othersWithPart, s => world[s]);
+}
+
 var answererData = readCSV('../../data/experiment3/answerFromMongo_clean.csv');
 //var questionerData = readCSV('../../data/experiment3/questionFromMongo_clean.csv');
+
+var handleBlocked = function(response) {
+  var state = JSON.parse(response['gridState']);
+  var world = JSON.parse(response['underlyingWorld']);  
+  var origA = JSON.parse(response['answer']);
+  var rowGoal = response['trueGoal'] == 'rows';
+  var getRelevantPart = rowGoal ? v => v[0] : v => v[1];
+  var getOtherPart = rowGoal ? v => v[1] : v => v[0];
+
+  // Two cases: they asked about unsafe cell or asked about safe cell
+  var askedAboutStatus = world[response['cellAskedAbout']];
+  
+  // If they just gave literal answer, escape now
+  if(origA.length == 1) {
+    return _.extend({}, response, {askedAboutStatus, trialType: 'blocked', answerType: 'literal'});
+  }
+  
+  // You can additionally tell them about
+  // (1) safe cell in same row, (2) unsafe cell in same row,
+  // (3) safe cell in different unsafe row, (4) unsafe cell in different unsafe row
+  // (5) safe cell in an all-safe row, or (6) nothing
+  var otherCell = _.without(origA, response['cellAskedAbout'])[0];
+  var otherCellStatus = world[otherCell];
+
+  var rowStatus = _.includes(getValueOfPart(otherCell, world, getRelevantPart), 'unsafe') ? 'Unsafe' : 'Safe';
+
+  console.log(getRelevantPart(otherCell));
+  console.log(getRelevantPart(response['cellAskedAbout']));
+  var answerType = getRelevantPart(otherCell) == getRelevantPart(response['cellAskedAbout']) ? 'sameRow' : 'different' + rowStatus + 'Row';
+
+  return _.extend({}, response, {
+    askedAboutStatus, trialType: 'blocked',
+    answerType: otherCellStatus + ' cell in ' + answerType
+  });
+}
 
 var annotatedAnswererData = _.map(answererData, function(response) {
   var state = JSON.parse(response['gridState']);
   var world = JSON.parse(response['underlyingWorld']);  
   var origA = JSON.parse(response['answer']);
   var rowGoal = response['trueGoal'] == 'rows';
+  var getRelevantPart = rowGoal ? v => v[0] : v => v[1];
+  var getOtherPart = rowGoal ? v => v[1] : v => v[0];
 
   // first order of business: fix the mislabeled 'blocked' trials
-  if(response['trialType'] == 'blocked') {
-    
+  if(state['safe'].length == 1 && response['questionNumber'] == 1) {
+    var vals = getValueOfPart(state['safe'][0], world, getRelevantPart);
+    if(_.includes(vals, 'unsafe')) {
+      return handleBlocked(response);
+    } else {
+      return _.extend({}, response, {
+	askedAboutStatus: 'none', answerType: 'none', trialType: 'pragmatic'
+      });
+    }
   } else {
-    return _.extend({}, response, {qualitativeQuestion: 'none', qualitativeTrialType: 'other'});
+    return _.extend({}, response, {
+	askedAboutStatus: 'none', answerType: 'none'
+      })
   }
 });
 
-writeCSV(annotatedQuestionerData, './questionFromMongo_qualitative.csv');
+writeCSV(annotatedAnswererData, './answerFromMongo_fixed.csv');

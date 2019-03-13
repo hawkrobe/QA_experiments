@@ -81,7 +81,6 @@ goal_response_proportions.boot <- map_dfr(seq_len(5000), ~goal_response_proporti
     complete(questionNumber, trialType, correct, 
            fill = list(empirical_prop = 0.002, ci_upper = 0.003,ci_lower =0.001 )) #%>%
 
-dodge = position_dodge(.9)
 ggplot(goal_response_proportions.boot, aes(x = questionNumber, y = empirical_prop, color = correct, fill = correct, group=correct))  +
   #geom_bar(stat = 'identity', position = dodge) +
   geom_line() +
@@ -111,10 +110,10 @@ chisq.test(matrix(c(33, 40, 31, 9, 79, 16), nrow = 3))
 ## Questioner
 
 ```{r}
-qualitativeQ <- read_csv('../modeling/qa/questionFromMongo_qualitative.csv') %>%
-  filter(qualitativeTrialType != 'other') %>%
-  group_by(qualitativeTrialType) %>%
-  mutate(total = length(qualitativeQuestion)) 
+qualitativeQ <- read_csv('../modeling/qa/questionFromMongo_fixed.csv') 
+
+qualitativeQ %>%
+  filter(trialType == 'blocked') 
 
 qualitativeQ %>%
   group_by(qualitativeTrialType, qualitativeQuestion) %>%
@@ -151,12 +150,16 @@ cat(paste0(c('\npragmatic-confusing = ', estimate,
 
 ## Answerer
 
-See how often people *answer* with extra info
+See how often people *answer* with extra info.
 
 ```{r}
+d.answers <- read_csv('../modeling/qa/answerFromMongo_fixed.csv') %>%
+  group_by(gameid, trialNum) %>%
+  mutate(trialType = first(trialType))
+
 answer_info <- d.answers %>% 
   filter(questionNumber == 1) %>%
-  filter(!(trialType %in% c('random'))) %>%
+  filter(!(trialType %in% c('practice'))) %>%
   rowwise() %>%
   mutate(additionalInfo = ifelse(nchar(answer) == 11, 1, 0)) %>%
   mutate(trialType = ifelse(trialType == 'blocked', 'pragmatic', trialType)) %>%
@@ -164,7 +167,7 @@ answer_info <- d.answers %>%
   tidyboot_mean(additionalInfo) %>% 
   ungroup() %>% 
   mutate(trialType = factor(trialType, levels = c('practice', 'pragmatic', 'empty')))
-
+dodge = position_dodge(.9)
 ggplot(answer_info, aes(x = trialType, y = empirical_stat))  +
   geom_bar(stat = 'identity', position = dodge) +
   theme_few() +
@@ -180,9 +183,11 @@ Look specifically at 'blocked' trials -- how do people respond?
 
 ```{r}
  d.answers %>% 
-  #filter(questionNumber == 1) %>%
   filter(trialType == 'blocked') %>%
-  rowwise()
+  filter(questionNumber == 1)
+  rowwise() %>%
+    group_by(askedAboutStatus, answerType) %>%
+    tally()
 ```
 
 # Quantitative model comparison

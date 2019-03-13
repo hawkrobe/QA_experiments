@@ -73,10 +73,45 @@ function mapQuestionSame(goal, question, state) {
     return _.extend({question: 'other'}, info);
   }
 }
-var answererData = readCSV('../../data/experiment3/answerFromMongo_clean.csv');
+
 var questionerData = readCSV('../../data/experiment3/questionFromMongo_clean.csv');
 
-var annotatedQuestionerData = _.map(questionerData, function(response) {
+var fixedQuestionerData = _.flatten(
+  _.values(
+    _.mapValues(
+      _.groupBy(questionerData, response => {
+	return response['gameid'] + '_' + response['trialNum'];
+      }), trialData => {
+	var Q1 = trialData[0];
+	var QN = trialData.slice(-1)[0];
+	var rowGoal = Q1['goal'] == 'rows';
+
+	var initState = JSON.parse(Q1['gridState']);
+	var finalState = JSON.parse(QN['gridState']);
+
+	if(initState['safe'].length != 1) {
+	  return trialData;
+	} else {
+	  var getRelevantPart = rowGoal ? v => v[0] : v => v[1];
+	  var getOtherPart = rowGoal ? v => v[1] : v => v[0];
+	  
+	  var part = getRelevantPart(initState['safe'][0]);
+	  var anyUnsafe = _.some(finalState['unsafe'], s => getRelevantPart(s) == part);
+	  // console.log(Q1)
+	  // console.log(QN)
+	  // console.log(anyUnsafe);
+
+	  return _.map(trialData, v => _.extend({}, v, {
+	    trialType : anyUnsafe ? 'blocked' : 'pragmatic'
+	  }));
+	}
+      })
+  )
+);
+
+writeCSV(fixedQuestionerData, './questionFromMongo_fixed.csv');
+
+var annotatedQuestionerData = _.map(fixedQuestionerData, function(response) {
   var state = JSON.parse(response['gridState']);
   var rowGoal = response['goal'] == 'rows';
   var origQ = response['question'];
