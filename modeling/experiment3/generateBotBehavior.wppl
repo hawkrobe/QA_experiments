@@ -10,25 +10,55 @@ var colRowExists = function(grid) {
   return completeRow(grid) && completeCol(grid);
 }
 
-var model = SpatialModel(20, 20);
+var model = SpatialModel(13, 2.5, .5);
 var answerer = model.answerer;
 var questioner = model.questioner;
 var worldPrior = model.worldPrior;
 var makeValidQuestionPrior = model.makeValidQuestionPrior;
 
-var example = {
-  world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"safe","B2":"safe","B3":"safe","C1":"unsafe","C2":"safe","C3":"safe"},
-  initState: {"safe":["A2","B3"],"unsafe":[]}
-}
-
-console.log(answerer('pragmatic', 'is_A1_safe?', example.world,example.initState));
-
-// var example = {
-//   world: {"A1":"safe","A2":"safe","A3":"safe","B1":"unsafe","B2":"unsafe","B3":"safe","C1":"safe","C2":"unsafe","C3":"safe"},
-//   initState: {"safe":["C1"],"unsafe":[]}
+// EXAMPLE OF BLOCKED TRIAL IN PAPER
+// var exampleR1 = {
+//   world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"unsafe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+//   initState: {"safe":["A1"],"unsafe":[]}
 // }
 
-// console.log(answerer('pragmatic', 'is_A1_safe?', example.world,example.initState));
+// console.log('response to asking about safe');
+// console.log(answerer('pragmatic', 'is_A2_safe?', exampleR1.world,exampleR1.initState));
+
+// console.log('response to asking about unsafe');
+// console.log(answerer('pragmatic', 'is_A3_safe?', exampleR1.world,exampleR1.initState))
+
+var exampleR2_safe = {
+  world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"unsafe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+  initState: {"safe":["A1", "A2"],"unsafe":['A3']}
+}
+
+console.log('question on R2 after safe');
+console.log(questioner('pragmatic', ['A','B','C'], exampleR2_safe.initState));
+
+var exampleR2_unsafe = {
+  world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"unsafe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+  initState: {"safe":["A1", "C1"],"unsafe":['A3']}
+}
+
+console.log('question on R2 after unsafe');
+console.log(questioner('pragmatic', ['A','B','C'], exampleR2_unsafe.initState));
+
+
+//console.log(questioner('explicit', ['1', '2', '3'], example.initState));
+//console.log(questioner('explicit', 'B', example.initState));
+
+// var example = {
+//   world: {"A1":"safe","A2":"safe","A3":"safe","B1":"unsafe","B2":"unsafe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
+//   initState: {"safe":["A1"],"unsafe":[]}
+// }
+
+//console.log(questioner('explicit', ['1', '2', '3'], example.initState));
+//console.log(answerer('explicit', 'is_C1_safe?', example.world,example.initState))
+
+// console.log(timeit(function() {
+//   answerer('pragmatic', 'is_C1_safe?', example.world,example.initState)
+// }));
 
 // var example = {
 //   world: {"A1":"safe","A2":"safe","A3":"unsafe","B1":"unsafe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
@@ -36,9 +66,8 @@ console.log(answerer('pragmatic', 'is_A1_safe?', example.world,example.initState
 // }
 
 // console.log(answerer('pragmatic', 'is_A1_safe?', example.world,example.initState));
-//console.log(questioner('pragmatic', ['1', '2', '3'],example.initState));
 
-// THIS IS WHY YOU CAN'T JUST USE `MAP` QUD (i.e. 'which rows...')
+
 // We want it to go for the shortest path, i.e. completing row C...
 // var example = {
 //   world: {"A1":"safe","A2":"safe","A3":"safe","B1":"safe","B2":"safe","B3":"safe","C1":"safe","C2":"safe","C3":"safe"},
@@ -84,29 +113,29 @@ console.log(answerer('pragmatic', 'is_A1_safe?', example.world,example.initState
 // console.log(questioner('pragmatic', ['A', 'B', 'C'], example.initState));
 // console.log(questioner('pragmatic', ['1', '2', '3'], example.initState));
   
-var possibleInitStates = Infer({method: 'enumerate'}, function() {
-  var world = sample(worldPrior);
-  var safeStates = filter(function(v){return world[v] == 'safe'}, _.keys(world));
-  var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
-  var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
-		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
-  condition(colRowExists(world) &&
-	    (initState['safe'].length + initState['unsafe'].length) < 9);
-  return {initState};
-});
+// var possibleInitStates = Infer({method: 'enumerate'}, function() {
+//   var world = sample(worldPrior);
+//   var safeStates = filter(function(v){return world[v] == 'safe'}, _.keys(world));
+//   var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
+//   var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
+// 		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
+//   condition(colRowExists(world) &&
+// 	    (initState['safe'].length + initState['unsafe'].length) < 9);
+//   return {initState};
+// });
 
-var writeOutQuestionerPredictions= function(goal) {
-  var goalString = _.includes(goal, 'A') ? 'rows' : 'columns';
-  var filename = 'spatialQuestionerOutput_HierarchicalVersion_' + goalString + '.csv';
-  foreach(possibleInitStates.support(), function(item) {
-    var initState = item.initState;
-    console.log(initState);
-    qa.writeSpatialQuestioner(filename, ['explicit', JSON.stringify(initState), goalString],
-			      questioner('explicit', goal, initState));
-    qa.writeSpatialQuestioner(filename, ['pragmatic', JSON.stringify(initState), goalString],
-			      questioner('pragmatic', goal, initState));
-  });
-};
+// var writeOutQuestionerPredictions= function(goal) {
+//   var goalString = _.includes(goal, 'A') ? 'rows' : 'columns';
+//   var filename = 'spatialQuestionerOutput_HierarchicalVersion_' + goalString + '.csv';
+//   foreach(possibleInitStates.support(), function(item) {
+//     var initState = item.initState;
+//     console.log(initState);
+//     qa.writeSpatialQuestioner(filename, ['explicit', JSON.stringify(initState), goalString],
+// 			      questioner('explicit', goal, initState));
+//     qa.writeSpatialQuestioner(filename, ['pragmatic', JSON.stringify(initState), goalString],
+// 			      questioner('pragmatic', goal, initState));
+//   });
+// };
 
 //writeOutQuestionerPredictions(['A', 'B', 'C']);
 
@@ -114,32 +143,32 @@ var writeOutQuestionerPredictions= function(goal) {
 //   return !qa.alreadyInOutput(JSON.stringify(w));
 // }, worldPrior.support());
 
-var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
-  var world = sample(worldPrior);
-  var safeStates = filter(function(v){return world[v] == 'safe'}, _.keys(world));
-  var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
-  var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
-		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
+// var possibleAnswererItems = Infer({method: 'enumerate'}, function() {
+//   var world = sample(worldPrior);
+//   var safeStates = filter(function(v){return world[v] == 'safe'}, _.keys(world));
+//   var unsafeStates = filter(function(v){return world[v] == 'unsafe'}, _.keys(world));  
+//   var initState = {'safe' : uniformDraw(qa.powerset(safeStates)),
+// 		   'unsafe' : uniformDraw(qa.powerset(unsafeStates))};
   
-  condition(colRowExists(world) &&
-	    (initState['safe'].length + initState['unsafe'].length) < 9);
-  return {world, initState};
-});
+//   condition(colRowExists(world) &&
+// 	    (initState['safe'].length + initState['unsafe'].length) < 9);
+//   return {world, initState};
+// });
 
-var writeOutAnswererPredictions= function() {
-  var filename = 'spatialAnswererOutput_HierarchicalVersion.csv';
-  foreach(possibleAnswererItems.support(), function(item) {
-    var initState = item.initState;
-    var trueWorld = item.world;
-    console.log(item);
-    foreach(makeValidQuestionPrior(initState).support(), function(question) {
-      qa.writeSpatialAnswerer(filename, ['explicit', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
-      			      answerer('explicit', question, trueWorld, initState));
-      qa.writeSpatialAnswerer(filename, ['pragmatic', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
-      			      answerer('pragmatic', question, trueWorld, initState));
+// var writeOutAnswererPredictions= function() {
+//   var filename = 'spatialAnswererOutput_HierarchicalVersion.csv';
+//   foreach(possibleAnswererItems.support(), function(item) {
+//     var initState = item.initState;
+//     var trueWorld = item.world;
+//     console.log(item);
+//     foreach(makeValidQuestionPrior(initState).support(), function(question) {
+//       qa.writeSpatialAnswerer(filename, ['explicit', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
+//       			      answerer('explicit', question, trueWorld, initState));
+//       qa.writeSpatialAnswerer(filename, ['pragmatic', question.split('_')[1], JSON.stringify(trueWorld), JSON.stringify(initState)],
+//       			      answerer('pragmatic', question, trueWorld, initState));
       
-      });
-  });
-};
+//       });
+//   });
+// };
 
 // writeOutAnswererPredictions();
