@@ -10,107 +10,179 @@ var KL = function(erpTrue, erpApprox){
     }, values)));
 };
 
-var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
-  //   ---------------
-  // | World knowledge |
-  //   ---------------
+//   ---------------
+// | World knowledge |
+//   ---------------
 
-  var rows = ['A', 'B', 'C'];
-  var cols = ['1', '2', '3'];
+var rows = ['A', 'B', 'C'];
+var cols = ['1', '2', '3'];
 
-  var bomb = function() {
-    return flip() ? 'safe' : 'unsafe';
+var bomb = function() {
+  return flip() ? 'safe' : 'unsafe';
+};
+
+// We exclude worlds where any goal is a priori impossible
+// to achieve (this is also important for efficiency...)
+var worldPrior = Infer({method: 'enumerate'}, function(){
+  var world = {
+    'A1' : bomb(), 'A2' : bomb(), 'A3' : bomb(),
+    'B1' : bomb(), 'B2' : bomb(), 'B3' : bomb(),
+    'C1' : bomb(), 'C2' : bomb(), 'C3' : bomb()
   };
+  return world;
+});
 
-  // We exclude worlds where any goal is a priori impossible
-  // to achieve (this is also important for efficiency...)
-  var worldPrior = Infer({method: 'enumerate'}, function(){
-    var world = {
-      'A1' : bomb(), 'A2' : bomb(), 'A3' : bomb(),
-      'B1' : bomb(), 'B2' : bomb(), 'B3' : bomb(),
-      'C1' : bomb(), 'C2' : bomb(), 'C3' : bomb()
-    };
+//  -------------------
+// | Question knowledge |
+//  -------------------
+
+var questionPrior = Infer({method: 'enumerate'}, function(){
+  var row = uniformDraw(rows);
+  var col = uniformDraw(cols);  
+  return 'is_' + row + col + '_safe?';
+});
+
+var makeValidQuestionPrior = dp.cache(function(gridState) {
+  return Categorical({vs: filter(function(q) {
+    return (!_.includes(gridState['safe'], q.split('_')[1]) &&
+	    !_.includes(gridState['unsafe'], q.split('_')[1]));
+  }, questionPrior.support())});
+});
+
+//  -----------------
+// | Answer knowledge |
+//  -----------------
+
+var answers = _.flattenDeep(map(function(row) {
+  map(function(col) {
+    map(function(status) {
+      return row + col + '_' + status;
+    }, ['safe', 'unsafe']);
+  }, cols);
+}, rows));
+
+// Allow 1 or 2 pieces of information...
+var shortAnswers = map(function(v){return [v]}, answers);
+var longAnswers = _.uniq(Infer({method: 'enumerate'}, function() {
+  var answer1 = uniformDraw(answers);
+  var a1cell = answer1.split('_')[0];
+  var answer2 = uniformDraw(_.without(answers, a1cell + '_safe', a1cell + '_unsafe'));
+  return sort([answer1, answer2]);
+}).support());
+
+var answerPrior = Categorical({vs : shortAnswers.concat(longAnswers)});
+
+var spatialLocationAnswerMeaning = function(utterance){
+  return function(world){
+    return all(function(v) {
+      var components = v.split('_');
+      return world[components[0]] === components[1];
+    }, utterance);
+  };
+};
+
+// this cuts out answers that are literally false (mostly for
+// computaitonal efficiency reasons)
+var makeTruthfulAnswerPrior = dp.cache(function(question, trueWorld, gridState) {
+  var cellAskedAbout = question.split("_")[1];
+  var validAnswers = filter(function(answer) {
+    var isTrue = all(function(v){return trueWorld[v.split('_')[0]] == v.split('_')[1]},
+		     answer);
+    var responds = any(function(v){return v.split('_')[0] == cellAskedAbout}, answer);
+    var alreadyRevealed = any(function(v){
+      return (_.includes(gridState['safe'], v.split('_')[0]) ||
+	      _.includes(gridState['unsafe'], v.split('_')[0]));
+    }, answer);
+    return isTrue && responds && !alreadyRevealed;
+  }, answerPrior.support());
+  return Categorical({vs: validAnswers}); // , ps : ps
+}, 1000);
+
+// This takes subset of worlds where the 'known' revealed cells
+// are true (i.e. when people start with a map, or after revealing more)
+var makeConsistentWorldPrior = dp.cache(function(gridState) {
+  return Categorical({vs : filter(function(w) {
+    return (all(function(v) {return w[v] == 'safe';}, gridState['safe']) &&
+	    all(function(v) {return w[v] == 'unsafe';}, gridState['unsafe']));
+  }, worldPrior.support())});
+}, 1000);
+
+
+//  ------
+// | QUDs |
+//  ------
+
+var superQudPrior = function(){
+  return flip() ? rows : cols;
+};
+
+var subQudPrior = function(sup){
+  return uniformDraw(sup);
+};
+
+var QUDPosteriorFromMeaning = function(question) {
+  if(_.includes(questionPrior.support(), question))
+    return Delta({v: [[qa.butLast(question).split('_')[1]]]});
+  else
+    console.error('unknown question' + question);
+};
+
+var spatialLocationQUD = function(qudName) {
+  return function(world){
+    return (_.includes(cols, qudName) ? qa.completeCol(qudName, world) :
+	    _.includes(rows, qudName) ? qa.completeRow(qudName, world) :
+	    qa.cellMatch(qudName, world));
+  };
+};
+
+var spatialNameToQUD = function(qudName){
+  if(qudName == 'identity') 
+    return function(w) {return w;};
+  else if(qudName.length > 1) {
+    return function(w) {return map(function(qud) {
+      return spatialLocationQUD(qud)(w);
+    }, qudName);};
+  } else {
+    return spatialLocationQUD(qudName);
+  }
+};
+
+//  -------
+// | Models |
+//  -------
+
+var getPriorProb = dp.cache(function(goal, gridState) {
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
+  var qud = spatialNameToQUD(goal);
+  return marginalize(consistentWorldPrior, function(world) {return qud(world);});
+}, 1000);
+
+var interpreter = dp.cache(function(answer, gridState){
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
+  return Infer({method: 'enumerate'}, function(){
+    var world = sample(consistentWorldPrior);
+    var answerMeaning = spatialLocationAnswerMeaning(answer);
+    condition(answerMeaning(world));
     return world;
   });
+}, 1000);
 
-  //  -------------------
-  // | Question knowledge |
-  //  -------------------
+// Note that in principle we should be conditioning on hearing back from
+// answerer here, but in this case, they are equivalent
+var getPosteriorProb = dp.cache(function(answer, goal, gridState) {
+  var consistentWorldPrior = makeConsistentWorldPrior(gridState);
+  var qud = spatialNameToQUD(goal);
+  return marginalize(interpreter(answer, gridState), function(w) {return qud(w)});
+}, 1000);
 
-  var questionPrior = Infer({method: 'enumerate'}, function(){
-    var row = uniformDraw(rows);
-    var col = uniformDraw(cols);  
-    return 'is_' + row + col + '_safe?';
-  });
+var getKL = dp.cache(function(answer, goal, gridState) {
+  var priorProb = getPriorProb(goal, gridState);
+  var posteriorProb = getPosteriorProb(answer, goal, gridState);
+  return KL(posteriorProb, priorProb);
+});
 
-  //  -----------------
-  // | Answer knowledge |
-  //  -----------------
-
-  var answers = _.flattenDeep(map(function(row) {
-    map(function(col) {
-      map(function(status) {
-	return row + col + '_' + status;
-      }, ['safe', 'unsafe']);
-    }, cols);
-  }, rows));
-
-  // Allow 1 or 2 pieces of information...
-  var shortAnswers = map(function(v){return [v]}, answers);
-  var longAnswers = _.uniq(Infer({method: 'enumerate'}, function() {
-    var answer1 = uniformDraw(answers);
-    var a1cell = answer1.split('_')[0];
-    var answer2 = uniformDraw(_.without(answers, a1cell + '_safe', a1cell + '_unsafe'));
-    return sort([answer1, answer2]);
-  }).support());
-
-  var answerPrior = Categorical({vs : shortAnswers.concat(longAnswers)});
-
-  var spatialLocationAnswerMeaning = function(utterance){
-    return function(world){
-      return all(function(v) {
-	var components = v.split('_');
-	return world[components[0]] === components[1];
-      }, utterance);
-    };
-  };
-
-  // this cuts out answers that are literally false (mostly for
-  // computaitonal efficiency reasons)
-  var makeTruthfulAnswerPrior = dp.cache(function(question, trueWorld, gridState) {
-    var cellAskedAbout = question.split("_")[1];
-    var validAnswers = filter(function(answer) {
-      var isTrue = all(function(v){return trueWorld[v.split('_')[0]] == v.split('_')[1]},
-		       answer);
-      var responds = any(function(v){return v.split('_')[0] == cellAskedAbout}, answer);
-      var alreadyRevealed = any(function(v){
-	return (_.includes(gridState['safe'], v.split('_')[0]) ||
-		_.includes(gridState['unsafe'], v.split('_')[0]));
-      }, answer);
-      return isTrue && responds && !alreadyRevealed;
-    }, answerPrior.support());
-    return Categorical({vs: validAnswers}); // , ps : ps
-  }, 1000);
-
-  //  ------
-  // | QUDs |
-  //  ------
-
-  var superQudPrior = function(){
-    return flip() ? rows : cols;
-  };
-
-  var subQudPrior = function(sup){
-    return uniformDraw(sup);
-  };
-
-  var QUDPosteriorFromMeaning = function(question) {
-    if(_.includes(questionPrior.support(), question))
-      return Delta({v: [[qa.butLast(question).split('_')[1]]]});
-    else
-      console.error('unknown question' + question);
-  };
+var SpatialModel = function(Qrationality, Arationality, answerCost) {
 
   var QUDPosteriorFromInference = dp.cache(function(question, gridState){
     return Infer({method: 'enumerate'}, function() {
@@ -136,67 +208,6 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
     });
   }, 10000);
 
-  //  -------
-  // | Models |
-  //  -------
-
-  var spatialLocationQUD = function(qudName) {
-    return function(world){
-      return (_.includes(cols, qudName) ? qa.completeCol(qudName, world) :
-	      _.includes(rows, qudName) ? qa.completeRow(qudName, world) :
-	      qa.cellMatch(qudName, world));
-    };
-  };
-
-  var spatialNameToQUD = function(qudName){
-    if(qudName == 'identity') 
-      return function(w) {return w;};
-    else if(qudName.length > 1) {
-      return function(w) {return map(function(qud) {
-	return spatialLocationQUD(qud)(w);
-      }, qudName);};
-    } else {
-      return spatialLocationQUD(qudName);
-    }
-  };
-
-  var getPriorProb = dp.cache(function(goal, gridState) {
-    var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-    var qud = spatialNameToQUD(goal);
-    return marginalize(consistentWorldPrior, function(world) {return qud(world);});
-  }, 1000);
-
-  // Note that in principle we should be conditioning on hearing back from
-  // answerer here, but in this case, they are equivalent
-  // var A = answerer(type, question, world, gridState);
-  var getPosteriorProb = dp.cache(function(type, question, answer, goal, gridState) {
-    var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-    var qud = spatialNameToQUD(goal);
-    return Infer({method: 'enumerate'}, function(){
-      var world = sample(consistentWorldPrior);
-      var A = answerer(type, question, world, gridState);
-      observe(A, answer);
-      return qud(world);
-    });
-  }, 1000);
-
-  // This takes subset of worlds where the 'known' revealed cells
-  // are true (i.e. when people start with a map, or after revealing more)
-  var makeConsistentWorldPrior = dp.cache(function(gridState) {
-    return Categorical({vs : filter(function(w) {
-      return (all(function(v) {return w[v] == 'safe';}, gridState['safe']) &&
-	      all(function(v) {return w[v] == 'unsafe';}, gridState['unsafe']));
-    }, worldPrior.support())});
-  }, 1000);
-
-
-  var makeValidQuestionPrior = dp.cache(function(gridState) {
-    return Categorical({vs: filter(function(q) {
-      return (!_.includes(gridState['safe'], q.split('_')[1]) &&
-	      !_.includes(gridState['unsafe'], q.split('_')[1]));
-    }, questionPrior.support())});
-  });
-
   var questioner = dp.cache(function(type, goal, gridState) {
     var consistentWorldPrior = makeConsistentWorldPrior(gridState);
     var validQuestionPrior = makeValidQuestionPrior(gridState);
@@ -204,26 +215,14 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
       var question = sample(validQuestionPrior);
       var utility = expectation(consistentWorldPrior, function(trueWorld) {
 	var possibleAnswer = answerer(type, question, trueWorld, gridState);
-	return expectation(possibleAnswer, function(answer){
-  	  var priorProb = getPriorProb(goal, gridState);
-  	  var posteriorProb = getPosteriorProb(type, question, answer, goal, gridState);
-  	  return KL(posteriorProb, priorProb);
+	return expectation(possibleAnswer, function(answer) {
+	  return getKL(answer, goal, gridState);
 	});
       });
       factor(utility.toFixed(8) * Qrationality);
       return question;
     });
   }, 10000);
-
-  var interpreter = dp.cache(function(answer, gridState){
-    var consistentWorldPrior = makeConsistentWorldPrior(gridState);
-    return Infer({method: 'enumerate'}, function(){
-      var world = sample(consistentWorldPrior);
-      var answerMeaning = spatialLocationAnswerMeaning(answer);
-      condition(answerMeaning(world));
-      return world;
-    });
-  }, 1000);
   
   var answerer = dp.cache(function(type, question, trueWorld, gridState) {
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(question, trueWorld, gridState);
@@ -235,15 +234,14 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
     );
     return Infer({method: 'enumerate'}, function(){
       var answer = sample(truthfulAnswerPrior);
-      var possibleWorlds = interpreter(answer, gridState);
+      
       var utility = expectation(qudPosterior, function(qudName) {
 	return _.sum(map(function(name) {
-	  return Math.log(expectation(possibleWorlds, function(w) {
-	    var localQUD = spatialNameToQUD(name);
-	    return _.isEqual(localQUD(w), localQUD(trueWorld));
-	  }));
+	  var targetWorld = spatialNameToQUD(name)(trueWorld);
+	  return getPosteriorProb(answer, name, gridState).score(targetWorld);
 	}, qudName));
       });
+
       factor(Arationality * (utility - answerCost * answer.length));      
       return answer;
     });
