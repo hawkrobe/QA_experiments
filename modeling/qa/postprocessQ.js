@@ -83,26 +83,46 @@ var fixedQuestionerData = _.flatten(
 	return response['gameid'] + '_' + response['trialNum'];
       }), trialData => {
 	var Q1 = trialData[0];
+	var Q2 = _.find(trialData, {questionNumber: '2'});
 	var QN = trialData.slice(-1)[0];
 	var rowGoal = Q1['goal'] == 'rows';
 
 	var initState = JSON.parse(Q1['gridState']);
+	var secondState = Q2 ? JSON.parse(Q2['gridState']) : 'none';
 	var finalState = JSON.parse(QN['gridState']);
 
 	if(initState['safe'].length != 1) {
-	  return trialData;
+	  return _.map(trialData, v => _.extend({}, v, {
+	    initAskedAbout: 'none', secondAskedAbout: 'none'
+	  }));
 	} else {
 	  var getRelevantPart = rowGoal ? v => v[0] : v => v[1];
 	  var getOtherPart = rowGoal ? v => v[1] : v => v[0];
 	  
 	  var part = getRelevantPart(initState['safe'][0]);
-	  var anyUnsafe = _.some(finalState['unsafe'], s => getRelevantPart(s) == part);
-	  // console.log(Q1)
-	  // console.log(QN)
-	  // console.log(anyUnsafe);
-
+	  var anyUnsafe = _.some(finalState['unsafe'],
+				 s => getRelevantPart(s) == part);
+	  var initAskedAbout = 'none';
+	  if(getRelevantPart(initState['safe'][0]) == getRelevantPart(Q1['question'])){
+	    initAskedAbout = _.includes(finalState['unsafe'], Q1['question']) ? 'sameButUnsafe' : 'sameAndSafe';
+	  } else {
+	    initAskedAbout = 'other';
+	  }
+	  var secondAskedAbout = 'none' ;
+	  if(Q2) {
+	    if(_.includes(_.map(secondState['unsafe'], getRelevantPart),
+			  getRelevantPart(Q2['question'])))
+	      secondAskedAbout = 'sameAsUnsafe';
+	    else if(_.includes(_.map(secondState['safe'], getRelevantPart),
+			       getRelevantPart(Q2['question'])))
+	      secondAskedAbout = 'sameAsSafe';
+	    else
+	      secondAskedAbout = 'newAndUnknown';
+	  }
 	  return _.map(trialData, v => _.extend({}, v, {
-	    trialType : anyUnsafe ? 'blocked' : 'pragmatic'
+	    trialType : anyUnsafe ? 'blocked' : 'pragmatic',
+	    initAskedAbout,
+	    secondAskedAbout
 	  }));
 	}
       })
