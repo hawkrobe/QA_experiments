@@ -1,12 +1,35 @@
-var getPredictions = function() {
-  var bestQRationality = 8;
-  var bestARationality = 4;
+var getQuestionerPredictions = function(questionerType) {
+  var bestQRationality = 11;
+  var bestARationality = 3;
   var bestAnswerCost = 1.5;
   var model = SpatialModel(bestQRationality, bestARationality, bestAnswerCost);
-  var questionerData = qa.readCSV('../qa/questionFromMongo_qualitative.csv');//qa.readCSV('../../data/experiment3/questionFromMongo_clean.csv');
+  var questionerData = qa.readCSV('../qa/questionFromMongo_qualitative.csv');
   var questioner = model.questioner;
   foreach(questionerData, function(datum) {
-    console.log(datum);
+    var rawState = JSON.parse(datum['gridState']);
+    var state = {'safe' : sort(rawState['safe']),
+		 'unsafe' : sort(rawState['unsafe'])};
+    var goal = datum['goal'] == 'columns' ? ['1', '2', '3'] : ['A', 'B', 'C'];
+    var prediction = questioner(questionerType, goal, state);
+    foreach(prediction.support(), function(s){
+      var key = _.values(datum).concat(s);
+      var newPair = _.zipObject([key], [prediction.score(s)]);
+      globalStore.predictives = extend(globalStore.predictives, newPair);
+    });
+  });
+  return globalStore.predictives;
+};
+
+console.log(getQuestionerPredictions());
+
+var getAnswererPredictions = function() {
+  var bestQRationality = 11;
+  var bestARationality = 3;
+  var bestAnswerCost = 1.5;
+  var model = SpatialModel(bestQRationality, bestARationality, bestAnswerCost);
+  var answererData = qa.readCSV('../qa/a.csv');//qa.readCSV('../../data/experiment3/questionFromMongo_clean.csv');
+  var questioner = model.questioner;
+  foreach(questionerData, function(datum) {
     var rawState = JSON.parse(datum['gridState']);
     var state = {'safe' : sort(rawState['safe']),
 		 'unsafe' : sort(rawState['unsafe'])};
@@ -21,4 +44,4 @@ var getPredictions = function() {
   return globalStore.predictives;
 };
 
-console.log(getPredictions());
+getAnswererPredictions()
