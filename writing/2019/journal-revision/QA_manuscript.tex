@@ -975,7 +975,7 @@ Furthermore, this task presented the opportunity to more strongly test the pragm
 
 
 As in Experiment 1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
-Unlike in Experiment 1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
+Unlike Experiment 1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
 More specifically, the questioner was privately assigned a hand of playing cards to find (Fig. \ref{fig:exp2task}A, left). 
 The cards were scattered around a grid, and only the answerer had visibility of where the cards were located (Fig. \ref{fig:exp2task}A, right).
 The possible hands of cards the questioner might be assigned were shared in common ground.
@@ -1241,8 +1241,8 @@ $$MATH$$
 \label{fig:exp3goalinference}
 \end{figure}
 
-A primary internal mechanism driving pragmatic behavior in our models is $A_2$'s Bayesian inference about the hidden goal conditioned on the question. 
-While the overall success of $A_2$ in predicting answerer behavior in Experiments 1 and 2 provided indirect evidence for this mechanism, the goal belief elicitation step included in the design Experiment 3 provides the opportunity for a more direct test of this mechanism.
+A primary internal mechanism driving pragmatic behavior in our models is $A_2$'s Bayesian inference about the questioner's goal conditioned on the question. 
+While the overall success of $A_2$ in predicting answerer behavior in Experiments 1 and 2 provided indirect evidence for this mechanism, the elicitation step included in our design provides the opportunity for a more direct test of the answerer's beliefs about the goal.
 Do participants' inferences about the questioner's true goal match those internally predicted by the model?
 
 We examined participants' goal inferences in the \emph{empty} condition, which was designed to measure the changes in answerer's beliefs about the hidden goal over repeated exchanges. 
@@ -1271,22 +1271,47 @@ Answerers systematically use context to make accurate inferences about their par
 \label{fig:blocked}
 \end{figure*}
 
-Just as the answerer's beliefs about the goal shifted as they accumulated more evidence, questioners asked different follow-up questions depending on the answer to their first question.
-See Fig. \ref{fig:blocked} for a qualitative view on how dialogue unfolded.
-Answerer predictions computed with $\alpha_Q = 100, \alpha_A = 2.5, \beta = .5$ and questioner predictions computed with $\alpha_Q=13, \alpha_A=2.5, \beta = .5$.
+Just as the answerer's beliefs about the hidden goal shifted as they heard additional questions, the questioner's preferences over questions ought to shift systematically as they gain additional information about the world. 
+To evaluate this prediction, we consider how dialogue unfolded in the \emph{blocked} condition as a qualitative case study.
+In the blocked condition, questioners are faced with a setback: while a single safe tile in the initial common ground may make a particular row or column attractive, we ensured that there was a hidden bomb in that row or column.
+Answerers in this condition therefore needed to decide how to most helpfully reveal this information, while questioners needed to decide how to proceed in future exchanges given that their initial subgoal failed.
+This sets up a situation where questioners may prefer different follow-up questions depending on the answer to their first question, a key test of our model's ability to deal with an updating state. 
 
-\todo[inline]{First report `holistic' model comparison w/ likelihoods; predictives?}
+In Fig. \ref{fig:blocked}, we show a schematic view of how dialogue unfolded in this condition.
+In this example, the questioner was assigned the \emph{row} goal, and 
+Answerer predictions computed with $\alpha_Q = 20, \alpha_A = 2.5, \beta = .5$ and questioner predictions computed with $\alpha_Q=13, \alpha_A=2.5, \beta = .5$.
 
-While the primary aim of Experiment 3 was to elucidate qualitative features of extended dialogue, it also provided another opportunity to conduct a formal model comparison over a wide variety of items.
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{multirow}
+\begin{table}[]
+\begin{tabular}{@{}llr@{}}
+\toprule
+\multirow{2}{*}{answerers} & A1 & -1894 \\ \cmidrule(l){2-3} 
+ & $A_2$ & \textbf{-1424} \\ \midrule
+\multirow{2}{*}{questioners} & Q1 &  \\ \cmidrule(l){2-3} 
+ & Q2 &  \\ \bottomrule
+\end{tabular}
+\end{table}
+
+Finally, while the primary aim of Experiment 3 was to demonstrate how our model framework qualitatively captures repeated question-answer exchanges, these data also provided an additional opportunity to conduct a formal model comparison over a wide variety of items.
+Our models had three parameters: a cost weight $\beta_c$ as well as optimality parameters for the questioner and answerer, $\{\alpha_Q$, $\alpha_A\}$.
+We placed uniform priors over these three parameters:
+$$
+\begin{array}{rcl}
+\alpha_Q & \sim & \textrm{unif}(0, 20) \\
+\alpha_A & \sim & \textrm{unif}(0, 20) \\
+\beta_c & \sim & \textrm{unif}(0, 3)
+\end{array}
+$$
+As in Experiment 1, we computed Bayes Factors by evaluating the marginal likelihood of the data under each of our models, integrating over these parameter priors. 
+Because the model 
+
+Among the answerer models, we found strong support for $A_2$ over $A_1$
 
 \todo[inline]{Next report some qualitative thing just looking at `blocked' trials? like, how does model predict answerers deal with blockage? what do they reveal instead?}
 
-
-\subsubsection{Questioner model comparison}
-
 \todo[inline]{Give a disclaimer about questioner models being very close together again in this task, so full model comparison wasn't super reliable? Still show predictives for absolute fit?}
-
-\todo[inline]{Next report some qualitative thing just looking at `blocked' trials? like, how does question distribution shift after hearing about blockage?}
 
 \begin{figure*}[tbh!]
 \begin{center}
