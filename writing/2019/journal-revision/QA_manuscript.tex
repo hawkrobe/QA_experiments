@@ -1211,23 +1211,28 @@ Practice trials were constructed by including two of the three cells of a goal-r
 It should have been clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
 After these initial six trials, we constructed a scrambled sequence where each condition appeared once in each role and these critical trials were interspersed with more random trials.
 As in Experiment 2, participants were paired with an artificial agent playing the opposite role. 
-This agent responded according to the output of our $Q_2$ and $A_2$ models, with the optimality parameter set high ($\alpha = 100$). 
+This agent acted according to our $Q_2$ and $A_2$ models, with the optimality parameter set high ($\alpha = 100$). 
 
 \subsection{Results}
 
 \subsubsection{Model setup}
 
-\todo[inline]{Finish explaining how worlds/questions/answers were represented}
+The key innovation required to account for extended sequences is an explicit representation $s_t$ of the \emph{discourse state} at a given time. 
+For the purposes of this experiment, $s_t$ can be thought of as the literal state of the game board shared in common ground at time $t$, since all information was updated and maintained visually.
+More generally, however, the state may contain prior utterances, as well as any other non-linguistic observations about the agent's partner or context.
+Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$, or about a partner's goals, $P(g | s_t)$. \footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different questions or answers actions lead to transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework.}.
+Now, when a questioner is selecting a question at time $s_t$, rather than taking expected information gain relative to a general prior $P(w)$ , they it relative to their current beliefs: 
+
+$$$$
+Similarly, we assume answerers are attempting to be informative to a questioner with beliefs $P(w | s_t)$
+In our experiment, updating beliefs based on the state simply entailed removing any world states from the prior that are incompatible with previous exchanges and re-normalizing.
+
+Aside from this notion of state, this task was formalized similarly to the previous experiments.
 Goals were again represented hierarchically, with a joint inference over rows vs. columns and \emph{which} row or column.
 The top-level row (column) goals projected worlds (i.e. locations of bombs) to an array of booleans representing which rows (columns) contained bombs and which were safe.
 The subgoal representing a particular row (column) projected worlds to a single boolean representing whether that particular row (column) was safe.
+\todo[inline]{Finish explaining how worlds/questions/answers were represented}
 
-\todo[inline]{Finish explaining incorporation of 'state' into model}
-The key model innovation required to account for extended sequences is an explicit representation $s_t$ of the \emph{state} at a given time. 
-For the purposes of this experiment, $s_t$ can be thought of as the literal board state shared in common ground at time $t$, since all relevant information was maintained visually.
-More generally, however, this may represent an agent's general beliefs about the world, or about their partner's goals, at a given time (this is how we are setting a foundation for possible later integration with a POMDP).
-Rather than taking expected information gain relative to a general prior, then, we take it relative to the beliefs about the world given the state: 
-$$MATH$$
 
 \subsubsection{Hidden goal inferences}
 
