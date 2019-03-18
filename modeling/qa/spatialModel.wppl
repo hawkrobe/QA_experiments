@@ -219,7 +219,7 @@ var SpatialModel = function(Qrationality, Arationality, answerCost) {
 	  return getKL(answer, goal, gridState);
 	});
       });
-      factor(utility.toFixed(8) * Qrationality);
+      factor(utility * Qrationality);
       return question;
     });
   }, 10000);
