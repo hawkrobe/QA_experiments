@@ -1220,19 +1220,20 @@ This agent acted according to our $Q_2$ and $A_2$ models, with the optimality pa
 The key innovation required to account for extended sequences is an explicit representation $s_t$ of the \emph{discourse state} at a given time. 
 For the purposes of this experiment, $s_t$ can be thought of as the literal state of the game board shared in common ground at time $t$, since all information was updated and maintained visually.
 More generally, however, the state may contain prior utterances, as well as any other non-linguistic observations about the agent's partner or context.
-Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$, or about a partner's goals, $P(g | s_t)$. \footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different questions or answers actions lead to transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework.}.
-Now, when a questioner is selecting a question at time $s_t$, rather than taking expected information gain relative to a general prior $P(w)$ , they it relative to their current beliefs: 
 
-$$$$
-Similarly, we assume answerers are attempting to be informative to a questioner with beliefs $P(w | s_t)$
-In our experiment, updating beliefs based on the state simply entailed removing any world states from the prior that are incompatible with previous exchanges and re-normalizing.
+Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$. \footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different questions or answers actions lead to transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework.}.
+In our experiment, computing this distribution simply entailed removing any world states from the prior that are incompatible with previous exchanges and re-normalizing.
+Now, when a questioner is selecting a question in state $s_t$, rather than taking expected information gain relative to the initial prior $P(w)$, they use their current beliefs $P(w | s_t)$ as the baseline.
+Moreover, if the discourse state $s_t$ can be taken to be in common ground, we can assume this alternative prior is used throughout internal levels of recursion, e.g. that $A_1$ also attempts to be informative with respect to this prior.
 
-Aside from this notion of state, this task was formalized similarly to the previous experiments.
-Goals were again represented hierarchically, with a joint inference over rows vs. columns and \emph{which} row or column.
-The top-level row (column) goals projected worlds (i.e. locations of bombs) to an array of booleans representing which rows (columns) contained bombs and which were safe.
-The subgoal representing a particular row (column) projected worlds to a single boolean representing whether that particular row (column) was safe.
-\todo[inline]{Finish explaining how worlds/questions/answers were represented}
+Aside from this novel introduction of state to handle extended exchanges, the task details were formalized similarly to the previous experiments.
+The world prior was uniform across all $2^9$ assignments of bombs to tiles. 
+The question space contained the 9 options available to participants in the experiment, where ``Is A1 safe?'' is represented as a projection from the full world to the status of the queried tile. 
+The answer space contained both the literal answers ``yes, it is safe'' and ``no, it is not safe,'' as well as longer answers that additionally mentioned the state of another tile, e.g. ``yes, it is safe but A3 is not.''
 
+Goals were again represented hierarchically, with a joint representation containing rows vs. columns at the super-ordinate level and \emph{which} row or column at the subordinate level.
+The super-ordinate row (column) goals projected worlds to arrays of three booleans representing which rows (columns) contained bombs and which did not.
+The subgoal representing a particular row (column) projected worlds to a single boolean representing whether that particular row (column) contained bombs.
 
 \subsubsection{Hidden goal inferences}
 
