@@ -1211,23 +1211,29 @@ Practice trials were constructed by including two of the three cells of a goal-r
 It should have been clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
 After these initial six trials, we constructed a scrambled sequence where each condition appeared once in each role and these critical trials were interspersed with more random trials.
 As in Experiment 2, participants were paired with an artificial agent playing the opposite role. 
-This agent responded according to the output of our $Q_2$ and $A_2$ models, with the optimality parameter set high ($\alpha = 100$). 
+This agent acted according to our $Q_2$ and $A_2$ models, with the optimality parameter set high ($\alpha = 100$). 
 
 \subsection{Results}
 
 \subsubsection{Model setup}
 
-\todo[inline]{Finish explaining how worlds/questions/answers were represented}
-Goals were again represented hierarchically, with a joint inference over rows vs. columns and \emph{which} row or column.
-The top-level row (column) goals projected worlds (i.e. locations of bombs) to an array of booleans representing which rows (columns) contained bombs and which were safe.
-The subgoal representing a particular row (column) projected worlds to a single boolean representing whether that particular row (column) was safe.
+The key innovation required to account for extended sequences is an explicit representation $s_t$ of the \emph{discourse state} at a given time. 
+For the purposes of this experiment, $s_t$ can be thought of as the literal state of the game board shared in common ground at time $t$, since all information was updated and maintained visually.
+More generally, however, the state may contain prior utterances, as well as any other non-linguistic observations about the agent's partner or context.
 
-\todo[inline]{Finish explaining incorporation of 'state' into model}
-The key model innovation required to account for extended sequences is an explicit representation $s_t$ of the \emph{state} at a given time. 
-For the purposes of this experiment, $s_t$ can be thought of as the literal board state shared in common ground at time $t$, since all relevant information was maintained visually.
-More generally, however, this may represent an agent's general beliefs about the world, or about their partner's goals, at a given time (this is how we are setting a foundation for possible later integration with a POMDP).
-Rather than taking expected information gain relative to a general prior, then, we take it relative to the beliefs about the world given the state: 
-$$MATH$$
+Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$. \footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different questions or answers actions lead to transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework.}.
+In our experiment, computing this distribution simply entailed removing any world states from the prior that are incompatible with previous exchanges and re-normalizing.
+Now, when a questioner is selecting a question in state $s_t$, rather than taking expected information gain relative to the initial prior $P(w)$, they use their current beliefs $P(w | s_t)$ as the baseline.
+Moreover, if the discourse state $s_t$ can be taken to be in common ground, we can assume this alternative prior is used throughout internal levels of recursion, e.g. that $A_1$ also attempts to be informative with respect to this prior.
+
+Aside from this novel introduction of state to handle extended exchanges, the task details were formalized similarly to the previous experiments.
+The world prior was uniform across all $2^9$ assignments of bombs to tiles. 
+The question space contained the 9 options available to participants in the experiment, where ``Is A1 safe?'' is represented as a projection from the full world to the status of the queried tile. 
+The answer space contained both the literal answers ``yes, it is safe'' and ``no, it is not safe,'' as well as longer answers that additionally mentioned the state of another tile, e.g. ``yes, it is safe but A3 is not.''
+
+Goals were again represented hierarchically, with a joint representation containing rows vs. columns at the super-ordinate level and \emph{which} row or column at the subordinate level.
+The super-ordinate row (column) goals projected worlds to arrays of three booleans representing which rows (columns) contained bombs and which did not.
+The subgoal representing a particular row (column) projected worlds to a single boolean representing whether that particular row (column) contained bombs.
 
 \subsubsection{Hidden goal inferences}
 
@@ -1271,11 +1277,12 @@ Answerers systematically use context to make accurate inferences about their par
 \label{fig:blocked}
 \end{figure*}
 
-Just as the answerer's beliefs about the hidden goal shifted as they heard additional questions, the questioner's preferences over questions ought to shift systematically as they gain additional information about the world. 
-To evaluate this prediction, we consider how dialogue unfolded in the \emph{blocked} condition as a qualitative case study.
-In the blocked condition, questioners are faced with a setback: while a single safe tile in the initial common ground may make a particular row or column attractive, we ensured that there was a hidden bomb in that row or column.
+Just as the answerer's beliefs about the hidden goal shifted as they heard additional questions, the questioner's behavior ought to shift systematically as they gain additional information about the world. 
+In particular, questioners may prefer different follow-up questions depending on the answer to their first question, a key test of our model's ability to deal with an updating state. 
+To evaluate this prediction, we consider how dialogue unfolded in the \emph{blocked} condition.
+The blocked condition was designed as a case study where questioners are faced with a setback. 
+While a single safe tile in the initial common ground may make a particular row or column attractive, we ensured that there was a hidden bomb in that row or column.
 Answerers in this condition therefore needed to decide how to most helpfully reveal this information, while questioners needed to decide how to proceed in future exchanges given that their initial subgoal failed.
-This sets up a situation where questioners may prefer different follow-up questions depending on the answer to their first question, a key test of our model's ability to deal with an updating state. 
 
 In Fig. \ref{fig:blocked}, we show a schematic view of how dialogue unfolded in this condition.
 In this example, the questioner was assigned the \emph{row} goal, and 
@@ -1307,9 +1314,17 @@ $$
 As in Experiment 1, we computed Bayes Factors by evaluating the marginal likelihood of the data under each of our models, integrating over these parameter priors. 
 Because the model 
 
-Among the answerer models, we found strong support for $A_2$ over $A_1$
+\begin{figure*}[t!]
+\begin{center}
+\includegraphics[scale = .5]{Exp3/predictives.pdf}
+\end{center}
+\caption{The mean probability assigned to participant responses under different models.}
+%\vspace{-1cm}
+\label{fig:exp3predictives}
+\end{figure*}
 
-\todo[inline]{Next report some qualitative thing just looking at `blocked' trials? like, how does model predict answerers deal with blockage? what do they reveal instead?}
+Among the answerer models, we found strong support for $A_2$ over $A_1$. 
+Predictives are shown in Fig. \ref{fig:exp3predictives}.
 
 \todo[inline]{Give a disclaimer about questioner models being very close together again in this task, so full model comparison wasn't super reliable? Still show predictives for absolute fit?}
 
