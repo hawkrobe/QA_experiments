@@ -850,7 +850,7 @@ We found that 69\% of these tests rejected the null hypothesis of uniformity at 
 \end{tabular}
 \vspace{1em}
 \end{center}
-\caption{\footnotesize Results of quantitative model comparison; marginal likelihoods shown on log scale.}
+\caption{\footnotesize Results of quantitative model comparison for Exp.~1; marginal likelihoods shown on log scale.}
 \label{tab:exp1likelihoods}
 \end{table}
 
@@ -1149,7 +1149,7 @@ Second, although $A_2$'s internal goal inference mechanism was implicit in the s
 \begin{center}
 \includegraphics[scale = .7]{Exp3/spatialDemo.pdf}
 \end{center}
-\caption{(A) Task design and procedure for Experiment 3. Answerers are shown a private map with bomb locations, while questioners are assigned a private goal. Both participants see a common board over which extended dialogues can take place. (B) Examples of initial board states in different conditions.}
+\caption{(A-B) Task design and procedure for Experiment 3. Answerers are shown a private map with bomb locations, while questioners are assigned a private goal. Both participants see a common board over which extended dialogues can take place. (C) Examples of initial board states in different conditions.}
 %\vspace{-1cm}
 \label{fig:exp3task}
 \end{figure*}
@@ -1221,7 +1221,7 @@ The key innovation required to account for extended sequences is an explicit rep
 For the purposes of this experiment, $s_t$ can be thought of as the literal state of the game board shared in common ground at time $t$, since all information was updated and maintained visually.
 More generally, however, the state may contain prior utterances, as well as any other non-linguistic observations about the agent's partner or context.
 
-Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$. \footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different questions or answers actions lead to transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework.}.
+Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$. \footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different question or answer selections lead to anticipated transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework.}.
 In our experiment, computing this distribution simply entailed removing any world states from the prior that are incompatible with previous exchanges and re-normalizing.
 Now, when a questioner is selecting a question in state $s_t$, rather than taking expected information gain relative to the initial prior $P(w)$, they use their current beliefs $P(w | s_t)$ as the baseline.
 Moreover, if the discourse state $s_t$ can be taken to be in common ground, we can assume this alternative prior is used throughout internal levels of recursion, e.g. that $A_1$ also attempts to be informative with respect to this prior.
@@ -1284,21 +1284,24 @@ The blocked condition was designed as a case study where questioners are faced w
 While a single safe tile in the initial common ground may make a particular row or column attractive, we ensured that there was a hidden bomb in that row or column.
 Answerers in this condition therefore needed to decide how to most helpfully reveal this information, while questioners needed to decide how to proceed in future exchanges given that their initial subgoal failed.
 
-In Fig. \ref{fig:blocked}, we show a schematic view of how dialogue unfolded in this condition.
-In this example, the questioner was assigned the \emph{row} goal, and 
-Answerer predictions computed with $\alpha_Q = 20, \alpha_A = 2.5, \beta = .5$ and questioner predictions computed with $\alpha_Q=13, \alpha_A=2.5, \beta = .5$.
+In Fig. \ref{fig:blocked}, we show a schematic view of how dialogue unfolded in an example trial in the blocked condition.
+The questioner was assigned the \emph{row} goal, and 
+%Answerer predictions computed with $\alpha_Q = 20, \alpha_A = 2.5, \beta = .5$ and questioner predictions computed with $\alpha_Q=13, \alpha_A=2.5, \beta = .5$.
 
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
 % \usepackage{multirow}
 \begin{table}[]
+\begin{center}
 \begin{tabular}{@{}llr@{}}
 \toprule
-\multirow{2}{*}{answerers} & A1 & -1894 \\ \cmidrule(l){2-3} 
- & $A_2$ & \textbf{-1424} \\ \midrule
-\multirow{2}{*}{questioners} & Q1 &  \\ \cmidrule(l){2-3} 
- & Q2 &  \\ \bottomrule
+\multirow{2}{*}{answerers} & $A_1$ & -1894 \\ \cmidrule(l){2-3} 
+ & $A_2$ & \textbf{-1388} \\ \midrule
+\multirow{2}{*}{questioners} & Q1 & -1138  \\ \cmidrule(l){2-3} 
+ & Q2 & -1139 \\ \bottomrule
 \end{tabular}
+\end{center}
+\caption{Results of quantitative model comparison for Exp. 3; marginal likelihoods shown on log scale.}
 \end{table}
 
 Finally, while the primary aim of Experiment 3 was to demonstrate how our model framework qualitatively captures repeated question-answer exchanges, these data also provided an additional opportunity to conduct a formal model comparison over a wide variety of items.
@@ -1314,14 +1317,14 @@ $$
 As in Experiment 1, we computed Bayes Factors by evaluating the marginal likelihood of the data under each of our models, integrating over these parameter priors. 
 Because the model 
 
-\begin{figure*}[t!]
+\begin{figure}[t!]
 \begin{center}
-\includegraphics[scale = .5]{Exp3/predictives.pdf}
+\includegraphics[scale = .7]{Exp3/predictives.pdf}
 \end{center}
 \caption{The mean probability assigned to participant responses under different models.}
 %\vspace{-1cm}
 \label{fig:exp3predictives}
-\end{figure*}
+\end{figure}
 
 Among the answerer models, we found strong support for $A_2$ over $A_1$. 
 Predictives are shown in Fig. \ref{fig:exp3predictives}.
