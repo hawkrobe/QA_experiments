@@ -19,8 +19,8 @@ var getQuestionerPredictions = function(questionerType, bestQRationality, bestAR
   return globalStore.predictives;
 };
 
-qa.writeCSV(getQuestionerPredictions('explicit', 31, 1, 0.1), './bdaOutput/questionerPredictives_explicit.json');
-qa.writeCSV(getQuestionerPredictions('pragmatic', 29, 3, 2.5), './bdaOutput/questionerPredictives_pragmatic.json');
+// qa.writeCSV(getQuestionerPredictions('explicit', 31, 1, 0.1), './bdaOutput/questionerPredictives_explicit.json');
+// qa.writeCSV(getQuestionerPredictions('pragmatic', 29, 3, 2.5), './bdaOutput/questionerPredictives_pragmatic.json');
 
 var getAnswererPredictions = function(answererType, bestQRationality, bestARationality, bestAnswerCost) {
   var model = SpatialModel(bestQRationality, bestARationality, bestAnswerCost);
@@ -48,4 +48,4 @@ var getAnswererPredictions = function(answererType, bestQRationality, bestARatio
 };
 
 qa.writeCSV(getAnswererPredictions('explicit', 19, 11, 0.1), './bdaOutput/answererPredictives_explicit.json');
-qa.writeCSV(getAnswererPredictions('pragmatic', 59, 3, 1.0), './bdaOutput/answererPredictives_pragmatic.json');
+qa.writeCSV(getAnswererPredictions('pragmatic', 59, 2.5, 1.0), './bdaOutput/answererPredictives_pragmatic.json');
