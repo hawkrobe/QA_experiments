@@ -61,11 +61,11 @@ var runAIS = function(questionerType) {
   var questionerData = filter(f, qa.readCSV('../qa/questionFromMongo_qualitative.csv'));
   var AISconfig = {steps: 100};
   return AIS(function() {
-    var Arationality = uniform(1, 20)//config.Arationality;
-    var Qrationality = uniform(1, 20)//config.Qrationality;
-    var answerCost = uniform(0, 3)//config.answerCost;
+    var Arationality = uniformDrift({a:0, b: 100, width: 10})//config.Arationality;
+    var Qrationality = uniformDrift({a:0, b: 100, width: 10})//config.Qrationality;
+    var answerCost = uniformDrift({a: 0, b: 5, width: 1})//config.answerCost;
     
-    console.log(Arationality, Qrationality, answerCost);
+    console.log(Qrationality, Arationality, answerCost);
     var model = SpatialModel(Qrationality, Arationality, answerCost);
     var questioner = model.questioner;
 
@@ -84,12 +84,7 @@ var runAIS = function(questionerType) {
       globalStore.score += score;
       factor(_.isFinite(score) ? score : -10);
     });
-
     console.log({
-      questionerType,
-      Qrationality,
-      Arationality,
-      answerCost,
       likelihood: globalStore.score
     });
     return;

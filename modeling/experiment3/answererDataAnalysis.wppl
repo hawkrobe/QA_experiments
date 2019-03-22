@@ -9,8 +9,8 @@ var runAnalysis = function() {
   // don't condition on 'practice' trials (because they're practice)
   var f = function(v) {
     var state = JSON.parse(v['gridState']);
-    return (!(_.includes(['practice'], v['trialType']))
-  	    && (state['safe'].length + state['unsafe'].length) > 0);
+    return (_.toInteger(v['trialNum']) > 6
+	    && (state['safe'].length + state['unsafe'].length) > 0);
   };
   
   var answererData = filter(f, qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv'));
@@ -50,5 +50,99 @@ var runAnalysis = function() {
   }});
 };
 
-console.log(runAnalysis());
+var runAIS = function(answererType) {
+  // don't condition on 1st 6 'practice' trials
+  var f = function(v) {
+    var state = JSON.parse(v['gridState']);
+    return (_.toInteger(v['trialNum']) > 6
+	    && (state['safe'].length + state['unsafe'].length) > 0);
+  };
+
+  var answererData = filter(f, qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv'));
+  console.log('# data points:', answererData.length);
+  console.log(answererType);
+  var AISconfig = {steps: 10000};
+  return AIS(function() {
+    var Arationality = uniformDrift({a:1, b:20,width:1})//config.Arationality;
+    var Qrationality = uniformDrift({a:1, b:30, width:2})//config.Qrationality;
+    var answerCost = uniformDrift({a:0, b:3, width:.5})//config.answerCost;
+    
+    console.log(Qrationality, Arationality, answerCost);
+    var model = SpatialModel(Qrationality, Arationality, answerCost);
+    var answerer = model.answerer;
+    globalStore.score = 0;
+
+    mapData({data: answererData}, function(response) {
+      var rawState = JSON.parse(response['gridState']);
+      var state = {'safe' : sort(rawState['safe']),
+    		   'unsafe' : sort(rawState['unsafe'])};
+      var world = JSON.parse(response['underlyingWorld']);
+      var question = 'is_' + response['cellAskedAbout'] + '_safe?';
+      var trueAnswer = map(function(v) {return v + '_' + world[v]},
+    			   JSON.parse(response['answer']));
+      var prediction = answerer(answererType, question, world, state);
+      var score = prediction.score(trueAnswer);
+      globalStore.score += score;
+      factor(_.isFinite(score) ? score : -10);
+    });
+    console.log(globalStore.score);
+    return;
+  }, AISconfig);
+};
+
+
+var findBlockedParams = function(answererType) {
+  // don't condition on 1st 6 'practice' trials
+  console.log('here');
+  var f = function(v) {
+    var state = JSON.parse(v['gridState']);
+    return v['trialType'] == 'blocked' & _.toInteger(v['questionNumber']) == 1;
+  };
+
+  var answererData = filter(f, qa.readCSV('../../data/experiment3/answerFromMongo_clean.csv'));
+  console.log('# data points:', answererData.length);
+  console.log(answererType);
+  var MCMCconfig = {method: 'MCMC', samples: 5, lag : 100, burn : 1000}//, kernel: {HMC: {steps: 2, stepSize: .1}}};
+  return Infer(MCMCconfig, function() {
+    var Arationality = uniformDrift({a:1, b:30, width:1})//config.Arationality;
+    var Qrationality = uniformDrift({a:1, b:30, width: 1})//config.Qrationality;
+    var answerCost = uniformDrift({a:0, b:3, width: .1})//config.answerCost;
+    
+    console.log(Arationality, Qrationality, answerCost);
+    var model = SpatialModel(Qrationality, Arationality, answerCost);
+    var answerer = model.answerer;
+    globalStore.score = 0;
+
+    mapData({data: answererData}, function(response) {
+      var rawState = JSON.parse(response['gridState']);
+      var state = {'safe' : sort(rawState['safe']),
+    		   'unsafe' : sort(rawState['unsafe'])};
+      var world = JSON.parse(response['underlyingWorld']);
+      var question = 'is_' + response['cellAskedAbout'] + '_safe?';
+      var trueAnswer = map(function(v) {return v + '_' + world[v]},
+    			   JSON.parse(response['answer']));
+      var prediction = answerer(answererType, question, world, state);
+      var score = prediction.score(trueAnswer);
+      globalStore.score += score;
+      factor(_.isFinite(score) ? score : -10);
+    });
+    
+    return {
+      answererType,
+      Qrationality,
+      Arationality,
+      answerCost,
+      likelihood: globalStore.score
+    };
+  });
+};
+
+if(argv.blockedOnly) {
+  findBlockedParams(argv.answererType)
+} else if(argv.answererType) {
+  runAIS(argv.answererType)
+} else  {
+  runAnalysis()
+}
+
 
