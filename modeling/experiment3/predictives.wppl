@@ -1,10 +1,8 @@
-var getQuestionerPredictions = function(questionerType) {
-  var bestQRationality = 11;
-  var bestARationality = 3;
-  var bestAnswerCost = 1.5;
+var getQuestionerPredictions = function(questionerType, bestQRationality, bestARationality, bestAnswerCost) {
   var model = SpatialModel(bestQRationality, bestARationality, bestAnswerCost);
   var questionerData = qa.readCSV('../qa/questionFromMongo_qualitative.csv');
   var questioner = model.questioner;
+  globalStore.predictives = [];
   foreach(questionerData, function(datum) {
     var rawState = JSON.parse(datum['gridState']);
     var state = {'safe' : sort(rawState['safe']),
@@ -12,20 +10,19 @@ var getQuestionerPredictions = function(questionerType) {
     var goal = datum['goal'] == 'columns' ? ['1', '2', '3'] : ['A', 'B', 'C'];
     var prediction = questioner(questionerType, goal, state);
     foreach(prediction.support(), function(s){
-      var key = _.values(datum).concat(s);
-      var newPair = _.zipObject([key], [prediction.score(s)]);
-      globalStore.predictives = extend(globalStore.predictives, newPair);
+      var strippedQuestion = s.split('_')[1];
+      var newPair = _.extend({}, datum, {modelOption: strippedQuestion, modelScore : prediction.score(s)});
+      console.log(globalStore.predictives.length);
+      globalStore.predictives = globalStore.predictives.concat(newPair);
     });
   });
   return globalStore.predictives;
 };
 
-//console.log(getQuestionerPredictions());
+qa.writeCSV(getQuestionerPredictions('explicit', 31, 1, 0.1), './bdaOutput/questionerPredictives_explicit.json');
+qa.writeCSV(getQuestionerPredictions('pragmatic', 29, 3, 2.5), './bdaOutput/questionerPredictives_pragmatic.json');
 
-var getAnswererPredictions = function(answererType) {
-  var bestQRationality = 19;
-  var bestARationality = 3;
-  var bestAnswerCost = 1;
+var getAnswererPredictions = function(answererType, bestQRationality, bestARationality, bestAnswerCost) {
   var model = SpatialModel(bestQRationality, bestARationality, bestAnswerCost);
   var answererData = qa.readCSV('../qa/answerFromMongo_fixed.csv');//qa.readCSV('../../data/experiment3/questionFromMongo_clean.csv');
   var answerer = model.answerer;
@@ -50,5 +47,5 @@ var getAnswererPredictions = function(answererType) {
   return globalStore.predictives;
 };
 
-qa.writeCSV(getAnswererPredictions('explicit'), './bdaOutput/answererPredictives_explicit.json');
-qa.writeCSV(getAnswererPredictions('pragmatic'), './bdaOutput/answererPredictives_pragmatic.json');
+qa.writeCSV(getAnswererPredictions('explicit', 19, 11, 0.1), './bdaOutput/answererPredictives_explicit.json');
+qa.writeCSV(getAnswererPredictions('pragmatic', 59, 3, 1.0), './bdaOutput/answererPredictives_pragmatic.json');
