@@ -47,7 +47,7 @@
 
 \makeatother
 
-\title{Social inference for asking and answering questions}
+\title{Why do you ask? Social inference for asking and answering questions}
 \shorttitle{Questions and answers in dialogue}
 \author{Robert X.D. Hawkins, Noah D. Goodman}
 \affiliation{Stanford University} 
@@ -75,19 +75,36 @@ We find that social inference is needed to account for critical aspects of the d
 
 \begin{document}
 \maketitle
-\section{The pragmatics of asking and answering}
+\section{The pragmatics of asking and answering questions}
+
 Asking questions is one of our most valuable methods of gathering information and learning from others. 
-At a very young age, children can strategically select \emph{who} to ask \cite{LegareEtAl13_QuestionsChildhood} and \emph{what} to ask \cite{Chouinard07_ChildrenQuestions, RuggeriLombrozo15_ChildrenAdaptQuestions} in order to solve problems and test lay theories \cite{CallananOakes92_PreschoolerQuestions}. 
+At a very young age, children begin strategically asking questions to adults in order to solve problems and test lay theories \cite{LegareEtAl13_QuestionsChildhood, Chouinard07_ChildrenQuestions,CallananOakes92_PreschoolerQuestions}. 
 Robots that ask questions to clarify commands \cite{DeitsTellex___Roy13_HumanRobotDialog} or obtain assistance with a task \cite{FongThorpeBaur03_RobotQuestions} make for better collaborators. 
-In tutoring scenarios, students who ask better questions tend to be more successful \cite{GraesserPerson94_QuestionAskingTutoring}, and scientists who design their studies to ask better questions can obtain much more informative results \cite{ClarkSchober92_InfluencingAnswers, MyungPitt09_OED}.
+Students who ask better questions in the classroom tend to be more successful \cite{GraesserPerson94_QuestionAskingTutoring}, and scientists who design their surveys to ask better questions can obtain more informative results \cite{ClarkSchober92_InfluencingAnswers}.
 
-A question is only as useful as its answer, however, and not all answers are equal. How does an answerer select from the broad range of possible responses? This is straightforward in some cases. For direct, factual questions, an answerer can use the explicit meaning of the question, which specifies a particular gap in the questioner's knowledge, and respond with the requested piece of information (if it is known): 
-\enumsentence{
-	Q: Who was the 16th president of the U.S.?\\
-	A: Abraham Lincoln.}
-This response strategy has been implemented in sophisticated semantic parsers that extract the logical form of the query and efficiently search a database for an entity that satisfies it \cite<e.g.>{BerantChouFrostigLiang13_FreebaseQAPairs}. 
+How, then, do people decide which question to ask in a given situation?
+One particularly influential account formalizes question asking as an optimal experiment design (OED) problem \cite{OaksfordChater94_RationalAnalysisSelectionTask,Nelson05_UsefulQuestions,MyungPitt09_OED, GureckisMarkant12_SelfDirectedLearning}, where people choose a question to maximize the knowledge they expect to gain from knowing its answer. 
+A central ingredient in this framework is the distribution over possible answers people expect to receive after asking a question.
+This distribution is typically assumed to be determined by the ground truth outcomes of the task. 
+For instance, in a category learning task \cite{MarkantGureckis14_ActiveLearning}, the possible answers to a query about the category membership of a particular object (``Which category is this?'') are simply the possible categories (``It's a \emph{dax}.'')
+In other words, an OED questioner expects answers to come from an oracle that responds truthfully but literally.
 
-Many questions in everyday conversation, however, are not so straightforward to answer. 
+While this assumption has been sufficient to capture a wide variety of inquiry phenomena in active learning domains including causal learning \cite{bramley2015conservative} and sequential ``20 questions''-style search problems \cite{RuggeriLombrozo15_ChildrenAdaptQuestions}, we argue that it is violated precisely under the conditions where inquiry is perhaps most prevalent and useful: asking linguistic questions to other social agents, in dialogue \cite{coenen2018asking}.
+Answerers regularly go beyond the literal meaning of a question in subtle, context-dependent ways. 
+\todo[inline]{Say something about how sometimes it is literal, but often go beyond the }
+
+[How do answerers actually choose among the broad range of possible responses? 
+The semantics and pragmatics of questions and answers has received extensive treatment in a largely independent tradition within the field of linguistics.]
+
+%
+%This is straightforward in some cases. 
+%For simple factual questions, which clearly identify a gap in the questioner's knowledge, and respond with the requested piece of information (if it is known): 
+%\enumsentence{
+%	Q: Who was the 16th president of the U.S.?\\
+%	A: Abraham Lincoln.}
+%This response strategy has been implemented in sophisticated semantic parsers that extract the logical form of the query and efficiently search a database for an entity that satisfies it \cite<e.g.>{BerantChouFrostigLiang13_FreebaseQAPairs}. 
+
+Many questions in everyday conversation, however, are not so straightforward. 
 For a class of questions called indirect speech acts, the questioner typically will not be satisfied with a simple yes/no answer; they expect the answerer to go \emph{beyond} the literal meaning to address the questioner's true interests \cite{Clark79_IndirectSpeechActs}:  
 \enumsentence{
 	Q: Do you know the time?\\
@@ -110,9 +127,9 @@ In many contexts, radically underspecified questions are the rule rather than th
 
 What do these exchanges have in common? Q chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
 
-A, in turn, reasons under uncertainty beyond the overt question and provides an answer that addresses Q's true interests. Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the literal question, or to address a different question altogether.  
-\todo[inline]{Fix this sentence; kind of a non-sequitor that doesn't quite set up the problem}
-This subtle context-sensitive interplay between a questioner choosing a question to ask and an answerer choosing a response raises two specific questions for formal models of linguistic behavior: What makes a question useful? And what makes an answer helpful? 
+A, in turn, reasons under uncertainty beyond the overt question and provides an answer that addresses Q's true interests. 
+Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the literal question, or to address a different question altogether.  
+This deep interdependence between question and answer poses a challenge for formal accounts of inquiry. 
 
 We suggest, following recent accounts \cite<see>[for a thorough review]{coenen2018asking}, that the value of a natural-language question is the extent to which it can be expected to elicit useful information. 
 More specifically, however, the value of a question is the expected information gained relevant to the questioner's interests, given the set of likely answers it may provoke \emph{from another agent}. The value of an answer, then, is the extent to which it resolves questioner uncertainty over the \emph{goal-relevant} aspect of the world. 
