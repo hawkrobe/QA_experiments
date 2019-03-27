@@ -55,16 +55,16 @@
 \abstract{What makes a question useful? What makes an answer helpful? 
 Asking questions is one of our most efficient and reliable means of learning about the world. 
 Yet we do not often pose these questions to an impartial oracle; we ask cooperative social partners, in dialogue. 
-In this paper, we aim to reconcile formal models of optimal question-asking and answering with classic psycholinguistic effects of social context. 
+In this paper, we aim to reconcile formal models of optimal question asking and answering with classic psycholinguistic effects of social context. 
 %Agents hear an utterance, update their beliefs through social reasoning, and select an utterance in response. 
 We begin from the functional hypothesis that question-answer dialogue is motivated by a two-sided asymmetry in beliefs: questioners have private goals but are uncertain about goal-relevant aspects of the world, while answerers have private knowledge about the world but are uncertain about the questioner's goal.
 We formalize this asymmetry in a computational framework and derive pragmatic questioner and answerer behavior from recursive social reasoning.
-Critically, this framework predicts that pragmatic answerers should go beyond the literal meaning of the question to be informative with respect to inferred goals, and that pragmatic questioners expecting answerers to do so may select questions to more unambiguously signal their goals.
+Critically, this framework predicts that pragmatic answerers go beyond the literal meaning of the question to be informative with respect to inferred goals, and that pragmatic questioners expecting answerers to do so may select questions to more unambiguously signal their goals.
 %The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal upon hearing an answer from their partner. 
 We evaluate our pragmatic models against optimal but non-social models in two ways.
-First, we shown computational simulations accounting for classic effects in psycholinguistics.
+First, we present computational simulations accounting for three classic answerer effects in psycholinguistics.
 We then introduce the Hidden Goal paradigm for experimentally eliciting both questioner and answerer behavior in scenarios where there is uncertainty about the questioner's goal. 
-We report data from three experiments in this paradigm and show how our core computational framework can be composed with more sophisticated question semantics, hierarchical goal spaces, and a persistent state over which repeated dialogue can unfold.
+We report data from three experiments in this paradigm and show how our core computational framework can be composed with more sophisticated question semantics, hierarchical goal spaces, and a persistent state over which extended dialogue can unfold.
 We find that social inference is needed to account for critical aspects of the data. 
 %\hl{DRAFT 2/13//2018: THIS PAPER HAS NOT BEEN PEER REVIEWED. PLEASE DO NOT COPY OR CITE WITHOUT AUTHOR'S PERMISSION}
 }
@@ -83,29 +83,22 @@ Robots that ask questions to clarify commands \cite{DeitsTellex___Roy13_HumanRob
 Students who ask better questions in the classroom tend to be more successful \cite{GraesserPerson94_QuestionAskingTutoring}, and scientists who design their surveys to ask better questions can obtain more informative results \cite{ClarkSchober92_InfluencingAnswers}.
 
 How, then, do people decide which question to ask in a given situation?
-One particularly influential account formalizes question asking as an optimal experiment design (OED) problem \cite{OaksfordChater94_RationalAnalysisSelectionTask,Nelson05_UsefulQuestions,MyungPitt09_OED, GureckisMarkant12_SelfDirectedLearning}, where people choose a question to maximize the knowledge they expect to gain from knowing its answer. 
-A central ingredient in this framework is the distribution over possible answers people expect to receive after asking a question.
+One particularly influential account formalizes human inquiry as an \emph{optimal experiment design} (OED) problem \cite{OaksfordChater94_RationalAnalysisSelectionTask,Nelson05_UsefulQuestions,MyungPitt09_OED, GureckisMarkant12_SelfDirectedLearning}, where people choose the question that maximizes the knowledge they expect to gain from knowing its answer. 
+
+A central component in the OED framework is the distribution over possible answers questioners expect to receive given a particular question.
 This distribution is typically assumed to be determined by the ground truth outcomes of the task. 
-For instance, in a category learning task \cite{MarkantGureckis14_ActiveLearning}, the possible answers to a query about the category membership of a particular object (``Which category is this?'') are simply the possible categories (``It's a \emph{dax}.'')
-In other words, an OED questioner expects answers to come from an oracle that responds truthfully but literally.
+For instance, in a category learning task \cite{MarkantGureckis14_ActiveLearning}, the possible answers to a query about the category membership of a particular object are simply the possible categories.
+\enumsentence{
+Q: Which category is this?\\
+A: It's a \emph{dax}.}
 
-While this assumption has been sufficient to capture a wide variety of inquiry phenomena in active learning domains including causal learning \cite{bramley2015conservative} and sequential ``20 questions''-style search problems \cite{RuggeriLombrozo15_ChildrenAdaptQuestions}, we argue that it is violated precisely under the conditions where inquiry is perhaps most prevalent and useful: asking linguistic questions to other social agents, in dialogue \cite{coenen2018asking}.
-Answerers regularly go beyond the literal meaning of a question in subtle, context-dependent ways. 
-\todo[inline]{Say something about how sometimes it is literal, but often go beyond the }
+In other words, an OED questioner expects answers to come from an impartial oracle that responds truthfully but literally.
+This answering strategy has been computaionally implemented in sophisticated semantic parsers that extract the logical form of the question and either execute it on the world state \cite{rothe2017question} or efficiently search a database for an entity that satisfies it \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. 
 
-[How do answerers actually choose among the broad range of possible responses? 
-The semantics and pragmatics of questions and answers has received extensive treatment in a largely independent tradition within the field of linguistics.]
+While this assumption has been sufficient to capture a wide variety of inquiry phenomena in active learning domains, including causal learning \cite{bramley2015conservative} and sequential information search \cite{RuggeriLombrozo15_ChildrenAdaptQuestions}, it is violated precisely under the social learning conditions where inquiry may be most prevalent and useful: asking linguistic questions to other social agents in cooperative dialogue \cite{coenen2018asking}.
+Answerers regularly go \emph{beyond} the literal meaning of a question in helpful, context-dependent ways.
 
-%
-%This is straightforward in some cases. 
-%For simple factual questions, which clearly identify a gap in the questioner's knowledge, and respond with the requested piece of information (if it is known): 
-%\enumsentence{
-%	Q: Who was the 16th president of the U.S.?\\
-%	A: Abraham Lincoln.}
-%This response strategy has been implemented in sophisticated semantic parsers that extract the logical form of the query and efficiently search a database for an entity that satisfies it \cite<e.g.>{BerantChouFrostigLiang13_FreebaseQAPairs}. 
-
-Many questions in everyday conversation, however, are not so straightforward. 
-For a class of questions called indirect speech acts, the questioner typically will not be satisfied with a simple yes/no answer; they expect the answerer to go \emph{beyond} the literal meaning to address the questioner's true interests \cite{Clark79_IndirectSpeechActs}:  
+A simple example is an indirect speech act, where questioners typically will not be satisfied with a literal yes/no answer to their yes/no question \cite{Clark79_IndirectSpeechActs}:  
 \enumsentence{
 	Q: Do you know the time?\\
 	A: It's a quarter past 3.}
@@ -113,39 +106,69 @@ For a class of questions called indirect speech acts, the questioner typically w
 %	Q: Do you know how to get to the campus bookstore?\\ 
 %	A: It's on the other side of campus, but there's a shop just down the street with a better selection.}
  
-Indeed, answerers often go beyond the literal meaning even for \emph{direct} questions. A recent corpus study found that 14\% of responses to direct yes/no questions used a full statement instead of a simple ``yes'' or ``no'' \cite{DeMarneffeGrimmPotts09_IndirectAnswersCorpus}:
+Answerers will go beyond the literal meaning even for \emph{direct} questions. 
+A corpus study found that 14\% of responses to direct yes/no questions used a full statement instead of a simple ``yes'' or ``no'' \cite{DeMarneffeGrimmPotts09_IndirectAnswersCorpus}:
 
 \enumsentence{
 	Q: Is it in Dallas?\\
 	A: Uh, it's in Lewisville.}
 
-In many contexts, radically underspecified questions are the rule rather than the exception. Teachers, doctors, technical troubleshooters, concierges, and others in the service industry are regularly faced with the challenge of responding helpfully even when the questioner may not be clear about precisely what information they need:
+In some domains, radically underspecified questions are the rule rather than the exception. 
+Common questions like ``Where are you?'' or ``What is that?'' admit a nearly infinite number of answers at different levels of specificity \cite{Potts12_CardsDialogueCorpus}, but questioners can expect their partner to respond at the appropriate level given the context.
+Teachers, doctors, technical troubleshooters, concierges, and others in the service industry are regularly faced with the challenge of responding helpfully even when the questioner may not be clear about precisely what information they need:
 
 \enumsentence{
 	Q: What's wrong with my answer to \#1?\\ 
 	A: Well, let me remind you how to compute a derivative...}
 
-What do these exchanges have in common? Q chooses a question that manages to send a signal to A about her intentions, while sometimes being unable or unwilling to specify exactly what those intentions are. They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
+These considerations present two immediate challenges for computational models of inquiry. 
+First, if people do not simply respond literally to questions, how \emph{do} they choose answers? 
+What makes an answer more or less helpful?
+To extend rational models of question asking to social settings, we must first formulate a social and context-sensitive model of question \emph{answering} that captures the relevant psycholinguistic phenomena.
 
-A, in turn, reasons under uncertainty beyond the overt question and provides an answer that addresses Q's true interests. 
-Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the literal question, or to address a different question altogether.  
-This deep interdependence between question and answer poses a challenge for formal accounts of inquiry. 
+Second, if questions cannot simply be represented as a distribution over their possible (literal) answers, then what is the appropriate representation of a question?
+This problem has been addressed extensively in a largely separate literature in linguistics focusing on the semantics of questions and answers \cite{GroenendijkStokhof84_SemanticsOfQuestions,Ginzburg95_ResolvingQuestions,VanRooy03_QuestioningDecisionProblems,ciardelli2013inquisitive}. 
+These formal accounts have successfully worked through a number of thorny semantic problems, but a psychological account of question \emph{pragmatics} based on these insights has remained elusive.
 
-We suggest, following recent accounts \cite<see>[for a thorough review]{coenen2018asking}, that the value of a natural-language question is the extent to which it can be expected to elicit useful information. 
-More specifically, however, the value of a question is the expected information gained relevant to the questioner's interests, given the set of likely answers it may provoke \emph{from another agent}. The value of an answer, then, is the extent to which it resolves questioner uncertainty over the \emph{goal-relevant} aspect of the world. 
+The present work synthesizes ideas from work on question in linguistics and active learning to present a unified computational framework addressing these challenges.
+%Yet this literature has been 
+% What is needed What do these exchanges have in common? 
+We begin with the idea that the motivating conditions for inquiry in social contexts emerge from a \emph{two-sided} asymmetry in beliefs between social agents. 
+One agent -- the questioner -- has a private goal but lacks goal-relevant information about the world.
+Another agent -- the answerer -- has private information about the world but critically lacks foreknowledge of the questioner's goals.
+If either of these conditions were not satisfied, there would be no need for a question: the questioner would either already have the information they need, or the answerer could provide the relevant information without being asked.
+This formulation establishes a recursive dependence between the two agents and suggests a theoretical view where question asking and answering behavior is derived from deeply intertwined \emph{social inferences}.
 
-\todo[inline]{This paragraph is bad and needs revision.}
-This paper makes two key theoretical contributions. 
-First, while psychologists have learned a lot about questioner behavior and answerer behavior by studying the two processes in isolation, we argue that there are significant theoretical benefits in viewing them as deeply intertwined \emph{social} inferences. 
-Second, we formalize this view in a probabilistic model of pragmatic language understanding, bridging the gap between the simple queries used in psychological research on optimal information search and the natural language questions studied by linguistics. 
-This is the first time that such pragmatic language models have been extended beyond single utterances and hence provides a first step toward modeling longer dialogues.
+We make this view formally precise below in a recursive probabilistic model of language understanding, and show that existing OED models of question asking are a special case at lower levels of recursion (albeit with some modifications to the question representation).
+By adding additional layers of recursive reasoning, however, we derive a pragmatic answerer that uses the question to infer the questioner's underlying goal and provides an answer that directly attempts to address this goal. 
+A pragmatic questioner, in turn, can then select questions that more clearly signal her goals and intentions, especially when she is unable or unwilling to articulate questions that precisely correspond to those goals. 
+%They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
+%Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the literal question, or to address a different issue altogether. 
+
+%
+%This is straightforward in some cases. 
+%For simple factual questions, which clearly identify a gap in the questioner's knowledge, and respond with the requested piece of information (if it is known): 
+%\enumsentence{
+%	Q: Who was the 16th president of the U.S.?\\
+%	A: Abraham Lincoln.}
+
+
+%Many questions in everyday conversation, however, are not so straightforward. 
+
+%We suggest, following recent accounts \cite<see>[]{coenen2018asking}, that the value of a natural-language question is the extent to which it can be expected to elicit useful information. 
+
+%\todo[inline]{This paragraph is bad and needs revision.}
+%This paper makes two key theoretical contributions. 
+%First, while psychologists have learned a lot about questioner behavior and answerer behavior by studying the two processes in isolation, we argue that there are significant theoretical benefits in viewing them as deeply intertwined \emph{social} inferences. 
+%Second, we formalize this view in a probabilistic model of pragmatic language understanding, bridging the gap between the simple queries used in psychological research on optimal information search and the natural language questions studied by linguistics. 
+%This is the first time that such pragmatic language models have been extended beyond single utterances and hence provides a first step toward modeling longer dialogues.
 %
 
 The rest of this paper is structured as follows. 
 After reviewing previous experimental and formal modeling efforts to situate question-asking and question-answering in a social context, we lay out the details of our computational framework, formalizing different hypotheses in distinct questioner and answerer models. 
 We then evaluate these models in two ways: through a set of computational experiments capturing three classic \emph{answerer} sensitivity effects, and through three novel behavioral experiments addressing a longstanding paucity of data on social reasoning in \emph{questioner} behavior. 
 
-These behavioral experiments introduce and develop the \emph{Hidden Goal} paradigm, a novel family of cooperative communication tasks inducing uncertainty for the answerer over the questioner's private goal. 
+Our behavioral experiments introduce and develop the \emph{Hidden Goal} paradigm, a novel family of cooperative communication tasks inducing uncertainty for the answerer over the questioner's private goal. 
 In this paradigm, different questioner and answerer models can be rigorously distinguished through both qualitative predictions falsifying previous models as well as quantitative model comparisons based on relative fit. 
 Additionally, each experiment demonstrates how our core computational framework can be composed and extended with additional elements to capture more sophisticated behaviors, including more complex question semantics (Exp.~1), structured hierarchical goals (Exp.~2), and multi-round dialogue (Exp.~3). 
 
