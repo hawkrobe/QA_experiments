@@ -1,4 +1,4 @@
-\documentclass[12pt, floatsintext, jou]{apa6}
+\documentclass[11pt, floatsintext]{apa6}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[outdir=./]{epstopdf}
@@ -47,7 +47,7 @@
 
 \makeatother
 
-\title{Why do you ask? Social inference for asking and answering questions}
+\title{Why do you ask? \\ Social cognition and context shape human inquiry}
 \shorttitle{Questions and answers in dialogue}
 \author{Robert X.D. Hawkins, Noah D. Goodman}
 \affiliation{Stanford University} 
@@ -55,11 +55,11 @@
 \abstract{What makes a question useful? What makes an answer helpful? 
 Asking questions is one of our most efficient and reliable means of learning about the world. 
 Yet we do not often pose these questions to an impartial oracle; we ask cooperative social partners, in dialogue. 
-In this paper, we aim to reconcile formal models of optimal question asking and answering with classic psycholinguistic effects of social context. 
+In this paper, we aim to reconcile formal models of optimal question asking and answering with classic effects of social context. 
 %Agents hear an utterance, update their beliefs through social reasoning, and select an utterance in response. 
-We begin from the functional hypothesis that question-answer dialogue is motivated by a two-sided asymmetry in beliefs: questioners have private goals but are uncertain about goal-relevant aspects of the world, while answerers have private knowledge about the world but are uncertain about the questioner's goal.
-We formalize this asymmetry in a computational framework and derive pragmatic questioner and answerer behavior from recursive social reasoning.
-Critically, this framework predicts that pragmatic answerers go beyond the literal meaning of the question to be informative with respect to inferred goals, and that pragmatic questioners expecting answerers to do so may select questions to more unambiguously signal their goals.
+We begin from the observation that question-answer dialogue is motivated by a fundamental asymmetry in beliefs: questioners have a private goal but lack goal-relevant information about the world, and answerers have private information but lack knowledge about the questioner's goal.
+We formalize this problem in a computational framework and derive pragmatic questioner and answerer behavior from recursive social reasoning.
+Critically, we predict that pragmatic answerers go beyond the literal meaning of the question to be informative with respect to inferred goals, and that pragmatic questioners expecting answerers to do so may select questions to more unambiguously signal their goals.
 %The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal upon hearing an answer from their partner. 
 We evaluate our pragmatic models against optimal but non-social models in two ways.
 First, we present computational simulations accounting for three classic answerer effects in psycholinguistics.
@@ -69,14 +69,12 @@ We find that social inference is needed to account for critical aspects of the d
 %\hl{DRAFT 2/13//2018: THIS PAPER HAS NOT BEEN PEER REVIEWED. PLEASE DO NOT COPY OR CITE WITHOUT AUTHOR'S PERMISSION}
 }
 
-\keywords{pragmatics, social reasoning, language, computational modeling, active learning, questions, answers}
+\keywords{questions and answers, semantics and pragmatics, social reasoning, social learning, language, computational modeling, active learning}
 
 \authornote{This report is based in part on work presented at the 37th Conference of the Cognitive Science Society. Correspondence should be addressed to Robert X.D. Hawkins, e-mail: rxdh@stanford.edu}
 
 \begin{document}
 \maketitle
-\section{The pragmatics of asking and answering questions}
-
 Asking questions is one of our most valuable methods of gathering information and learning from others. 
 At a very young age, children begin strategically asking questions to adults in order to solve problems and test lay theories \cite{LegareEtAl13_QuestionsChildhood, Chouinard07_ChildrenQuestions,CallananOakes92_PreschoolerQuestions}. 
 Robots that ask questions to clarify commands \cite{DeitsTellex___Roy13_HumanRobotDialog} or obtain assistance with a task \cite{FongThorpeBaur03_RobotQuestions} make for better collaborators. 
@@ -178,13 +176,14 @@ Additionally, each experiment demonstrates how our core computational framework 
 %In particular, we compare a pragmatic answerer making inferences about the questioner's goals to two simpler models: one that takes into account only that an answerer wants to be maximally informative with respect to the explicit question asked (without inferring the questioner's underlying decision problem) and one that provides a literal answer to the question (without attempting to be maximally informative).  
 % We close with a brief discussion of how our approach grounds question-asking and answering in social cognition, noting the potential scalability of our framework to more complex discourse contexts, natural language understanding, and active learning.
 
-\subsection{Empirical background}
+\subsection{Evidence for goal-sensitivity in question answering}
 
 A number of psycholinguistic studies have provided empirical evidence that answerers are both sensitive to a questioner's goals and attempt to be informative with respect to those goals.
 In \citeA{Clark79_IndirectSpeechActs}, for instance, researchers called liquor merchants and asked ``Does a fifth of Jim Beam cost more than \$5?'' 
 Before asking the question, they provided some context for their call by saying either ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). 
-These contexts were designed to signal different speaker goals. 
-In the uninformative condition, the goal is simply to buy whiskey, hence the exact price would be useful information; in the five dollar condition, the goal was literally to find out whether or not the speaker could \emph{afford} the whiskey, so a yes/no answer would suffice. 
+These contexts were designed to establish different speaker goals. 
+In the uninformative condition, where the goal was to buy whiskey, the exact price would be relevant information; 
+in the five dollar condition, where the goal was simply to find out whether or not the whiskey was \emph{affordable}, a yes/no answer would suffice. 
 If merchants inferred these goals from the context signal and responded with respect to these goals, we would expect different types of answers in the two conditions. 
 Indeed, merchants gave a literal yes/no answer more often in the latter condition than the former, where an exact price was more common. 
 
@@ -200,21 +199,27 @@ When the experimenter mentioned that they had an appointment at a given time, ho
 %In the game, two players were placed in a virtual world where they were instructed to collect cards with six consecutive numbers from the same suit. Each player could only hold three cards at a time, and neither player could see the other, thereby requiring the players to explicitly coordinate their locations. 
 %Using an information-theoretic measure to quantify a response's degree of specificity, Potts found that answers tended to be more specific when the questioner was trying to meet up or direct the answerer to a specific card, and less specific when developing a general search strategy. 
 
-Linguists interested in pragmatic accounts of answerer behavior have noted a number of additional scenarios with more nebulous goals. 
+Linguists interested in answerer behavior have noted a number of additional scenarios with more nebulous goals. 
 Questions like ``where are you?'' permit answers at many degrees of specificity: \emph{the United States}, \emph{my apartment}, and \emph{by the big tree} are each perfectly appropriate in some context and highly inappropriate in others \cite{Potts12_CardsDialogueCorpus}. 
 Identification questions like ``who is X?'' can be resolved in many ways  \cite{BoerLycan75_KnowingWho, Gerbrandy00_Identity, Aloni05_ConceptualCovers}. 
 For example, if an undergraduate asked ``Who is Noam Chomsky?'' in an introductory course, it would be appropriate to respond ``The influential scholar who wrote \emph{Aspects of the Theory of Syntax}'' or ``The father of modern linguistics.'' 
 If a potential donor asked the same question at a fundraiser that Chomsky was attending, though, it would be more appropriate to point at him in the crowd. 
 Similarly, if a child asks ``What's that?'' while pointing at a common household object, a parent's response will be much different than if one of their adult friends asked the same question. 
-More specific \emph{wh}-questions like ``Who passed the examination?'' are also context-sensitive: answers can be understood to mean either an \emph{exhaustive} or \emph{selective} list of relevant entities depending on the scenario \cite{SchulzVanRooij06_ExhaustiveInterpretation}.
+More specific \emph{wh}-questions like ``Who passed the examination?'' may also receive different answers in different contexts. 
+If an instructor asks their teaching assistants this quesiton in a meeting, they likely want an \emph{exhaustive} list, while a group of students talking amongst themselves may only care about a \emph{selective} list of relevant entities \cite{SchulzVanRooij06_ExhaustiveInterpretation}.
 
 % "WHY ARE WE DOING THIS?" paragraph
 Taken together, this body of work suggests that \emph{goal-relevance} is a critical feature of question-answering: answerers routinely go beyond the literal meaning of a question to help the questioner achieve their underlying goals. Note that the vast majority of prior work on question-answer behavior has focused on the \emph{answerer}, holding the question constant and investigating the effect of different contexts. 
-However, questioners must also select between many alternative questions in order to achieve their goal and it remains unclear to what degree their choice is affected by social context. Next, we review a set of formal proposals about the questioner's role in dialogue.  
+However, questioners must also select between many alternative questions in order to achieve their goal and it remains unclear to what degree their choice is affected by social context. 
+Next, we review a set of formal proposals about the questioner's role in dialogue.  
 
-\subsection{Modeling background}
+\subsection{Formal approaches to goal-sensitivity in inquiry}
 
-An artificial agent capable of flexibly answering questions posed in natural language would be valuable for a diversity of practical applications, from customer service and technical support to health care and financial consulting. It's no surprise, then, that the problem of question-answering has attracted attention from researchers in the artificial intelligence community for decades \cite{Simmons65_QuestionsComputer, Lehnert77_QuestionAnswering, AllenPerrault80_IntentionUtterances, GreenCarberry94_IndirectAnswersModel, MollaVicedo07_QARestrictedDomains}. Some of these classic systems are highly domain-restricted interfaces for databases, such as the kind that could be used to show airline customers flights that meet their criteria, but many built on insights from early work in cognitive science to represent questioner intentions as schemas or plans. For instance, the system designed by \citeA{AllenPerrault80_IntentionUtterances} uses a set of logical rules to generate a space of possible plans, searches this space using a set of heuristics, identifies obstacles to fulfilling this plan, and takes a set of actions to address the obstacles. 
+The earliest attempts to construct artificial agents who could answer natural-language questions in a goal-sensitive manner took place within the artificial intelligence community \cite{Simmons65_QuestionsComputer, Lehnert77_QuestionAnswering, AllenPerrault80_IntentionUtterances, GreenCarberry94_IndirectAnswersModel, MollaVicedo07_QARestrictedDomains}. 
+Many of these classic systems were essentially highly domain-restricted interfaces for databases, with applications in customer service, technical support, health care, or financial consulting
+Other systems, however, built on insights from early work in cognitive science to represent questioner intentions as schemas or plans. 
+For instance, the system designed by \citeA{AllenPerrault80_IntentionUtterances} used a set of logical rules to generate a space of possible plans, searched this space using a set of heuristics, identified obstacles to fulfilling this plan, and finally took a set of actions to address the obstacles for the questioner. 
+These systems never 
 
 At the same time, linguists have developed formal theories of what questions and answers mean in the first place, mainly focusing on the notion of informativeness. In Groenendijk and Stokhof's \citeyear{GroenendijkStokhof84_SemanticsOfQuestions} foundational work on question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible complete answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others \cite{Ginzburg95_ResolvingQuestions} have pointed out, this predicts that wh-questions like ``Where do they sell Italian newspapers in Amsterdam?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location in the city. Clearly, this is not the case: a single nearby location would suffice. Even theories that allow for `mention-some' answers cannot account for contextual variation in what counts as a useful answer: if a media executive asked this same question at a corporate meeting, they might legitimately be requesting an exhaustive list.
 
@@ -225,7 +230,7 @@ In the first proposal, questions have a context-independent meaning -- in the se
 
 In the second proposal, the meaning of a question is \emph{underspecified} and its interpretation depends on the decision problem. In particular, because the questioner is assumed to be rational, the answerer chooses the interpretation that would maximize the expected value of the answer. We take these proposals as a starting point for the meaning of questions in our models.
 
-\section{A Rational Speech Act model of \\questions and answers in dialogue}
+\section{A Rational Speech Act model of \\ asking and answering questions}
 
 \subsection{Overview}
 
