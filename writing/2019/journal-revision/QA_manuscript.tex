@@ -209,25 +209,33 @@ More specific \emph{wh}-questions like ``Who passed the examination?'' may also 
 If an instructor asks their teaching assistants this quesiton in a meeting, they likely want an \emph{exhaustive} list, while a group of students talking amongst themselves may only care about a \emph{selective} list of relevant entities \cite{SchulzVanRooij06_ExhaustiveInterpretation}.
 
 % "WHY ARE WE DOING THIS?" paragraph
-Taken together, this body of work suggests that \emph{goal-relevance} is a critical feature of question-answering: answerers routinely go beyond the literal meaning of a question to help the questioner achieve their underlying goals. Note that the vast majority of prior work on question-answer behavior has focused on the \emph{answerer}, holding the question constant and investigating the effect of different contexts. 
-However, questioners must also select between many alternative questions in order to achieve their goal and it remains unclear to what degree their choice is affected by social context. 
-Next, we review a set of formal proposals about the questioner's role in dialogue.  
+Taken together, this body of work suggests that \emph{goal-relevance} is a critical feature of question-answering: answerers routinely go beyond the literal meaning of a question to help the questioner achieve their underlying goals. 
+The bulk of prior work on goal-sensitivity in inquiry has focused on the \emph{answerer}, holding the question constant and investigating the effect of different contexts, so the extent to which the \emph{questioner}'s choice is affected by social context remains unclear. 
+Next, we turn to a set of formal proposals about how .  
 
 \subsection{Formal approaches to goal-sensitivity in inquiry}
 
 The earliest attempts to construct artificial agents who could answer natural-language questions in a goal-sensitive manner took place within the artificial intelligence community \cite{Simmons65_QuestionsComputer, Lehnert77_QuestionAnswering, AllenPerrault80_IntentionUtterances, GreenCarberry94_IndirectAnswersModel, MollaVicedo07_QARestrictedDomains}. 
-Many of these classic systems were essentially highly domain-restricted interfaces for databases, with applications in customer service, technical support, health care, or financial consulting
+Many of these classic systems were essentially domain-restricted interfaces for databases, with applications in customer service, technical support, health care, or financial consulting
 Other systems, however, built on insights from early work in cognitive science to represent questioner intentions as schemas or plans. 
 For instance, the system designed by \citeA{AllenPerrault80_IntentionUtterances} used a set of logical rules to generate a space of possible plans, searched this space using a set of heuristics, identified obstacles to fulfilling this plan, and finally took a set of actions to address the obstacles for the questioner. 
-These systems never 
+Because these systems relied heavily on problem-specific rules and heuristics, it has not been straightforward to generalize them into a broader computational framework for inquiry.
 
-At the same time, linguists have developed formal theories of what questions and answers mean in the first place, mainly focusing on the notion of informativeness. In Groenendijk and Stokhof's \citeyear{GroenendijkStokhof84_SemanticsOfQuestions} foundational work on question and answer semantics, asking a question induces a partition over the space of possible worlds, where each cell of the partition corresponds to a possible complete answer. An answer, then, consists of eliminating cells in this partition, and the most useful answers are those that eliminate all relevant alternatives to the true world. However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others \cite{Ginzburg95_ResolvingQuestions} have pointed out, this predicts that wh-questions like ``Where do they sell Italian newspapers in Amsterdam?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location in the city. Clearly, this is not the case: a single nearby location would suffice. Even theories that allow for `mention-some' answers cannot account for contextual variation in what counts as a useful answer: if a media executive asked this same question at a corporate meeting, they might legitimately be requesting an exhaustive list.
+A more promising thread of formal work on goal-sensitivity in inquiry has been developed in the linguistics literature on questions \cite<see>[for a thorough review of this literature]{ciardelli2018inquisitive}. 
+It is a fundamental problem in formal semantics to precisely define the meaning of questions and answers. 
+Early approaches simply identified the meaning of a question with a set of possible answers  \cite{hamblin1973questions,Karttunen77_SyntaxSemanticsQuestions}.
+Later work by \citeA{GroenendijkStokhof84_SemanticsOfQuestions} pointed out several limitations of these naive approaches and  formulated an elegant account where that questions have a \emph{single} exhaustive answer in each world. 
+Because each world has a unique answer, questions induce a \emph{partition} over the space of possible worlds, where each cell of the partition corresponds to a different answer and all worlds in a particular cell have the same answer.
+%However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others have pointed out, this predicts that wh-questions like ``Where do they sell Italian newspapers in Amsterdam?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location in the city. Clearly, this is not the case: a single nearby location would suffice. Even theories that allow for `mention-some' answers cannot account for contextual variation in what counts as a useful answer: if a media executive asked this same question at a corporate meeting, they might legitimately be requesting an exhaustive list.
 
-\todo[inline]{Revamp this section as discussed in rebuttal}
-More recent linguistic theories have tried to fix these problems by introducing some consideration of the questioner's goals. \citeA{VanRooy03_QuestioningDecisionProblems}, for instance, formalizes these goals in terms of a decision problem faced by the questioner and assumed to be in common ground. He considers two proposals for how meanings depend on this decision problem, ultimately arguing for the second. 
+While these accounts grapple with subtle semantic phenomena, the meanings they assign are entirely context-independent. 
+A question like ``Where are you?'' will always induce the same partition, demanding the same answers.
+Several accounts have argued that the `goodness' of an answer ought to be defined relative to questioner goals  \cite<e.g>{Ginzburg95_ResolvingQuestions,AsherLascarides98_QuestionsInDialogue} but the most influential formal model is due to \citeA{VanRooy03_QuestioningDecisionProblems}.
+This account proposes that people ask questions to resolve \emph{decision problems}, so the utility of an answer ought to be evaluated \emph{with respect to that decision problem}.  
+In a decision-theoretic framework similar to that used in OED models, the questioner therefore chooses the question that maximizes their expected information gain, assuming that the answerer is cooperative and will choose goal-relevant answers.
 
+He considers two proposals for how meanings depend on this decision problem, ultimately arguing for the second. 
 In the first proposal, questions have a context-independent meaning -- in the sense that an interrogative sentence always creates the same partition on worlds -- but the extent to which an answer is \emph{useful} or \emph{resolving} is determined by the decision problem. In particular, a useful answer under this account is one that maximizes the expected value of the questioner's decision problem, even if it is not a complete semantic answer. 
-
 In the second proposal, the meaning of a question is \emph{underspecified} and its interpretation depends on the decision problem. In particular, because the questioner is assumed to be rational, the answerer chooses the interpretation that would maximize the expected value of the answer. We take these proposals as a starting point for the meaning of questions in our models.
 
 \section{A Rational Speech Act model of \\ asking and answering questions}
