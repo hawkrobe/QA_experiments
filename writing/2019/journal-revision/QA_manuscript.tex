@@ -1031,6 +1031,15 @@ We often need to achieve multiple subgoals in pursuit of a larger, more abstract
 These more structured representations have also been key to explaining third-party goal inferences in Bayesian models of theory of mind \cite{BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. 
 For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we simply infer that they intend to run this errand as a subgoal of their ultimate goal of getting home. 
 
+\begin{figure*}[th!]
+\begin{center}
+\includegraphics[scale = .9]{Exp2/task.pdf}
+\end{center}
+\caption{(A) Task displays and (B) procedure for Experiment 2.}
+%\vspace{-1cm}
+\label{fig:exp2task}
+\end{figure*}
+
 The hierarchical structure of goals has also long been recognized in linguistic theories of questions in discourse  \cite{Kuppevelt95_TopicalityDiscourse,Roberts96_InformationStructureDiscourse,Buring03_DtreesBeansBaccents,Groenendijk99_LogicOfInterrogation,rojas2014discourse}.
 For instance, if a traveler asks \emph{Are there window seat tickets to Berlin at 7:00?} and there are no such tickets available, it would be more helpful for the travel agent to respond \emph{the next available tickets are for 10:00} than \emph{no} \cite{rojas2013roadsigns}.
 This has been understood as a recognition by the agent that the specific flight and seat preference mentioned by the traveler are subgoals in a hierarchy below the broader goal of getting to Berlin. 
@@ -1038,15 +1047,6 @@ This has been understood as a recognition by the agent that the specific flight 
 Structured goals of this type are naturally accommodated by our framework. 
 To show this, we designed a simple Hidden Goal collection game inspired by recent experiments in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
 Furthermore, this task presented the opportunity to more strongly test the pragmatic questioner model $Q_2$.
-
-\begin{figure*}[tbh!]
-\begin{center}
-\includegraphics[scale = .7]{Exp2/task.pdf}
-\end{center}
-\caption{(A) Task displays and (B) procedure for Experiment 2.}
-%\vspace{-1cm}
-\label{fig:exp2task}
-\end{figure*}
 
 
 As in Experiment 1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
@@ -1089,12 +1089,12 @@ Each trial proceeded through the same four phases as Experiment 1.
 Questioners were first assigned a ``combo'' to complete out of a shared list of possible alternatives and used dropdown menus to choose a suit and rank to ask about (e.g. ``Where is the king of hearts?'').
 Upon seeing this question, the answerer selected either one or two cards to reveal to the questioner and the questioner was then shown the locations of these cards.
 
-If all of the cards in their combo were revealed, participants advanced to the next trial; if not, the questioner was prompted to ask a follow-up question.
-It was always possible to complete the combo in a single question.
-To incentivize performance, we therefore gave a bonus when the exact cards in the combo were revealed. 
+If all of the cards in their combo were revealed, participants advanced to the next trial; if not, the questioner was prompted to try again.
+It was always possible to complete the combo in a single exchange.
+To incentivize performance, we gave a bonus when the exact cards in the combo were revealed on their first try. 
 
-The trial sequence was thus constructed such that each participant saw each of the three trial types (baseline, overlapping, and catch trials) once as questioner and once as answerer for a total of six trials.
-Trials thus appeared in two blocks corresponding to each role, with the sequence of conditions randomized within each block. 
+The trial sequence was constructed such that each participant saw each of the three trial types (baseline, overlapping, and catch trials) once as questioner and once as answerer for a total of six trials.
+We grouped trials into two blocks, one for each role, with the sequence of conditions randomized within each block.
 The starting role was counterbalanced across participants.
 
 Unlike Experiment 1, which used a real-time multi-player methodology to ensure participants knew they were playing with a real partner, we decided in this experiment that the benefit of such minimal interaction was not worth the loss in control over the input given to participants.
