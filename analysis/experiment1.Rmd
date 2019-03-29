@@ -11,6 +11,7 @@ library(tidyboot)
 library(ggthemes)
 library(lme4)
 library(lmerTest)
+library(brms)
 
 #library(GGally)
 # library(coda)
@@ -131,17 +132,31 @@ cor(corData_a)
 
 ### Answerer deviation from uniform
 
-for example:
+statistical results:
 
 ```{r}
-# Collapse across domains
-overall_distribution = d_a %>% 
-  group_by(utterance, type, response) %>% 
-  summarize(count = sum(count))
+D.ans <- d %>% 
+  filter(type == 'branching') %>% 
+  filter(questionNodes == 'Q4') %>% 
+  group_by(domain, answerNodes) %>% 
+  summarize(counts = n()) %>%
+  complete(answerNodes,  fill = list(counts = 0)) %>%
+  mutate(answerNodes = factor(answerNodes, levels = c('A4', 'A3', 'A2', 'A1'))) %>%
+  mutate(A4diff = ifelse(answerNodes == 'A4', 1, 0))
 
-overall_distribution %>% 
-  filter(utterance == 'Q4' & type == 'branching') %>%
-  mutate(prob = count / sum(count))
+null.A = glmer(counts ~ 1 + (1 | domain), 
+           data=D.ans, family=poisson(),
+            control=glmerControl(optimizer='Nelder_Mead', 
+                      optCtrl=list(maxfun=2e5) ))
+summary(null.A)
+
+full.A = glmer(counts ~ 1 + A4diff + (1 + A4diff | domain), 
+           data=D.ans, family=poisson(),
+            control=glmerControl(optimizer='Nelder_Mead', 
+                      optCtrl=list(maxfun=2e5) ))
+summary(full.A)
+
+anova(null.A, full.A)
 ```
 
 get CIs for plots
@@ -209,14 +224,44 @@ ggsave("../writing/2016/journal-manuscript/figures/BranchingModelComparison.pdf"
        width = 4, height=3)
 ```
 
-statistical test:
+### Questioner overlapping condition
+
+get statistical result
 
 ```{r}
-chisq.test(subset(overall_distribution, 
-                  utterance == "Q4"& type == "branching")$count)
-```
+D.quest <- d %>% 
+  filter(type == "overlapping") %>%
+  filter(goalNodes == "G2") %>%
+  group_by(domain, questionNodes) %>% 
+  summarize(counts = n()) %>%
+  complete(questionNodes,  fill = list(counts = 0)) %>%
+  mutate(Q2Q3_same = ifelse(questionNodes %in% c('Q2', 'Q3'), 1, -1),
+         Q2Q3_diff = case_when(questionNodes == 'Q2' ~ 1, 
+                               questionNodes == 'Q3' ~ -1, 
+                               TRUE ~ 0),
+         Q1Q4_diff = case_when(questionNodes == 'Q1' ~ 1, 
+                               questionNodes == 'Q4' ~ -1, 
+                               TRUE ~ 0))
 
-### Questioner overlapping condition
+extra.null.Q = glmer(counts ~ 1 + (1 | domain), 
+           data=D.quest, family=poisson,
+            control=glmerControl(optimizer='Nelder_Mead', 
+                      optCtrl=list(maxfun=2e5) ))
+summary(extra.null.Q)
+
+null.Q = glmer(counts ~ 1 + Q2Q3_same + (1 + Q2Q3_same | domain), 
+           data=D.quest, family=poisson,
+            control=glmerControl(optimizer='Nelder_Mead', 
+                      optCtrl=list(maxfun=2e5) ))
+summary(null.Q)
+
+full.Q = glmer(counts ~ 1 + Q2Q3_same + Q2Q3_diff + (1 + Q2Q3_same + Q2Q3_diff | domain),
+           data=D.quest, family=poisson(), 
+           control=glmerControl(optimizer='Nelder_Mead', 
+                                optCtrl=list(maxfun=2e5) ))
+summary(full.Q)
+anova(extra.null.Q, null.Q, full.Q)
+```
 
 Make plot
 
@@ -233,9 +278,7 @@ collapsed_q <- d %>%
   select(goal, type, response, count, lower_ci, upper_ci, 
          groupSize, empirical) %>%
   mutate(source = 'empirical')
-```
 
-```{r}
 Q0 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q0_unif') %>%
   filter(alpha == 10 & beta == 0) %>%
   mutate(source = 'Q0') 
@@ -266,6 +309,7 @@ plot
 cbPalette = c(rgb(.6, .6, .4), rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
 plottableQ = collapsed_q %>% 
   filter(goal == "G2") %>%
+  filter(condition == 'overlapping') %>%
   ungroup() %>%
   select(-type, -count, -goal, -groupSize) %>%
   rename(prob = empirical, question = response) %>%
@@ -290,39 +334,6 @@ plottableQ = collapsed_q %>%
 
 ggsave("../writing/2016/journal-manuscript/figures/OverlappingModelComparison.pdf", 
        width = 4, height=3)
-```
-
-get statistical result
-
-```{r}
-cat('Q2:', round(subset(plottableQ, response == 'cat?')$empirical, 2))
-cat('\nQ3:', round(subset(plottableQ, response == 'pet?')$empirical, 2))
-
-diffScore <- function(data, indices) {
-  d <- data[indices,] %>%
-    group_by(response) %>%
-    summarize(count = n()) %>%
-    ungroup() %>%
-    mutate(prob = count / sum(count)) %>%
-    select(-count) %>%
-    spread(response, prob)
-  return(d$Q2 - d$Q3)
-}
-
-bootRes = d %>% 
-  mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
-  mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
-  group_by(goal,type) %>%
-  filter(type == "overlapping") %>%
-  filter(goal == "G2") %>%
-  boot(statistic = diffScore,R=1000) 
-
-estimate <- round(bootRes$t0,2)
-lowerDiffScore <- round(boot.ci(bootRes, type = "perc")$percent[4],2)
-upperDiffScore <- round(boot.ci(bootRes, type = "perc")$percent[5],2)
-cat(paste0(c('\nQ3-Q2 = ', estimate,
-             '[', lowerDiffScore, 
-             ', ', upperDiffScore, ']')))
 ```
 
 # Interactive Experiment

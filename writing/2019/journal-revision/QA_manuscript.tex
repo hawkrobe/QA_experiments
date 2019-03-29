@@ -701,13 +701,6 @@ In Experiment 1, we extend our model with an underlying formal account of defini
 In Experiment 2, we show how the model extends to more structured spaces of hierarchical goals.
 And finally, in Experiment 3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
 
-\begin{figure*}[th!]
-\begin{center}
-\includegraphics[scale = .5]{Exp1/hierarchyStructureExamples.pdf}
-\end{center}
-\caption{\footnotesize  Example of each condition of conceptual hierarchy used in our experiment. Example stimuli are shown for the \emph{animals} domain, but the other conceptual domains were structurally identical.}
-\label{fig:hierarchyStructures}
-\end{figure*}
 \section{Experiment 1: \\ Definite reference and salience}
 
 %%%
@@ -717,6 +710,14 @@ On each trial, four objects are hidden behind four doors.
 One player -- the \emph{questioner} -- is assigned one of the objects to find as a private goal but does not know which object is behind which door (Fig. \ref{fig:expviews}A).
 The other player -- the \emph{answerer} -- knows each object's true location but does not know which one the questioner is looking for (Fig. \ref{fig:expviews}B). 
 To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully so that his partner can guess the location of her goal object more accurately (Fig. \ref{fig:expviews}C).
+
+\begin{figure*}[th!]
+\begin{center}
+\includegraphics[scale = .5]{Exp1/hierarchyStructureExamples.pdf}
+\end{center}
+\caption{\footnotesize  Example of each condition of conceptual hierarchy used in our experiment. Example stimuli are shown for the \emph{animals} domain, but the other conceptual domains were structurally identical.}
+\label{fig:hierarchyStructures}
+\end{figure*}
 
 Critically, we manipulated the sets of goals, questions, and answers across trials to create a number of different scenarios where our models make distinguishable predictions.
 To do so, we exploited the hierarchical conceptual structure provided by nominal referring expressions.
@@ -774,40 +775,57 @@ Both players received feedback about the outcome of the guess: the questioner sa
 \subsection{Qualitative behavioral predictions}
 
 Before proceeding to quantitative model comparisons, we highlight several key patterns in the behavioral data where models make qualitatively different predictions. 
-Because there was high pairwise correlation $(r = 0.91 \textrm{ to } 0.97)$ in response probabilities among different domains for both questioners and answerers\footnote{with the exception of the `place' domain in answerers, which is likely due to a confusing choice of object images ($r = 0.78$; see Supp. Table \ref{table:experiment4correlations})}, we pool response counts across domains.
-For readability, we continue using examples from the ``animal'' domain when reporting these qualitative results.
+This allows us to \emph{falsify} certain models on the basis of failing to predict these qualitative patterns \cite{palminteri2017importance}.
+Because these predictions are based purely on the hierarchy structures, we treat the four domains as item-level effects, but continue using examples from the ``animal'' domain for readability.
 
 \subsubsection{Answerer behavior}
 The most straightforward qualitative prediction distinguishing our answerer models concerns the \emph{nested} condition. 
 This condition was characterized by four successively more specific labels, ranging from the super-ordinate ``animal'' to the sub-ordinate ``Dalmatian.'' 
 At each layer of conceptual nesting, one of the objects in context was excluded: ``animal'' is true of all four objects, ``pet'' is true of three, and so on.
-Thus, some answerer behavior is obvious and predicted by both $A_1$ and $A_2$: when asked ``Where is the \emph{Dalmatian}?'', 100\% of participants revealed the location of the Dalmatian.
+The aggregated answerer response distribution across domains is shown for all possible questions in Fig.\ref{fig:exp1qualitative}A.
 
-Other questions, however, lead to sharp qualitative differences.
+Some answerer behavior is straightforwardly predicted by both $A_1$ and $A_2$: when asked ``Where is the \emph{Dalmatian}?'', 100\% of participants revealed the location of the Dalmatian.
+Other questions, however, lead to sharp qualitative differences between models.
 Suppose the questioner asks ``Where is the \emph{animal}?''. 
 Neither $A_0$ nor $A_1$ have a preference over which of the animals to provide information about, because all four satisfy the literal meaning of the question. 
-Human participants, on the other hand, have a strong preference: 94\% provided the location of the ``whale,'' the object that isn't queried by any of the other questions, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}A).
+Human participants, on the other hand, displayed a strong preference across domains: 94\% provided the location of the ``whale,'' the object that isn't queried by any of the other questions.
 
-This strong non-uniform pattern %, also found by \citeA{HawkinsStuhlmullerDegen15_qAndA}, 
-is only consistent with $A_2$. 
-To understand this, consider the Gricean inference that can be made about the underlying goal from the utterance ``Where is the animal?''
-$A_2$ reasons that if the questioner were looking for the Dalmatian, they would be more likely to ask ``Where is the Dalmatian?'' 
+We statistically tested the non-uniformity of this distribution while accounting for domain-level variability by running a log-linear mixed-effects model with random effects for domain\footnote{Because of the small number of responses per participant, we were unable to also estimate participant-level random effects. We considered controlling for domain more important, however --- although there high agreement in responses across domains overall, the `place' domain was a notable outlier due to a confusing choice of images (see Appendix Table 1).}. 
+Specifically, we used a Poisson linking function to predict the (log) count data for each response level, as implemented in \texttt{lme4} \cite{bates2014fitting}.
+Our null model contained only a fixed intercept, and random intercepts for each domain, capturing the qualitative prediction of $A_0$ and $A_1$ that all response levels share the same frequency.
+We compared this to an alternative model adding an additional regressor that was dummy-coded 1 for ``whale'' and 0 for the other levels, allowing the model flexibility to break the symmetry.
+Because these models are nested, we used a likelihood-ratio test comparison accounting for additional degrees of freedom. 
+We found that the null model representing $A_1$ was strongly rejected, $\chi^2(3) = 181, p < 0.001$.
+%Most simply, we collapsed response counts across the domains and conducted a chi-squared goodness of fit test, finding significant deviation from a uniform distribution, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}A).
+
+This non-uniform pattern is only consistent with the predictions of $A_2$. 
+To understand why, consider the Gricean inference that can be made about the underlying goal from hearing the utterance ``Where is the animal?''.
+$A_2$ reasons that if the questioner were looking for the Dalmatian, they would be more likely to ask ``Where is the Dalmatian?''. 
 If looking for the other dog, the poodle, they would have asked ``Where is the dog?''
-More generally, they would have been more likely to ask a more direct question under any goal except the ``whale'', and the fact that they \emph{didn't} ask one of these more direct questions is evidence that they didn't have these goals.
+More generally, they would have been more likely to ask a more direct question under any goal except the ``whale,'' and the fact that they \emph{didn't} ask one of these more direct questions is evidence that they didn't have these goals.
 Having inferred that the most likely goal is the whale, $A_2$ gives the most informative, relevant answer: the location of the whale.
 
 \subsubsection{Questioner behavior}
-Next, we turn to a subtler qualitative pattern in the ``overlapping'' condition, which was specifically designed to distinguish between our \emph{questioner} models. 
-Suppose the questioner is assigned the ``house cat'' as their goal object. 
-What question do they ask? 
-$Q_0$ is equally likely to ask any of the four questions, since $A_0$ ignores their utterance anyway. 
-$Q_1$, in turn, is evenly split between the two parents in the tree -- ``Pet?'' and ``Cat?'' -- since $A_1$ would have a 50\% chance of responding with the house cat's location in either case. 
+Next, we turn to a subtler qualitative pattern in the ``overlapping'' condition, which was designed to distinguish between our \emph{questioner} models. 
+The aggregated counts of participants asking each possible question in this condition are shown in Fig. \ref{fig:exp1qualitative}B. 
+One goal in particular leads to qualitatively diverging predictions across models: suppose the questioner is assigned the ``house cat'' as their goal object (the row highlighted in green). 
+$Q_0$ is equally likely to ask any of the four questions in this scenario, since $A_0$ ignores their utterance anyway. 
+$Q_1$, in turn, is evenly split between the two parents in the tree -- ``Pet?'' and ``Cat?'' --- it reasons that $A_1$ would have a 50\% chance of responding with the house cat's location in either case. 
+Empirically, we observed that 64\% of questioners asked ``Cat?'' while only 25\% asked ``Pet?''
 
-$Q_2$, however, takes into account the goal inferences $A_2$ would make after hearing her question. 
+We again used a mixed-effects regression model to account for domain-level variability when testing whether these probabilities deviated from uniform.
+Our simplest model only contains a fixed intercept, forcing all responses to be generated from the same parameter.
+Our second model, representing $Q_1$'s qualitative predictions, adds a categorical predictor coded 1 for ``Cat?'' and ``Pet?'' and -1 for the other two responses, thus forcing the former two responses to share a single parameter.
+Our final model added an orthogonal contrast allowing ``Cat?'' and ``Pet?'' to be different (i.e. 1 for ``Cat?'', -1 for ``Pet?''). 
+All of these models contained domain-level random effects for each fixed-effect regressor.
+We found in a nested likelihood-ratio test that the second model was significantly preferred to the intercept-only model, $\chi^2(3) = 49, p < 0.001$, but that the third model allowing the ``Cat?'' and ``Pet?'' to differ was significantly preferred over the model forcing them to be the same, $\chi^2(4) = 26, p < 0.001$.
+This allows us to falsify $Q_0$ and $Q_1$ because they fail to capture this qualitative asymmetry.
+
+$Q_2$, on the other hand, successfully predicts this asymmetry (see Fig. \ref{fig:exp1qualitative}B) because it takes into account the goal inferences $A_2$ would make after hearing her question. 
 Once $A_2$ hears ``Cat?'' he will infer, using the same Gricean logic described above, that because the more specific ``Lion?'' is an available alternative for the questioner, she would have \emph{directly} asked about it if it were her goal. 
 Because she didn't, he infers that she must be interested the other cat (her true goal). 
 ``Pet?'' on the other hand, gives no clue to her goals and is therefore less preferred. 
-Thus, we have a pair of sharply distinguishable predictions: $Q_0$ predicts all four questions will be equally likely, $Q_1$ predicts that ``Pet?'' and ``Cat?'' will be equally likely, and $Q_2$ predicts an asymmetry where ``Cat?'' is the preferred question.
+This critical condition thus provides qualitative evidence for $Q_2$: in some cases, questioners consider the answerer's inference about their goals when selecting their question. 
 
 %
 %\begin{figure}[t!]
@@ -818,9 +836,8 @@ Thus, we have a pair of sharply distinguishable predictions: $Q_0$ predicts all 
 %\label{fig:Exp4ZoomedIn}
 %\end{figure}
 
-The counts of participants asking each possible question in this scenario, collapsed across domains, is shown in Fig. \ref{fig:exp1qualitative}B. 
-We find that the pragmatic model $Q_2$ makes the correct qualitative prediction -- the empirical probability of asking ``Cat?'' ($\hat{p} = 0.64$) is significantly different from the  probability of asking ``Pet?'' ($\hat{p} = 0.25$; bootstrapped $95\%$ CI on difference: $[0.17, 0.58]$). 
-This critical condition thus provides qualitative evidence for $Q_2$: in some cases, questioners consider the answerer's inference about their goals when selecting their question. 
+
+%We find that the pragmatic model $Q_2$ makes the correct qualitative prediction -- the empirical probability of asking ``Cat?'' ($\hat{p} = 0.64$) is significantly different from the  probability of asking ``Pet?'' ($\hat{p} = 0.25$; bootstrapped $95\%$ CI on difference: $[0.17, 0.58]$). 
 
 %Thus, in examining the results below we will collapse across domains for simplicity of analysis. 
 %Still, it is worth noting that the ``place'' domain has the lowest inter-domain correlations for both questioners and answerers, indicating that it may be an outlier -- we will return to this point in the discussion below.  Next, we step through the response patterns for each hierarchy type. For concreteness, though all statistical tests were conducted on data pooled across domains, we report our results in terms of the `animal' domain instead of the abstract goal, question, and answer labels (see Figure \ref{fig:exp4res} for the full response distributions).
