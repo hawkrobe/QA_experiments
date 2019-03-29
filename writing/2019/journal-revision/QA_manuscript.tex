@@ -709,7 +709,7 @@ As a first quantitative test of our models, we designed a cooperative guessing g
 On each trial, four objects are hidden behind four doors.
 One player -- the \emph{questioner} -- is assigned one of the objects to find as a private goal but does not know which object is behind which door (Fig. \ref{fig:expviews}A).
 The other player -- the \emph{answerer} -- knows each object's true location but does not know which one the questioner is looking for (Fig. \ref{fig:expviews}B). 
-To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully so that his partner can guess the location of her goal object more accurately (Fig. \ref{fig:expviews}C).
+To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully a location so that the questioner can guess the location of their goal object more accurately (Fig. \ref{fig:expviews}C).
 
 \begin{figure*}[th!]
 \begin{center}
@@ -721,11 +721,10 @@ To succeed in the face of this knowledge asymmetry, the questioner must first as
 
 Critically, we manipulated the sets of goals, questions, and answers across trials to create a number of different scenarios where our models make distinguishable predictions.
 To do so, we exploited the hierarchical conceptual structure provided by nominal referring expressions.
-For example, a questioner could ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all could plausibly be referring to a Dalmatian in the answerer's view \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. 
-However, among these labels, only ``animal'' could truthfully refer to a whale.
-This structure allowed us to introduce a family of indirect questions and answers by carefully selecting how the four objects are conceptually related to one another, and which questions are made available.
+For example, a questioner could ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all could plausibly describe an image of a Dalmatian in the answerer's view \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. 
+However, among these labels, only the super-ordinate label ``animal'' could describe an image of a whale.
+These conceptual relationships, in conjunction with common knowledge of alternative questions and answers, license different pragmatic inferences.
 
-%These restrictions were motivated by one of the key features of indirect questioning: when the direct question (e.g. ``may I eat your food?'') is suppressed due to politeness, utterance length, complexity, or some other intervening factor, questioners instead rely on a pragmatic indirect question (e.g. ``are you going to eat that?''). 
 
 
 \subsection{Methods}
@@ -776,13 +775,13 @@ Both players received feedback about the outcome of the guess: the questioner sa
 
 Before proceeding to quantitative model comparisons, we highlight several key patterns in the behavioral data where models make qualitatively different predictions. 
 This allows us to \emph{falsify} certain models on the basis of failing to predict these qualitative patterns \cite{palminteri2017importance}.
-Because these predictions are based purely on the hierarchy structures, we treat the four domains as item-level effects, but continue using examples from the ``animal'' domain for readability.
+Because these predictions are based purely on the hierarchy structures, we treat the four domains as distinct items in our analyses but continue using examples from the ``animal'' domain for readability.
 
 \subsubsection{Answerer behavior}
 The most straightforward qualitative prediction distinguishing our answerer models concerns the \emph{nested} condition. 
 This condition was characterized by four successively more specific labels, ranging from the super-ordinate ``animal'' to the sub-ordinate ``Dalmatian.'' 
 At each layer of conceptual nesting, one of the objects in context was excluded: ``animal'' is true of all four objects, ``pet'' is true of three, and so on.
-The aggregated answerer response distribution across domains is shown for all possible questions in Fig.\ref{fig:exp1qualitative}A.
+The aggregated answerer response distribution across domains is shown for all possible questions in Fig.~\ref{fig:exp1qualitative}A.
 
 Some answerer behavior is straightforwardly predicted by both $A_1$ and $A_2$: when asked ``Where is the \emph{Dalmatian}?'', 100\% of participants revealed the location of the Dalmatian.
 Other questions, however, lead to sharp qualitative differences between models.
@@ -793,9 +792,9 @@ Human participants, on the other hand, displayed a strong preference across doma
 We statistically tested the non-uniformity of this distribution while accounting for domain-level variability by running a log-linear mixed-effects model with random effects for domain\footnote{Because of the small number of responses per participant, we were unable to also estimate participant-level random effects. We considered controlling for domain more important, however --- although there high agreement in responses across domains overall, the `place' domain was a notable outlier due to a confusing choice of images (see Appendix Table 1).}. 
 Specifically, we used a Poisson linking function to predict the (log) count data for each response level, as implemented in \texttt{lme4} \cite{bates2014fitting}.
 Our null model contained only a fixed intercept, and random intercepts for each domain, capturing the qualitative prediction of $A_0$ and $A_1$ that all response levels share the same frequency.
-We compared this to an alternative model adding an additional regressor that was dummy-coded 1 for ``whale'' and 0 for the other levels, allowing the model flexibility to break the symmetry.
+We compared this to an alternative model adding an additional regressor that was dummy-coded 1 for ``whale'' and 0 for the other levels, allowing flexibility to break the symmetry.
 Because these models are nested, we used a likelihood-ratio test comparison accounting for additional degrees of freedom. 
-We found that the null model representing $A_1$ was strongly rejected, $\chi^2(3) = 181, p < 0.001$.
+We found that the intercept-only model was strongly rejected in favor of the non-uniform model, $\chi^2(3) = 181, p < 0.001$.
 %Most simply, we collapsed response counts across the domains and conducted a chi-squared goodness of fit test, finding significant deviation from a uniform distribution, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}A).
 
 This non-uniform pattern is only consistent with the predictions of $A_2$. 
@@ -1396,7 +1395,7 @@ We thus evaluated the likelihood of our data, excluding the first six practice t
 $$
 \begin{array}{rcl}
 \alpha_Q & \sim & \textrm{unif}(0, 59) \\
-\alpha_A & \sim & \textrm{unif}(0, 20) \\
+\alpha_A & \sim & \textrm{unif}(0, 19) \\
 \beta_c & \sim & \textrm{unif}(0, 3)
 \end{array}
 $$
@@ -1405,9 +1404,9 @@ We found that the pragmatic model $A_2$ was able to fit the answerer data substa
 $A_2$ was maximized at $\alpha_Q = 59; \alpha_A = 2.7, \beta_c = 0.9$ while $A_1$ attained its maximum fit at $\alpha_Q = 1, \alpha_A = 11, \beta_c = 0.1$. 
 The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}, indicating a good overall fit to human responses.
 
-Because Exp.~3 was not designed to distinguish our questioner models (unlike Exp.~1-2), we expected that they would made similar predictions for most trials. 
-Indeed, the difference in the maximum (log) likelihood for the two models was only 0.68, 
-These predictions, however, also provided a good overall fit to human responses (see Fig. \ref{fig:exp3predictives}).
+Because Exp.~3 was not designed to distinguish our questioner models (unlike Exp.~1-2), we expected that $Q_1$ and $Q_2$ would made similar predictions for most trials. 
+Indeed, the difference in the maximum log-likelihood for the two models was only $d=0.68$, indicating parity in fit.
+These predictions also provided a good overall fit to human responses (see Fig. \ref{fig:exp3predictives}).
 
 \begin{figure}[t!]
 \begin{center}
@@ -1438,10 +1437,15 @@ These predictions, however, also provided a good overall fit to human responses 
 %\todo[inline]{Might split this into subsections?}
 % \subsection{Summary of what we did}
 
-Asking questions is one of our most efficient and reliable means of learning about the world. Yet we do not often pose these questions to an impartial oracle; we ask other agents, in dialogue. In this paper, we jointly consider the decision problem faced by each agent. Questioners must plan over the possible answers they are likely to receive from their partner and seek to maximize the future reduction in their own uncertainty. Answerers, in turn, seek to informatively and relevantly address the underlying questioner goals most likely to have generated the question. 
+Asking questions is one of our most efficient and reliable means of learning about the world. 
+Yet we do not often pose these questions to an impartial oracle; we ask other agents, in dialogue. In this paper, we jointly consider the decision problems faced by socially aware questioner and answerer agents. 
+Questioners must plan over the possible answers they are likely to receive from their partner and seek to maximize the future reduction in their own uncertainty. 
+Answerers, in turn, seek to informatively and relevantly address the underlying questioner goals most likely to have motivated the question. 
 
 %\todo[inline]{Refactor next paragraph to separate out stuff that's included in the model from external stuff}
-We provided several lines of evidence supporting this theory---formalized in our $A_2$ and $Q_2$ models---over purely informative answerers and asocial oracle questioners. In a series of answerer simulations, we showed that only $A_2$ could qualitatively account for classic answerer-sensitivity effects from \citeA{Clark79_IndirectSpeechActs}: answers depend critically upon the question utterance, the context in which a question is asked, and the relationship between the questioner's underlying goal and their question. We then found strong evidence for $A_2$ and $Q_2$ using question and answer data jointly collected from a real-time, multi-player dialogue experiment, which was further bolstered by enriching our literal question semantics with measured saliency priors. %as well as strong quantitative evidence from a rigorous model comparison on trial-by-trial data. By  in this experiment, we also observed systematic use of indirect questions, as predicted by $Q_1$ and $Q_2$. However, only $Q_2$, who relies on higher-order pragmatic reasoning about what goals an answerer would infer from their question utterance, could account for the critical overlapping condition. 
+We provided several lines of evidence supporting this theory---formalized in our $A_2$ and $Q_2$ models---over asocial questioners and answerers. 
+In a series of answerer simulations, we showed that only $A_2$ could qualitatively account for classic answerer-sensitivity effects from \citeA{Clark79_IndirectSpeechActs}: answers depend critically upon the question utterance, the context in which a question is asked, and the relationship between the questioner's underlying goal and their question. 
+We then found strong qualitative and quantitative evidence for both $A_2$ and $Q_2$ from three dialogue experiments in our \emph{Hidden Goal} paradigm, which further demonstrated the extendability of our core framework. %as well as strong quantitative evidence from a rigorous model comparison on trial-by-trial data. By  in this experiment, we also observed systematic use of indirect questions, as predicted by $Q_1$ and $Q_2$. However, only $Q_2$, who relies on higher-order pragmatic reasoning about what goals an answerer would infer from their question utterance, could account for the critical overlapping condition. 
 %Finally, enriching the semantics of ``Where is \emph{the}\dots?'' questions to use more realistic saliency priors both eliminated a potential confound and also significantly improved our quantitative fit. %, questioners relied on higher-order pragmatic reasoning about what inferences an answerer would make about their own underlying goals when deciding what question to ask, but a Bayesian model comparison showed that the simpler explicit model is sufficient to explain the vast majority of our data.
 
 %In the case of our Experiment 1 hierarchy, there exists a simple, heuristic strategy that produces the same pattern of responses as our model without requiring any social inference. Suppose questioners saw their goal on a given trial and ruled out labels that do not apply (e.g. a `cat' is neither a `dalmatian' nor a `dog'), then picked the most specific of the remaining labels (`pet' picks out a smaller set of objects than `animal'). Whether through use of this heuristic strategy or pragmatic inference (as our model suggests), questioners strongly converged on a single mapping from goals to question utterances. 
@@ -1453,22 +1457,16 @@ A major formal advance of the models considered here is synthesizing current app
 \todo[inline]{Make note that we sorta derived something like inquisitive semantics from purely projective semantics plus generic gricean mechanism? inquisitive semantics explicitly builds in the goal `raising' as part of the meaning of the question, we only get it at $Q_2$}
 
 Our computational framework also has implications for the theoretical treatment of question and answer meanings in linguistics and philosophy of language. 
-First, while the projection-based question semantics we use as the explicit meaning of questions is equivalent to classic partition-based proposals \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions}, %the meaning of the question can technically be described as its set of possible ``answers,'' i.e. the set of states in the image of its projection map, 
+While the projection-based question semantics we use as the explicit meaning of questions is equivalent to classic partition-based proposals \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions}, %the meaning of the question can technically be described as its set of possible ``answers,'' i.e. the set of states in the image of its projection map, 
 our \emph{answerer} agent chooses from an independent set of declarative utterances $\mathcal{A}$, not from any set of cells constrained by the question. 
 This critical dissociation of question meanings, which are informative about \emph{goals} or QUDs, and answer meanings, which are informative about the state of the \emph{world}, is conceptually similar to recent proposals for an \emph{inquisitive semantics} specified in formal logic \cite{ciardelli2013inquisitive, roelofsen2013algebraic}.
 
 The precise relationship between fundamental notions of meaning in inquisitive semantics and meanings in our framework requires further exploration. 
 Still, we conjecture that our further dissociation between underlying semantic meaning and recursive probabilistic mechanisms for goal inference and signaling \emph{given} these meanings may be key to grounding pragmatic question and answer behavior in basic social cognitive mechanisms.
 
-\todo[inline]{Need to say this better}
-Second, our dissociation of question meanings and goals or QUDs raises the interesting possibility that the set of utterable questions is effectively a \emph{subset} of the possible goals one might have: there may not exist an easy-to-express question utterance for every underlying goal an agent may need to address, thus the need for pragmatics.
-%The formulation of these utilities provides a useful connection to current game-theoretic and decision-theoretic models \cite{VogelBodoiaPottsJurafsky13_GricePOMDP, VanRooy03_QuestioningDecisionProblems}, which also emphasize the importance of goals and speaker beliefs in communication.
 %Here, we focused specifically on two sub-cases that are of particular interest for psychological science: (1) selecting a question in the absence of any input, and (2) selecting a declarative statement in response to a question. 
 %In principle this framework allows a dialogue agent to update their beliefs after hearing any type of utterance, then to select any type of utterance in response. 
-
 %The former requires replacing the immediate motive to convey true information with the more distant motive to provoke useful information from one's interlocutor. The latter requires sophisticated inference about the underlying interests of the questioner instead of simply relying upon the literal question semantics. 
-
-% Questioner behavior, however, appeared to be more sensitive to the experimental set-up. In a single-player pilot version of Exp.~1, for example, we did not emphasize certain aspects of the game in the instructions, such as the fact that the answerer knows about the restricted answer set. Our data in this pilot experiment appeared to contain a mixture of explicit and pragmatic answerers and questioners (though other confounds were present in this version). We found the interactive, multi-player version of the task, used in this paper to be more robust to these minor variations. 
 
 %\subsection{Limitations of the model}
 
@@ -1476,11 +1474,44 @@ Second, our dissociation of question meanings and goals or QUDs raises the inter
 
 %While these results provide strong evidence for our claim that question-asking and answering is grounded in sophisticated social reasoning, it is worth more closely examining some choices we made in formulating our Rational Speech Act model. For example, as in previous studies using RSA, we assume that the recursive reasoning process giving rise to pragmatic interpretations grounds out in a base case of literal semantics. We only consider two levels of recursion above this base case, but we could in principle consider a fixed-point at infinity \cite{Franke13_GameTheoryPragmatics}. Alternatively, social reasoning could be grounded not in iterated reasoning but in a joint project or shared intention established by other means \cite{Clark96_UsingLanguage, TomaselloCarpenter___Moll05_IntentionsCulturalCognition}. While we suspect the question-answer domain is not particularly informative for distinguishing between these formulations, we note that additional levels of reasoning tend not to qualitatively change RSA predictions and that our model contains elements of the latter proposal in its assumption that questioners and answerers share priors, sets of alternatives, and semantic meanings in common ground \cite<see>[for further discussion]{LassiterGoodman15_AdjectivalVagueness} 
 
-\todo[inline]{Revamp this section}
-Our model also complements recent work enriching active learning paradigms to allow rich natural-language questions as queries \cite{RotheEtAl16_NaturalLanguageQuestions, CohenLake16_20Q}. The expected information gain (EIG) measure used to choose new queries in these studies is closely related to our questioner formulation. Our most critical innovation to this line of work is embedding active learning in a social, communicative context \cite<see also>{ShaftoGoodmanFrank12_LearningFromOthers, ShaftoGoodmanGriffiths14_Pedagogical}. Instead of computing expected information gain across \emph{all possible} answers, our questioner models take the expected value over a cooperative \emph{dialogue partner} who seeks to be informative and relevant, often going beyond the literal question meaning. This allows questioners to effectively ask indirect questions and is especially important in real-world contexts where there is legitimate uncertainty over the questioner's goals; in a twenty-questions game, the questioner always has the goal of guessing the target object, but in a classroom context, the goal motivating a student's question may not be as obvious. 
-%This allows many classic active learning tasks in cognitive psychology can be modeled as special cases of our \emph{explicit} questioner model. There are two main ways that our framework generalizes Bayesian models of active learning (e.g. XXX): first, it allows for the full range of questions expressible under our natural language semantics rather than restricting the learner to narrow yes/no questions like ``Is this an example of category A?'' Second, because the answerer is a social agent capable of reasoning about the questioner's underlying goals, the questioner could in principle rely on the cooperativity principle to ask additionally informative questions. 
+ 
+\subsection{The correspondence between questions and goals}
 
-How do our assumptions scale up to less constrained interactions? We suspect that the simple, discrete sets of QUDs used in our models above will need to be generalized to continuous spaces and broader mixtures of discourse topics \cite{BleiNgJordan03_LDA, GriffithsSteyversTenenbaum07_Topics}. The computational challenges associated with such complex QUD spaces may contribute to the difficulties young children face in answering broad, sentence-focus questions like ``what's happening?'' \cite{SalomoLievenTomasello13_ChildrenAnsweringQuestions}. To generalize beyond the hand-picked sets of alternative questions and answers used in our models above, we may need to consider conditional frequencies from past interactions or simple deletions and edits from the given question \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. To generalize to dialogues lasting longer than a single exchange, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate, and the longer-term planning needed for agents to reason effectively about such interactions.
+\todo[inline]{ugh, fix this...}
+Our $Q_2$ model predicts that people will ask the question most directly corresponding to their goal if it accessible and easy to produce, because it would be the clearest signal.
+So why would a questioner ever ask a question that didn't directly correspond to their underlying goal? 
+Our dissociation of question meanings and goals or QUDs raises the interesting possibility that the set of easy-to-express utterable questions is effectively a \emph{subset} of the possible goals one might have: there may not exist an easy-to-express question utterance for every underlying goal an agent may need to address, thus the need for pragmatics.
+
+Theoretically, our motivation for formulating the pragmatics of using questions to signal goals came from realistic cases where a question directly corresponding to the goal is either naturally inaccessible or costly to formulate (e.g. if the interrogative sentence with the meaning most closely corresponding to the underlying goal is impolite or would be long or confusing to produce). 
+For instance, when trying to meet up in a city, people regularly ask the shorter question “Where are you?” rather than a more direct “At the intersection of which two streets are you currently located, and which direction are you heading?” (see Potts, 2012). 
+Rather than disallowing certain questions, we would thus observe similar model behavior if we had included these questions in the set of allowable questions but given them higher production costs (this suffices as a coherent theoretical claim). 
+
+Empirically, however, it is challenging to induce such scenarios in the laboratory, so we chose to impose this ‘cost’ externally by disallowing the most obvious questions for some scenarios. 
+Under this constraint, we were able to test the model’s preferences among other questions and found $Q_2$ to be quite accurate relative to $Q_1$. 
+This does not invalidate our model comparison, but it does leave open for future work the empirical challenge of designing a lab task that can naturally modulate the cost of the direct question. 
+Other empirical paradigms for question-asking also tend to impose strict constraints on allowable questions for similar reasons. 
+In games like Battleship or 20 Questions, the truly optimal question would be ``Where are all of your ships?'' or ``Which object are you thinking of?''
+
+\todo[inline]{Revamp this para... Say our work may shed new light on why not generating perfectly optimal questions may not be a problem in social interaction; if they're used to relying on the answerer to make inferences, they may go for a cognitively cheaper question that still effectively signals the goal. so people may still be cognitively limited in their ability to generate questions but these less informative questions may be `resource-rational' given social expectations of cooperativity (see our ToM paper?)}
+Our model also complements recent work enriching active learning paradigms to allow rich natural-language questions as queries \cite{RotheEtAl16_NaturalLanguageQuestions, CohenLake16_20Q}. 
+The expected information gain (EIG) measure used to choose new queries in these studies is closely related to our questioner formulation. 
+Our most critical innovation to this line of work is embedding active learning in a social, communicative context \cite<see also>{ShaftoGoodmanFrank12_LearningFromOthers, ShaftoGoodmanGriffiths14_Pedagogical}. 
+Instead of computing expected information gain across \emph{all possible} answers, our questioner models take the expected value over a cooperative \emph{dialogue partner} who seeks to be informative and relevant, often going beyond the literal question meaning. 
+This allows questioners to effectively ask questions and is especially important in real-world contexts where there is legitimate uncertainty over the questioner's goals; in a twenty-questions game, the questioner always has the goal of guessing the target object, but in a classroom context, the goal motivating a student's question may not be as obvious.
+
+%These restrictions were motivated by one of the key features of indirect questioning: when the direct question (e.g. ``may I eat your food?'') is suppressed due to politeness, utterance length, complexity, or some other intervening factor, questioners instead rely on a pragmatic indirect question (e.g. ``are you going to eat that?''). 
+
+\subsection{Computational challenges}
+
+How do our assumptions scale up to less constrained interactions? 
+We suspect that the simple, discrete sets of QUDs used in our models above will need to be generalized to continuous spaces and broader mixtures of discourse topics \cite{BleiNgJordan03_LDA, GriffithsSteyversTenenbaum07_Topics}. 
+The computational challenges associated with such complex QUD spaces may contribute to the difficulties young children face in answering broad, sentence-focus questions like ``what's happening?'' \cite{SalomoLievenTomasello13_ChildrenAnsweringQuestions}. 
+
+To generalize beyond the hand-picked sets of alternative questions and answers used in our models above, we may need to consider conditional frequencies from past interactions or simple deletions and edits from the given question \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. To generalize to dialogues lasting longer than a single exchange, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate, and the longer-term planning needed for agents to reason effectively about such interactions.
+
+\todo[inline]{ say briefly that taking the exhaustive expectation over all possible worlds does not scale well with the size of the world space...}
+
+\todo[inline]{finally, note that even though we offered a rational analysis of what is required to solve this problem through Bayesian reasoning, aspects of the computation such as the goal prediction problem may be approximated by a feed-forward neural network}
 
 %Finally, although our Bayesian model comparison strongly favored the lower-level questioner model, indicating that the burden of pragmatic reasoning lies primarily on the answerer, it is still unclear under which circumstances questioners engage in an additional level of recursion. In a critical condition designed to test between the models, participants  displayed evidence of this additional level of reasoning, but the difficulty of constructing such a case suggests that such circumstances may be rare. 
 %\todo[inline]{Not sure they're actually that rare... Might just be accessibility bias or difficulty of construction in our experimental paradigm?}
@@ -1499,9 +1530,10 @@ How do our assumptions scale up to less constrained interactions? We suspect tha
 
 %While the artificiality of our question-answer game may distance the behavior of participants from the natural use of language, there are also some benefits to this design. In particular, it is easy in this setting to control the exact space of questions, goals, and answers. While the restrictions on question space may seem peculiar, it is directly motivated by conversational scenarios in everyday usage which feature restrictions on the set of things one can ask about, due to politeness, salience, time cost, and other factors. 
 
+\subsection{Conclusion}
 Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition, BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_Animacy}. A long tradition in psycholinguistics has shown that this expertise extends to speech acts.  Behind every question lies a goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). These wildly different intentions seem to warrant different kinds of answers. %, even if the explicit question is expressed using the same words
 %\todo[inline]{Reformulate this last sentence so that it doesn't sound like we've already accomplished this; make clear that this is something for the future, but that the framework is really exciting because it?s so clear about where one would start fiddling with it}
-By formalizing the recursive utilities of questioner and answerer agents and the computational principles by which agents infer each other's intentions from verbal behavior, our theoretical framework provides a foundation for re-situating dialogue in its social context and capturing the full richness of dialogue behavior.
+By formalizing the recursive utilities of questioner and answerer agents and the computational principles by which agents infer each other's intentions from verbal behavior, our theoretical framework provides a foundation for re-situating question asking and answering in its social context.
 
 \section{\bf Acknowledgments}
 \small
