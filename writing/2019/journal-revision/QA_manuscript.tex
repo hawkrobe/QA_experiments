@@ -81,7 +81,7 @@ Robots that ask questions to clarify commands \cite{DeitsTellex___Roy13_HumanRob
 Students who ask better questions in the classroom tend to be more successful \cite{GraesserPerson94_QuestionAskingTutoring}, and scientists who design their surveys to ask better questions can obtain more informative results \cite{ClarkSchober92_InfluencingAnswers}.
 
 How, then, do people decide which question to ask in a given situation?
-One particularly influential rational account formalizes human inquiry as an \emph{optimal experiment design} (OED) problem \cite{OaksfordChater94_RationalAnalysisSelectionTask,Nelson05_UsefulQuestions,MyungPitt09_OED, GureckisMarkant12_SelfDirectedLearning}, where people choose a question to maximize the knowledge they expect to gain from knowing its answer. 
+One particularly influential rational account formalizes human inquiry as an \emph{optimal experiment design} (OED) problem \cite{OaksfordChater94_RationalAnalysisSelectionTask,Nelson05_UsefulQuestions,MyungPitt09_OED, GureckisMarkant12_SelfDirectedLearning,coenen2018asking}, where people choose a question to maximize the knowledge they expect to gain from knowing its answer. 
 
 A central component in the OED framework is the distribution over possible answers questioners expect to receive after asking a particular question.
 This distribution is typically assumed to be determined by the ground truth outcomes of the task. 
@@ -93,7 +93,7 @@ A: It's a \emph{dax}.}
 In other words, an OED questioner expects answers to come from an impartial oracle that responds truthfully but literally with the requested information.
 This answering strategy has been computationally implemented in sophisticated semantic parsers that extract the logical form of the question and either execute it on the world state \cite{rothe2017question} or efficiently search a database for an entity that satisfies it \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. 
 
-While this `oracle' assumption has been sufficient to capture a wide variety of inquiry phenomena in active learning domains, including causal learning \cite{bramley2015conservative} and sequential information search \cite{RuggeriLombrozo15_ChildrenAdaptQuestions}, it is violated precisely under the social learning conditions where inquiry may be most prevalent and useful: asking linguistic questions to other social agents in cooperative dialogue \cite{coenen2018asking}.
+While this `oracle' assumption has been sufficient to capture a wide variety of inquiry phenomena in active learning domains, including causal learning \cite{bramley2015conservative} and sequential information search \cite{RuggeriLombrozo15_ChildrenAdaptQuestions}, it is violated precisely under the social learning conditions where inquiry may be most prevalent and useful: asking linguistic questions to other social agents in cooperative dialogue.
 Answerers regularly go \emph{beyond} the literal meaning of a question in helpful, context-dependent ways.
 
 A simple example is an indirect speech act, where questioners typically will not be satisfied with a literal yes/no answer to their yes/no question \cite{Clark79_IndirectSpeechActs}:  
@@ -105,7 +105,7 @@ A simple example is an indirect speech act, where questioners typically will not
 %	A: It's on the other side of campus, but there's a shop just down the street with a better selection.}
  
 But answerers will go beyond the literal meaning even for \emph{direct} questions. 
-A corpus study found that 14\% of responses to direct yes/no questions used a full statement instead of a simple ``yes'' or ``no'' \cite{DeMarneffeGrimmPotts09_IndirectAnswersCorpus}:
+A corpus study found that 14\% of responses to direct yes/no questions used a full declarative statement instead of a simple ``yes'' or ``no'' \cite{DeMarneffeGrimmPotts09_IndirectAnswersCorpus}:
 \enumsentence{
 	Q: Is it in Dallas?\\
 	A: Uh, it's in Lewisville.}
@@ -128,12 +128,11 @@ These cases present two immediate challenges for computational models of inquiry
 First, if people do not simply respond literally to questions, how \emph{do} they choose answers? 
 What makes an answer more or less helpful?
 To extend rational models of question asking to social settings, we must first formulate a social and context-sensitive model of question \emph{answering} that captures the relevant psycholinguistic phenomena.
-
 Second, if questions cannot simply be represented as a distribution over their possible (literal) answers, then what is the appropriate representation of a question?
 This problem has been addressed extensively in a largely independent literature in linguistics focusing on the semantics of questions and answers \cite{GroenendijkStokhof84_SemanticsOfQuestions,Ginzburg95_ResolvingQuestions,VanRooy03_QuestioningDecisionProblems,ciardelli2013inquisitive}. 
 These formal accounts have successfully worked through a number of thorny semantic problems, but a psychological account of question \emph{pragmatics} based on these insights has remained elusive.
 
-The present work synthesizes ideas from accounts of questioning in linguistics and psychology to present a unified computational framework addressing these challenges.
+This paper presents a unified computational framework that synthesizes and extends accounts of inquiry in linguistics and psychology to address these challenges.
 %Yet this literature has been 
 % What is needed What do these exchanges have in common? 
 We begin with the idea that the functional conditions for inquiry in social contexts emerge from a \emph{two-sided} asymmetry in beliefs between social agents. 
@@ -145,7 +144,7 @@ This formulation establishes a recursive dependence between the two agents and s
 We make this view formally precise below in a recursive probabilistic model of language understanding, and show that existing OED models of question asking are a special case at lower levels of recursion.
 By adding additional layers of recursive reasoning, we derive a pragmatic answerer that uses the question to infer the questioner's underlying goal and provides an answer that directly attempts to address this goal. 
 A pragmatic questioner, in turn, can then select questions that more clearly signal her goals and intentions.
-This provides an alternative view of the function of a question: not as a request for information, but as a signal about private goals.
+This model supports an alternative view of the function of a question: not as a request for information, but as a signal about private goals \cite{de2012questions}.
 %They may be impolite or embarrassing, they may be too long or costly to fully explain, or she may just not know enough about the topic she's interested in to articulate them.
 %Depending on the circumstances, he can adjust his response to be over- or under-informative with respect to the literal question, or to address a different issue altogether. 
 
@@ -189,7 +188,7 @@ In \citeA{Clark79_IndirectSpeechActs}, for instance, researchers called liquor m
 Before asking the question, they provided some context for their call by saying either ``I want to buy some bourbon'' (the \emph{uninformative} condition) or ``I've got \$5 to spend'' (the \emph{five dollar} condition). 
 These contexts were designed to establish different speaker goals. 
 In the uninformative condition, where the goal was to buy whiskey, the exact price would be relevant information; 
-in the five dollar condition, where the goal was simply to find out whether or not the whiskey was \emph{affordable}, a yes/no answer would suffice. 
+in the five dollar condition, where the goal was simply to find out whether or not the whiskey was affordable, a yes/no answer would suffice. 
 If merchants inferred these goals from the context signal and responded with respect to these goals, we would expect different types of answers in the two conditions. 
 Indeed, merchants gave a literal yes/no answer more often in the latter condition than the former, where an exact price was more common. 
 
@@ -209,10 +208,10 @@ When the experimenter mentioned that they had an appointment at a given time, ho
 
 
 % "WHY ARE WE DOING THIS?" paragraph
-Taken together, this evidence suggests that \emph{goal-relevance} is a critical feature of question-answering: answerers routinely go beyond the literal meaning of a question to help the questioner achieve their underlying goals. 
-his work has focused entirely on the \emph{answerer}, with the experimenter holding the question constant and investigating the effect of different contexts. 
-Empirical evidence about how social context affects the \emph{questioner}'s choice is relatively lacking; this is the primary motivation for introducing our Hidden Goal paradigm and presenting new empirical data below.
-Next, we turn to a set of formal proposals about how .  
+These studies suggest that \emph{goal-relevance} is a critical feature of question-answering: answerers are sensitive to questioner goals and go beyond the literal meaning of a question to help the questioner achieve them. 
+To our knowledge, this empirical work has focused entirely on the answerer, with the experimenter holding the question constant and investigating the effect of different contexts. 
+To date, empirical evidence about how social context affects the \emph{questioner}'s choice has been scarce. 
+Next, we turn to a set of existing formal proposals about how goals may be incorporated into models of optimal question asking and answering.
 
 \subsection{Formal approaches to goal-sensitivity in inquiry}
 
@@ -230,26 +229,33 @@ Because each possible world has a unique answer, questions induce a \emph{partit
 This partition, then, is taken to be the formal meaning of a question.
 %However, as van Rooy \citeyear{VanRooy03_QuestioningDecisionProblems} and others have pointed out, this predicts that wh-questions like ``Where do they sell Italian newspapers in Amsterdam?'' can only be fully resolved by exhaustively mentioning whether or not such a newspaper can be bought at each possible location in the city. Clearly, this is not the case: a single nearby location would suffice. Even theories that allow for `mention-some' answers cannot account for contextual variation in what counts as a useful answer: if a media executive asked this same question at a corporate meeting, they might legitimately be requesting an exhaustive list.
 
-While \cite{GroenendijkStokhof84_SemanticsOfQuestions} and subsequent refinments grapple with subtle semantic phenomena, the meanings they assign are context-independent. 
-A question like ``Where are you?'' will, by definition, induce the same partition, demanding the same answers.
-Several accounts have addressed this limitation by arguing that the `goodness' of an answer for resolving a question ought to be defined relative to the questioner's current goals  \cite<e.g>{Ginzburg95_ResolvingQuestions,AsherLascarides98_QuestionsInDialogue} but the most influential formal proposal is due to \citeA{VanRooy03_QuestioningDecisionProblems}.
+While subsequent developments of partition-based question semantics  have grappled with increasingly subtle phenomena, the meanings they assign are by definition context-independent. 
+A question like ``Where are you?'' will always induce the same partition, demanding the same answers.
+Several accounts have addressed this limitation by arguing that the `goodness' of an answer for resolving a question ought to be defined relative to the questioner's current goals  \cite<e.g>{Ginzburg95_ResolvingQuestions,AsherLascarides98_QuestionsInDialogue}. 
+The most relevant formalization of this idea is due to \citeA{VanRooy03_QuestioningDecisionProblems}, who elegantly incorporated goals using a decision-theoretic framework. 
+In this framework, questioners face a \emph{decision problem} under uncertainty, and may ask a question to gain information before acting.
 
-In a decision-theoretic framework similar to the one used in OED models, \citeA{VanRooy03_QuestioningDecisionProblems} assumes that people will select the question yielding the maximal expected increase in payoff for the decision problem they are facing.
-It follows that the usefulness of an answer ought to be evaluated \emph{with respect to that decision problem}.
-Given this setup, \citeA{VanRooy03_QuestioningDecisionProblems} argues further that the literal meaning of a question should be taken to be ambiguous or underspecified and this ambiguity is only resolved for the answerer given the contextual parameter of a specific decision problem. 
+Similar to OED models, it can be shown that a rational questioner should choose the question yielding the maximal expected increase in payoff for the decision problem they are facing.
+An answerer agent can similarly be formulated, who selects the maximally useful answer \emph{with respect to that decision problem}.
 Because both questioner and answerer expect one another to behave rationally, the questioner can assume their partner will take their decision-problem into account when interpreting their question.
+\citeA{VanRooy03_QuestioningDecisionProblems} then argues that the literal meaning of a question is underspecified: it only resolves to a particular partition given the contextual parameter of a specific decision problem. 
 
-We take this goal-centric proposal as a starting point for approaching context-sensitivity in our social inference framework below.
-However, our account departs from \cite{VanRooy03_QuestioningDecisionProblems} in two critical ways, motivated by two limitations as a cognitive model of inquiry.
-First, \citeA{VanRooy03_QuestioningDecisionProblems} and subsequent accounts in this tradition \cite{benz2006utility} assume that the decision problem determining relevance is \emph{already mutual knowledge shared by both questioner and answerer}: ``On the assumption that the answerer knows what the agent’s decision problem is, the coarser-grained, and thus partial, answer is [...] preferred.'' (p. 738).
-In our view, this assumption contradicts the functional conditions motivating inquiry. 
-If the decision problem were already clear, there would be no need to ask a question -- the answerer could simply provide the needed information.
-We suggest that the 
+We take this proposal as a starting point for approaching context-sensitivity in our social inference framework below.
+However, our account departs from this starting point in two critical ways, motivated by two limitations it faces as a cognitive model of inquiry.
+First, how does the answerer know what the decision problem is? 
+\citeA{VanRooy03_QuestioningDecisionProblems} and subsequent accounts in this tradition \cite<e.g.>{benz2006utility} assume that the decision problem is \emph{already mutual knowledge shared by both questioner and answerer}: ``On the assumption that the answerer knows what the agent’s decision problem is, the coarser-grained, and thus partial, answer is [...] preferred.'' (p. 738).
 
-The only work we are aware of that relaxes this assumption and considers how the answerer to consider a space of alternative decision problems is \citeA{stevens2014indirect} which only treats a limited special case from a game-theoretic perspective. 
-So, one way of framing our theoretical contribution for a linguistics audience is to say that we are introducing the necessary inferential machinery required to extend Van Rooy (2003) to the more general case where answerers have a priori uncertainty over the questioner’s goal, and exploring the broader consequences for pragmatics under such conditions. 
+In our view, this assumption undermines the functional conditions motivating inquiry. 
+A cognitive account of answerer goal-sensitivity must provide an explicit mechanism for how the answerer learns the goal. 
+We will suggest that the necessary mechanism is (Bayesian) social inference: the answerer inverts a model of the questioner to reason about their likely goals, conditioned on their utterance.
+Our framework can thus be viewed as extending Van Rooy's account to the more general case where answerers have a priori uncertainty over the questioner’s goal\footnote{The only previous work we are aware of that considers how the answerer might determine the questioner's decision problem from a space of alternatives is by \citeA{stevens2014indirect} which treats a limited case under a game-theoretic perspective.}. 
 
-\section{A Rational Speech Act model of \\ asking and answering questions}
+Second, rather than following Van Rooy in stipulating a context-sensitive literal meaning for questions, we will derive context-sensitivity at the \emph{pragmatic} level via recursive reasoning.
+%Because different goals are consistent with the same question, 
+Our framework makes a psychologically meaningful distinction between the latent goal in the questioner's mind and the communicative signal they choose to provide about it.
+Because we will define a goal to be the same type of object as a classic question meaning, we can start with a simple answerer who identifies the goal directly from the question and derive a pragmatic answerer who reasons about \emph{why} a questioner would be asking this particular question, considering the space of possible goals that might lead to the same question.
+
+\section{A Rational Speech Act framework for \\ asking and answering questions}
 
 \subsection{Overview}
 
