@@ -243,7 +243,7 @@ In this framework, questioners face a \emph{decision problem} under uncertainty,
 Similar to OED models, it can be shown that a rational questioner should choose the question yielding the maximal expected increase in payoff for the decision problem they are facing.
 An answerer agent can similarly be formulated, who selects the maximally useful answer \emph{with respect to that decision problem}.
 Because both questioner and answerer expect one another to behave rationally, the questioner can assume their partner will take their decision-problem into account when interpreting their question.
-\citeA{VanRooy03_QuestioningDecisionProblems} then argues that the literal meaning of a question is underspecified: it only resolves to a particular partition given the contextual parameter of a specific decision problem. 
+\citeA{VanRooy03_QuestioningDecisionProblems} argues further that the literal meaning of a question is underspecified: it only resolves to a particular partition given the contextual parameter of a specific decision problem. 
 
 We take this proposal as a starting point for approaching context-sensitivity in our social inference framework below.
 However, our account departs from this starting point in two critical ways, motivated by two limitations it faces as a cognitive model of inquiry.
@@ -327,11 +327,12 @@ In the next section, we review the basic RSA framework and explore several diffe
 
 \subsection{Preliminaries}
 
-Our computational framework begins with four primitive sets that agents take to be in common ground. 
-A particular choice of these sets specifies a model for a concrete scenario.
+Our computational framework begins with four primitive sets. 
+A particular choice of these sets specifies a model in the framework, so they can be viewed as the basic cognitive `inputs' from which our framework derives question and answer behavior. 
+We will hold the core computational machinery constant throughout the paper, but each experiment will require saying what these sets are for  the scenario of interest.
 For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as an example throughout this section: 
 \begin{description}
-\item[$\mathcal{W}$:] a set of true states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}. In principle, this may also include other features of the world, such as the current weather, the location of nearby caf\'es, or the kinds of payment that the store accepts.
+\item[$\mathcal{W}$:] a set of possible states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}. This may include arbitrarily many features of the world, such as the current weather, the location of nearby caf\'es, or the kinds of payment that the store accepts.
 \item[$\mathcal{G}$:] a set of possible underlying questioner goals, such as learning the actual price of the whiskey or learning whether or not one can afford to buy the whiskey at all. 
 Following previous RSA models, we formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function $g: \mathcal{W} \rightarrow \widehat{\mathcal{W}}$ that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\widehat{w} = g(w)$. 
 For example, a customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
@@ -344,20 +345,23 @@ such that all worlds where the agent can afford the whiskey are mapped onto one 
 \item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be truth-conditional: a map from world states to booleans. For instance, the utterance ``A fifth costs \$8.'' would be true in the world where $w = \$8$ and false otherwise. 
 \end{description}
 
-Since our questioner models depend on the answerer model they expect responses to come from, we first introduce a family of answerers.
+Because our framework is probabilistic, each of these sets is equipped with a prior, which we take to be shared in common ground.
+This prior in principle allows us to explicitly model the knowledge that certain world states, goals, or utterances are \emph{a priori} more or less likely. 
+Unless otherwise stated, we will assume a uniform prior for simplicity.
+Since our questioner models will depend on the answerer model they expect responses to come from, we first introduce a family of answerers.
 
-\subsection{$A_0$: purely informative answerer}
+\subsection{$A_0$: Purely informative answerer}
 
 We begin with the simplest possible answerer, $A_0$, which attempts to be informative about the state of the world without considering relevance to his partner's goals. 
 Formally, $A_0$ hears a question utterance $q \in \mathcal{Q}$ with private knowledge about the true world state $w \in \mathcal{W}$. 
 He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$ proportional to the epistemic utility of that utterance to his communication partner: 
-$$P_{A_0}(a | q, w) \propto \exp(\alpha U_{A_0}(a;w))$$ 
+$$P_{A_0}(a | q, w) \propto \exp\{\alpha U_{A_0}(a;w)\}\cdot P(a)$$ 
 where $\alpha$ is a soft-max optimality parameter. 
 
-We define the epistemic utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$: 
+We define the utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$: 
 \begin{equation}
 \label{eq:A0utility}
-U_{A_0}(a;w) = \ln P_I(w|a)
+U_{A_0}(a;w) = \ln P_I(w|a) 
 \end{equation}
 $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs about worlds, conditioning on the literal meaning of the declarative utterance $a$ being true:
 $$P_I(w|a) \propto \delta_{\textrm{\den{a}}(w)} P(w)$$
@@ -394,8 +398,8 @@ $$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$
 %                 & = & \ln \sum_{w'\in\mathcal{W}} K_g(w,w')P_I(w' | a)
 %\end{array}
 %$$
-This modified utility suggests simply using the semantics of the question $q$ itself as the goal projection:
-$$P_{A_1}(a|q,w) \propto \exp(\alpha U_{A_1}(a; q,w))$$
+This modified utility suggests simply using the literal meaning of the question $q$ itself as the goal projection:
+$$P_{A_1}(a|q,w) \propto \exp\{\alpha U_{A_1}(a; q,w)\} \cdot P(a)$$
 This implements the most common theory of answerers in dialogue: $A_1$ directly interprets a question as an epistemic goal, then informatively produces an utterance that reduces the questioner's uncertainty under that goal projection. 
 
 $A_1$ may be sufficient for many simple, fact-based questions, like ``Who was the 16th president of the U.S.?'' given a rich enough semantic parser to supply the semantics of $q$ \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. Still, the dazzling display of context-sensitivity and indirectness displayed in everyday communication suggests that deeper social reasoning may be at play. To explore more sophisticated answerers that reason about context and their partner's underlying goals, we must first address the problem of how a speaker chooses between questions.
@@ -413,8 +417,8 @@ More formally, a questioner agent takes a goal $g \in \mathcal{G}$ as input and 
 %
 $$
 \begin{array}{lcl}
-P_{Q_i}(q|g)  & \propto & \exp\{\alpha U(q;g)\} \\
-U(q;g) & = & \E{P(a|q)}{IG^g(a,q)} \\
+P_{Q_i}(q|g)  & \propto & \exp\{\alpha U_{Q_i}(q;g)\} \cdot P(q)\\
+U_{Q_i}(q;g) & = & \E{P(a|q)}{IG^g(a,q)} \\
 	 & = & \sum_{w\in\mathcal{W}} P_{A_i}(a|q,w)P(w) IG^g(a,q)
 \end{array}
 $$
@@ -474,7 +478,7 @@ U_{A_2}(a; q, w) = \sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g_I}(w|\,a)
 %
 Reasoning backwards from questions to goals is a simple Bayesian inversion of $Q_1$ using a prior on goals:
 $$
-P(g|q) \propto P_{Q_1}(q|g)P(g)
+P(g|q) \propto P_{Q_1}(q|g)\cdot P(g)
 $$
 
 By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an arbitrarily deep chain of nested reasoning where $A_{i}$ infers a posterior over underlying goals by inverting $Q_{i-1}$, and so on. This recursion terminates in the base case $A_1$, which uses the literal question semantics. For our purposes, however, we only consider models up to a depth of $i=2$, after which there are no qualitative changes in the model's behavior in the cases we examine\footnote{Recent systematic model exploration by \citeA{frank2017rational} suggests that recursive depth trades off with the soft-max optimality parameter $\alpha$. Because these two parameters are not generally identifiable, we fix the maximal level of recursion and achieve the behavior of higher levels of recursion by allowing $\alpha$ to vary.}. In particular, we are interested in $Q_2$, which can be interpreted as an agent who rationally selects a question not simply for its literal meaning but for the signal it provides about her underlying beliefs. This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models})\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Reproducible experimental materials as well as code for all reported analyses and model simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}.
@@ -546,7 +550,8 @@ These answerers then choose an utterance that \emph{relevantly} addresses the go
 
 Next, we show how our models can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context. For this illustration, we consider the results of Experiment 4 from \citeA{Clark79_IndirectSpeechActs}. Recall that liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in the uninformative context (``I want to buy some bourbon'') than in the five dollar context (``I've got \$5 to spend''). Which of our answerer models, if any, shows a similar sensitivity to context?
 
-Our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \dots, \$10\}$. We consider two possible goals: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than the amount the agent has in their pocket). The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \dots, \$10\}$ as well as ``yes'' and ``no.'' We use an answer prior that assigns equal probability to picking the category of ``yes/no'' answers and of ``price'' answers, then uniformly draws from the possible responses within each category. 
+Our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \dots, \$10\}$. We consider two possible goals: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than the amount the agent has in their pocket). The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \dots, \$10\}$ as well as ``yes'' and ``no.'' 
+We use an answer prior that assigns equal probability to picking the category of ``yes/no'' answers and of ``price'' answers, then uniformly draws from the possible responses within each category. 
 
 %Because the question was fixed in the experiment, the question space $\mathcal{Q}$ simply consists of the single question $q = $``Does a fifth of Jim Beam cost more than \$5?''\footnote{Note that because there are no alternatives for the ``pragmatic answerer'' to consider, they are not strictly engaging in Gricean reasoning; obvious alternatives like ``How much does Jim Beam cost?'' do not significantly change the model behavior in this case, but we omit them to isolate the effect of the QUD prior in this example.}  
 
@@ -598,15 +603,15 @@ Because this is the only example of M-implicature that arises in this paper, and
 }:
 %%%
 \begin{enumerate}
-\item ``Do you accept Master Charge cards?'' 
-\item ``Do you accept American Express cards?''
+\item ``Do you accept MasterCard?'' 
+\item ``Do you accept American Express?''
 \item ``Do you accept credit cards?'' 
 \end{enumerate}
 %He analyzed the likelihood that the respondent gave a literal yes/no answer, compared to the likelihood of giving the exhaustive list of exactly which cards were accepted.  
 \citeA{Clark79_IndirectSpeechActs} found that (1) and (2) were nearly always answered literally, with a `yes' or `no', while (3) was significantly more likely to be answered with full information. Which, if any, of our answerer models show this pattern of responses? % (see Table \ref{table:clark79exp5}). 
 %As in the first case study above, we are only interested in the ratio of literal answers vs. over-informative answers $p_l = n_l/(n_l + n_i)$ and $p_i = n_i/(n_l + n_i)$, not in responses including both. 
 
-We formalize the scenario as follows. The set of possible worlds $\mathcal{W}$ is given by the power set $\mathcal{P}(\mathcal{C})$, where $\mathcal{C} = \{$Visa, Master Card, American Express, Diner's Club, and Carte Blanche$\}$, the set of five possible credit cards. %This power set contains all $2^5 = 32$ subsets of cards that the restaurant might accept. 
+We formalize the scenario as follows. The set of possible worlds $\mathcal{W}$ is given by the power set $\mathcal{P}(\mathcal{C})$, where $\mathcal{C} = \{$Visa, MasterCard, American Express, Diner's Club, and Carte Blanche$\}$, the set of five possible credit cards. %This power set contains all $2^5 = 32$ subsets of cards that the restaurant might accept. 
 The prior distribution over worlds, $P(w)$, can in principle take into account the empirical likelihoods of restaurants accepting different cards, but we treat them as uniform to make the dynamics of our simulations clearer. % Clark reports these likelihoods to be 72, 71, 38, 12, and 10\% for Visa, Master Card, American Express, Diner's Club, and Carte Blanche, respectively. 
 
 The question space $\mathcal{Q}$ contains the five basic questions (``Do you accept $c$?" with $c \in \mathcal{C}$ one of the five cards) in addition to ``Do you accept credit cards?'' For the literal semantics of the five basic questions, indexed by $c$, we use the function $q_c(w) = \delta_{c \in w}$, which projects worlds to a boolean corresponding to whether they accept card $c$ or not.
