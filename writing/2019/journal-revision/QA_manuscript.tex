@@ -213,7 +213,7 @@ To our knowledge, this empirical work has focused entirely on the answerer, with
 To date, empirical evidence about how social context affects the \emph{questioner}'s choice has been scarce. 
 Next, we turn to a set of existing formal proposals about how goals may be incorporated into models of optimal question asking and answering.
 
-\subsection{Formal approaches to goal-sensitivity in inquiry}
+\subsection{Formal approaches to goal-sensitivity}
 
 The earliest attempts to construct artificial agents who could answer natural-language questions in a goal-sensitive manner took place within the artificial intelligence community \cite{Simmons65_QuestionsComputer, Lehnert77_QuestionAnswering, AllenPerrault80_IntentionUtterances, GreenCarberry94_IndirectAnswersModel, MollaVicedo07_QARestrictedDomains}. 
 Many of these classic systems were essentially domain-restricted interfaces for databases, with applications in customer service, technical support, health care, or financial consulting
@@ -255,13 +255,13 @@ Second, rather than following Van Rooy in stipulating a context-sensitive litera
 Our framework makes a psychologically meaningful distinction between the latent goal in the questioner's mind and the communicative signal they choose to provide about it.
 Because we will define a goal to be the same type of object as a classic question meaning, we can start with a simple answerer who identifies the goal directly from the question and derive a pragmatic answerer who reasons about \emph{why} a questioner would be asking this particular question, considering the space of possible goals that might lead to the same question.
 
-\section{A Rational Speech Act framework for \\ asking and answering questions}
+\section{A Rational Speech Act framework for \\ question and answer pragmatics}
 
 \subsection{Overview}
 
 % WHAT PROBLEMS NEED TO BE SOLVED IN DIALOGUE?
 %We begin by presenting a general computational framework for agents in dialogue, then focus on the problem of question-asking and answering in particular. 
-Broadly speaking, an agent must solve two problems to participate in a dialogue. 
+Broadly speaking, an agent must solve two problems to participate in a communicative exchange. 
 First, they must \emph{listen}, interpreting the meaning of their partner's utterance and updating their own beliefs accordingly. 
 Then they must \emph{speak}, producing an utterance that informatively addresses the current goal or topic of conversation. 
 At either stage, the utterance may be a statement, a question, or another more exotic kind of speech act. 
@@ -277,8 +277,10 @@ At either stage, the utterance may be a statement, a question, or another more e
 % HOW ARE THESE ADDRESSED IN RSA?
 The listening problem and the speaking problem have been addressed separately in prior work within the Rational Speech Act (RSA) framework \cite{FrankGoodman12_PragmaticReasoningLanguageGames, GoodmanStuhlmuller13_KnowledgeImplicature, GoodmanFrank16_RSATiCS}, in which language understanding is formalized as recursive Bayesian inference. 
 Pragmatic speaker agents choose utterances to maximize their partner's surprisal about the true state of the world -- a basic epistemic goal -- and pragmatic listener agents interpret utterances by inverting the speaker model. 
-This basic framework has been used to account for a number of diverse pragmatic phenomena including 
-scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, %prosody \cite{BergenGoodman15_StrategicUseOfNoise},
+This basic framework has been used to account for a diverse selection of pragmatic phenomena including 
+scalar implicature \cite{GoodmanStuhlmuller13_KnowledgeImplicature}, 
+manner implicature \cite{BergenLevyGoodman16_LexicalUncertainty},
+%prosody \cite{BergenGoodman15_StrategicUseOfNoise},
 %the acquisition of word meanings \cite{FrankGoodman14_InferringWordMeanings}, and
 generic language \cite{TesslerGoodman16_Generics}, and
 interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{LassiterGoodman15_AdjectivalVagueness}.
@@ -286,24 +288,22 @@ interpretation of context-sensitive adjectives like ``tall'' or ``cheap'' \cite{
 % HOW IS GOAL-RELEVANCE FORMALIZED IN RSA?
 RSA models have also recently been extended to incorporate the critical notion of \emph{goal-relevance} into the speaker's utility \cite{Roberts96_InformationStructureDiscourse, WilsonSperber12_MeaningRelevance}. 
 Instead of attempting to be maximally informative about the \emph{full} state of the world, a goal-relevant speaker ignores irrelevant dimensions and only attempts to be informative about the relevant feature or summary statistic. 
+The projection function that collapses irrelevant dimensions is often called a Question Under Discussion (QUD) and is incorporated as a parameter of the speaker that a pragmatic listener may have uncertainty over and make inferences about.
 RSA models with relevance have been used to capture non-literal language use like metaphor, irony, and hyperbole. 
 In the case of hyperbole, for instance, a speaker who says ``It took a million years to get a table'' may be intending to be informative about the topic of their affective state (e.g. their frustration) rather than the exact time it took to get a table \cite{KaoWuBergenGoodman14_NonliteralNumberWords}.
 
 % HOW IS OUR MODEL DIFFERENT FROM PAST MODELS (DIALOGUE!)
-Although the social interplay between questioner and answerer may superficially resemble that of the \emph{speaker} and \emph{listener} agents in previous RSA models, the minimal form of dialogue introduced by a question-answer pair present fundamentally new challenges.
+Although the social interplay between questioner and answerer may superficially resemble that of the \emph{speaker} and \emph{listener} agents in previous RSA models, the minimal form of dialogue introduced by a question-answer exchange present fundamentally new challenges.
 Here, we build upon these recent modeling advances in several ways. 
-
-First, while the role of a speaker in prior models is limited to production, and the role of listener is limited to interpretation, question-answer dialogue requires unifying the listening problem and speaking problem in a single agent. 
-Addressing this problem in a rational model requires derivating of the appropriate contingency between linguistic input and output.
+First, while the role of a speaker in prior models is limited to production, and the role of listener is limited to interpretation, a question-answer exchange requires unifying the listening problem and speaking problem in a single agent. 
+Addressing this problem in a rational model requires deriving the appropriate contingency between linguistic input and output.
 Different kinds of input shift an agent's beliefs in different ways, motivating different kinds of responses. 
 
-Second, the utilities considered in previous rational models of language use cannot straightforwardly capture the utility of a question, since questions -- as utterances -- don't provide direct information about the world to the listener.
-While a declarative statement in our framework provides evidence about the true state of the world, as in previous models, we conjecture that a question provides evidence about the \emph{speaker's goals}. 
-Rather than defining the meaning of a question in terms of its possible answers, as in traditional linguistic theories, we treat it as a \emph{signal} that the listener can use to update their beliefs about the goals of the question-asker. 
+Second, the utilities used for previous RSA speakers use cannot straightforwardly capture the utility of uttering a question, since questions don't provide direct information about the world to the listener.
+While a declarative statement in our framework provides evidence about the true state of the world, as in previous models, we conjecture that a question is intended to be informative about the \emph{speaker's goals}. 
+%Rather than defining the meaning of a question in terms of its possible answers, as in traditional linguistic theories, we treat it as a \emph{signal} that the listener can use to update their beliefs about the goals of the question-asker. 
 When it is the listener's turn to speak, they can then generate statements that better address the goal-relevant aspects of the world. 
 In the next section, we review the basic RSA framework and explore several different proposals for how agents interpret and respond to questions within this framework.
-
-%This is a first step toward chaining together more complex multi-utterance discourse phenomena.
 
 % HOW IS OUR MODEL DIFFERENT FROM PAST MODELS (QUESTIONS!)
 %\footnote{That is, the literal meaning of a question does not seem to be new information about the world, per se. Questions do, of course, end up conveying information about the speaker's knowledge, needs, and so on---it is this conveyed information that we attempt to derive below.}. 
