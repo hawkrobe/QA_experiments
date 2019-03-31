@@ -718,7 +718,7 @@ We developed the \emph{Hidden Goal} paradigm to address the challenge of creatin
 There are two key features that distinguish this paradigm from those used in prior work.
 First, while preserving the asymmetry in world knowledge between questioner and answerer used in prior work, it also explicitly introduces an asymmetry in access to \emph{goals}.
 We privately assign one of several possible goals to the questioner and withhold information about the identity of this goal from the answerer. 
-Second, it establishes a \emph{joint task} shared by both participants---the answerer is only rewarded when the questioner meets their goal---thus emphasizing the need for cooperation in combining these different sources of private knowledge. 
+Second, it establishes a \emph{joint task} shared by both participants---the answerer is only rewarded when the questioner meets their goal---thus creating the need for cooperation in combining these different sources of private knowledge. 
 
 %First, while our case studies were drawn from extensive experimental work on \emph{answerer} behavior, data on questioner pragmatics is scare.
 % directly tested whether people behave as the questioner models predict, or compared the different levels of questioner models against one another. 
@@ -731,19 +731,19 @@ Second, it establishes a \emph{joint task} shared by both participants---the ans
 
 In the remainder of the paper, we present three behavioral experiments in this paradigm that provide a more rigorous evaluation of both questioner and answerer models in our framework.
 Each experiment additionally demonstrates how the core computational mechanisms of our theory can be elegantly composed with other linguistic and cognitive primitives to capture more sophisticated question and answer behaviors.
-In Experiment 1, we extend our model with an underlying formal account of definite reference in questions (e.g. ``where is \emph{the} dog?'') which uses graded knowledge of concept typicality.
-In Experiment 2, we show how the model extends to more structured spaces of hierarchical goals.
-And finally, in Experiment 3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
+In Exp.~1, we extend our model with an underlying formal account of definite reference in questions (e.g. ``where is \emph{the} dog?'') which uses graded knowledge of concept typicality.
+In Exp.~2, we show how the model extends to more structured spaces of hierarchical goals.
+And finally, in Exp.~3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
 
-\section{Experiment 1: \\ Definite reference and salience}
+\section{Experiment 1: \\ Definite reference and typicality}
 
 %%%
 As a first quantitative test of our models, we designed a cooperative guessing game that relies on knowledge of concept structure. 
 % This game served as a minimal case of the Hidden Goal paradigm.
 On each trial, four objects are hidden behind four doors.
-One player -- the \emph{questioner} -- is assigned one of the objects to find as a private goal but does not know which object is behind which door (Fig. \ref{fig:expviews}A).
-The other player -- the \emph{answerer} -- knows each object's true location but does not know which one the questioner is looking for (Fig. \ref{fig:expviews}B). 
-To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully a location so that the questioner can guess the location of their goal object more accurately (Fig. \ref{fig:expviews}C).
+One player -- the \emph{questioner} -- is assigned one of the objects to find as a private goal but does not know which object is behind which door.
+The other player -- the \emph{answerer} -- knows each object's true location but does not know which one the questioner is looking for (Fig. \ref{fig:expviews}A). 
+To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully a location so that the questioner can guess the location of their goal object more accurately (Fig. \ref{fig:expviews}B).
 
 \begin{figure*}[th!]
 \begin{center}
@@ -917,51 +917,35 @@ We assume uniform prior probability over worlds, goals, questions, and answers.
 %The semantics of questions in this domain is 
 %To populate our question space $\mathcal{Q}$, we must specify the explicit meaning of the question ``Where is the $x$?'' for each of the four labels allowed in a given trial (see Fig. \ref{fig:hierarchyStructures}). 
 Specifying the formal semantics of the question space $\mathcal{Q}$ draws upon several results from linguistics. 
-The denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, then, the use of a definite article \emph{presupposes} the uniqueness or salience of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. 
+The denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, the use of a definite article \emph{presupposes} the uniqueness or identifiability of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. 
 
-Thus we take the literal meaning of each question $q$ to be: 
-$$\textrm{\den{Where is the x?}} = q_{x}(w) = \textrm{loc}(s_x,w)$$ where $s_x$ is the \emph{salient} object of category $x$. 
-In contexts where there are multiple objects of category $x$, the question is interpreted by drawing an object from a prior saliency distribution, given the category in the noun phrase: $s_x \sim \mathcal{S}(o | x)$. 
-This distribution may depend on typicality for the category \cite{Rosch75}, world knowledge about what labels people tend to use to refer to different objects, and so on. 
+Thus we take the meaning of each question $q$ to be: 
+$$\textrm{\den{Where is the x?}} = q_{x}(w) = i_x$$ where $i_x$ is the \emph{identifiable} object of category $x$. 
+In contexts where there are multiple objects of category $x$, the definite article is interpreted by sampling an object from a prior identifiability distribution over objects in the labelled category: $i_x \sim \mathcal{I}(o | x)$. 
+This distribution may depend on distinctive visual properties, but on the typicality of the object for the category \cite{Rosch75}, world knowledge about which labels people tend to use to refer to different objects, and other information in common ground \cite{ClarkMarshall1981}.
+To estimate the combined weight of these influences on interpretation, we estimated the empirical identifiability prior from an independent elicitation task.
 
-\subsubsection{Eliciting saliency priors}
-In prior work, there have been two approaches to setting such model-internal prior distributions in a principled manner.
+\subsubsection{Eliciting empirical identifiability priors}
+In prior work, there have been two approaches to setting model-internal prior distributions in a principled manner.
 The first is to treat these internal distributions as additional free parameters and jointly infer them from the behavioral data along with other parameters of interest \cite<e.g.>{TesslerGoodman16_Generics, tauber2017bayesian}. 
 The second is to use an independent task to empirically elicit these priors from a separate population of participants, and then use this (parameter-free) distribution in the model \cite<e.g>{KaoWuBergenGoodman14_NonliteralNumberWords}.
 Here, we take a hybrid approach. 
-We elicit empirical saliency priors from an external sample, as in the second approach, but then infer the extent to which these empirical priors are actually necessary for explaining participants' question and answer behavior in our model comparison.
+We elicit empirical identifiability priors from an external sample, as in the second approach, but then infer the extent to which these empirical priors are actually necessary for explaining participants' question and answer behavior in our model comparison.
 
-We thus designed a simple language saliency elicitation task using the stimuli from our communication task.
+We thus designed a simple elicitation task using the stimuli from our communication task.
 On each trial, we presented participants with a set of four pictures and a label $X$ and were asked to ``Click \emph{the} $X$.''
 Each participant was given one trial for each of the twelve items used above; to obtain the label $X$, we sampled one of the four possible category nouns that could be used in questions. 
 In this way, no participant saw the same set of objects more than once. 
 %The order of trials and positions of pictures within trials were randomized.
 Of 192 participants recruited from Amazon's Mechanical Turk, 13 participants were excluded after reporting a non-English native language, and 15 more were excluded due to self-reported confusion over the instructions. 
 This left data for 164 participants.
-To form an empirical saliency distribution $s_x \sim \mathcal{S}(o | x)$ that can be used in the model, we computed the proportion of participants that clicked on each of the objects $o$ for each label $x$. 
+To form an empirical identifiability distribution $\mathcal{I}(o | x)$ that can be used in the model, we computed the proportion of participants that clicked on each of the objects $o$ for each label $x$. 
 
-Before formally testing the usefulness of these empirical saliency estimates in our model comparison, we conducted a simple test of the null hypothesis that participants use a uniform saliency prior over within-category objects when interpreting the definite article. 
-We performed $\chi^2$ goodness of fit tests on the response distribution for each label: a total of 32 tests. 
-We found that 69\% of these tests rejected the null hypothesis of uniformity at a (Bonferroni-corrected) significance level of $\alpha = 0.05/32 = 0.002$ indicating that saliency distribution often deviates from uniform.
+Before formally testing the usefulness of these empirical priors in our model comparison, we conducted a simple test of the null hypothesis that participants use a \emph{uniform} prior over within-category objects when interpreting the definite article. 
+We performed Pearson $\chi^2$ goodness of fit tests on the response distribution for each label: a total of 32 tests. 
+We found that 69\% of these tests rejected the null hypothesis of uniformity at a (Bonferroni-corrected) significance level of $\alpha = 0.05/32 = 0.002$ indicating that the identifiability distribution often deviates from uniform: not all members of a category are equally likely to be identified as the referent of the definite description.
 
 \subsubsection{Results of model comparison}
-\begin{table}[]
-\begin{center}
-\begin{tabular}{@{}llrr@{}}
-\toprule
- &  & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}uniform\\ saliency\end{tabular}} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}empirical\\ saliency\end{tabular}} \\ \midrule
-\multirow{3}{*}{\begin{tabular}[c]{@{}l@{}}answerer\\ models\end{tabular}} & $A_0$ & -1231.0 & -1231.0 \\ \cmidrule(l){2-4} 
- & $A_1$ & -847.5 & -767.2 \\ \cmidrule(l){2-4} 
- & $A_2$ & -645.7 & \textbf{-599.6} \\ \midrule
-\multirow{3}{*}{\begin{tabular}[c]{@{}l@{}}questioner\\ models\end{tabular}} & $Q_0$ & -1025.9 & -1025.9 \\ \cmidrule(l){2-4} 
- & $Q_1$ & -343.8 & -328.3 \\ \cmidrule(l){2-4} 
- & $Q_2$ & -342.3 & \textbf{-311.5} \\ \bottomrule
-\end{tabular}
-\vspace{1em}
-\end{center}
-\caption{\footnotesize Results of quantitative model comparison for Exp.~1; marginal likelihoods shown on log scale.}
-\label{tab:exp1likelihoods}
-\end{table}
 
 %How does correcting this assumption affect our quantitative model predictions? 
 %The empirical saliency distributions we collected can be directly substituted in for $\mathcal{S}(o|x)$ when defining the literal semantics of ``Where is \emph{the}\dots?'' questions. 
@@ -971,8 +955,8 @@ We found that 69\% of these tests rejected the null hypothesis of uniformity at 
 %This finishes the specification of the three Questioner models and three Answerer models for our experimental situation.
 For a rigorous model comparison among our different questioner and answerer models, we conducted a Bayesian data analysis \cite{LeeWagenmakers14_BDA}. 
 We introduce a discrete hyperparameter $\gamma \in \{0, 1, 2\}$  determining which model to use, and jointly infer this parameter along with the continuous rationality parameter $\alpha$.
-Additionally, to test whether a model using our non-uniform empirically-measured saliency distribution provides a better fit to the data, we add an additional parameter $\beta$ which interpolates between a uniform salience prior ($\beta = 0$) and the empirical salience distribution we measured ($\beta = 1$). 
-In other words, we assume participants use some mixture between the pure uniform and empirical saliency and we infer the mixture weight.
+Additionally, to test whether a model using our empirically-measured identifiability prior provides a better fit to the data than a uniform prior, we add an additional parameter $\beta \in [0,1]$ which interpolates between them.
+In other words, we assume participants use some mixture between the pure uniform and empirical priors and we infer the mixture weight.
 We place uninformative priors over these parameters,
 $\gamma \sim  \textrm{unif}\{0, 1, 2\}$ and 
 $\alpha   \sim  \textrm{unif}(0,20)$, 
@@ -986,8 +970,27 @@ Among the remaining answerer models, we found overwhelming evidence for $A_2$ re
 For our questioner models, we found substantial evidence for $Q_2$ relative to $Q_1$ (BF~$\approx2\times~10^{7}$). 
 
 Next, having established support for $A_2$ and $Q_2$, we test the extent to which the introduction of empirical saliencies improved our predictions. 
-Again using Bayes Factors, which automatically penalize our empirical saliency model for its additional flexibility, we found strong evidence against the $\beta=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants interpret questions using non-uniform saliencies.
-Finally, the posterior predictives for $A_2$ and $Q_2$ after including empirical saliencies explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively (see Fig. \ref{fig:exp1predictives}). %Posteriors over alpha are similar to our previous results. \ndg{Appendix}% (see Appendix).
+Again using Bayes Factors, which automatically penalize our hybrid model for its additional flexibility, we found strong evidence against the $\beta=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants account for non-uniform knowledge about salience and conceptual typicality when interpreting the definite article.
+Finally, the posterior predictives for the best-fitting models explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively (see Fig. \ref{fig:exp1predictives}). 
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+ &  & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}uniform\\ identifiability\end{tabular}} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}empirical\\ identifiability\end{tabular}} \\ \midrule
+\multirow{3}{*}{\begin{tabular}[c]{@{}l@{}}answerer\\ models\end{tabular}} & $A_0$ & -1231.0 & -1231.0 \\ \cmidrule(l){2-4} 
+ & $A_1$ & -847.5 & -767.2 \\ \cmidrule(l){2-4} 
+ & $A_2$ & -645.7 & \textbf{-599.6} \\ \midrule
+\multirow{3}{*}{\begin{tabular}[c]{@{}l@{}}questioner\\ models\end{tabular}} & $Q_0$ & -1025.9 & -1025.9 \\ \cmidrule(l){2-4} 
+ & $Q_1$ & -343.8 & -328.3 \\ \cmidrule(l){2-4} 
+ & $Q_2$ & -342.3 & \textbf{-311.5} \\ \bottomrule
+\end{tabular}
+\vspace{1em}
+\end{center}
+\caption{\footnotesize Results of quantitative model comparison for Exp.~1; marginal likelihoods shown on log scale.}
+\label{tab:exp1likelihoods}
+\end{table}
+
 
 
 %
@@ -1030,35 +1033,37 @@ Finally, the posterior predictives for $A_2$ and $Q_2$ after including empirical
 In Experiment 1, presented both answerer and questioner models with the  \emph{quantitative} challenge of accounting for trial-level variance in a Hidden Goal task. 
 We found strong converging support for $A_2$ relative to our other answerer models and, for the first time, tested the predictions of our questioner models. 
 While both $Q_1$ and $Q_2$ provided good predictive fits to our question-asking data, only $Q_2$ could account for asymmetries in the critical \emph{overlapping} condition and was therefore also preferred in a Bayesian model comparison. 
-We also found that incorporating realistic saliency priors to interpret definite questions provided a substantially better fit to our data. 
+We also found that incorporating realistic identifiability priors to interpret definite questions provided a substantially better fit to our data. 
 
-There are two reasons incorporating typicality into our model is important. 
-First, failures to account for typicality could potentially invalidate the conclusions of our model comparison. 
+There are two reasons incorporating identifiability into our model is important. 
+First, failures to account for non-uniform factors like conceptual typicality could potentially invalidate the conclusions of our model comparison. 
 For example, we expect a house cat to be a much more typical exemplar of the category `cat' than a lion. 
-Hence, participants may not be choosing the house cat in this item for pragmatic reasons; they may just be selecting the more salient member of the category. 
-If this were the case, including saliency knowledge should improve the predictions of $A_1$ and $Q_1$, thus potentially `explaining away' any benefit of deeper pragmatics. 
+Hence, participants may not be choosing the house cat in this item for pragmatic reasons; they may just be expecting the definite description to identify the more typical member of the category. 
+If this were the case, including common knowledge about typicality should improve the predictions of $A_1$ and $Q_1$, thus potentially `explaining away' any benefit of deeper pragmatics. 
 After accounting for this potential confound, we still found strong evidence for $A_2$ and $Q_2$ over simpler models.
 
-Second, Fig. \ref{fig:exp1predictives} makes it clear that without these saliencies, $A_2$ and $Q_2$ fail to capture graded responses across different domains. 
+Second, Fig. \ref{fig:exp1predictives} makes it clear that without the empirical priors, $A_2$ and $Q_2$ fail to capture graded responses across different domains. 
 This is especially striking in the `equivocal' condition where our models predict no preference in questioner behavior: if asking about the goldfish, which is both a ``pet'' and a ``fish,'' then the symmetry of the alternatives provides no reason to favor one label over the other. 
 Instead, we found a high degree of variability across domains. 
 
 For example, when questioners were trying to find a pet goldfish, 85\% of participants preferred the label `fish' to the label `pet,' even though both are technically true. 
 In the `artifacts' domain, on the other hand, questioners had no preference between asking about the `seat' or `metal thing' when the objects (metal chairs) fell into both categories.
-To understand how our empirical saliency distribution captured this data, consider that a Dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}. 
+To understand how our empirical identifiability distribution captured this data, consider that a Dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}. 
 Hence a questioner considering this knowledge as common ground would know that asking ``Where is the pet?'' would tend to elicit information about the Dalmatian, not the goldfish. 
 If they were looking for information about the goldfish, they would then prefer to ask about the `fish' category, where a goldfish is a highly typical example. 
-In these cases, saliency strongly guides interpretation of the definite article in questions.
+In these cases, we expect typicality strongly guides interpretation of the definite article in questions.
 
-Our model for Experiment 1 also served as a first demonstration of the ``compositionality'' of our computational framework with other formal proposals in linguistics and cognitive science.
-Because our model framework derives question and answer pragmatics given more elemental choices of literal question and answer semantics, world states, and goals, we could neatly accommodate definite reference and salience in questions by importing formal semantic proposals for definiteness developed in linguistics and philosophy.
+Another aspect of our results, which is somewhat orthogonal \dots
+
+Our model for Exp.~1 also served as a first demonstration of the ``composability'' of our computational framework with other formal proposals in linguistics and cognitive science.
+Because our model framework derives question and answer pragmatics given more elemental choices of literal question and answer semantics, world states, and goals, we could neatly accommodate definite reference and typicality in questions by importing formal semantic proposals for definiteness developed in linguistics and philosophy.
 In other words, the core computational framework itself did not need to be extended, only applied to the appropriate space of questions. 
-In Experiment 2, we design a more targeted experiment to test our pragmatic questioner $Q_2$ and show that our model can similarly accommodate more structured \emph{goals}.
+In Exp.~2, we design a more targeted experiment to test our pragmatic questioner $Q_2$ and show that our model can similarly accommodate more structured \emph{goals}.
 
 \section{Experiment 2: Structured goals}
 
 The construct of a goal has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
-The simplest spaces of goals, like those used in Experiment 1, are discrete sets of projections on the world state.
+The simplest spaces of goals, like those used in Exp.~1, are discrete sets of projections on the world state.
 For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read the presented word or (2) name the color in which they are written \cite{miller2001integrative}.
 However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
 We often need to achieve multiple subgoals in pursuit of a larger, more abstract goal. 
@@ -1083,8 +1088,8 @@ To show this, we designed a simple Hidden Goal collection game inspired by recen
 Furthermore, this task presented the opportunity to more strongly test the pragmatic questioner model $Q_2$.
 
 
-As in Experiment 1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
-Unlike Experiment 1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
+As in Exp.~1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
+Unlike Exp.~1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
 More specifically, the questioner was privately assigned a hand of playing cards to find (Fig. \ref{fig:exp2task}A, left). 
 The cards were scattered around a grid, and only the answerer had visibility of where the cards were located (Fig. \ref{fig:exp2task}A, right).
 The possible hands of cards the questioner might be assigned were shared in common ground.
@@ -1119,7 +1124,7 @@ If the questioner asked about a different card, or the answerer failed to reveal
 
 \subsubsection{Procedure}
 
-Each trial proceeded through the same four phases as Experiment 1. 
+Each trial proceeded through the same four phases as Exp.~1. 
 Questioners were first assigned a ``combo'' to complete out of a shared list of possible alternatives and used dropdown menus to choose a suit and rank to ask about (e.g. ``Where is the king of hearts?'').
 Upon seeing this question, the answerer selected either one or two cards to reveal to the questioner and the questioner was then shown the locations of these cards.
 
@@ -1131,7 +1136,7 @@ The trial sequence was constructed such that each participant saw each of the th
 We grouped trials into two blocks, one for each role, with the sequence of conditions randomized within each block.
 The starting role was counterbalanced across participants.
 
-Unlike Experiment 1, which used a real-time multi-player methodology to ensure participants knew they were playing with a real partner, we decided in this experiment that the benefit of such minimal interaction was not worth the loss in control over the input given to participants.
+Unlike Exp.~1, which used a real-time multi-player methodology to ensure participants knew they were playing with a real partner, we decided in this experiment that the benefit of such minimal interaction was not worth the loss in control over the input given to participants.
 Instead, participants were paired with an artificial agent that played the opposite role.
 When in the questioner role, this agent selected question stimulus with maximum probability according to $Q_2$. 
 This choice ensured that we densely sampled answer responses in the cases where the answerer models made diverging predictions.
@@ -1146,16 +1151,16 @@ Second, because we counterbalanced the order in which roles were assigned, we wi
 
 \subsubsection{Model setup}
 
-Experiment 2 was designed to provide a strong \emph{qualitative} test of the questioner models in a scenario with more structured goals.
+Exp.~2 was designed to provide a strong \emph{qualitative} test of the questioner models in a scenario with more structured goals.
 We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}$ to a set of ordered pairs $\{g_{ij}\} = \{(g_i, g_i^{(j)})\}$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
-In the case of Experiment 2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
+In the case of Exp.~2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
 
 
 \begin{figure*}[th!]
 \begin{center}
 \includegraphics[scale = 1]{Exp2/qualitativeResults.pdf}
 \end{center}
-\caption{Results for Experiment 2. (A) Answerers are more likely to go beyond the literal question and reveal additional cards in the baseline and overlap conditions. (B) Questioners are more likely to ask about the non-overlapping card relative to baseline. Dotted line is chance, and error bars are bootstrapped 95\% CIs.}
+\caption{Results for Exp.~2. (A) Answerers are more likely to go beyond the literal question and reveal additional cards in the baseline and overlap conditions. (B) Questioners are more likely to ask about the non-overlapping card relative to baseline. Dotted line is chance, and error bars are bootstrapped 95\% CIs.}
 %\vspace{-1cm}
 \label{fig:exp2results}
 \end{figure*}
@@ -1176,9 +1181,9 @@ $$U_{A_2}(a; q, w) = \sum_{g_{ij} \in \mathcal{G}} P(g_{ij}|q) \sum_{g\in \{g_i,
 While this presentation was written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
 The simpler goal spaces considered earlier in the paper are special cases of this more general formulation taking goal tuples to be singletons.
 
-Given this generalization of the model to more structured goal spaces, we can derive predictions for Experiment 2. 
+Given this generalization of the model to more structured goal spaces, we can derive predictions for Exp.~2. 
 The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
-Questions in the question space $\mathcal{Q}$ were of the same form as in Experiment 1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of saliency do not arise. 
+Questions in the question space $\mathcal{Q}$ were of the same form as in Exp.~1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of multiple identifiability do not arise. 
 Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at location that was mentioned, and false otherwise.
 
 
@@ -1200,7 +1205,7 @@ The empirical response distributions for these conditions are thus consistent wi
 
 \subsubsection{Questioner results}
 
-Next, we turn to questioner behavior, the primary focus of Experiment 2.
+Next, we turn to questioner behavior, the primary focus of Exp.~2.
 The $Q_1$ and $Q_2$ models make qualitatively different predictions about which questions participants chose in the \emph{overlap} and \emph{baseline} conditions.
 $Q_1$ predicts no difference in behavior across these two conditions.
 Because it reasons that $A_1$ will always provide a literal or (indiscriminately) overinformative response, as we saw in the previous section, then asking about either card is equally useful for completing the target combo.
@@ -1220,14 +1225,14 @@ To address this concern, we examined these response patterns for the subset of p
 
 \subsection{Discussion}
 
-Experiment 2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to demonstrate how our core framework generalizes to more structured spaces of goals.
+Exp.~2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to demonstrate how our core framework generalizes to more structured spaces of goals.
 To meet these challenges, we designed a Hidden Goal task where questioners were privately assigned a set of \emph{multiple} objects to find, inducing a hierarchy of subgoals.
 By manipulating whether objects overlapped or differed across sets in the space of possible goals, we constructed scenarios where our different models made sharply different predictions. 
 
 We found that answerers reasoned beyond the literal subgoal prompted by the question to respond helpfully to the inferred ultimate goal in the hierarchy.
 Questioners, in turn, chose to ask about the objects that would most clearly signal their ultimate goal to their partner, even though these different questions would have equal expected information gain under traditional models. 
 
-The minimal goal hierarchy studied in Experiment 2 is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering. 
+The minimal goal hierarchy studied in Exp.~2 is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering. 
 However, handling more complex goal structures will require composing our core computational framework with additional mechanisms.
 In particular, we relied on the simplifying assumption of different subgoals being \emph{conditionally independent} given their parent in the hierarchy. 
 This assumption justified the representation of subgoals as ordered pairs with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal. 
@@ -1248,11 +1253,11 @@ While introducing such a planning mechanism into our model is outside the scope 
 In our computational framework, an answerer updates their beliefs about the questioner's goals after hearing a question, and a questioner updates their beliefs about the world state after hearing an answer. 
 In principle, this step can be repeated multiple times until the questioner's goal is resolved, allowing for an extended sequence of questions and answers: the questioner's posterior over worlds after hearing an answer to their first question becomes the prior for selecting their second, and so on.
 
-In Experiment 3, we developed a final task in the Hidden Goal paradigm to investigate how the pragmatics of asking and answering questions unfolded over multiple exchanges.
+In Exp.~3, we developed a final task in the Hidden Goal paradigm to investigate how the pragmatics of asking and answering questions unfolded over multiple exchanges.
 This task was designed with several desiderata in mind.
 First, we needed a larger and more natural space of goals that weren't always possible to satisfy in a single round.
 This would allow us to test our models' predictions about how the answer to one question may influence the choice of a subsequent question, or how the answerer's beliefs about the questioner's goal may shift after hearing additional questions.
-Second, although $A_2$'s internal goal inference mechanism was implicit in the success of our model predictions in Experiments 1 and 2, we sought explicit validation of this model component by directly eliciting answerers' beliefs about the questioner's goal.
+Second, although $A_2$'s internal goal inference mechanism was implicit in the success of our model predictions in Exps.~1 and 2, we sought explicit validation of this model component by directly eliciting answerers' beliefs about the questioner's goal.
 
 \begin{figure*}[tbh!]
 \begin{center}
@@ -1300,7 +1305,7 @@ Cells in the shared board were labeled with coordinates (A1, A2, $\dots$ ) for e
 
 \subsubsection{Procedure}
 
-The task procedure was adapted from that of Experiments 1 and 2 to support extended exchanges. 
+The task procedure was adapted from that of Exps.~1 and 2 to support extended exchanges. 
 First, questioners were shown their assigned goal and selected a cell label from a dropdown menu to ask a question of the form ``Is X safe?''. 
 Answerers selected a yes/no answer to this question and were presented with the option to either send more information or to continue with only this yes/no answer.
 If they chose to send more information, we showed dropdown menus with all possible cells, allowing for responses like ``no, X is not safe, but Y is.''
@@ -1319,7 +1324,7 @@ To acquaint participants how the task worked, all trial sequences began with two
 Practice trials were constructed by including two of the three cells of a goal-relevant column or row in the initial state. 
 It should have been clear from a basic understanding of the instructions that the questioner needed to ask about the third cell and the answerer ought to reveal it. 
 After these initial six trials, we constructed a scrambled sequence where each condition appeared once in each role and these critical trials were interspersed with more random trials.
-As in Experiment 2, participants were paired with an artificial agent playing the opposite role. 
+As in Exp.~2, participants were paired with an artificial agent playing the opposite role. 
 This agent acted according to our $Q_2$ and $A_2$ models, with the optimality parameter set high ($\alpha = 100$). 
 
 \subsection{Results}
@@ -1351,7 +1356,7 @@ The subgoal representing a particular row (column) projected worlds to a single 
 \begin{center}
 \includegraphics[scale = .8]{Exp3/spatialGoalInference_final.pdf}
 \end{center}
-\caption{Empirical answerer responses to ``Which goal do you think your partner has?''  after hearing the $k$th question on a given trial. Error ribbons are bootstrapped 95\% CIs.}
+\caption{Goal inferences shift with additional questions. Curves are the proportions of empirical answerer responses to ``Which goal do you think your partner has?''  after hearing the $k$th question. Error ribbons are bootstrapped 95\% CIs.}
 %\vspace{-1cm}
 \label{fig:exp3goalinference}
 \end{figure}
@@ -1361,14 +1366,14 @@ The subgoal representing a particular row (column) projected worlds to a single 
 \begin{center}
 \includegraphics[scale = .6]{Exp3/blocked.pdf}
 \end{center}
-\caption{Empirical distributions of questions and answers in `blocked' condition as dialogue unfolds.}
+\caption{Decision tree of questions and answers in `blocked' condition as dialogue unfolds. Response probabilities are empirical estimates; line width is proportional to response probability.}
 %\vspace{-1cm}
 \label{fig:blocked}
 \end{figure*}
 
 
 A primary internal mechanism driving pragmatic behavior in our models is $A_2$'s Bayesian inference about the questioner's goal conditioned on the question. 
-While the overall success of $A_2$ in predicting answerer behavior in Experiments 1 and 2 provided indirect evidence for this mechanism, the elicitation step included in our design provides the opportunity for a more direct test of the answerer's beliefs about the goal.
+While the overall success of $A_2$ in predicting answerer behavior in Exps.~1 and 2 provided indirect evidence for this mechanism, the elicitation step included in our design provides the opportunity for a more direct test of the answerer's beliefs about the goal.
 Do participants' inferences about the questioner's true goal match those internally predicted by the model?
 
 We examined participants' goal inferences in the \emph{empty} condition, which was designed to measure the changes in answerer's beliefs about the hidden goal over repeated exchanges. 
@@ -1401,7 +1406,7 @@ Given the initial common ground that the top-left tile was safe, and their priva
 the modal empirical answer (62\%) was to confirm that A2 was safe, but additionally reveal that A3 was not safe.
 In the first case, the modal empirical \emph{answer} (52\%) was to confirm that A3 contained a bomb, and then give additional information about a safe tile in a completable row (e.g. C1 or C2).  
 In both cases, when it was the questioner's turn to ask a second question, they were faced with a much different epistemic state than at the outset---one that suggested pursuing a different subgoal, and that differed depending on their first question. 
-This updating sequence of questions and answers qualitatively matches that of our model.
+This updating sequence of questions and answers qualitatively matches that of the $Q_2$ and $A_2$ models.
 
 \begin{table}[]
 \begin{center}
@@ -1419,13 +1424,13 @@ This updating sequence of questions and answers qualitatively matches that of ou
 
 \subsection{Model comparison}
 
-Lastly, while the primary aim of Experiment 3 was to demonstrate how our model framework can be straightforwardly extended to repeated question-answer exchanges, these data also provided an opportunity to conduct an additional model comparison over a wide variety of items.
+Lastly, while the primary aim of Exp.~3 was to demonstrate how our model framework can be straightforwardly extended to repeated question-answer exchanges, these data also provided an opportunity to conduct an additional model comparison over a wide variety of items.
 
 All models have exactly three parameters, a cost weight $\beta_c$ and optimality parameters for the questioner and answerer, $\{\alpha_Q$, $\alpha_A\}$.
 Because evaluating marginal likelihoods over this parameter space was computationally intractable, we use the Bayesian Information Criterion (BIC) instead of the Bayes Factor. 
 %This measure is defined: $$BIC = -2 \ln \hat{L} + \ln(n) k $$ where $\ln \hat{L}$ is the maximum log likelihood, $k$ is the number of parameters, and $n$ is the number of observations. 
 Because the models we are comparing share the same parameters, the differences in BIC between models depends only on the \emph{maximum} of the likelihood function.
-We thus evaluated the likelihood of our data, excluding the first six practice trials of each game, under the following parameter ranges:
+We thus evaluated the maximum likelihood of our data, excluding the first six practice trials of each game, under the following parameter ranges:
 $$
 \begin{array}{rcl}
 \alpha_Q & \sim & \textrm{unif}(0, 59) \\
@@ -1439,7 +1444,7 @@ $A_2$ was maximized at $\alpha_Q = 59; \alpha_A = 2.7, \beta_c = 0.9$ while $A_1
 The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}, indicating a good overall fit to human responses.
 
 Because Exp.~3 was not designed to distinguish our questioner models (unlike Exp.~1-2), we expected that $Q_1$ and $Q_2$ would made similar predictions for most trials. 
-Indeed, the difference in the maximum log-likelihood for the two models was only $d=0.68$, indicating parity in fit.
+Indeed, the difference in the maximum log-likelihood for the two models was only $d=0.68$, indicating a rough parity in fit.
 These predictions also provided a good overall fit to human responses (see Fig. \ref{fig:exp3predictives}).
 
 \begin{figure}[t!]
@@ -1462,6 +1467,7 @@ These predictions also provided a good overall fit to human responses (see Fig. 
 %\end{figure*}
 
 \subsection{Discussion}
+
 
 %\cite<e.g>{khani2018planning,young2013pomdp,gao2019neural}
 
