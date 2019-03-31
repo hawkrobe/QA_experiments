@@ -1030,12 +1030,12 @@ Finally, the posterior predictives for the best-fitting models explain a substan
 \subsection{Discussion}
 
 %In three case studies, we first established that among our answerer models only $A_2$, which goes beyond the literal meaning of the question to infer and address underlying \emph{goals}, could account for classic qualitative answerer-sensitivity effects. 
-In Experiment 1, presented both answerer and questioner models with the  \emph{quantitative} challenge of accounting for trial-level variance in a Hidden Goal task. 
+In Exp.~1, we presented both answerer and questioner models with the  \emph{qualitative} and \emph{quantitative} challenge of accounting for trial-level variance in a Hidden Goal task. 
 We found strong converging support for $A_2$ relative to our other answerer models and, for the first time, tested the predictions of our questioner models. 
 While both $Q_1$ and $Q_2$ provided good predictive fits to our question-asking data, only $Q_2$ could account for asymmetries in the critical \emph{overlapping} condition and was therefore also preferred in a Bayesian model comparison. 
-We also found that incorporating realistic identifiability priors to interpret definite questions provided a substantially better fit to our data. 
+We also found that incorporating realistic identifiability priors to handle the definite article provided a substantially better fit to our data. 
 
-There are two reasons incorporating identifiability into our model is important. 
+There are main two reasons why it was important to incorporate these priors into our model.
 First, failures to account for non-uniform factors like conceptual typicality could potentially invalidate the conclusions of our model comparison. 
 For example, we expect a house cat to be a much more typical exemplar of the category `cat' than a lion. 
 Hence, participants may not be choosing the house cat in this item for pragmatic reasons; they may just be expecting the definite description to identify the more typical member of the category. 
@@ -1045,17 +1045,22 @@ After accounting for this potential confound, we still found strong evidence for
 Second, Fig. \ref{fig:exp1predictives} makes it clear that without the empirical priors, $A_2$ and $Q_2$ fail to capture graded responses across different domains. 
 This is especially striking in the `equivocal' condition where our models predict no preference in questioner behavior: if asking about the goldfish, which is both a ``pet'' and a ``fish,'' then the symmetry of the alternatives provides no reason to favor one label over the other. 
 Instead, we found a high degree of variability across domains. 
-
 For example, when questioners were trying to find a pet goldfish, 85\% of participants preferred the label `fish' to the label `pet,' even though both are technically true. 
 In the `artifacts' domain, on the other hand, questioners had no preference between asking about the `seat' or `metal thing' when the objects (metal chairs) fell into both categories.
-To understand how our empirical identifiability distribution captured this data, consider that a Dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}. 
+
+To understand how our elicited identifiability distribution helped to explain these data, consider that a Dalmatian is a far more typical and salient member of the `pet' category than a goldfish \cite{Rosch75}. 
 Hence a questioner considering this knowledge as common ground would know that asking ``Where is the pet?'' would tend to elicit information about the Dalmatian, not the goldfish. 
 If they were looking for information about the goldfish, they would then prefer to ask about the `fish' category, where a goldfish is a highly typical example. 
-In these cases, we expect typicality strongly guides interpretation of the definite article in questions.
+In these cases, we expect that typicality strongly guides interpretation of the embedded definite article in questions.
 
-Another aspect of our results, which is somewhat orthogonal \dots
+Our results in the overlapping condition also raise a broader question about depth of recursive reasoning in RSA models.
+The predicted asymmetry between ``cat?'' and ``pet?'' that we used to qualitatively distinguish our $Q_1$ and $Q_2$ models is a \emph{second-order implicature}: it only emerges at the $k =2$ level of recursion.
+Previous attempts to test such second-order implicatures outside the question-answer setting have found mixed evidence. 
+For example, \citeA{franke2016reasoning} used a hierarchical analysis to conclude that only one participant (out of 50) was accurately described as a second-order speaker in an ad-hoc implicature task \cite<see also>{frank2017rational}.
+We expect our data also represent a heterogeneous population of questioners and answerers, but it remains an open question for future work to investigate which aspects of the task facilitated this higher incidence of second-order inferences.
+One hypothesis is that the use of natural images and familiar conceptual relationships removed certain cognitive demands imposed by the \emph{ad hoc} binary properties used in prior reference games.
 
-Our model for Exp.~1 also served as a first demonstration of the ``composability'' of our computational framework with other formal proposals in linguistics and cognitive science.
+Finally, our model for Exp.~1 also served as a first demonstration of the ``composability'' of our computational framework with other formal proposals in linguistics and cognitive science.
 Because our model framework derives question and answer pragmatics given more elemental choices of literal question and answer semantics, world states, and goals, we could neatly accommodate definite reference and typicality in questions by importing formal semantic proposals for definiteness developed in linguistics and philosophy.
 In other words, the core computational framework itself did not need to be extended, only applied to the appropriate space of questions. 
 In Exp.~2, we design a more targeted experiment to test our pragmatic questioner $Q_2$ and show that our model can similarly accommodate more structured \emph{goals}.
