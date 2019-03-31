@@ -246,19 +246,14 @@ Because both questioner and answerer expect one another to behave rationally, th
 \citeA{VanRooy03_QuestioningDecisionProblems} argues further that the literal meaning of a question is underspecified: it only resolves to a particular partition given the contextual parameter of a specific decision problem. 
 
 We take this proposal as a starting point for approaching context-sensitivity in our social inference framework below.
-However, our account departs from this starting point in two critical ways, motivated by two limitations it faces as a cognitive model of inquiry.
-First, how does the answerer know what the decision problem is? 
+However, our account departs from this proposal in addressing a critical limitation it faces as a cognitive model of inquiry: how does the answerer know what the decision problem is? 
 \citeA{VanRooy03_QuestioningDecisionProblems} and subsequent accounts in this tradition \cite<e.g.>{benz2006utility} assume that the decision problem is \emph{already mutual knowledge shared by both questioner and answerer}: ``On the assumption that the answerer knows what the agent’s decision problem is, the coarser-grained, and thus partial, answer is [...] preferred.'' (p. 738).
 
-In our view, this assumption undermines the functional conditions motivating inquiry. 
+In our view, this assumption undermines the two-sided functional conditions motivating inquiry. 
 A cognitive account of answerer goal-sensitivity must provide an explicit mechanism for how the answerer learns the goal. 
 We will suggest that the necessary mechanism is (Bayesian) social inference: the answerer inverts a model of the questioner to reason about their likely goals, conditioned on their utterance.
-Our framework can thus be viewed as extending Van Rooy's account to the more general case where answerers have a priori uncertainty over the questioner’s goal\footnote{The only previous work we are aware of that considers how the answerer might determine the questioner's decision problem from a space of alternatives is by \citeA{stevens2014indirect} which treats a limited case under a game-theoretic perspective.}. 
-
-Second, rather than following Van Rooy in stipulating a context-sensitive literal meaning for questions, we will derive context-sensitivity at the \emph{pragmatic} level via recursive reasoning.
-%Because different goals are consistent with the same question, 
-Our framework makes a psychologically meaningful distinction between the latent goal in the questioner's mind and the communicative signal they choose to provide about it.
-Because we will define a goal to be the same type of object as a classic question meaning, we can start with a simple answerer who identifies the goal directly from the question and derive a pragmatic answerer who reasons about \emph{why} a questioner would be asking this particular question, considering the space of possible goals that might lead to the same question.
+Our framework can thus be viewed as introducing the cognitive mechanisms needed to extend Van Rooy's account to the more general case where answerers have a priori uncertainty over the questioner’s goal\footnote{The only previous work we are aware of that considers how the answerer might determine the questioner's decision problem from a space of alternatives is by \citeA{stevens2014indirect} which treats a limited case under a game-theoretic perspective.}. 
+This extension has a number of broad consequences and forces a re-evaluation of the meaning of a question, which we will return to in the General Discussion.
 
 \section{A Rational Speech Act framework for \\ question and answer pragmatics}
 
@@ -1444,13 +1439,13 @@ $$
 \end{array}
 $$
 
-We found that the pragmatic model $A_2$ was able to fit the answerer data substantially better than $A_1$ (see Table \ref{table:exp3likelihoods}).
-$A_2$ was maximized at $\alpha_Q = 59; \alpha_A = 2.7, \beta_c = 0.9$ while $A_1$ attained its maximum fit at $\alpha_Q = 1, \alpha_A = 11, \beta_c = 0.1$. 
-The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}, indicating a good overall fit to human responses.
-
 Because Exp.~3 was not designed to distinguish our questioner models (unlike Exp.~1-2), we expected that $Q_1$ and $Q_2$ would made similar predictions for most trials. 
 Indeed, the difference in the maximum log-likelihood for the two models was only $d=0.68$, indicating a rough parity in fit.
-These predictions also provided a good overall fit to human responses (see Fig. \ref{fig:exp3predictives}).
+These predictions, however, provided a good overall fit to human responses (see Fig. \ref{fig:exp3predictives}).
+
+For answerers, on the other hand, we found that the pragmatic model $A_2$ was able to fit the answerer data substantially better than $A_1$ (see Table \ref{table:exp3likelihoods}).
+$A_2$ was maximized at $\alpha_Q = 59; \alpha_A = 2.7, \beta_c = 0.9$ while $A_1$ attained its maximum fit at $\alpha_Q = 1, \alpha_A = 11, \beta_c = 0.1$. 
+The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}, also indicating an excellent overall fit to human responses.
 
 \begin{figure}[t!]
 \begin{center}
@@ -1470,9 +1465,6 @@ These predictions also provided a good overall fit to human responses (see Fig. 
 %%\vspace{-1cm}
 %\label{fig:exp1predictives}
 %\end{figure*}
-
-\subsection{Discussion}
-
 
 %\cite<e.g>{khani2018planning,young2013pomdp,gao2019neural}
 
@@ -1497,26 +1489,33 @@ We then found strong qualitative and quantitative evidence for both $A_2$ and $Q
 
 % Note that this behavior also could not be explained by the heuristic strategy raised in the earlier experiments: if questioners just ruled out labels that did not apply (e.g. ``lion''), they would have no mechanism for deciding between the two equally-good parent labels (``pet'' and ``cat'') to pick out their goal. 
 
-A major formal advance of the models considered here is synthesizing current approaches to optimal question asking and answering from AI and linguistics with the recursive social reasoning captured in the Rational Speech Act framework. In addition to introducing pragmatics into the former approaches, this moves RSA models beyond production or interpretation of single utterances (in context) to consider the dynamics of simple dialogs where both listening and speaking---linguistic input and output---must be integrated within the same agent. 
+A central formal advance of the proposed framework is the synthesis of current OED approaches to optimal question asking in active learning with the generic social reasoning mechanisms proposed by the Rational Speech Act approach to language use. 
+In addition to embedding the former approaches into a social context, this work moves RSA models beyond the production or interpretation of single utterances (in context) to consider the dynamics of simple dialogs where both listening and speaking---linguistic input and output---must be integrated within the same agent. 
+In the remainder of the discussion, we discuss several broader questions raised by our framework and note a number of avenues for future work.
 
-\todo[inline]{Make note that we sorta derived something like inquisitive semantics from purely projective semantics plus generic gricean mechanism? inquisitive semantics explicitly builds in the goal `raising' as part of the meaning of the question, we only get it at $Q_2$}
+\subsection{What is the meaning of a question?}
 
-\todo[inline]{Tune this up}
-\subsection{The meaning of a question}
+Our framework draws heavily from theoretical treatments of question and answer semantics in linguistics and the philosophy of language. 
+Our development of these ideas, however, leads to a subtly different perspective on the meaning of a question. 
+These differences stem from two psychologically meaningful distinctions at the heart of our model.
+The first distinction disentangles the question meaning from its possible answers and instead associates it with a particular goal it literally signals.
+The second distinction disentangles the space of latent goals in the questioner's mind from the communicative signal they choose to provide about that goal.
 
-Our computational framework also has implications for the theoretical treatment of question and answer meanings in linguistics and philosophy of language. 
-While the relevance projection we used to represent the notion of a goal is equivalent to classic partition-based proposals for the semantics of questions \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions}, %the meaning of the question can technically be described as its set of possible ``answers,'' i.e. the set of states in the image of its projection map, 
-the meaning of a question in our framework is conceptually closer to recent proposals for an \emph{inquisitive semantics} specified in formal logic \cite{ciardelli2013inquisitive, roelofsen2013algebraic}.
 
-our \emph{answerer} agent chooses from an independent set of declarative utterances $\mathcal{A}$, not from any set of cells constrained by the question. 
-This critical dissociation of question meanings, which are informative about \emph{goals} or QUDs, and answer meanings, which are informative about the state of the \emph{world}, %is conceptually similar to recent proposals for an \emph{inquisitive semantics} specified in formal logic \cite{ciardelli2013inquisitive, roelofsen2013algebraic}.
 
-Unlike previous accounts in the literature, which identify the meaning of a question with its possible answers (or unique exhaustive/relevant answer), both our framework and inquisitive semantics end up disentangling the meaning of questions from the space of answers. Interrogative sentences under our account simply provide information about goals or issues (QUDs) while declarative sentences provide information about the state of the world. While we do not fully flesh out these connections given the rather large scope of inquisitive semantics (e.g. how classic problems about embedded questions, exhaustivity, and so on are handled), we see this as an interesting area for future work that we hope will resonate with formal semanticists.
+rather than following \citeA{VanRooy03_QuestioningDecisionProblems} in stipulating a context-sensitive literal meaning for questions, we \emph{derive} context-sensitivity at the \emph{pragmatic} level via recursive reasoning on top of context-independent meanings.
+%Because different goals are consistent with the same question, 
+The key innovation that allows for this derivation is the psychologically meaningful distinction between the latent goal in the questioner's mind and 
 
-The second ‘departure’ from van Rooy is that we use recursive inference to derive context-sensitive questioner and answerer behavior from a context-independent question semantics (where a literal question meaning is simply a QUD projection), whereas he argued for a semantics in which the literal meaning of a question is under-determined and context-dependent. This intersects with our first ‘departure’ above, since for the pragmatic questioner, this question is chosen as a signal about which of many decision problems they have in mind, and the pragmatic answerer uses this question along with other context to reduce their uncertainty about the underlying decision problem.
+Because a goal is defined to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can start with a simple answerer who identifies the goal directly from the question and derive a pragmatic answerer who reasons about \emph{why} a questioner would be asking this particular question, considering the space of possible goals that might lead to the same question.
+
+Thus, while the relevance projection we used to represent the notion of a goal is equivalent to classic partition-based proposals for the semantics of questions \cite<e.g.>{}, the meaning of a question in our framework is conceptually closer to recent proposals for an \emph{inquisitive semantics} specified in formal logic \cite{ciardelli2018inquisitive}. % which resonates with ongoing work in this literature.
+Unlike previous accounts in the literature, which identify the meaning of a question with its possible answers (whether this is unique exhaustive/relevant answer), both our framework and that of inquisitive semantics end up disentangling the meaning of questions from the space of answers. 
+Interrogative sentences under our account simply provide information about goals or issues (QUDs) while declarative sentences provide information about the state of the world. 
+While we do not fully flesh out these connections given the rather large scope of inquisitive semantics (e.g. how classic problems about embedded questions, exhaustivity, and so on are handled), we see this as an interesting area for future work that we hope will resonate with formal semanticists.
 
 The precise relationship between fundamental notions of meaning in inquisitive semantics and meanings in our framework requires further exploration. 
-Still, we conjecture that our further dissociation between underlying semantic meaning and recursive probabilistic mechanisms for goal inference and signaling \emph{given} these meanings may be key to grounding pragmatic question and answer behavior in basic social cognitive mechanisms.
+%Still, we conjecture that our further dissociation between underlying semantic meaning and recursive probabilistic mechanisms for goal inference and signaling \emph{given} these meanings may be key to grounding pragmatic question and answer behavior in basic social cognitive mechanisms.
 
 %Here, we focused specifically on two sub-cases that are of particular interest for psychological science: (1) selecting a question in the absence of any input, and (2) selecting a declarative statement in response to a question. 
 %In principle this framework allows a dialogue agent to update their beliefs after hearing any type of utterance, then to select any type of utterance in response. 
