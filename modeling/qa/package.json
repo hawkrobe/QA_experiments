@@ -9,7 +9,7 @@
     ]
   },
   "dependencies": {
-    "lodash": "~4.17.4",
-    "babyparse": "*"
+    "babyparse": "*",
+    "lodash": "^4.17.11"
   }
 }
