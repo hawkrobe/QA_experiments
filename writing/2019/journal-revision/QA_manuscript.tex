@@ -1495,31 +1495,32 @@ In the remainder of the discussion, we discuss several broader questions raised 
 
 \subsection{What is the meaning of a question?}
 
-Our framework draws heavily from theoretical treatments of question and answer semantics in linguistics and the philosophy of language. 
+Our framework draws heavily from classical accounts of question and answer semantics in linguistics and the philosophy of language. 
 Our development of these ideas, however, leads to a subtly different perspective on the meaning of a question. 
 These differences stem from two psychologically meaningful distinctions at the heart of our model.
-The first distinction disentangles the question meaning from its possible answers and instead associates it with a particular goal it literally signals.
-The second distinction disentangles the space of latent goals in the questioner's mind from the communicative signal they choose to provide about that goal.
+The first disentangles the literal question meaning from any particular set of possible answers and instead associates it with a specific goal.
+The second disentangles the space of latent goals in the questioner's mind from the communicative signal they choose to provide.
+
+On the first point, our framework resonates with dynamic approaches to question meaning \cite<e.g>{Groenendijk99_LogicOfInterrogation}, as well as recent proposals for a broader inquisitive semantics \cite{ciardelli2018inquisitive}, where the formal content of a question is simply the ``issue'' it raises into the context.
+These approaches are implemented in a formal logic that distinguishes this notion of inquisitive content from standard informational content.
+Defining literal question semantics directly in terms of their relevance or resolution conditions imposes a crucial \emph{modularity} at the semantic level of the model, freeing higher-level pragmatic considerations to handle the problem of how questioners actually think their partner will generate (possible) answers. 
+The distribution of likely answers may or may not correspond to the resolution conditions of the literal meaning depending on the level of recursion.
+
+The observation in inquisitive semantics is that declarative sentences may \emph{also} have inquisitive content, providing a unified semantics rather than separate notions of meaning for interrogative and declarative utterances.
+In our framework, we made the simplifying assumption that interrogative sentences shift the hearer's beliefs about the questioner's private goals (corresponding to purely inquisitive content) while declarative sentences shift beliefs about the state of the world (corresponding to purely informational content). 
+The RSA framework, however, also allows declarative sentences to have as prior work modeling hyperbole in terms of its `inquisitive' 
+ the problem of how questioners actually think their partner will generate answers for 
+While we do not fully flesh out these connections given the rather large scope of inquisitive semantics (e.g. how classic problems about embedded questions, exhaustivity, and so on are handled), we see this as an interesting area for future work that we hope will resonate with formal semanticists.
+The precise relationship between fundamental notions of meaning in inquisitive semantics and meanings in our framework requires further exploration. 
 
 
-
-rather than following \citeA{VanRooy03_QuestioningDecisionProblems} in stipulating a context-sensitive literal meaning for questions, we \emph{derive} context-sensitivity at the \emph{pragmatic} level via recursive reasoning on top of context-independent meanings.
+On the second point, rather than following \citeA{VanRooy03_QuestioningDecisionProblems} in stipulating a context-sensitive literal meaning for questions, we \emph{derive} context-sensitivity at the \emph{pragmatic} level via recursive reasoning on top of context-independent meanings.
 %Because different goals are consistent with the same question, 
-The key innovation that allows for this derivation is the psychologically meaningful distinction between the latent goal in the questioner's mind and 
+%The key innovation that allows for this derivation is the psychologically meaningful distinction between the latent goal in the questioner's mind and 
 
 Because a goal is defined to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can start with a simple answerer who identifies the goal directly from the question and derive a pragmatic answerer who reasons about \emph{why} a questioner would be asking this particular question, considering the space of possible goals that might lead to the same question.
 
-Thus, while the relevance projection we used to represent the notion of a goal is equivalent to classic partition-based proposals for the semantics of questions \cite<e.g.>{}, the meaning of a question in our framework is conceptually closer to recent proposals for an \emph{inquisitive semantics} specified in formal logic \cite{ciardelli2018inquisitive}. % which resonates with ongoing work in this literature.
-Unlike previous accounts in the literature, which identify the meaning of a question with its possible answers (whether this is unique exhaustive/relevant answer), both our framework and that of inquisitive semantics end up disentangling the meaning of questions from the space of answers. 
-Interrogative sentences under our account simply provide information about goals or issues (QUDs) while declarative sentences provide information about the state of the world. 
-While we do not fully flesh out these connections given the rather large scope of inquisitive semantics (e.g. how classic problems about embedded questions, exhaustivity, and so on are handled), we see this as an interesting area for future work that we hope will resonate with formal semanticists.
-
-The precise relationship between fundamental notions of meaning in inquisitive semantics and meanings in our framework requires further exploration. 
-%Still, we conjecture that our further dissociation between underlying semantic meaning and recursive probabilistic mechanisms for goal inference and signaling \emph{given} these meanings may be key to grounding pragmatic question and answer behavior in basic social cognitive mechanisms.
-
-%Here, we focused specifically on two sub-cases that are of particular interest for psychological science: (1) selecting a question in the absence of any input, and (2) selecting a declarative statement in response to a question. 
-%In principle this framework allows a dialogue agent to update their beliefs after hearing any type of utterance, then to select any type of utterance in response. 
-%The former requires replacing the immediate motive to convey true information with the more distant motive to provoke useful information from one's interlocutor. The latter requires sophisticated inference about the underlying interests of the questioner instead of simply relying upon the literal question semantics. 
+Our probabilistic account can also be considered an ``update semantics,'' 
 
 %\subsection{Limitations of the model}
 
@@ -1531,7 +1532,8 @@ The precise relationship between fundamental notions of meaning in inquisitive s
 \subsection{The correspondence between questions and goals}
 
 \todo[inline]{ugh, fix this...}
-Our $Q_2$ model predicts that people will ask the question most directly corresponding to their goal if it accessible and easy to produce, because it would be the clearest signal.
+Because we define the meaning of a question to be the same kind of object as a goal, our $Q_2$ model predicts that people will ask the question most directly corresponding to their goal if it accessible and easy to produce.
+After all, it would be the clearest signal.
 So why would a questioner ever ask a question that didn't directly correspond to their underlying goal? 
 Our dissociation of question meanings and goals or QUDs raises the interesting possibility that the set of easy-to-express utterable questions is effectively a \emph{subset} of the possible goals one might have: there may not exist an easy-to-express question utterance for every underlying goal an agent may need to address, thus the need for pragmatics.
 
