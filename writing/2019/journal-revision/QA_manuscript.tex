@@ -1501,26 +1501,23 @@ These differences stem from two psychologically meaningful distinctions at the h
 The first disentangles the literal question meaning from any particular set of possible answers and instead associates it with a specific goal.
 The second disentangles the space of latent goals in the questioner's mind from the communicative signal they choose to provide.
 
-On the first point, our framework resonates with dynamic approaches to question meaning \cite<e.g>{Groenendijk99_LogicOfInterrogation}, as well as recent proposals for a broader inquisitive semantics \cite{ciardelli2018inquisitive}, where the formal content of a question is simply the ``issue'' it raises into the context.
-These approaches are implemented in a formal logic that distinguishes this notion of inquisitive content from standard informational content.
-Defining literal question semantics directly in terms of their relevance or resolution conditions imposes a crucial \emph{modularity} at the semantic level of the model, freeing higher-level pragmatic considerations to handle the problem of how questioners actually think their partner will generate (possible) answers. 
-The distribution of likely answers may or may not correspond to the resolution conditions of the literal meaning depending on the level of recursion.
+On the first point, our framework resonates with dynamic accounts to question meaning \cite<e.g>{Groenendijk99_LogicOfInterrogation}, as well as recent proposals for an inquisitive semantics \cite{ciardelli2018inquisitive}, where the formal content of a question is simply the ``issue'' it raises into the context.
+Our proposal that the meaning of an interrogative sentence shifts the hearer's beliefs about the questioner's goals can be seen as a probabilistic, and psychological, analogue to this notion of \emph{inquisitive content} which is implemented in a custom formal logic.
+%Similarly, our proposal that  is  to o from standard informational content. 
+% roughly corresponding to our distinction between the  while declarative sentences shift beliefs about the state of the world.
+In both cases, defining literal question semantics directly in terms of their inquisitive content rather than appeals to possible answers imposes a crucial \emph{modularity} at the semantic level the model. 
+This modularity frees higher-level pragmatic considerations to handle the problem of how questioners \emph{actually} think their partner will generate answers given a question, which may or may not correspond to the literal resolution conditions.
 
-The observation in inquisitive semantics is that declarative sentences may \emph{also} have inquisitive content, providing a unified semantics rather than separate notions of meaning for interrogative and declarative utterances.
-In our framework, we made the simplifying assumption that interrogative sentences shift the hearer's beliefs about the questioner's private goals (corresponding to purely inquisitive content) while declarative sentences shift beliefs about the state of the world (corresponding to purely informational content). 
-The RSA framework, however, also allows declarative sentences to have as prior work modeling hyperbole in terms of its `inquisitive' 
- the problem of how questioners actually think their partner will generate answers for 
-While we do not fully flesh out these connections given the rather large scope of inquisitive semantics (e.g. how classic problems about embedded questions, exhaustivity, and so on are handled), we see this as an interesting area for future work that we hope will resonate with formal semanticists.
-The precise relationship between fundamental notions of meaning in inquisitive semantics and meanings in our framework requires further exploration. 
+This conceptual connection to inquisitive semantics is intriguing and we see the broader correspondence between probabilistic and logic-based notions of inquisitive content as an important area for further exploration.
+For example, a fundamental insight of inquisitive semantics is that declarative sentences sometimes \emph{also} have inquisitive content.
+While we have made the simplifying assumption that declarative utterances are purely informative, the RSA framework also supports this ``hybrid'' notion.
+For example, previous RSA models have explained the use of non-literal language like hyperbole, irony, and metaphor in declarative sentences by the same mechanism: providing information about the speaker's goal \cite{KaoEtAl2014-Cogsci,KaoGoodman15_IronyCogSci,KaoWuBergenGoodman14_NonliteralNumberWords}.
+A subtler difference, however, lies in the correspondence between the projection function we have used to define goals and the ``issue'' formalism in inquisitive semantics, which is not as strict. 
+Thus, the class of functions used to represent a goal in our framework may need to be expanded to properly handle embedded questions, entailment, and exhaustivity \cite{ciardelli2018inquisitive}.
 
-
+\todo[inline]{Maybe need to roll this in as a benefit of modularity?}
 On the second point, rather than following \citeA{VanRooy03_QuestioningDecisionProblems} in stipulating a context-sensitive literal meaning for questions, we \emph{derive} context-sensitivity at the \emph{pragmatic} level via recursive reasoning on top of context-independent meanings.
-%Because different goals are consistent with the same question, 
-%The key innovation that allows for this derivation is the psychologically meaningful distinction between the latent goal in the questioner's mind and 
-
 Because a goal is defined to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can start with a simple answerer who identifies the goal directly from the question and derive a pragmatic answerer who reasons about \emph{why} a questioner would be asking this particular question, considering the space of possible goals that might lead to the same question.
-
-Our probabilistic account can also be considered an ``update semantics,'' 
 
 %\subsection{Limitations of the model}
 
