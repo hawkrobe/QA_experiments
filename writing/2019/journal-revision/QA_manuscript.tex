@@ -580,9 +580,9 @@ Finally, we see that $A_2$ is context-dependent in the same way as \citeA{Clark7
 
 \begin{figure*}[t]
 \begin{center}
-\includegraphics[scale=.5]{simulations/clarkExampleFig}
+\includegraphics[scale=.45]{simulations/clarkExampleFig}
 \end{center}
-\vspace{-2cm}
+\vspace{-1cm}
 \caption{Illustration of how $A_2$ uses the questioner's utterance as a cue to their underlying goal and responds relevantly, thus producing the sensitivity reported by Clark (1979). We set the optimality parameter $\alpha = 100$ to make the effect clearer; the middle column is the marginal posterior projected to the number of cards in the goal.}
 \label{fig:clarkExample}
 \end{figure*}
@@ -730,7 +730,7 @@ In Exp.~1, we extend our model with an underlying formal account of definite ref
 In Exp.~2, we show how the model extends to more structured spaces of hierarchical goals.
 And finally, in Exp.~3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
 
-\section{Experiment 1: \\ Definite reference and typicality}
+\section{Experiment 1: \\ Definite reference and conceptual knowledge}
 
 %%%
 As a first quantitative test of our models, we designed a cooperative guessing game that relies on knowledge of concept structure. 
@@ -800,7 +800,7 @@ Each of these drag-and-drop actions was rendered for the other participant in re
 Finally, after receiving the answer, the questioner clicked on one of the gates to make their guess. 
 Both players received feedback about the outcome of the guess: the questioner saw the true locations of the objects, and the answerer saw the questioner's true private goal. 
 
-\subsection{Qualitative behavioral predictions}
+\subsection{Qualitative results}
 
 Before proceeding to quantitative model comparisons, we highlight several key patterns in the behavioral data where models make qualitatively different predictions. 
 This allows us to \emph{falsify} certain models on the basis of failing to predict these qualitative patterns \cite{palminteri2017importance}.
@@ -1414,15 +1414,15 @@ This updating sequence of questions and answers qualitatively matches that of th
 \toprule
 \multirow{2}{*}{answerers} & $A_1$ & -1890 \\ \cmidrule(l){2-3} 
  & $A_2$ & \textbf{-1380} \\ \midrule
-\multirow{2}{*}{questioners} & Q1 & -1136  \\ \cmidrule(l){2-3} 
- & Q2 & \textbf{-1135} \\ \bottomrule
+\multirow{2}{*}{questioners} & $Q_1$ & -1136  \\ \cmidrule(l){2-3} 
+ & $Q_2$ & \textbf{-1135} \\ \bottomrule
 \end{tabular}
 \end{center}
 \caption{Results of quantitative model comparison for Exp. 3; marginal likelihoods shown on log scale.}
 \label{table:exp3likelihoods}
 \end{table}
 
-\subsection{Model comparison}
+\subsection{Quantitative model comparison}
 
 Lastly, while the primary aim of Exp.~3 was to demonstrate how our model framework can be straightforwardly extended to repeated question-answer exchanges, these data also provided an opportunity to conduct an additional model comparison over a wide variety of items.
 
@@ -1495,29 +1495,31 @@ In the remainder of the discussion, we discuss several broader questions raised 
 
 \subsection{What is the meaning of a question?}
 
-Our framework draws heavily from classical accounts of question and answer semantics in linguistics and the philosophy of language. 
-Our development of these ideas, however, leads to a subtly different perspective on the meaning of a question. 
-These differences stem from two psychologically meaningful distinctions at the heart of our model.
-The first disentangles the literal question meaning from any particular set of possible answers and instead associates it with a specific goal.
-The second disentangles the space of latent goals in the questioner's mind from the communicative signal they choose to provide.
+While our framework draws extensively from previous theoretical accounts of question and answer semantics, the division of labor between semantics and pragmatics in our proposed model leads to a subtly different perspective on the meaning of a question. 
+These differences stem from two psychologically meaningful distinctions at the core of our model.
+The first disentangles the literal meaning of a question from any particular set of possible answers and instead associates it with a specific goal that it raises or signals for an answerer.
+The second disentangles the space of possible latent goals in the questioner's mind from the one associated with the interrogative signal they choose to provide.
+Together, these distinctions allow us to \emph{derive} context-sensitivity at the pragmatic level via recursive reasoning that grounds out in context-independent meanings.
 
-On the first point, our framework resonates with dynamic accounts to question meaning \cite<e.g>{Groenendijk99_LogicOfInterrogation}, as well as recent proposals for an inquisitive semantics \cite{ciardelli2018inquisitive}, where the formal content of a question is simply the ``issue'' it raises into the context.
-Our proposal that the meaning of an interrogative sentence shifts the hearer's beliefs about the questioner's goals can be seen as a probabilistic, and psychological, analogue to this notion of \emph{inquisitive content} which is implemented in a custom formal logic.
+This is somewhat different from the context-sensitive literal meanings suggested by \citeA{VanRooy03_QuestioningDecisionProblems}.
+As previously discussed, this account argued that the meaning of a question ought to be underspecified and resolved only through the contextual parameter of the questioner's decision problem.
+Once we explicitly address the issue of how the answerer actually \emph{infers} this decision problem from hearing the question (and from other context), it becomes clear that an underspecified literal question meaning would introduce a circularity\footnote{RSA models have handled vague or underspecified literal meanings by introducing a free variable into the meaning that is determined by the speaker and inferred by the pragmatic listener \cite<e.g>{LassiterGoodman15_AdjectivalVagueness,TesslerGoodman16_Generics}. An implementation of van Rooy's proposal would require the free variable in the literal meaning to be the questioner's private goal itself. This in turn would allow the literal questioner to obtain relevant information from \emph{any} question simply by having a private goal. In order for the question utterance to be informative about the goal or decision problem for the pragmatic answerer, there must be a stable base case linking goals to question utterances.}. 
+Because we take a goal to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can implement its meaning in a literal answerer who identifies the goal directly from the question.
+
+In this way, the meaning of a question in our framework resonates with dynamic accounts of question meaning \cite<e.g>{Groenendijk99_LogicOfInterrogation}, as well as recent proposals for an inquisitive semantics \cite{ciardelli2018inquisitive}, where the formal content of a question is simply the ``issue'' it raises into the context.
+Our proposal that the meaning of an interrogative sentence shifts the hearer's beliefs about the questioner's goals can be seen as a probabilistic analogue to the notion of \emph{inquisitive content} as implemented in formal logic.
 %Similarly, our proposal that  is  to o from standard informational content. 
 % roughly corresponding to our distinction between the  while declarative sentences shift beliefs about the state of the world.
-In both cases, defining literal question semantics directly in terms of their inquisitive content rather than appeals to possible answers imposes a crucial \emph{modularity} at the semantic level the model. 
+In both cases, defining literal question semantics directly in terms of their inquisitive content rather than possible answers imposes a crucial \emph{modularity} at the semantic level of the model. 
 This modularity frees higher-level pragmatic considerations to handle the problem of how questioners \emph{actually} think their partner will generate answers given a question, which may or may not correspond to the literal resolution conditions.
 
-This conceptual connection to inquisitive semantics is intriguing and we see the broader correspondence between probabilistic and logic-based notions of inquisitive content as an important area for further exploration.
+The connection to inquisitive semantics is an intriguing area for further exploration.% and we see the broader correspondence between probabilistic and logic-based notions of inquisitive content .
 For example, a fundamental insight of inquisitive semantics is that declarative sentences sometimes \emph{also} have inquisitive content.
 While we have made the simplifying assumption that declarative utterances are purely informative, the RSA framework also supports this ``hybrid'' notion.
 For example, previous RSA models have explained the use of non-literal language like hyperbole, irony, and metaphor in declarative sentences by the same mechanism: providing information about the speaker's goal \cite{KaoEtAl2014-Cogsci,KaoGoodman15_IronyCogSci,KaoWuBergenGoodman14_NonliteralNumberWords}.
 A subtler difference, however, lies in the correspondence between the projection function we have used to define goals and the ``issue'' formalism in inquisitive semantics, which is not as strict. 
 Thus, the class of functions used to represent a goal in our framework may need to be expanded to properly handle embedded questions, entailment, and exhaustivity \cite{ciardelli2018inquisitive}.
 
-\todo[inline]{Maybe need to roll this in as a benefit of modularity?}
-On the second point, rather than following \citeA{VanRooy03_QuestioningDecisionProblems} in stipulating a context-sensitive literal meaning for questions, we \emph{derive} context-sensitivity at the \emph{pragmatic} level via recursive reasoning on top of context-independent meanings.
-Because a goal is defined to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can start with a simple answerer who identifies the goal directly from the question and derive a pragmatic answerer who reasons about \emph{why} a questioner would be asking this particular question, considering the space of possible goals that might lead to the same question.
 
 %\subsection{Limitations of the model}
 
