@@ -57,7 +57,7 @@
 \author{Robert X.D. Hawkins, Noah D. Goodman}
 \affiliation{Stanford University} 
 
-\abstract{What makes a question useful? What makes an answer helpful? 
+\abstract{%What makes a question useful? What makes an answer helpful? 
 Asking questions is one of our most efficient and reliable means of learning about the world. 
 Yet we do not often pose these questions to an impartial oracle; we ask cooperative social partners, in dialogue. 
 In this paper, we aim to reconcile formal models of optimal question asking and answering with classic effects of social context. 
@@ -1501,8 +1501,8 @@ The first disentangles the literal meaning of a question from any particular set
 The second disentangles the space of possible latent goals in the questioner's mind from the one associated with the interrogative signal they choose to provide.
 Together, these distinctions allow us to \emph{derive} context-sensitivity at the pragmatic level via recursive reasoning that grounds out in context-independent meanings.
 
-This is somewhat different from the context-sensitive literal meanings suggested by \citeA{VanRooy03_QuestioningDecisionProblems}.
-As previously discussed, this account argued that the meaning of a question ought to be underspecified and resolved only through the contextual parameter of the questioner's decision problem.
+This idea differs somewhat from the context-sensitive literal meanings suggested by \citeA{VanRooy03_QuestioningDecisionProblems}.
+As previously described, Van Rooy argued that the meaning of a question ought to be underspecified and resolved only through the contextual parameter of the questioner's decision problem.
 Once we explicitly address the issue of how the answerer actually \emph{infers} this decision problem from hearing the question (and from other context), it becomes clear that an underspecified literal question meaning would introduce a circularity\footnote{RSA models have handled vague or underspecified literal meanings by introducing a free variable into the meaning that is determined by the speaker and inferred by the pragmatic listener \cite<e.g>{LassiterGoodman15_AdjectivalVagueness,TesslerGoodman16_Generics}. An implementation of van Rooy's proposal would require the free variable in the literal meaning to be the questioner's private goal itself. This in turn would allow the literal questioner to obtain relevant information from \emph{any} question simply by having a private goal. In order for the question utterance to be informative about the goal or decision problem for the pragmatic answerer, there must be a stable base case linking goals to question utterances.}. 
 Because we take a goal to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can implement its meaning in a literal answerer who identifies the goal directly from the question.
 
@@ -1511,14 +1511,14 @@ Our proposal that the meaning of an interrogative sentence shifts the hearer's b
 %Similarly, our proposal that  is  to o from standard informational content. 
 % roughly corresponding to our distinction between the  while declarative sentences shift beliefs about the state of the world.
 In both cases, defining literal question semantics directly in terms of their inquisitive content rather than possible answers imposes a crucial \emph{modularity} at the semantic level of the model. 
-This modularity frees higher-level pragmatic considerations to handle the problem of how questioners \emph{actually} think their partner will generate answers given a question, which may or may not correspond to the literal resolution conditions.
+This modularity frees higher-level pragmatic considerations to handle the problem of how questioners actually think their partner will generate answers given a question, which may or may not correspond to the literal resolution conditions.
 
-The connection to inquisitive semantics is an intriguing area for further exploration.% and we see the broader correspondence between probabilistic and logic-based notions of inquisitive content .
+The connection to inquisitive semantics is an intriguing area for further exploration. % and we see the broader correspondence between probabilistic and logic-based notions of inquisitive content .
 For example, a fundamental insight of inquisitive semantics is that declarative sentences sometimes \emph{also} have inquisitive content.
 While we have made the simplifying assumption that declarative utterances are purely informative, the RSA framework also supports this ``hybrid'' notion.
 For example, previous RSA models have explained the use of non-literal language like hyperbole, irony, and metaphor in declarative sentences by the same mechanism: providing information about the speaker's goal \cite{KaoEtAl2014-Cogsci,KaoGoodman15_IronyCogSci,KaoWuBergenGoodman14_NonliteralNumberWords}.
 A subtler difference, however, lies in the correspondence between the projection function we have used to define goals and the ``issue'' formalism in inquisitive semantics, which is not as strict. 
-Thus, the class of functions used to represent a goal in our framework may need to be expanded to properly handle embedded questions, entailment, and exhaustivity \cite{ciardelli2018inquisitive}.
+Thus, the class of functions used to represent a goal in our framework may need to be expanded to properly handle embedded questions, entailment, and disjunction \cite{ciardelli2018inquisitive}.
 
 
 %\subsection{Limitations of the model}
@@ -1530,28 +1530,31 @@ Thus, the class of functions used to represent a goal in our framework may need 
  
 \subsection{The correspondence between questions and goals}
 
-\todo[inline]{ugh, fix this...}
-Because we define the meaning of a question to be the same kind of object as a goal, our $Q_2$ model predicts that people will ask the question most directly corresponding to their goal if it accessible and easy to produce.
+A straightforward consequence of defining the meaning of a question to be the same kind of object as a goal, our $Q_2$ model predicts that people will ask the question most directly corresponding to their private goal if it accessible and easy to produce.
 After all, it would be the clearest signal.
 So why would a questioner ever ask a question that didn't directly correspond to their underlying goal? 
-Our dissociation of question meanings and goals or QUDs raises the interesting possibility that the set of easy-to-express utterable questions is effectively a \emph{subset} of the possible goals one might have: there may not exist an easy-to-express question utterance for every underlying goal an agent may need to address, thus the need for pragmatics.
+Our dissociation of question meanings and latent goals raises the interesting possibility that the set of questions that is easy to verbally express is effectively a \emph{subset} of the possible latent goals one might have: there may not exist a question utterance literally encoding every underlying goal an agent may need to address, thus the need for pragmatics.
 
-Theoretically, our motivation for formulating the pragmatics of using questions to signal goals came from realistic cases where a question directly corresponding to the goal is either naturally inaccessible or costly to formulate (e.g. if the interrogative sentence with the meaning most closely corresponding to the underlying goal is impolite or would be long or confusing to produce). 
-For instance, when trying to meet up in a city, people regularly ask the shorter question “Where are you?” rather than a more direct “At the intersection of which two streets are you currently located, and which direction are you heading?” (see Potts, 2012). 
-Rather than disallowing certain questions, we would thus observe similar model behavior if we had included these questions in the set of allowable questions but given them higher production costs (this suffices as a coherent theoretical claim). 
+More specifically, we were motivated by real-world cases where the interrogative sentence with a meaning more closely corresponding to the underlying goal would be longer or more confusing to produce. 
+For instance, when trying to meet up in a city, people regularly get away with asking the bare question ``Where are you?'' when they could directly signal the relevant coarse-graining, e.g. ``At the intersection of which two streets are you currently located, and which direction are you heading?'' \cite{Potts12_CardsDialogueCorpus}.
+While we leave a careful formal account of ``Where are you?'' in our framework for future work, it seems natural for the literal meaning to be the finest-grained goal of locating the hearer's exact point in space, such that higher levels of pragmatic recursion coarsen it to the appropriate level.
+Pragmatic questioners will prefer the less costly utterance if they can expect the answerer to recover the intended coarser goal.
+Issues of cost may enter \emph{answers} to ``Where are you?'' as well, since giving a precise GPS coordinate is presumably costlier than more coarse-grained and easily retrievable spatial referring expressions.
 
-Empirically, however, it is challenging to induce such scenarios in the laboratory, so we chose to impose this ‘cost’ externally by disallowing the most obvious questions for some scenarios. 
-Under this constraint, we were able to test the model’s preferences among other questions and found $Q_2$ to be quite accurate relative to $Q_1$. 
+Empirically, it was challenging to naturally capture such cost differences for our controlled experiments; instead, we imposed this cost artificially by disallowing the most direct questions for some scenarios. 
+Under this constraint, we were able to test the model's preferences among alternative questions.
+%We would observe similar model predictions if we had included these disallowed questions in the model's question set $\mathcal{Q}$ but given them higher production costs.
 This does not invalidate our model comparison, but it does leave open for future work the empirical challenge of designing a lab task that can naturally modulate the cost of the direct question. 
 Other empirical paradigms for question-asking also tend to impose strict constraints on allowable questions for similar reasons. 
-In games like Battleship or 20 Questions, the truly optimal question would be ``Where are all of your ships?'' or ``Which object are you thinking of?''
+In games like Battleship or 20 Questions, the truly optimal questions would be ``Where are all of your ships?'' or ``Which object are you thinking of?''
 
-\todo[inline]{Revamp this para... Say our work may shed new light on why not generating perfectly optimal questions may not be a problem in social interaction; if they're used to relying on the answerer to make inferences, they may go for a cognitively cheaper question that still effectively signals the goal. so people may still be cognitively limited in their ability to generate questions but these less informative questions may be `resource-rational' given social expectations of cooperativity (see our ToM paper?)}
-Our model also complements recent work enriching active learning paradigms to allow rich natural-language questions as queries \cite{RotheEtAl16_NaturalLanguageQuestions, CohenLake16_20Q}. 
-The expected information gain (EIG) measure used to choose new queries in these studies is closely related to our questioner formulation. 
-Our most critical innovation to this line of work is embedding active learning in a social, communicative context \cite<see also>{ShaftoGoodmanFrank12_LearningFromOthers, ShaftoGoodmanGriffiths14_Pedagogical}. 
-Instead of computing expected information gain across \emph{all possible} answers, our questioner models take the expected value over a cooperative \emph{dialogue partner} who seeks to be informative and relevant, often going beyond the literal question meaning. 
-This allows questioners to effectively ask questions and is especially important in real-world contexts where there is legitimate uncertainty over the questioner's goals; in a twenty-questions game, the questioner always has the goal of guessing the target object, but in a classroom context, the goal motivating a student's question may not be as obvious.
+%\todo[inline]{Revamp this para... Say our work may shed new light on why not generating perfectly optimal questions may not be a problem in social interaction; if they're used to relying on the answerer to make inferences, they may go for a cognitively cheaper question that still effectively signals the goal. so people may still be cognitively limited in their ability to generate questions but these less informative questions may be `resource-rational' given social expectations of cooperativity (see our ToM paper?)}
+These considerations may also shed new theoretical light on recent results by \citeA{rothe2018people} finding that in games like Battleship, people fail to ask the maximally informative natural language questions (although they \emph{can} accurately rank the informativity of pre-generated questions). 
+By embedding active learning in a social, communicative context \cite<see also>{ShaftoGoodmanFrank12_LearningFromOthers, ShaftoGoodmanGriffiths14_Pedagogical}, our framework suggests that in the typical cooperative setting for asking questions, this behavior may be resource-rational \cite{GriffithsLiederGoodman15_LevelsOfAnalysis}.
+If the maximally informative questions to elicit information from a literal ``oracle'' answerer tend to be longer and more syntactically or conceptually complex (e.g. ``At what location is the top left part of the purple ship?''), they may also be more cognitively demanding to generate.
+When assuming a cooperative pragmatic answerer, however, a simpler and less literally informative question may be just as effective for signaling the goal.
+%Instead of computing expected information gain across \emph{all possible} answers, our questioner models take the expected value over a cooperative \emph{dialogue partner} who seeks to be informative and relevant, often going beyond the literal question meaning. 
+%This allows questioners to effectively ask questions and is especially important in real-world contexts where there is legitimate uncertainty over the questioner's goals; in a twenty-questions game, the questioner always has the goal of guessing the target object, but in a classroom context, the goal motivating a student's question may not be as obvious.
 
 %These restrictions were motivated by one of the key features of indirect questioning: when the direct question (e.g. ``may I eat your food?'') is suppressed due to politeness, utterance length, complexity, or some other intervening factor, questioners instead rely on a pragmatic indirect question (e.g. ``are you going to eat that?''). 
 
