@@ -1466,6 +1466,9 @@ The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}
 %\label{fig:exp1predictives}
 %\end{figure*}
 
+% \subsection{Discussion}
+%To generalize to dialogues lasting longer than a single exchange, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate, and the longer-term planning needed for agents to reason effectively about such interactions.
+
 %\cite<e.g>{khani2018planning,young2013pomdp,gao2019neural}
 
 \section{General discussion}
@@ -1549,28 +1552,26 @@ Other empirical paradigms for question-asking also tend to impose strict constra
 In games like Battleship or 20 Questions, the truly optimal questions would be ``Where are all of your ships?'' or ``Which object are you thinking of?''
 
 %\todo[inline]{Revamp this para... Say our work may shed new light on why not generating perfectly optimal questions may not be a problem in social interaction; if they're used to relying on the answerer to make inferences, they may go for a cognitively cheaper question that still effectively signals the goal. so people may still be cognitively limited in their ability to generate questions but these less informative questions may be `resource-rational' given social expectations of cooperativity (see our ToM paper?)}
-These considerations may also shed new theoretical light on recent results by \citeA{rothe2018people} finding that in games like Battleship, people fail to ask the maximally informative natural language questions (although they \emph{can} accurately rank the informativity of pre-generated questions). 
-By embedding active learning in a social, communicative context \cite<see also>{ShaftoGoodmanFrank12_LearningFromOthers, ShaftoGoodmanGriffiths14_Pedagogical}, our framework suggests that in the typical cooperative setting for asking questions, this behavior may be resource-rational \cite{GriffithsLiederGoodman15_LevelsOfAnalysis}.
-If the maximally informative questions to elicit information from a literal ``oracle'' answerer tend to be longer and more syntactically or conceptually complex (e.g. ``At what location is the top left part of the purple ship?''), they may also be more cognitively demanding to generate.
-When assuming a cooperative pragmatic answerer, however, a simpler and less literally informative question may be just as effective for signaling the goal.
-%Instead of computing expected information gain across \emph{all possible} answers, our questioner models take the expected value over a cooperative \emph{dialogue partner} who seeks to be informative and relevant, often going beyond the literal question meaning. 
-%This allows questioners to effectively ask questions and is especially important in real-world contexts where there is legitimate uncertainty over the questioner's goals; in a twenty-questions game, the questioner always has the goal of guessing the target object, but in a classroom context, the goal motivating a student's question may not be as obvious.
-
-%These restrictions were motivated by one of the key features of indirect questioning: when the direct question (e.g. ``may I eat your food?'') is suppressed due to politeness, utterance length, complexity, or some other intervening factor, questioners instead rely on a pragmatic indirect question (e.g. ``are you going to eat that?''). 
+These considerations may also shed new theoretical light on recent results by \citeA{rothe2018people} finding that in games like Battleship, people often fail to ask maximally informative natural language questions (although they \emph{can} accurately rank the informativity of pre-generated questions). 
+By embedding questioning in a social, communicative context \cite<see also>{ShaftoGoodmanFrank12_LearningFromOthers, ShaftoGoodmanGriffiths14_Pedagogical}, our framework suggests that this behavior may in fact be resource-rational under the conditions where most questioning takes place \cite{GriffithsLiederGoodman15_LevelsOfAnalysis}.
+If the maximally informative questions assuming a literal answerer are longer and more syntactically or conceptually complex (e.g. ``At what location is the top left part of the purple ship?''), they may also be more cognitively demanding to generate.
+When assuming a cooperative pragmatic answerer, however, a less costly question may be just as effective for signaling the goal and getting a helpful answer.
 
 \subsection{Computational challenges}
 
 How do our assumptions scale up to less constrained interactions? 
-We suspect that the simple, discrete sets of QUDs used in our models above will need to be generalized to continuous spaces and broader mixtures of discourse topics \cite{BleiNgJordan03_LDA, GriffithsSteyversTenenbaum07_Topics}. 
-The computational challenges associated with such complex QUD spaces may contribute to the difficulties young children face in answering broad, sentence-focus questions like ``what's happening?'' \cite{SalomoLievenTomasello13_ChildrenAnsweringQuestions}. 
+We suspect that the simple, discrete sets of goals used in our models above may need to be generalized to continuous spaces and broader mixtures of discourse topics \cite{BleiNgJordan03_LDA, GriffithsSteyversTenenbaum07_Topics}. 
+The computational challenges associated with such complex goal spaces may contribute to the difficulties young children face in answering broad, sentence-focus questions like ``what's happening?'' \cite{SalomoLievenTomasello13_ChildrenAnsweringQuestions}. 
+Similarly, to generalize beyond the tightly controlled sets of alternative questions and answers used in our models above, we may need to consider empirical frequencies or simple deletions and edits from the given question to automatically generate sets of alternatives \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. 
 
-To generalize beyond the hand-picked sets of alternative questions and answers used in our models above, we may need to consider conditional frequencies from past interactions or simple deletions and edits from the given question \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. To generalize to dialogues lasting longer than a single exchange, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate, and the longer-term planning needed for agents to reason effectively about such interactions.
+As a broader point, our framework offers a rational analysis of the social inferences involved in asking and answering questions, which only adds to the many important algorithmic questions already raised by rational model of inquiry \citeA{coenen2018asking}.
+For instance, we could use without modification the sophisticated and open-ended grammar of questions developed by \citeA{rothe2017question} as the prior for the question set $\mathcal{Q}$ in our pragmatic framework, but this would turn the literal questioner agent $Q_1$ into an infinite distribution, leading to intractability at higher levels of recursion.
+Similarly, taking an analytic expectation over all possible worlds quickly becomes intractable as the size of the world space $\mathcal{W}$ grows.
+We used exact enumeration for all of our results for theoretical precision, but it is clear that an algorithmic account must address how these computations can be effectively approximated, whether by Monte Carlo search or by feed-forward neural network approximations.
 
-\todo[inline]{ say briefly that taking the exhaustive expectation over all possible worlds does not scale well with the size of the world space...}
+%\todo[inline]{finally, note that even though we offered a rational analysis of what is required to solve this problem through Bayesian reasoning, aspects of the computation such as the goal prediction problem may be approximated by a feed-forward neural network}
 
-\todo[inline]{finally, note that even though we offered a rational analysis of what is required to solve this problem through Bayesian reasoning, aspects of the computation such as the goal prediction problem may be approximated by a feed-forward neural network}
-
-\todo[inline]{Maybe here is a good place to address R2's concern about `hand-coding' meanings, and not being falsifiable? e.g. this raises concerns that our model could fit \emph{any} question-answer data by choosing the appropriate set of priors. Indeed, we regard all of these choices as scientific hypotheses, not free parameters. For the experiments presented in the rest of this paper, we test these hypotheses or fix them via our experiment design. The choices in the computational experiments above were simply intended to be reasonable enough to illustrate how our model framework accommodates various results from the literature on question-answer pragmatics.}
+%\todo[inline]{Maybe here is a good place to address R2's concern about `hand-coding' meanings, and not being falsifiable? e.g. this raises concerns that our model could fit \emph{any} question-answer data by choosing the appropriate set of priors. Indeed, we regard all of these choices as scientific hypotheses, not free parameters. For the experiments presented in the rest of this paper, we test these hypotheses or fix them via our experiment design. The choices in the computational experiments above were simply intended to be reasonable enough to illustrate how our model framework accommodates various results from the literature on question-answer pragmatics.}
 
 \subsection{Applications to other question phenomena}
 
