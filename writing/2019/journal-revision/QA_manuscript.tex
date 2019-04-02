@@ -42,7 +42,9 @@
 \graphicspath{{./figures/}}
  
  \definecolor{Green}{RGB}{10,200,100}
+  \definecolor{Red}{RGB}{200,100,50}
 \newcommand{\ndg}[1]{\textcolor{Green}{[ndg: #1]}}  
+\newcommand{\rdh}[1]{\textcolor{Red}{[rdh: #1]}}  
 
 
 \makeatother
@@ -240,18 +242,18 @@ Several accounts have addressed this limitation by arguing that the `goodness' o
 The most relevant formalization of this idea is due to \citeA{VanRooy03_QuestioningDecisionProblems}, who elegantly incorporated goals using a decision-theoretic framework. 
 In this framework, questioners face a \emph{decision problem} under uncertainty, and may ask a question to gain information before acting.
 
-Similar to OED models, it can be shown that a rational questioner should choose the question yielding the maximal expected increase in payoff for the decision problem they are facing.
-An answerer agent can similarly be formulated, who selects the maximally useful answer \emph{with respect to that decision problem}.
+It can be shown that a rational questioner should choose the question yielding the maximal expected increase in payoff for the decision problem they are facing, similar to OED accounts.
+An answerer agent can similarly be formulated, who attempts to select the maximally useful answer \emph{with respect to that decision problem}.
 Because both questioner and answerer expect one another to behave rationally, the questioner can assume their partner will take their decision-problem into account when interpreting their question.
 \citeA{VanRooy03_QuestioningDecisionProblems} argues further that the literal meaning of a question is underspecified: it only resolves to a particular partition given the contextual parameter of a specific decision problem. 
 
 We take this proposal as a starting point for approaching context-sensitivity in our social inference framework below.
-However, our account departs from this proposal in addressing a critical limitation it faces as a cognitive model of inquiry: how does the answerer know what the decision problem is? 
-\citeA{VanRooy03_QuestioningDecisionProblems} and subsequent accounts in this tradition \cite<e.g.>{benz2006utility} assume that the decision problem is \emph{already mutual knowledge shared by both questioner and answerer}: ``On the assumption that the answerer knows what the agent’s decision problem is, the coarser-grained, and thus partial, answer is [...] preferred.'' (p. 738).
+Our account, however, seeks to address a critical limitation it faces as a cognitive model of inquiry: how does the answerer know what the decision problem is? 
+\citeA{VanRooy03_QuestioningDecisionProblems} and subsequent accounts in this tradition \cite<e.g.>{benz2006utility} implicitly assume that the decision problem is \emph{already mutual knowledge shared by both questioner and answerer}: ``On the assumption that the answerer knows what the agent’s decision problem is, the coarser-grained, and thus partial, answer is [...] preferred.'' (p. 738).
 
 In our view, this assumption undermines the two-sided functional conditions motivating inquiry. 
 A cognitive account of answerer goal-sensitivity must provide an explicit mechanism for how the answerer learns the goal. 
-We will suggest that the necessary mechanism is (Bayesian) social inference: the answerer inverts a model of the questioner to reason about their likely goals, conditioned on their utterance.
+We will suggest that the necessary mechanism is (Bayesian) social inference: the answerer inverts a model of the questioner to reason about their likely goals, conditioned on their question utterance (and other context).
 Our framework can thus be viewed as introducing the cognitive mechanisms needed to extend Van Rooy's account to the more general case where answerers have a priori uncertainty over the questioner’s goal\footnote{The only previous work we are aware of that considers how the answerer might determine the questioner's decision problem from a space of alternatives is by \citeA{stevens2014indirect} which treats a limited case under a game-theoretic perspective.}. 
 This extension has a number of broad consequences and forces a re-evaluation of the meaning of a question, which we will return to in the General Discussion.
 
@@ -337,12 +339,13 @@ $$g_{<}(w) = \left\{\begin{array}{rcl}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other worlds are mapped onto a different state.
 \item[$\mathcal{Q}$:] a set of possible question utterances, such as ``Does a fifth of Jim Beam cost more than \$5?'' and alternatives like ``Do you accept credit cards?'' We take the literal meaning \den{$q$} of a question to be of the same type as informational goals, such that a particular question utterance corresponds to a particular goal projection\footnote{This is equivalent to the partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection: $q^{-1}(\hat{w})$.}. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one value and all other worlds to a different value. Note that the correspondence between questions and goals is not necessarily symmetric: while every question corresponds to a goal, we do not expect that every possible goal corresponds to an easily articulated question utterance.
-\item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be truth-conditional: a map from world states to booleans. For instance, the utterance ``A fifth costs \$8.'' would be true in the world where $w = \$8$ and false otherwise. 
+\item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be truth-conditional: a map from world states to booleans. For instance, the utterance ``It costs \$7.'' would be true in the world where $w = \$7$ and false otherwise. 
 \end{description}
 
-Because our framework is probabilistic, each of these sets is equipped with a prior, which we take to be shared in common ground.
+Each of these sets is equipped with a prior, which we take to be shared in common ground.
 This prior in principle allows us to explicitly model the knowledge that certain world states, goals, or utterances are \emph{a priori} more or less likely. 
-Unless otherwise stated, we will assume a uniform prior for simplicity.
+Unless otherwise stated, we will assume uniform priors and make the sources of any such knowledge explicit in the utility function. 
+For instance, we will follow previous RSA models in allowing questions and answers to have a production cost given by a function $C$; all else being equal, longer or less accessible utterances are less preferred.
 Since our questioner models will depend on the answerer model they expect responses to come from, we first introduce a family of answerers.
 
 \subsection{$A_0$: Purely informative answerer}
@@ -353,14 +356,14 @@ He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$
 $$P_{A_0}(a | q, w) \propto \exp\{\alpha U_{A_0}(a;w)\}\cdot P(a)$$ 
 where $\alpha$ is a soft-max optimality parameter. 
 
-We define the utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$: 
+We define the utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$. This surprisal is traded off against the cost $C(a)$ of producing the answer utterance:
 \begin{equation}
 \label{eq:A0utility}
-U_{A_0}(a;w) = \ln P_I(w|a) 
+U_{A_0}(a;w) = \ln P_I(w|a) - C(a)
 \end{equation}
 $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs about worlds, conditioning on the literal meaning of the declarative utterance $a$ being true:
 $$P_I(w|a) \propto \delta_{\textrm{\den{a}}(w)} P(w)$$
-where $\delta_{e}$ is the delta function returning 1 when $e$ evaluates to true and 0 otherwise, and $P(w)$ is a prior over true states of the world. 
+where $\delta_{e}$ is the delta function returning 1 when $e$ evaluates to true and 0 otherwise, and $P(w)$ is the prior over true states of the world. 
 %In other words, the interpreter constrains the prior on worlds to the subset of its support that is consistent with the given utterance, and $A_0$ attempts to (soft)-maximize the probability of the true world in this posterior. 
 
 This formulation of $A_0$ is equivalent to the pragmatic speaker $S_1$ for declarative utterances in previous RSA models \cite{GoodmanFrank16_RSATiCS}. 
@@ -379,9 +382,10 @@ Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speak
 %$$\widehat{P^g}(w') = \sum_{w\in\mathcal{W}} \delta_{w' = g(w)} P(w)$$ 
 Thus, we modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
 \begin{equation}
-U_{A_1}(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a)
+U_{A_1}(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a) - C(a)
 \end{equation}
-where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
+where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. 
+For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
 $$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$
 %\todo[inline]{rdh: not 100\% satisfied with this notation}
 }.
@@ -395,15 +399,19 @@ $$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$
 %$$
 This modified utility suggests simply using the literal meaning of the question $q$ itself as the goal projection:
 $$P_{A_1}(a|q,w) \propto \exp\{\alpha U_{A_1}(a; q,w)\} \cdot P(a)$$
-This implements the most common theory of answerers in dialogue: $A_1$ directly interprets a question as an epistemic goal, then informatively produces an utterance that reduces the questioner's uncertainty under that goal projection. 
+This implements a standard literal answerer: $A_1$ directly interprets a question as an (epistemic) goal, then informatively produces an utterance that reduces the questioner's uncertainty under that goal projection.
+We note, however, that $A_1$ is not otherwise constrained in their set of possible answers by the question; they are capable of giving non-yes/no answers to polar questions as long as they similarly resolve the literal goal raised by the question\footnote{Having the utility only depend on informativeness under the goal projection can lead to behavior where the goal-relevant answerer is happy to say something literally false as long as it maps to a truthful resolution of the coarser goal. Sometimes this is desired (as when we round the time to the nearest hour), but other times it is unintuitive. In principle, this problem could be solved by introducing the notion of a \emph{goal hierarchy} where the pure identity goal always has some small weight (see Exp.~2 for a formalization of this notion). In our simulations, however, we use a ``hard'' version of the same idea that removes literally false utterances from the possible answer set and then renormalizes the answer prior before computing the utility.}. 
 
-$A_1$ may be sufficient for many simple, fact-based questions, like ``Who was the 16th president of the U.S.?'' given a rich enough semantic parser to supply the semantics of $q$ \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. Still, the dazzling display of context-sensitivity and indirectness displayed in everyday communication suggests that deeper social reasoning may be at play. To explore more sophisticated answerers that reason about context and their partner's underlying goals, we must first address the problem of how a speaker chooses between questions.
+$A_1$ may be sufficient for simple fact-based questions, like ``Who was the 16th president of the U.S.?'' given a rich enough semantic parser to supply the semantics of $q$ \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. 
+But the context-sensitivity and indirectness displayed in everyday communication suggests that deeper social reasoning may be at play. 
+To explore more sophisticated answerers that reason about context and their partner's underlying goals, we must first address the problem of how a speaker chooses between questions.
 
 \subsection{$Q_i$: Questioners}
 
 If the utility of uttering a declarative statement is imparting information about the true state of the world, what is the utility of uttering a question? We begin by assuming that a questioner aims to \emph{learn information relevant to a private goal}.
 %
-In order to choose a question that results in useful information, the questioner reasons about how her dialogue partner would respond in different possible states of the world. She then selects a question that results in an answer that tends to reduce her own uncertainty about goal-relevant information.
+In order to choose a question that results in useful information, the questioner reasons about how her dialogue partner would respond in different possible states of the world. 
+She then selects among questions proportional to the extent that the answers they elicit reduce her own uncertainty about goal-relevant information.
 %
 
 % This is a divergence from previous RSA models, where agents choose utterances with the goal of imparting information about the state of the world.
@@ -413,13 +421,13 @@ More formally, a questioner agent takes a goal $g \in \mathcal{G}$ as input and 
 $$
 \begin{array}{lcl}
 P_{Q_i}(q|g)  & \propto & \exp\{\alpha U_{Q_i}(q;g)\} \cdot P(q)\\
-U_{Q_i}(q;g) & = & \E{P(a|q)}{IG^g(a,q)} \\
-	 & = & \sum_{w\in\mathcal{W}} P_{A_i}(a|q,w)P(w) IG^g(a,q)
+U_{Q_i}(q;g) & = & \E{P(a|q)}{IG^g(a,q)} - C(q)\\
+	 & = & \sum_{w\in\mathcal{W}} P_{A_i}(a|q,w)P(w) IG^g(a,q) - C(q)
 \end{array}
 $$
 %
 
-The expectation over likely answers $P(a|q)$ is computed by running an imagined answerer model forward, marginalizing over the possible worlds $w \in\mathcal{W}$ they might have knowledge of. The value of an answer depends on its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected prior distribution and posterior after hearing $a$.
+The expectation over likely answers $P(a|q)$ is computed by running an imagined answerer model forward, marginalizing over the possible worlds $w \in\mathcal{W}$ they might have knowledge of. The value of an answer depends on its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected world prior and posterior after hearing $a$.
 %
 $$
 IG^g(a,q) = \KL{\widehat{P^g}(w|q, a)}{\widehat{P^g}(w)}\\
@@ -429,23 +437,9 @@ $$
 In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future and inverting that model to infer the true world the answerer was trying to communicate:
 $$P(w|q,a) \propto P_{A_i}(a| q, w)P(w)$$
 
-Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. It therefore instantiates the same expected information gain measure of usefulness as proposed by current Optimal Experiment Design (OED) models of human inquiry \cite{coenen2018asking}. Critically, in contrast to \citeA{GroenendijkStokhof84_SemanticsOfQuestions} the questioner's behavior is not governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. They may be the same when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
+Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. It therefore instantiates the same expected information gain measure of usefulness as proposed by Optimal Experiment Design (OED) models of human inquiry \cite{coenen2018asking}. Critically, in contrast to \citeA{GroenendijkStokhof84_SemanticsOfQuestions} the questioner's behavior is not necessarily governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. They coincide when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
 
 \subsection{$A_2$: Goal-Sensitive Answerer}
-
-%How should an answerer choose between answers to a question? What should a questioner assume about the answerer when choosing a question? We next describe three different answerer models; the questioner could assume any one of them, leading to three corresponding versions of the questioner model. From here on, we index the questioner and answerer models by $i$ to formulate different questioner models $Q_i$ which reason about different answerers $A_i$ (see Figure \ref{fig:models}).
-%All answerers take a question $q \in \mathcal{Q}$ and a true world state $w^* \in \mathcal{W}$ as input and return a distribution over answers $a \in \mathcal{A}$.
-%
-
-%The \textbf{literal answerer} simply chooses answers by trading off prior answer probability (interpreted here as cost) and how well that answer conveys the true state of the world to an interpreter:
-%%
-%$$P_{A_0}(a | q,w^*) \propto e^{P_I(w^* | \,a) - C(a)} $$
-%\ndg{isn't there a $\ln$?}
-%%
-
-% \todo[inline]{this is wrong (should prefer \emph{it costs 8})}
-%For a fixed question, this is equivalent to the speaker in previous RSA models. They seek to be maximally informative about the state of the world, but do not adjust their response for different question utterances or contexts. This model is of interest primarily as a null model that is nonetheless more realistic than a random speaker. 
-%
 
 %\begin{table*}[h!]
 %\centering
@@ -466,17 +460,19 @@ Note that $Q_0$, who plans their question by reasoning about the likely response
 
 Now that we have defined the utility of asking a question, we can construct our final pragmatic answerer: $A_2$. The speaker component of this answerer attempts to informatively and relevantly address the questioner's goal like $A_1$. The listener component, however, accounts for the generative process of an asker with an underlying goal rather than taking that goal to be identical to the literal meaning of the question. That is, $A_2$ assumes that the question was produced by a rational agent $Q_1$, who is trying to address a private goal $g \in \mathcal{G}$, and then attempts to be relevantly informative with respect to his posterior over \emph{underlying} goals $P(g|q)$ given the question:
 \begin{equation}
-U_{A_2}(a; q, w) = \sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g_I}(w|\,a)
+U_{A_2}(a; q, w) = \sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g_I}(w|\,a) - C(a)
 \end{equation}
 
 %The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the questioner's goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which underlying goals $g$ are likely given that a question $q$ was asked, and chooses answers that have high expected informativity:
 %
-Reasoning backwards from questions to goals is a simple Bayesian inversion of $Q_1$ using a prior on goals:
+Reasoning backwards from questions to goals is a simple Bayesian inversion of $Q_1$ using the prior on goals:
 $$
 P(g|q) \propto P_{Q_1}(q|g)\cdot P(g)
 $$
 
-By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an arbitrarily deep chain of nested reasoning where $A_{i}$ infers a posterior over underlying goals by inverting $Q_{i-1}$, and so on. This recursion terminates in the base case $A_1$, which uses the literal question semantics. For our purposes, however, we only consider models up to a depth of $i=2$, after which there are no qualitative changes in the model's behavior in the cases we examine\footnote{Recent systematic model exploration by \citeA{frank2017rational} suggests that recursive depth trades off with the soft-max optimality parameter $\alpha$. Because these two parameters are not generally identifiable, we fix the maximal level of recursion and achieve the behavior of higher levels of recursion by allowing $\alpha$ to vary.}. In particular, we are interested in $Q_2$, which can be interpreted as an agent who rationally selects a question not simply for its literal meaning but for the signal it provides about her underlying beliefs. This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models})\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Reproducible experimental materials as well as code for all reported analyses and model simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}.
+By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an arbitrarily deep chain of nested reasoning where $A_{i}$ infers a posterior over underlying goals by inverting $Q_{i-1}$, and so on. This recursion terminates in the base case $A_1$, which uses the literal question semantics. For our purposes, however, we only consider models up to a depth of $i=2$, after which there are no qualitative changes in the model's behavior in the cases we examine\footnote{Recent systematic model exploration by \citeA{frank2017rational} suggests that recursive depth trades off with the soft-max optimality parameter $\alpha$. Because these two parameters are not generally identifiable, we fix the maximal level of recursion and achieve the behavior of higher levels of recursion by allowing $\alpha$ to vary.}. 
+%$A_2$ and $Q_2$ can be interpreted as pragmatic agents who are capable of going beyond    and $Q_2$, which can be interpreted as an agent who rationally selects a question not simply for its literal meaning but for the signal it provides about her underlying beliefs. 
+This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models})\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Reproducible experimental materials as well as code for all reported analyses and model simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}.
  
 
 %For all of the questioner and answerer models, we can vary how strongly optimizing they are---that is, to what extent they are sampling from the distributions defined above, and to what extent they deterministically choose the most likely element. For any such distribution over utterances, we introduce an optimality parameter $\alpha$ and transform it by $ P'(x) \propto P(x)^{\alpha} $. Furthermore, we have set the answer prior in all answerer models such that outright false responses are excluded. The answerer models naturally assign very low, but non-zero probability to these options (because they are minimally informative). However, we set them to zero probability for the sake of simplicity in reporting and visualizing predictions.
@@ -545,19 +541,21 @@ These answerers then choose an utterance that \emph{relevantly} addresses the go
 
 Next, we show how our models can provide different---sometimes over- or under-informative---answers to the same explicit question, depending on context. For this illustration, we consider the results of Experiment 4 from \citeA{Clark79_IndirectSpeechActs}. Recall that liquor merchants were more likely to give over-informative answers (specifying exact price) to the question ``Does a fifth of Jim Beam cost more than \$5?'' in the uninformative context (``I want to buy some bourbon'') than in the five dollar context (``I've got \$5 to spend''). Which of our answerer models, if any, shows a similar sensitivity to context?
 
-Our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \dots, \$10\}$. We consider two possible goals: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than the amount the agent has in their pocket). The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \dots, \$10\}$ as well as ``yes'' and ``no.'' 
-We use an answer prior that assigns equal probability to picking the category of ``yes/no'' answers and of ``price'' answers, then uniformly draws from the possible responses within each category. 
+Our space of possible worlds consists of possible prices for the whiskey: $\mathcal{W} = \{\$1, \dots, \$10\}$. We consider two possible goals with equal prior probability: $g_=$, learning the actual price of whiskey,  and $g_>$, learning whether or not the agent can afford to buy the whiskey at all (i.e. whether the price is greater or less than the amount the agent has in their pocket). The set of answers $\mathcal{A}$ includes exact prices $a~\in~\{\$1, \dots, \$10\}$ as well as ``yes'' and ``no.'' 
+Although it does not change the qualitative effects of interest, we assume that bare ``yes/no'' answers are slightly less costly to produce than more informative ``price'' answers.
 
 %Because the question was fixed in the experiment, the question space $\mathcal{Q}$ simply consists of the single question $q = $``Does a fifth of Jim Beam cost more than \$5?''\footnote{Note that because there are no alternatives for the ``pragmatic answerer'' to consider, they are not strictly engaging in Gricean reasoning; obvious alternatives like ``How much does Jim Beam cost?'' do not significantly change the model behavior in this case, but we omit them to isolate the effect of the QUD prior in this example.}  
 
 We model the context sentence as a statement which the answerer must interpret before interpreting the question; we assume that it has the effect of shifting the answerer's beliefs about likely questioner goals $P(g)$. When the context is ``I'd like to buy some whiskey,'' we assume no shift from the goal prior: $P(g_= | c) = P(g_> | c) = 0.5$. When it is ``I only have \$5 to spend,'' we assume that it is more strongly in favor the agent learning whether or not they can afford it: $P(g_> | c)~=~.99$\footnote{We view this as a case of ``inquisitive content'' in a declarative sentence \cite{ciardelli2018inquisitive}: it is literally informative about how much money the speaker has but it has the same inquisitive effect of shifting the listener's expectations about the speaker's goals as a question does. While our framework is compatible with this idea (see General Discussion), this is the only example of such a ``hybrid'' declarative utterance that arises in the paper, so to avoid complicating our presentation, we just stipulate the effect and leave the formal derivation for future work.}. 
 
-$A_0$ is unable to show sensitivity to context for the same reason that he did not show sensitivity to the question utterance: he does not adjust his beliefs on the basis of what he hears. Thus, he always prefers to say the exact price (e.g. ``The whiskey costs \$6'') because it leaves less uncertainty about the true state of the world.
+Now, $A_0$ is unable to show sensitivity to context for the same reason that he did not show sensitivity to the question utterance in our first simulation: he does not adjust his beliefs on the basis of what he hears. Thus, he always prefers to say the exact price (e.g. ``The whiskey costs \$6'') because it leaves less uncertainty about the true state of the world.
 
 Because $A_1$ uses the literal meaning of the question, which is context-independent and not tied to the questioner's goals, he does \emph{not} give different responses in the two contexts. 
-In either case, his answer distribution does not differ from the answer prior: he remains ambivalent between giving a yes/no answer and an exact answer because they provide equivalent information about whether the true price is greater than or less than \$5. 
+In either case, he addresses the goal of finding out whether the price is more than \$5, so his answer distribution is only determined by the relative costs of giving a yes/no answer and an exact answer: they provide equivalent information about whether the true price is greater than or less than \$5. 
 
-Finally, we see that $A_2$ is context-dependent in the same way as \citeA{Clark79_IndirectSpeechActs} observed. When the question is prefaced with ``I only have \$5 to spend,'' which shifts the answerer's beliefs about goals strongly toward $g_>$ (equivalent to the literal meaning of the question), then $A_2$ is equally likely to give both answers for the same reason as $A_1$ above. However, when the question is prefaced with ``I'd like to buy some whiskey,'' which leaves in place the answerer's uniform prior over goals, then the \emph{exact price} answer is favored more strongly. This answer is much more informative in the case when the questioner's goal is to know the exact price, and no worse in the other case. The expected value of the non-literal answer is thus higher, and the answerer responds proportionally. 
+Finally, we see that $A_2$ is context-dependent in the same way as \citeA{Clark79_IndirectSpeechActs} observed. 
+When the question is prefaced with ``I only have \$5 to spend,'' which shifts the answerer's beliefs about goals strongly toward $g_>$ (equivalent to the literal meaning of the question), then $A_2$ behaves like $A_1$. 
+However, when the question is prefaced with ``I'd like to buy some whiskey,'' which leaves in place the answerer's uniform prior over goals, then the \emph{exact price} answer is favored more strongly. This answer is much more informative in the case when the questioner's goal is to know the exact price, and no worse in the other case. The expected value of the non-literal answer is thus higher, and the answerer responds proportionally. 
 %The output of $A_2$ is shown in Fig. \ref{fig:clarkResults}, compared with empirical results from \citeA{Clark79_IndirectSpeechActs}\footnote{The responses in \citeA{Clark79_IndirectSpeechActs} were tallied in three categories: literal answer only $(n_l)$, information only $(n_i)$, or both literal answer \emph{and} information $(n_b)$. For the purposes of this case study, we are only interested in the ratio of literal answers to information answers: $p_l = n_l/(n_l+n_i)$ and $p_i = n_i/(n_l+n_i)$.}  
 % This asymmetry arises in our model due to the fact that an exact price is much more highly informative than a literal response with respect to the ``exact price'' goal $g_=$, and if there is uncertainty over which goal is in fact the case, it is worth erring on the side of over-informativeness. This matches the empirical trend, which also favored the exact price answer (at probability $0.57$) over the literal answer (at probability $0.41$).
 
@@ -673,10 +671,12 @@ Finally, a more sophisticated answerer $A_2$, who inferred the questioner's unde
 
 %can use these mechanisms to explain a range of sophisticated psycholinguistic phenomena, both qualitatively and quantitatively.
 
-\todo[inline]{Address concern about robustness to alternative sets of questions or goals here}
-
-One salient concern with these simulations is that our resulting answer distribution depends in each case on the space of alternative questions, answers, and goals.
+\rdh{Address concern about robustness to alternative sets of questions or goals here e.g. 
+\begin{quote}One salient concern with these simulations is that our resulting answer distribution depends in each case on the space of alternative questions, answers, and goals.
 We chose simple, minimal sets to make the dynamics clear, but how robust are the results to the inclusion of additional alternatives?
+\end{quote}
+}
+
 % and the mathematical form of the various priors
 %We set these components to be simple and natural in the context of the scenario being modeled, but there is still some concern over the amount of flexibility afforded to the modeler in making these choices. For example, the answer prior for both Clark studies uses a parameter to determine the answerer's baseline preference for `yes' and `no' responses versus prices or lists of card types. In both cases we set this parameter to be $p = 0.5$, but other numbers could have been chosen to achieve a better or worse quantitative fit. 
 
@@ -1187,6 +1187,7 @@ Questions in the question space $\mathcal{Q}$ were of the same form as in Exp.~1
 Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at location that was mentioned, and false otherwise.
 
 
+
 \subsubsection{Answerer results}
 
 Although the different conditions of the experiment were primarily designed as a stronger qualitative test of the questioner model, it also provides another opportunity to test the answerer models. 
@@ -1609,7 +1610,7 @@ By formalizing the recursive utilities of questioner and answerer agents and the
 
 \section{\bf Acknowledgments}
 \small
-\noindent We thank Leon Bergen, Judith Degen, Arianna Yuan, MH Tessler, and Judith Fan for thoughtful conversations and comments. This work was supported by ONR grants N00014-13-1-0788 and N00014-13-10341. RXDH was supported by the Stanford Graduate Fellowship and the National Science Foundation Graduate Research Fellowship under Grant No. DGE-114747.
+\noindent We thank Leon Bergen, Judith Degen, Andreas Stuhlm\"uller, Arianna Yuan, MH Tessler, Dan Lassiter, and Judith Fan for thoughtful conversations and comments. This work was supported by ONR grants N00014-13-1-0788 and N00014-13-10341. RXDH was supported by the Stanford Graduate Fellowship and the National Science Foundation Graduate Research Fellowship under Grant No. DGE-114747.
 
 \bibliography{qa}
 \bibliographystyle{apacite}
