@@ -671,13 +671,25 @@ Finally, a more sophisticated answerer $A_2$, who inferred the questioner's unde
 
 %can use these mechanisms to explain a range of sophisticated psycholinguistic phenomena, both qualitatively and quantitatively.
 
-\rdh{Address concern about robustness to alternative sets of questions or goals here e.g. 
-\begin{quote}One salient concern with these simulations is that our resulting answer distribution depends in each case on the space of alternative questions, answers, and goals.
+One salient concern with these simulations is that our resulting answer distribution depends in each case on the space of alternative questions.
 We chose simple, minimal sets to make the dynamics clear, but how robust are the results to the inclusion of additional alternatives?
-\end{quote}
-}
+To address this concern, we ran two additional analyses.
+First, for our simulation evaluating sensitivity to context, we only included a single possible question to isolate the effect of the context sentence.
+Does this context effect disappear if a question directly corresponding to the other goal were available?
+We re-ran our model after supplementing the set of possible questions with the alternative ``How much does a fifth of Jim Beam cost?'' which we assigned a literal meaning that is identical to the exact price goal, $g_{=}$.
+We found that the existence of this alternative does slightly reduce the answerer's preference for responding with the exact price (from 62\% to 60\%, because $A_2$ reasons that if $Q_1$ really cared about the exact price, they would have asked this other question), but it has the same effect for the other context sentence, leaving the qualitative context effect unchanged.
+%As the rationality parameter increases, this effect increasingly overwhelms the effect of the context prior, but 
 
+Second, we were concerned that the availability of the most direct question ``What cards do you accept?'' as a potential alternative could interfere with the answerer's sensitivity to the questions they were asked in the credit card scenario. 
+We assigned this question a literal meaning that projects the world to the exact list of cards that are accepted and re-compute $A_2$'s behavior.
+Again, we found that the qualitative effect of interest was robust to this change. 
+%The key insight for understanding why lies in the observation that this question is good for all goals. 
+Because $Q_1$ will consider this a good question regardless of their goal, then failing to ask it is not particularly informative about the goal for $A_2$: the more informative signal about the goal is provided by the \emph{relative differences} in preferences for the other questions, which roughly puts us back in the case when we did not include this question in the set of possibilities.
+We conclude that in the most potentially problematic cases, our model's qualitative pattern of behavior does not change with larger spaces of question alternatives, although the effect size may differ.
+%Because the precise numerical output was already sensitive to the rationality parameters and numerical choices of answer costs, we .
+%Our aim in these simulations was not to fit exact values but to demonstrate how qualitative effects emerge in the $A_2$ model.
 % and the mathematical form of the various priors
+
 %We set these components to be simple and natural in the context of the scenario being modeled, but there is still some concern over the amount of flexibility afforded to the modeler in making these choices. For example, the answer prior for both Clark studies uses a parameter to determine the answerer's baseline preference for `yes' and `no' responses versus prices or lists of card types. In both cases we set this parameter to be $p = 0.5$, but other numbers could have been chosen to achieve a better or worse quantitative fit. 
 
 These case studies showcase the answerer models and demonstrate how social reasoning explains prior experimental findings under a unified formal framework. 
