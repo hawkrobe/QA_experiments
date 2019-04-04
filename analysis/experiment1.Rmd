@@ -693,8 +693,7 @@ Q2 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 
 
 ```{r}
 library(jsonlite)
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(ggthemes)
 rbind(fromJSON(txt = '../modeling/simulations/outputFromForest/questionerWithAmExQUD.json') %>% mutate(source = 'AmEx'),
       fromJSON(txt = '../modeling/simulations/outputFromForest/questionerWithBigQUD.json') %>% mutate(source = 'All cards')) %>%
@@ -733,22 +732,24 @@ ggplot(aes(x = x, y = y)) +
         axis.text.y = element_text(size=10),
         axis.text.x = element_text(size=10)) 
 
-ggsave('../writing/2016/journal-manuscript/figures/goalPosteriors.pdf', height = 4.51, width = 7.29)
+ggsave('../writing/2019/journal-revision/figures/simulations/clarkExampleFig/goalPosteriors.pdf', height = 4.51, width = 7.29)
 ```
+
 ```{r}
 rbind(fromJSON(txt = '../modeling/simulations/outputFromForest/answerWithQ1.json') %>% mutate(source = 'Q1'),
       fromJSON(txt = '../modeling/simulations/outputFromForest/answerWithQ5.json') %>% mutate(source = 'Q5')) %>%
-ggplot(aes(x = x, y = y)) +
+  filter(x == 'exhuastive') %>%
+ggplot(aes(x = source, y = y)) +
   geom_bar(stat = 'identity') +
-  facet_wrap(~ source, nrow = 3, ncol = 1) +
+  #facet_wrap(~ source, nrow = 3, ncol = 1) +
   theme_few()+
-  ylim(0,1) +
-  #xlab('number of cards') +
+  ylim(0,.5) +
+      #xlab('number of cards') +
   ylab('probability') + 
   theme(aspect.ratio = 1,  
         text = element_text(size=12), 
         axis.text.y = element_text(size=12),
         axis.text.x = element_text(size=12)) 
-ggsave('../writing/2016/journal-manuscript/figures/answererOutput.pdf', height = 4.51, width = 7.29)
+ggsave('../writing/2019/journal-revision/figures/simulations/clarkExampleFig/answererOutput.pdf', height = 4.51, width = 7.29)
 ```
 
