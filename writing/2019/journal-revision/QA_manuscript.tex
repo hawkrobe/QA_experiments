@@ -578,7 +578,7 @@ However, when the question is prefaced with ``I'd like to buy some whiskey,'' wh
 
 \begin{figure*}[t]
 \begin{center}
-\includegraphics[scale=.45]{simulations/clarkExampleFig}
+\includegraphics[scale=.5]{simulations/clarkExampleFig}
 \end{center}
 %\vspace{-1cm}
 \caption{Illustration of how $A_2$ uses the questioner's utterance as a cue to their underlying goal and responds relevantly, thus producing the sensitivity reported by Clark (1979). We set the optimality parameter $\alpha = 50$ and cost $\beta = 5$. The middle column is the marginalized goal posterior showing the expected number of cards; right column is expected probability of exhaustive listing (vs. literal yes/no answer) marginalized over all possible worlds.}
@@ -752,6 +752,12 @@ One player -- the \emph{questioner} -- is assigned one of the objects to find as
 The other player -- the \emph{answerer} -- knows each object's true location but does not know which one the questioner is looking for (Fig. \ref{fig:expviews}A). 
 To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully a location so that the questioner can guess the location of their goal object more accurately (Fig. \ref{fig:expviews}B).
 
+Critically, we manipulated the sets of goals, questions, and answers across trials to create a number of different scenarios where our models make distinguishable predictions.
+To do so, we exploited the hierarchical conceptual structure provided by nominal referring expressions.
+For example, a questioner could ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all could plausibly describe an image of a Dalmatian in the answerer's view \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. 
+However, among these labels, only the super-ordinate label ``animal'' could describe an image of a whale.
+These conceptual relationships, in conjunction with common knowledge of alternative questions and answers, license different pragmatic inferences.
+
 \begin{figure*}[th!]
 \begin{center}
 \includegraphics[scale = .5]{Exp1/hierarchyStructureExamples.pdf}
@@ -759,14 +765,6 @@ To succeed in the face of this knowledge asymmetry, the questioner must first as
 \caption{\footnotesize  Example of each condition of conceptual hierarchy used in our experiment. Example stimuli are shown for the \emph{animals} domain, but the other conceptual domains were structurally identical.}
 \label{fig:hierarchyStructures}
 \end{figure*}
-
-Critically, we manipulated the sets of goals, questions, and answers across trials to create a number of different scenarios where our models make distinguishable predictions.
-To do so, we exploited the hierarchical conceptual structure provided by nominal referring expressions.
-For example, a questioner could ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all could plausibly describe an image of a Dalmatian in the answerer's view \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. 
-However, among these labels, only the super-ordinate label ``animal'' could describe an image of a whale.
-These conceptual relationships, in conjunction with common knowledge of alternative questions and answers, license different pragmatic inferences.
-
-
 
 \subsection{Methods}
 \subsubsection{Participants} 
@@ -1073,15 +1071,6 @@ In other words, the core computational framework itself did not need to be exten
 In Exp.~2, we design a more targeted experiment to test our pragmatic questioner $Q_2$ and show that our model can similarly accommodate more structured \emph{goals}.
 
 \section{Experiment 2: Structured goals}
-
-The construct of a goal has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
-The simplest spaces of goals, like those used in Exp.~1, are discrete sets of projections on the world state.
-For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read the presented word or (2) name the color in which they are written \cite{miller2001integrative}.
-However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
-We often need to achieve multiple subgoals in pursuit of a larger, more abstract goal. 
-These more structured representations have also been key to explaining third-party goal inferences in Bayesian models of theory of mind \cite{BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. 
-For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we simply infer that they intend to run this errand as a subgoal of their ultimate goal of getting home. 
-
 \begin{figure*}[th!]
 \begin{center}
 \includegraphics[scale = .9]{Exp2/task.pdf}
@@ -1090,6 +1079,14 @@ For example, if we know an agent takes the same route home every day, but one da
 %\vspace{-1cm}
 \label{fig:exp2task}
 \end{figure*}
+
+The construct of a goal has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
+The simplest spaces of goals, like those used in Exp.~1, are discrete sets of projections on the world state.
+For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read the presented word or (2) name the color in which they are written \cite{miller2001integrative}.
+However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
+We often need to achieve multiple subgoals in pursuit of a larger, more abstract goal. 
+These more structured representations have also been key to explaining third-party goal inferences in Bayesian models of theory of mind \cite{BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. 
+For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we simply infer that they intend to run this errand as a subgoal of their ultimate goal of getting home. 
 
 The hierarchical structure of goals has also long been recognized in linguistic theories of questions in discourse  \cite{Kuppevelt95_TopicalityDiscourse,Roberts96_InformationStructureDiscourse,Buring03_DtreesBeansBaccents,Groenendijk99_LogicOfInterrogation,rojas2014discourse}.
 For instance, if a traveler asks \emph{Are there window seat tickets to Berlin at 7:00?} and there are no such tickets available, it would be more helpful for the travel agent to respond \emph{the next available tickets are for 10:00} than \emph{no} \cite{rojas2013roadsigns}.
