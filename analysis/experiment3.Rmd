@@ -110,16 +110,14 @@ chisq.test(matrix(c(33, 40, 31, 9, 79, 16), nrow = 3))
 ## Questioner
 
 ```{r}
-qualitativeQ <- read_csv('../modeling/qa/questionFromMongo_fixed.csv') 
+qualitativeQ <- read_csv('../modeling/qa/questionFromMongo_fixed.csv')  %>%
+  select(-sender, -timeFromMessage, -firstRole)
 
 qualitativeQ %>%
-  filter(trialType == 'blocked') 
-
-qualitativeQ %>%
-  group_by(qualitativeTrialType, qualitativeQuestion) %>%
-  tidyboot(summary_function = function(x) x %>% summarize(prop = length(total) / mean(total)),
-           statistics_functions = function(x) x %>%
-           summarise_at(vars(prop), funs(ci_upper, mean, ci_lower)))
+  filter(trialType == 'blocked') %>%
+  filter(questionNumber == 2) %>%
+  group_by(initAskedAbout, secondAskedAbout) %>%
+  tally()
 ```
 
 ```{r}
@@ -184,10 +182,11 @@ Look specifically at 'blocked' trials -- how do people respond?
 ```{r}
  d.answers %>% 
   filter(trialType == 'blocked') %>%
-  filter(questionNumber == 1)
-  rowwise() %>%
+  filter(questionNumber == 1) %>%
     group_by(askedAboutStatus, answerType) %>%
-    tally()
+    tally() %>%
+    group_by(askedAboutStatus) %>%
+    mutate(prop = n / sum(n))
 ```
 
 # Quantitative model comparison
@@ -212,8 +211,107 @@ write_csv(d.answer_predictions_trimmed, '../modeling/experiment3/relevantAnswere
 
 ```{r}
 library(jsonlite)
-out = fromJSON( '../modeling/experiment3/dataAnalysisOut_guessing.txt', flatten = T)
-out %>% 
-  group_by(questionerType) %>% 
-  summarize(prob = reduce(likelihood, sumlogprob) - log(length(likelihood)))
+Qout = fromJSON( '../modeling/experiment3/bdaOutput/dataAnalysisOut_questioner.json', flatten = T) %>%
+  distinct()
+
+Qout %>%
+  group_by(questionerType) %>%
+  filter(likelihood == max(likelihood)) %>%
+  select(questionerType, likelihood) %>%
+  spread(questionerType, likelihood) %>%
+  mutate(maxLL = pragmatic - explicit)
 ```
+
+```{r}
+library(jsonlite)
+answererModelComparison = fromJSON( '../modeling/experiment3/bdaOutput/dataAnalysisOut_answerer.json', flatten = T) %>%
+  distinct()
+
+answererModelComparison %>%
+  group_by(answererType) %>%
+  filter(likelihood == max(likelihood)) %>%
+  select(answererType, likelihood) %>%
+  distinct() %>%
+  spread(answererType, likelihood) %>%
+  mutate(maxLL = pragmatic - explicit)
+
+
+answererModelComparison %>% 
+  group_by(answererType) %>% 
+  summarize(prob = reduce(likelihood, sumlogprob) - log(length(likelihood))) %>%
+  spread(answererType, prob) %>%
+  mutate(BF = pragmatic-explicit)
+```
+
+## Try to parse predictives 
+
+```{r}
+dodge = position_dodge(.9)
+path = '../modeling/experiment3/bdaOutput/'
+A.modelpredictions <- rbind(
+    read_csv(paste0(path, 'answererPredictives_explicit.json')) %>% mutate(model = 'A1'),
+    read_csv(paste0(path, 'answererPredictives_pragmatic.json')) %>% mutate(model = 'A2')
+  ) %>%
+  mutate(answer = gsub('\"', '', answer, fixed = T)) %>%
+  mutate(answer = gsub('[', '', answer, fixed = T)) %>%
+  mutate(answer = gsub(']', '', answer, fixed = T)) %>%
+  filter(trialNum > 6) %>%
+  mutate(questionNumber = paste0('question # ', questionNumber)) %>%
+  mutate(modelScore = exp(modelScore)) 
+
+A.binned <- A.modelpredictions %>%
+  filter(model == 'A2') %>%
+  mutate(correct = as.numeric(modelOption == answer)) %>%
+  mutate(modelProbBin = .1*floor(modelScore / .1) + .05) %>%
+  group_by(model, modelProbBin) %>%
+  tidyboot_mean(correct)
+
+ggplot(A.binned, aes(x = modelProbBin, y = mean)) +
+    geom_point(aes(size = n), stat = 'identity') +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +
+    geom_abline(intercept = 0, slope = 1) +
+    #facet_wrap(~ model) +
+    theme_bw() +
+    xlim(0,1) +
+    theme(aspect.ratio = 1) +
+    ylab('human responses') +
+    xlab('model predictions')
+
+ggsave('../writing/2019/journal-revision/figures/Exp3/answererPredictives.pdf',  
+       width=14, height = 10, units='cm', useDingbats=FALSE)
+
+```
+
+```{r}
+Q.modelpredictions <- rbind(
+    read_csv(paste0(path, 'questionerPredictives_explicit.json')) %>% mutate(model = 'Q1'),
+    read_csv(paste0(path, 'questionerPredictives_pragmatic.json')) %>% mutate(model = 'Q2')
+  ) %>%
+  filter(trialNum > 6) %>%
+  #filter(questionNumber <= 2) %>%
+  mutate(questionNumber = paste0('question # ', questionNumber), 
+         modelScore = exp(modelScore),
+         correct = as.numeric(modelOption == question),
+         modelProbBin = .1*floor(modelScore / .1) + 0.05) 
+
+
+Q.binned <- Q.modelpredictions %>%
+  filter(model == 'Q2') %>%
+  group_by(model, modelProbBin) %>%
+  tidyboot_mean(correct) 
+
+ggplot(Q.binned, aes(x = modelProbBin, y = mean)) +
+    geom_point(aes(size = n), stat = 'identity') +
+    geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.1) +
+    geom_abline(intercept = 0, slope = 1) +
+    theme_bw() +
+    xlim(0,1) +
+    ylim(0,1) +
+    theme(aspect.ratio = 1) +
+    ylab('human responses') +
+    xlab('model predictions')
+
+ggsave('../writing/2019/journal-revision/figures/Exp3/questionerPredictives.pdf', 
+        width=14, height = 10, units='cm', useDingbats=FALSE)
+```
+
