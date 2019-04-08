@@ -64,13 +64,13 @@ Asking questions is one of our most efficient and reliable means of learning abo
 Yet we do not often pose these questions to an impartial oracle; we ask cooperative social partners, in dialogue. 
 In this paper, we aim to reconcile formal models of optimal question asking and answering with classic effects of social context. 
 %Agents hear an utterance, update their beliefs through social reasoning, and select an utterance in response. 
-We begin from the observation that question-answer dialogue is motivated by a fundamental asymmetry in beliefs: questioners have a private goal but lack goal-relevant information about the world, and answerers have private information but lack knowledge about the questioner's goal.
+We begin from the observation that question-answer dialogue is motivated by a two-sided asymmetry in beliefs: questioners have a private goal but lack goal-relevant information about the world, and answerers have private information but lack knowledge about the questioner's goal.
 We formalize this problem in a computational framework and derive pragmatic questioner and answerer behavior from recursive social reasoning.
-Critically, we predict that pragmatic answerers go beyond the literal meaning of the question to be informative with respect to inferred goals, and that pragmatic questioners expecting answerers to do so may select questions to more unambiguously signal their goals.
+Critically, we predict that pragmatic answerers go beyond the literal meaning of the question to be informative with respect to inferred goals, and that pragmatic questioners may therefore select questions to more unambiguously signal their goals.
 %The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal upon hearing an answer from their partner. 
-We evaluate our pragmatic models against optimal but non-social models in two ways.
+We evaluate our pragmatic models against asocial models in two ways.
 First, we present computational simulations accounting for three classic answerer effects in psycholinguistics.
-We then introduce the Hidden Goal paradigm for experimentally eliciting both questioner and answerer behavior in scenarios where there is uncertainty about the questioner's goal. 
+We then introduce a Hidden Goal paradigm for experimentally eliciting questioner and answerer behavior in scenarios where there is uncertainty about the questioner's goal. 
 We report data from three experiments in this paradigm and show how our core computational framework can be composed with more sophisticated question semantics, hierarchical goal spaces, and a persistent state over which extended dialogue can unfold.
 We find that social inference is needed to account for critical aspects of the data. 
 %\hl{DRAFT 2/13//2018: THIS PAPER HAS NOT BEEN PEER REVIEWED. PLEASE DO NOT COPY OR CITE WITHOUT AUTHOR'S PERMISSION}
@@ -98,7 +98,7 @@ Q: Which category is this?\\
 A: It's a \emph{dax}.}
 
 In other words, an OED questioner expects answers to come from an impartial oracle that responds truthfully but literally with the requested information.
-This answering strategy has been computationally implemented in sophisticated semantic parsers that extract the logical form of the question and either execute it on the world state \cite{rothe2017question} or efficiently search a database for an entity that satisfies it \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. 
+This answering strategy has been implemented in sophisticated semantic parsers that extract the logical form of the question and either execute it on the world state \cite{rothe2017question} or efficiently search a database for an entity that satisfies it \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. 
 
 While this `oracle' assumption has been sufficient to capture a wide variety of inquiry phenomena in active learning domains, including causal learning \cite{bramley2015conservative} and sequential information search \cite{RuggeriLombrozo15_ChildrenAdaptQuestions}, it is violated precisely under the social learning conditions where inquiry may be most prevalent and useful: asking linguistic questions to other social agents in cooperative dialogue.
 Answerers regularly go \emph{beyond} the literal meaning of a question in helpful, context-dependent ways.
@@ -331,14 +331,14 @@ For concreteness, we use the scenario from \citeA{Clark79_IndirectSpeechActs} as
 \begin{description}
 \item[$\mathcal{W}$:] a set of possible states of the world, such as the true price of a bottle of whiskey \{\$1, \$2, \dots, \$10\}. This may include arbitrarily many features of the world, such as the current weather, the location of nearby caf\'es, or the kinds of payment that the store accepts.
 \item[$\mathcal{G}$:] a set of possible underlying questioner goals, such as learning the actual price of the whiskey or learning whether or not one can afford to buy the whiskey at all. 
-Following previous RSA models, we formalize the key notion of an informational goal $g \in \mathcal{G}$ as a projection function $g: \mathcal{W} \rightarrow \widehat{\mathcal{W}}$ that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\widehat{w} = g(w)$. 
+Following previous RSA models, we formalize the key notion of a goal $g \in \mathcal{G}$ as a projection function $g: \mathcal{W} \rightarrow \widehat{\mathcal{W}}$ that maps a world state $w$ to a particular feature or set of features that the questioner cares about, which we denote $\widehat{w} = g(w)$. 
 For example, a customer's goal of learning the actual price of the whiskey is given by the identity function $g_{=}(w) = w$, while the goal of learning whether it is affordable is given by 
 $$g_{<}(w) = \left\{\begin{array}{rcl}
 1 & & w < 5 \\
 0 & & \textrm{otherwise}
 \end{array}\right.$$
 such that all worlds where the agent can afford the whiskey are mapped onto one state, and all other worlds are mapped onto a different state.
-\item[$\mathcal{Q}$:] a set of possible question utterances, such as ``Does a fifth of Jim Beam cost more than \$5?'' and alternatives like ``Do you accept credit cards?'' We take the literal meaning \den{$q$} of a question to be of the same type as informational goals, such that a particular question utterance corresponds to a particular goal projection\footnote{This is equivalent to the partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection: $q^{-1}(\hat{w})$.}. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one value and all other worlds to a different value. Note that the correspondence between questions and goals is not necessarily symmetric: while every question corresponds to a goal, we do not expect that every possible goal corresponds to an easily articulated question utterance.
+\item[$\mathcal{Q}$:] a set of possible question utterances, such as ``Does a fifth of Jim Beam cost more than \$5?'' and alternatives like ``Do you accept credit cards?'' We take the literal meaning \den{$q$} of a question to be of the same type as a goal, such that a particular question utterance corresponds to a particular goal projection\footnote{This is equivalent to the partition semantics of \citeA{GroenendijkStokhof84_SemanticsOfQuestions}, as can be seen by considering the pre-image of such a projection: $q^{-1}(\hat{w})$.}. For example, the literal meaning of the question ``Does a fifth of Jim Beam cost more than \$5?'' is a function that maps all worlds $w$ such that $w > \$5$ to one value and all other worlds to a different value. Note that the correspondence between questions and goals is not necessarily symmetric: while every question corresponds to a goal, we do not expect that every possible goal corresponds to an easily articulated question utterance.
 \item[$\mathcal{A}$:] a set of possible declarative utterances, such as ``It costs \$7.'' or ``Yes, it costs more than \$5.'' We take the literal meanings of these declarative utterances \den{$a$} to be truth-conditional: a map from world states to booleans. For instance, the utterance ``It costs \$7.'' would be true in the world where $w = \$7$ and false otherwise. 
 \end{description}
 
@@ -1614,7 +1614,6 @@ To understand behavior in these cases it may be necessary to adjust the utility 
 
 \subsection{Conclusion}
 Humans are experts at inferring the intentions of other agents from their actions \cite{TomaselloCarpenter___Moll05_IntentionsCulturalCognition, BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. Given simple motion cues, for example, we are able to reliably discern high-level goals such as chasing, fighting, courting, or playing \cite{BarrettToddMillerBlythe05_IntentionFromMotionCues, HeiderSimmel44_Animacy}. A long tradition in psycholinguistics has shown that this expertise extends to speech acts.  Behind every question lies a goal or intention. This could be an intention to obtain an explicit piece of information (``Where can I get a newspaper?''), signal some common ground (``Did you see the game last night?''), test the answerer's knowledge (``If I add these numbers together, what do I get?''), politely request the audience to take some action (``Could you pass the salt?''), or just to make open-ended small talk (``How was your weekend?''). These wildly different intentions seem to warrant different kinds of answers. %, even if the explicit question is expressed using the same words
-%\todo[inline]{Reformulate this last sentence so that it doesn't sound like we've already accomplished this; make clear that this is something for the future, but that the framework is really exciting because it?s so clear about where one would start fiddling with it}
 By formalizing the recursive utilities of questioner and answerer agents and the computational principles by which agents infer each other's intentions from verbal behavior, our framework provides a foundation for re-situating question asking and answering in its social context.
 
 \section{\bf Acknowledgments}
