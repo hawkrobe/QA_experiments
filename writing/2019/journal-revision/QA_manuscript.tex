@@ -353,14 +353,15 @@ Since our questioner models will depend on the answerer model they expect respon
 We begin with the simplest possible answerer, $A_0$, which attempts to be informative about the state of the world without considering relevance to his partner's goals. 
 Formally, $A_0$ hears a question utterance $q \in \mathcal{Q}$ with private knowledge about the true world state $w \in \mathcal{W}$. 
 He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$ proportional to the epistemic utility of that utterance to his communication partner: 
-$$P_{A_0}(a | q, w) \propto \exp\{\alpha U_{A_0}(a;w)\}\cdot P(a)$$ 
-where $\alpha$ is a soft-max optimality parameter. 
+$$P_{A_0}(a | q, w) \propto \exp\{U_{A_0}(a;w)\}\cdot P(a)$$ 
 
-We define the utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interpreter $I$'s certainty about the true state of the world after hearing $a$. This surprisal is traded off against the cost $C(a)$ of producing the answer utterance:
+We define the utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interlocutor's $I$'s certainty about the true state of the world after hearing $a$. This surprisal is traded off against the cost $C(a)$ of producing the answer utterance:
 \begin{equation}
 \label{eq:A0utility}
-U_{A_0}(a;w) = \ln P_I(w|a) - C(a)
+U_{A_0}(a;w) =  \alpha_A \ln P_I(w|a) - \beta C(a)
 \end{equation}
+where $\alpha_A$ and $\beta$ are parameters weighting the importance of each term.
+
 $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs about worlds, conditioning on the literal meaning of the declarative utterance $a$ being true:
 $$P_I(w|a) \propto \delta_{\textrm{\den{a}}(w)} P(w)$$
 where $\delta_{e}$ is the delta function returning 1 when $e$ evaluates to true and 0 otherwise, and $P(w)$ is the prior over true states of the world. 
@@ -382,7 +383,7 @@ Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speak
 %$$\widehat{P^g}(w') = \sum_{w\in\mathcal{W}} \delta_{w' = g(w)} P(w)$$ 
 Thus, we modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
 \begin{equation}
-U_{A_1}(a; g, w) = \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a) - C(a)
+U_{A_1}(a; g, w) = \alpha_A \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a) - \beta C(a)
 \end{equation}
 where $K_g(w,w')$ is a similarity function (or kernel) between worlds, given by the goal. 
 For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
@@ -398,9 +399,10 @@ $$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$
 %\end{array}
 %$$
 This modified utility suggests simply using the literal meaning of the question $q$ itself as the goal projection:
-$$P_{A_1}(a|q,w) \propto \exp\{\alpha U_{A_1}(a; q,w)\} \cdot P(a)$$
+$$P_{A_1}(a|q,w) \propto \exp\{U_{A_1}(a; q,w)\} \cdot P(a)$$
 This implements a standard literal answerer: $A_1$ directly interprets a question as an (epistemic) goal, then informatively produces an utterance that reduces the questioner's uncertainty under that goal projection.
-We note, however, that $A_1$ is not otherwise constrained in their set of possible answers by the question; they are capable of giving non-yes/no answers to polar questions as long as they similarly resolve the literal goal raised by the question\footnote{Having the utility only depend on informativeness under the goal projection can lead to behavior where the goal-relevant answerer is happy to say something literally false as long as it maps to a truthful resolution of the coarser goal. Sometimes this is desired (as when we round the time to the nearest hour), but other times it is unintuitive. In principle, this problem could be solved by introducing the notion of a \emph{goal hierarchy} where the pure identity goal always has some small weight (see Exp.~2 for a formalization of this notion). In our simulations, however, we use a ``hard'' version of the same idea that removes literally false utterances from the possible answer set and then renormalizes the answer prior before computing the utility.}. 
+We note, however, that $A_1$ is not otherwise constrained in their set of possible answers by the question. 
+For example, $A_1$ is capable of giving non-yes/no answers to polar questions to the extent that they resolve the literal goal raised by the question\footnote{Having the utility only depend on informativeness under the goal projection can lead to behavior where the goal-relevant answerer is happy to say something literally false as long as it maps to a truthful resolution of the coarser goal. Sometimes this is desired (as when we round the time to the nearest hour), but other times it is unintuitive. In principle, this problem could be solved by introducing the notion of a \emph{goal hierarchy} where the pure identity goal always has some small weight (see Exp.~2 for a formalization of this notion). In our simulations, however, we use a ``hard'' version of the same idea that removes literally false utterances from the possible answer set and then renormalizes the answer prior before computing the utility.}. 
 
 $A_1$ may be sufficient for simple fact-based questions, like ``Who was the 16th president of the U.S.?'' given a rich enough semantic parser to supply the semantics of $q$ \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. 
 But the context-sensitivity and indirectness displayed in everyday communication suggests that deeper social reasoning may be at play. 
@@ -420,12 +422,13 @@ More formally, a questioner agent takes a goal $g \in \mathcal{G}$ as input and 
 %
 $$
 \begin{array}{lcl}
-P_{Q_i}(q|g)  & \propto & \exp\{\alpha U_{Q_i}(q;g)\} \cdot P(q)\\
-U_{Q_i}(q;g) & = & \E{P(a|q)}{IG^g(a,q)} - C(q)\\
-	 & = & \sum_{w\in\mathcal{W}} P_{A_i}(a|q,w)P(w) IG^g(a,q) - C(q)
+P_{Q_i}(q|g)  & \propto & \exp\{U_{Q_i}(q;g)\} \cdot P(q)\\
+U_{Q_i}(q;g) & = & \E{P(a|q)}{IG^g(a,q)}\\
+	 & = & \alpha_Q \sum_{w\in\mathcal{W}} P_{A_i}(a|q,w)P(w) IG^g(a,q) 
 \end{array}
 $$
 %
+A cost term $C(q)$ is appropriate here, but for the cases we consider in this paper, the questions of interest have the same length, so we omit it for simplicity.
 
 The expectation over likely answers $P(a|q)$ is computed by running an imagined answerer model forward, marginalizing over the possible worlds $w \in\mathcal{W}$ they might have knowledge of. The value of an answer depends on its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer. Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected world prior and posterior after hearing $a$.
 %
@@ -437,7 +440,7 @@ $$
 In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future and inverting that model to infer the true world the answerer was trying to communicate:
 $$P(w|q,a) \propto P_{A_i}(a| q, w)P(w)$$
 
-Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. It therefore instantiates the same expected information gain measure of usefulness as proposed by Optimal Experiment Design (OED) models of human inquiry \cite{coenen2018asking}. Critically, in contrast to \citeA{GroenendijkStokhof84_SemanticsOfQuestions} the questioner's behavior is not necessarily governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. They coincide when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
+Note that $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. It therefore instantiates a version of the expected information gain measure of usefulness proposed by Optimal Experiment Design (OED) models \cite{coenen2018asking}. Critically, in contrast to classical views \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions} the questioner's behavior is not necessarily governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. They coincide when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
 
 \subsection{$A_2$: Goal-Sensitive Answerer}
 
@@ -460,7 +463,7 @@ Note that $Q_0$, who plans their question by reasoning about the likely response
 
 Now that we have defined the utility of asking a question, we can construct our final pragmatic answerer: $A_2$. The speaker component of this answerer attempts to informatively and relevantly address the questioner's goal like $A_1$. The listener component, however, accounts for the generative process of an asker with an underlying goal rather than taking that goal to be identical to the literal meaning of the question. That is, $A_2$ assumes that the question was produced by a rational agent $Q_1$, who is trying to address a private goal $g \in \mathcal{G}$, and then attempts to be relevantly informative with respect to his posterior over \emph{underlying} goals $P(g|q)$ given the question:
 \begin{equation}
-U_{A_2}(a; q, w) = \sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g_I}(w|\,a) - C(a)
+U_{A_2}(a; q, w) = \alpha_A \sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g_I}(w|\,a) - \beta C(a)
 \end{equation}
 
 %The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the questioner's goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which underlying goals $g$ are likely given that a question $q$ was asked, and chooses answers that have high expected informativity:
@@ -471,6 +474,9 @@ P(g|q) \propto P_{Q_1}(q|g)\cdot P(g)
 $$
 
 By defining $A_2$ recursively in terms of $Q_1$, we implicitly give rise to an arbitrarily deep chain of nested reasoning where $A_{i}$ infers a posterior over underlying goals by inverting $Q_{i-1}$, and so on. This recursion terminates in the base case $A_1$, which uses the literal question semantics. For our purposes, however, we only consider models up to a depth of $i=2$, after which there are no qualitative changes in the model's behavior in the cases we examine\footnote{Recent systematic model exploration by \citeA{frank2017rational} suggests that recursive depth trades off with the soft-max optimality parameter $\alpha$. Because these two parameters are not generally identifiable, we fix the maximal level of recursion and achieve the behavior of higher levels of recursion by allowing $\alpha$ to vary.}. 
+The framework specified above has three free parameters: separate $\alpha$ parameters for the questioner and answerer, and an answerer cost weight $\beta$.
+In principle, this parameterization could be loosened by allowing different parameters at different levels of recursion, or tightened by requiring the questioner and answerer to use the same $\alpha$. 
+However, we found that these three parameters were sufficient to 
 %$A_2$ and $Q_2$ can be interpreted as pragmatic agents who are capable of going beyond    and $Q_2$, which can be interpreted as an agent who rationally selects a question not simply for its literal meaning but for the signal it provides about her underlying beliefs. 
 This concludes our specification of the model space, giving a set of three answerers and three corresponding questioners that reason about them (see Fig. \ref{fig:models})\footnote{We have implemented these models in WebPPL, a probabilistic programming language \cite{GoodmanStuhlmuller14_DIPPL}. Reproducible experimental materials as well as code for all reported analyses and model simulations is available at \url{https://github.com/hawkrobe/Q\_and\_A}}.
  
@@ -581,7 +587,7 @@ However, when the question is prefaced with ``I'd like to buy some whiskey,'' wh
 \includegraphics[scale=.5]{simulations/clarkExampleFig}
 \end{center}
 %\vspace{-1cm}
-\caption{Illustration of how $A_2$ uses the questioner's utterance as a cue to their underlying goal and responds relevantly, thus producing the sensitivity reported by Clark (1979). We set the optimality parameter $\alpha = 50$ and cost $\beta = 5$. The middle column is the marginalized goal posterior showing the expected number of cards; right column is expected probability of exhaustive listing (vs. literal yes/no answer) marginalized over all possible worlds.}
+\caption{Illustration of how $A_2$ uses the questioner's utterance as a cue to their underlying goal and responds relevantly, thus producing the sensitivity reported by Clark (1979). We set the optimality parameter $\alpha_A = \alpha_Q = 50$ and cost $\beta = 5$. The middle column is the marginalized goal posterior showing the expected number of cards; right column is expected probability of exhaustive listing (vs. literal yes/no answer) marginalized over all possible worlds.}
 \label{fig:clarkExample}
 \end{figure*}
 
@@ -959,23 +965,24 @@ We found that 69\% of these tests rejected the null hypothesis of uniformity at 
 %We assume uniform prior probability over worlds, goals, questions, and answers. 
 %This finishes the specification of the three Questioner models and three Answerer models for our experimental situation.
 For a rigorous model comparison among our different questioner and answerer models, we conducted a Bayesian data analysis \cite{LeeWagenmakers14_BDA}. 
+First, because utterances did not differ in cost, we remove the cost term by setting $\beta=0$.
 We introduce a discrete hyperparameter $\gamma \in \{0, 1, 2\}$  determining which model to use, and jointly infer this parameter along with the continuous rationality parameter $\alpha$.
-Additionally, to test whether a model using our empirically-measured identifiability prior provides a better fit to the data than a uniform prior, we add an additional parameter $\beta \in [0,1]$ which interpolates between them.
+Additionally, to test whether a model using our empirically-measured identifiability prior provides a better fit to the data than a uniform prior, we add an additional parameter $w \in [0,1]$ which interpolates between them.
 In other words, we assume participants use some mixture between the pure uniform and empirical priors and we infer the mixture weight.
 We place uninformative priors over these parameters,
 $\gamma \sim  \textrm{unif}\{0, 1, 2\}$ and 
 $\alpha   \sim  \textrm{unif}(0,20)$, 
-$\beta \sim \textrm{unif}(0, 1)$
+$w \sim \textrm{unif}(0, 1)$
 and performed inference using enumeration over discrete bins. 
 
-After marginalizing over values of $\alpha$ and $\beta$, the posterior $P(\gamma | \textrm{data})$ can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}.
+After marginalizing over values of $\alpha$ and $w$, the posterior $P(\gamma | \textrm{data})$ can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}.
 Results are shown as marginal likelihoods in Table \ref{tab:exp1likelihoods}. 
 We can immediately rule out $A_0$ and $Q_0$, which predict a uniform distribution of responses within each condition and performed many orders of magnitude worse than the other models.
 Among the remaining answerer models, we found overwhelming evidence for $A_2$ relative to $A_1$ (BF~$\approx~6~\times~10^{72}$). 
 For our questioner models, we found substantial evidence for $Q_2$ relative to $Q_1$ (BF~$\approx2\times~10^{7}$). 
 
 Next, having established support for $A_2$ and $Q_2$, we test the extent to which the introduction of empirical saliencies improved our predictions. 
-Again using Bayes Factors, which automatically penalize our hybrid model for its additional flexibility, we found strong evidence against the $\beta=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants account for non-uniform knowledge about salience and conceptual typicality when interpreting the definite article.
+Again using Bayes Factors, which automatically penalize our hybrid model for its additional flexibility, we found strong evidence against the $w=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants account for non-uniform knowledge about salience and conceptual typicality when interpreting the definite article.
 Finally, the posterior predictives for the best-fitting models explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively (see Fig. \ref{fig:exp1predictives}). 
 
 \begin{table}[]
@@ -1436,7 +1443,7 @@ This updating sequence of questions and answers qualitatively matches that of th
 
 Lastly, while the primary aim of Exp.~3 was to demonstrate how our model framework can be straightforwardly extended to repeated question-answer exchanges, these data also provided an opportunity to conduct an additional model comparison over a wide variety of items.
 
-All models have exactly three parameters, a cost weight $\beta_c$ and optimality parameters for the questioner and answerer, $\{\alpha_Q$, $\alpha_A\}$.
+All models have exactly three parameters: a cost weight $\beta$ and optimality parameters for the questioner and answerer, $\{\alpha_Q$, $\alpha_A\}$.
 Because evaluating marginal likelihoods over this parameter space was computationally intractable, we use the Bayesian Information Criterion (BIC) instead of the Bayes Factor. 
 %This measure is defined: $$BIC = -2 \ln \hat{L} + \ln(n) k $$ where $\ln \hat{L}$ is the maximum log likelihood, $k$ is the number of parameters, and $n$ is the number of observations. 
 Because the models we are comparing share the same parameters, the differences in BIC between models depends only on the \emph{maximum} of the likelihood function.
@@ -1445,7 +1452,7 @@ $$
 \begin{array}{rcl}
 \alpha_Q & \sim & \textrm{unif}(0, 59) \\
 \alpha_A & \sim & \textrm{unif}(0, 19) \\
-\beta_c & \sim & \textrm{unif}(0, 3)
+\beta & \sim & \textrm{unif}(0, 3)
 \end{array}
 $$
 
@@ -1454,7 +1461,7 @@ Indeed, the difference in the maximum log-likelihood for the two models was only
 These predictions, however, provided a good overall fit to human responses (see Fig. \ref{fig:exp3predictives}).
 
 For answerers, on the other hand, we found that the pragmatic model $A_2$ was able to fit the answerer data substantially better than $A_1$ (see Table \ref{table:exp3likelihoods}).
-$A_2$ was maximized at $\alpha_Q = 59; \alpha_A = 2.7, \beta_c = 0.9$ while $A_1$ attained its maximum fit at $\alpha_Q = 1, \alpha_A = 11, \beta_c = 0.1$. 
+$A_2$ was maximized at $\alpha_Q = 59; \alpha_A = 2.7, \beta = 0.9$ while $A_1$ attained its maximum fit at $\alpha_Q = 1, \alpha_A = 11, \beta = 0.1$. 
 The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}, also indicating an excellent overall fit to human responses.
 
 \begin{figure}[t!]
