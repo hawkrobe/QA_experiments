@@ -1,0 +1,51 @@
+// Run as:
+// webppl AIS_answerer.wppl --require ../../qa -- --modelType <prag_unif>
+
+var questionToLabel = function(question) {
+  return qa.butLast(question).split("Is")[1].toLowerCase();
+};
+
+var labelToQuestion = function(label) {
+  return 'whereIs' + label[0].toUpperCase() + label.slice(1) + '?';
+}
+
+var data = qa.readCSV("../../../data/BayesianAnalysisInput.csv");
+console.log("loaded data");
+
+var modelAnalysis = function() {
+  // Sample params
+  var recursionLevel = argv.modelType.split('_')[0];
+  var salience = argv.modelType.split('_')[1];
+  var ArationalityRaw = uniformDrift({a: 0, b: 30, width: 5}),
+      Arationality = Number.parseFloat(ArationalityRaw.toFixed(2));
+  var QrationalityRaw = uniformDrift({a: 0, b: 30, width: 5}),
+      Qrationality = Number.parseFloat(QrationalityRaw.toFixed(2));
+  var wRaw = salience === 'unif' ? 0 : uniformDrift({a: 0, b: 1, width: .1}),
+      w = Number.parseFloat(wRaw.toFixed(2));
+
+  globalStore.likelihood = 0;
+
+  // Run model and condition on data
+  mapData({data: data}, function(datum) {
+    var model = QAmodel(datum.type, datum.domain, Qrationality, Arationality, w);
+    var runAnswererModel = model.runAnswererModel;
+    var answererERP = runAnswererModel(labelToQuestion(datum.question),
+				       recursionLevel, 'fast');
+    var likelihood = answererERP.score(datum.answer);
+    globalStore.likelihood += likelihood;
+    factor(likelihood);
+  });
+  console.log([Arationality,Qrationality,w,argv.modelType]);
+  console.log(globalStore.likelihood);
+  return {Arationality, Qrationality,w,modelType: argv.modelType,
+	  likelihood:globalStore.likelihood};
+};
+
+console.log(AIS(modelAnalysis, {steps: 100}));
+// var enumerateConfig = {method: 'enumerate'};
+// var MCMCconfig = {method: 'MCMC', onlyMAP: true, samples: 500, lag : 10, burn : 1000};
+// var outputERP = Infer(MCMCconfig, modelAnalysis);
+// console.log(outputERP);
+// console.log('inference complete... printing');
+
+//qa.bayesianErpWriter(outputERP, "data/answerer_modelComparison");

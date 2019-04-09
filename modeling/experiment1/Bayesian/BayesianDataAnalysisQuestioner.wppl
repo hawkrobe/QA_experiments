@@ -7,40 +7,43 @@ var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
-  var modelType = uniformDraw(['Q0_unif', 'Q1_unif', 'Q2_unif',
-			       'Q0_emp', 'Q1_emp', 'Q2_emp']);
-  var rawAlpha = uniformDraw(_.range(0, 15, 0.1)),
-      alpha = Number.parseFloat(rawAlpha.toFixed(3));
-  var rawBeta = modelType.split('_')[1] === 'unif' ? 0 : uniformDraw(_.range(0, 1.01, .1)),
-      beta = Number.parseFloat(rawBeta.toFixed(3));
+  var modelType = uniformDraw(['null_unif', 'lit_unif', 'prag_unif',
+			       'null_emp', 'lit_emp', 'prag_emp']);
+  var ArationalityRaw = uniformDraw(_.range(0, 15, .1)),
+      Arationality = Number.parseFloat(ArationalityRaw.toFixed(2));
+  var QrationalityRaw = uniformDraw(_.range(0, 15, .1)),
+      Qrationality = Number.parseFloat(QrationalityRaw.toFixed(2));
+  var wRaw = modelType.split('_')[1] === 'unif' ? 0 : uniformDraw(_.range(0, 1.01, .1)),
+      w = Number.parseFloat(wRaw.toFixed(2));
 
   globalStore.predictives = {};
 
   // Run model and condition on data
   var score = sum(map(function(item) {
-    var model = QAmodel(item[0], item[1], alpha, beta);
+    var model = QAmodel(item[0], item[1], Qrationality, Arationality, w);
     var questioner = model.questioner;  
     return sum(map(function(qud) {
       var itemData = qa.getSubset(data, {type: item[0], domain: item[1], goal: qud});
       var questionerERP = questioner(modelType.split('_')[0], qud);
       // Save predictives
-      foreach(questionerERP.support(),function(s){
-      	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
-      	var key = [qud, item[0], item[1], strippedQuestion, alpha, beta, modelType].join(",");
-      	var newPair = _.zipObject([key], [Math.exp(questionerERP.score(s))]);
-      	globalStore.predictives = extend(globalStore.predictives, newPair);
-      });
+      // foreach(questionerERP.support(),function(s){
+      // 	var strippedQuestion = qa.butLast(s).split("Is")[1].toLowerCase();
+      // 	var key = [qud, item[0], item[1], strippedQuestion,
+      // 		   Arationality, Qrationality, w, modelType].join(",");
+      // 	var newPair = _.zipObject([key], [Math.exp(questionerERP.score(s))]);
+      // 	globalStore.predictives = extend(globalStore.predictives, newPair);
+      // });
       return sum(map(function(dataRow) {
        	return questionerERP.score("whereIs" + qa.capitalize(dataRow.question) + "?");
       }, itemData));
     }, model.qudSpace));
   }, items));
 
-  console.log([alpha, beta, modelType]);
+  console.log([Qrationality, Arationality, w, modelType]);
   console.log(score);
   factor(score);
   
-  var paramsKey = [alpha, beta, modelType].join(',');
+  var paramsKey = [Qrationality, Arationality, w, modelType].join(',');
   return {predictive: globalStore.predictives,
 	  params : _.zipObject([paramsKey], [score])};
 };

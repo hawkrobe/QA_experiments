@@ -292,15 +292,15 @@ var buildTax = function(knowledge, labels, responses) {
     var label = labels[labelId];
     var labelMatches = _.filter(knowledge, function(obj) {return obj.label == label;});
     _.forEach(labelMatches, function(obj) {
-      probObj = _.extend(probObj, _.object([obj.response], [obj.prop]));
+      probObj = _.extend(probObj, _.fromPairs([[obj.response, obj.prop]]));
     });
-    tax = _.extend(tax, _.object([label],[probObj]));
+    tax = _.extend(tax, _.fromPairs([[label, probObj]]));
   }
   
   // Add knowledge about responses to taxonomy
   for (var responseId = 0; responseId < responses.length; responseId++) {
     var response = responses[responseId];
-    tax = _.extend(tax, _.object([response], [_.object([response], [1])]));
+    tax = _.extend(tax, _.fromPairs([[response, _.fromPairs([[response, 1]])]]));
   }
 
   return tax;
@@ -315,11 +315,10 @@ var buildKnowledge = function(type, domain) {
   };
   var relevantUnifKnowledge = _.filter(unifKnowledge, filterFunc);
   var relevantEmpKnowledge = _.filter(empKnowledge, filterFunc);
-  var relevantResponses = _.unique(_.pluck(relevantEmpKnowledge, 'response'));
-  var relevantLabels =  _.unique(_.pluck(relevantEmpKnowledge, 'label'));
+  var relevantResponses = _.uniq(_.map(relevantEmpKnowledge, 'response'));
+  var relevantLabels =  _.uniq(_.map(relevantEmpKnowledge, 'label'));
   var unifTax = buildTax(relevantUnifKnowledge, relevantLabels, relevantResponses);
   var empTax = buildTax(relevantEmpKnowledge, relevantLabels, relevantResponses);
-
   return {empTaxonomy: empTax, unifTaxonomy : unifTax,
 	  qudSpace : relevantResponses, labelSpace : relevantLabels};
 };
