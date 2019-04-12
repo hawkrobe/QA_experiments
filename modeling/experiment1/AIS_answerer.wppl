@@ -9,16 +9,18 @@ var labelToQuestion = function(label) {
   return 'whereIs' + label[0].toUpperCase() + label.slice(1) + '?';
 }
 
-var data = qa.readCSV("../../../data/BayesianAnalysisInput.csv");
-console.log("loaded data");
+var data = qa.readCSV("../../data/BayesianAnalysisInput.csv");
+var types = ["branching", "overlapping", "equivocal"];
+var domains = ["artifact", "animals", "places", "plants"];
+var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
   var recursionLevel = argv.modelType.split('_')[0];
   var salience = argv.modelType.split('_')[1];
-  var ArationalityRaw = uniformDrift({a: 0, b: 30, width: 5}),
+  var ArationalityRaw = uniformDrift({a: 0, b: 20, width: 3}),
       Arationality = Number.parseFloat(ArationalityRaw.toFixed(2));
-  var QrationalityRaw = uniformDrift({a: 0, b: 30, width: 5}),
+  var QrationalityRaw = uniformDrift({a: 0, b: 20, width: 3}),
       Qrationality = Number.parseFloat(QrationalityRaw.toFixed(2));
   var wRaw = salience === 'unif' ? 0 : uniformDrift({a: 0, b: 1, width: .1}),
       w = Number.parseFloat(wRaw.toFixed(2));
@@ -26,22 +28,26 @@ var modelAnalysis = function() {
   globalStore.likelihood = 0;
 
   // Run model and condition on data
-  mapData({data: data}, function(datum) {
-    var model = QAmodel(datum.type, datum.domain, Qrationality, Arationality, w);
+  var score = sum(map(function(item) {
+    var model = QAmodel(item[0], item[1], Qrationality, Arationality, w);
     var runAnswererModel = model.runAnswererModel;
-    var answererERP = runAnswererModel(labelToQuestion(datum.question),
-				       recursionLevel, 'fast');
-    var likelihood = answererERP.score(datum.answer);
-    globalStore.likelihood += likelihood;
-    factor(likelihood);
-  });
-  console.log([Arationality,Qrationality,w,argv.modelType]);
-  console.log(globalStore.likelihood);
+    return sum(map(function(question) {
+      var itemData = qa.getSubset(data, {type:item[0], domain: item[1],
+  					 question: questionToLabel(question)});
+      var answererERP = runAnswererModel(question, recursionLevel, 'fast');
+      return sum(map(function(dataRow) {
+	return answererERP.score(dataRow.answer);
+      }, itemData));
+    }, model.questionSpace));
+  }, items));
+
+  factor(score);
+  console.log(score);
   return {Arationality, Qrationality,w,modelType: argv.modelType,
-	  likelihood:globalStore.likelihood};
+	  likelihood:score};
 };
 
-console.log(AIS(modelAnalysis, {steps: 100}));
+console.log(argv.modelType, AIS(modelAnalysis, {steps: 10000}));
 // var enumerateConfig = {method: 'enumerate'};
 // var MCMCconfig = {method: 'MCMC', onlyMAP: true, samples: 500, lag : 10, burn : 1000};
 // var outputERP = Infer(MCMCconfig, modelAnalysis);
