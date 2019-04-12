@@ -211,14 +211,12 @@ var QAmodel = function(type, domain, Qrationality, Arationality, w) {
 			console.error('type not recognized'));
     var truthfulAnswerPrior = makeTruthfulAnswerPrior(trueWorld, version);
     return Infer({method: 'enumerate'}, function(){
+      var qud = makeGoalFromName(sample(qudPosterior));
       var answer = sample(truthfulAnswerPrior);
-      var utility = expectation(qudPosterior, function(name) {
-	return Math.log(expectation(interpreter(answer, version), function(w) {
-	  var goal = makeGoalFromName(name);
-          return _.isEqual(goal(w), goal(trueWorld));
-	}));
+      var utility = expectation(interpreter(answer, version), function(possibleWorld) {
+        return _.isEqual(qud(possibleWorld), qud(trueWorld));
       });
-      factor(Arationality * utility);      
+      factor(Arationality * Math.log(utility));      
       return answer;
     });
   });

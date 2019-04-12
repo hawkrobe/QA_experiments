@@ -73,12 +73,12 @@ var writeSpatialAnswerer = function(filename, labels, erp) {
 // Note this is highly specific to a single type of erp
 var bayesianErpWriter = function(erp, filePrefix) {
   var predictiveFile = fs.openSync(filePrefix + "Predictives.csv", 'w');
-  fs.writeSync(predictiveFile, ["parameter", "item1", "item2", "value",
-				"alpha", "beta", "modelType",
+  fs.writeSync(predictiveFile, ["stim", "item1", "item2", "value",
+				"alpha_A", "alpha_Q", "w", "modelType",
 				"prediction", "posteriorProb"] + '\n');
 
   var paramFile = fs.openSync(filePrefix + "Params.csv", 'w');
-  fs.writeSync(paramFile, ["alpha", "beta", "modelType",
+  fs.writeSync(paramFile, ["alpha_A", "alpha_Q", "w", "modelType",
 			   "logLikelihood", "posteriorProb"] + '\n');
 
   var supp = erp.support();
@@ -92,7 +92,7 @@ var bayesianErpWriter = function(erp, filePrefix) {
 };
 
 var supportWriter = function(s, p, handle) {
-  var sLst = _.pairs(s);
+  var sLst = _.toPairs(s);
   var l = sLst.length;
 
   for (var i = 0; i < l; i++) {
