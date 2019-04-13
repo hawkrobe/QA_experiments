@@ -1,5 +1,5 @@
 // Run as:
-// webppl genQuestionerPredictions.wppl --require ../qa
+// webppl genQuestionerPredictions.wppl --require ../qa -- --modelType 'prag_emp'
 
 var data = qa.readCSV("../../data/BayesianAnalysisInput.csv");
 var types = ["branching", "overlapping", "equivocal"];
@@ -7,7 +7,7 @@ var domains = ["artifact", "animals", "places", "plants"];
 var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
-  var modelType = 'prag_emp';
+var modelType = argv.modelType;
   var ArationalityRaw = uniformDrift({a: 0, b: 40, width: 2}),
       Arationality = Number.parseFloat(ArationalityRaw.toFixed(2));
   var QrationalityRaw = uniformDrift({a: 0, b: 40, width: 2}),
@@ -51,5 +51,5 @@ var MCMCconfig = {method: 'MCMC', samples: 500, lag : 12, burn : 4000};
 var outputERP = Infer(MCMCconfig, modelAnalysis);
 
 console.log('inference complete... printing');
-qa.bayesianErpWriter(outputERP, "bdaOutput/questioner_modelComparison");
+qa.bayesianErpWriter(outputERP, "bdaOutput/questioner_modelComparison_" + argv.modelType);
 

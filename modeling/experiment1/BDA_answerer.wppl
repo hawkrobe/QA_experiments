@@ -14,7 +14,7 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   // Sample params
-  var modelType = 'prag_emp';
+  var modelType = argv.modelType;
   var ArationalityRaw = uniformDrift({a: 0, b: 40, width: 2}),
       Arationality = Number.parseFloat(ArationalityRaw.toFixed(2));
   var QrationalityRaw = uniformDrift({a:  0, b: 40, width: 2}),
@@ -62,4 +62,4 @@ var outputERP = Infer(MCMCconfig, modelAnalysis);
 
 // console.log('inference complete... printing');
 
-qa.bayesianErpWriter(outputERP, "bdaOutput/answerer_modelComparison_");
+qa.bayesianErpWriter(outputERP, "bdaOutput/answerer_modelComparison_" + argv.modelType);
