@@ -1,192 +1,96 @@
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 null_unif -1025.8578272285317
-undefined
 lit_unif -345.3384644184064
-undefined
 lit_unif -344.8823497204779
-undefined
 lit_unif -343.85682771406834
-undefined
 lit_unif -343.81813623139027
-undefined
 lit_unif -343.70106817818083
-undefined
 lit_unif -344.03043414533136
-undefined
 lit_unif -344.3461597025451
-undefined
 lit_unif -344.0226493402191
-undefined
 lit_unif -344.0451819200954
-undefined
 lit_unif -344.4706300627731
-undefined
 lit_unif -343.75446902816725
-undefined
 lit_unif -344.4863993953874
-undefined
 lit_unif -344.4205432272038
-undefined
 lit_unif -343.8691853001148
-undefined
 lit_unif -344.0576970740163
-undefined
 lit_unif -344.1679785856108
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_em -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 null_emp -1025.8578272285317
-undefined
 prag_unif -342.03722391350084
-undefined
 prag_unif -342.13838585196163
-undefined
 prag_unif -343.93247906974517
-undefined
 prag_unif -342.9246102147973
-undefined
 prag_unif -344.7594590035797
-undefined
 prag_unif -342.78473266329337
-undefined
 prag_unif -343.8250265535162
-undefined
 prag_unif -343.96876173644296
-undefined
 prag_unif -342.68271024562955
-undefined
 prag_unif -343.6187265232134
-undefined
 prag_unif -343.4071377914726
-undefined
 prag_unif -342.72571319816416
-undefined
 prag_unif -341.75165130028216
-undefined
 prag_unif -341.9379747628501
-undefined
 prag_unif -341.63842565985277
-undefined
 prag_unif -343.0912937007352
-undefined
 lit_emp -331.37277998470404
-undefined
 lit_emp -328.40985973067615
-undefined
 lit_emp -329.91035687503427
-undefined
 lit_emp -330.12697066884306
-undefined
 lit_emp -328.30168997228907
-undefined
 lit_emp -329.13924907214727
-undefined
 lit_emp -329.39048502144595
-undefined
 lit_emp -327.6262621263481
-undefined
 lit_emp -327.85623194221944
-undefined
 lit_emp -327.6607960860631
-undefined
 lit_emp -328.1846347059422
-undefined
 lit_emp -328.8273785047009
-undefined
 lit_emp -331.80302777994746
-undefined
 lit_emp -331.22520387462004
-undefined
 lit_emp -328.820666355436
-undefined
 lit_emp -330.3581296313943
-undefined
 prag_emp -311.68935729913403
-undefined
 prag_emp -313.1976896315105
-undefined
 prag_emp -312.1673881957167
-undefined
 prag_emp -311.7491943841397
-undefined
 prag_emp -311.09476120554314
-undefined
 prag_emp -311.8363902098196
-undefined
 prag_emp -312.5000640136569
-undefined
 prag_emp -313.21882121510265
-undefined
 prag_emp -310.40534278630713
-undefined
 prag_emp -312.5321361375481
-undefined
 prag_emp -313.1942853453673
-undefined
 prag_emp -311.5473667495859
-undefined
 prag_emp -309.86259722687345
-undefined
 prag_emp -311.14010353347754
-undefined
 prag_emp -311.7301133115738
-undefined
 prag_emp -311.7751087156702
-undefined
