@@ -8,9 +8,9 @@ var items = qa.cartesianProductOf([types, domains]);
 
 var modelAnalysis = function() {
   var modelType = 'prag_emp';
-  var ArationalityRaw = uniformDrift({a: 0, b: 20, width: 2}),
+  var ArationalityRaw = uniformDrift({a: 0, b: 40, width: 2}),
       Arationality = Number.parseFloat(ArationalityRaw.toFixed(2));
-  var QrationalityRaw = uniformDrift({a: 0, b: 20, width: 2}),
+  var QrationalityRaw = uniformDrift({a: 0, b: 40, width: 2}),
       Qrationality = Number.parseFloat(QrationalityRaw.toFixed(2));
   var wRaw = modelType.split('_')[1] === 'unif' ? 0 : uniformDrift({a: 0, b: 1, width:.1}),
       w = Number.parseFloat(wRaw.toFixed(2));
