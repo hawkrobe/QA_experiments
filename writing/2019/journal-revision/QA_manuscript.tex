@@ -70,7 +70,7 @@ Critically, we predict that pragmatic answerers go beyond the literal meaning of
 %The utility of producing a question in this framework is the expected reduction in uncertainty about the aspects of the world relevant to the speaker's goal upon hearing an answer from their partner. 
 We evaluate our pragmatic models against asocial models in two ways.
 First, we present computational simulations accounting for three classic answerer effects in psycholinguistics.
-We then introduce a Hidden Goal paradigm for experimentally eliciting questioner and answerer behavior in scenarios where there is uncertainty about the questioner's goal. 
+We then introduce the Hidden Goal paradigm for experimentally eliciting questioner and answerer behavior in scenarios where there is uncertainty about the questioner's goal. 
 We report data from three experiments in this paradigm and show how our core computational framework can be composed with more sophisticated question semantics, hierarchical goal spaces, and a persistent state over which extended dialogue can unfold.
 We find that social inference is needed to account for critical aspects of the data. 
 %\hl{DRAFT 2/13//2018: THIS PAPER HAS NOT BEEN PEER REVIEWED. PLEASE DO NOT COPY OR CITE WITHOUT AUTHOR'S PERMISSION}
@@ -463,7 +463,7 @@ Note that $Q_0$, who plans their question by reasoning about the likely response
 
 Now that we have defined the utility of asking a question, we can construct our final pragmatic answerer: $A_2$. The speaker component of this answerer attempts to informatively and relevantly address the questioner's goal like $A_1$. The listener component, however, accounts for the generative process of an asker with an underlying goal rather than taking that goal to be identical to the literal meaning of the question. That is, $A_2$ assumes that the question was produced by a rational agent $Q_1$, who is trying to address a private goal $g \in \mathcal{G}$, and then attempts to be relevantly informative with respect to his posterior over \emph{underlying} goals $P(g|q)$ given the question:
 \begin{equation}
-U_{A_2}(a; q, w) = \alpha_A \sum_{g \in \mathcal{G}} P(g|q) \widehat{P^g_I}(w|\,a) - \beta C(a)
+U_{A_2}(a; q, w) = \alpha_A \sum_{g \in \mathcal{G}} P(g|q) \ln \widehat{P^g_I}(w|\,a) - \beta C(a)
 \end{equation}
 
 %The \textbf{pragmatic answerer} also evaluates answers with respect to how well they address the questioner's goal, but doesn't take the question's explicit meaning at face value. Instead, the pragmatic answerer reasons about which underlying goals $g$ are likely given that a question $q$ was asked, and chooses answers that have high expected informativity:
@@ -909,7 +909,7 @@ Before describing the results of our model comparison, we formalize the task set
 \begin{center}
 \includegraphics[scale = .77]{Exp1/ResultsFig.pdf}
 \end{center}
-\caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
+\caption{Posterior predictives for each model (excluding $A_0$ and $Q_0$). }
 %\vspace{-1cm}
 \label{fig:exp1predictives}
 \end{figure*}
@@ -952,7 +952,7 @@ Of 192 participants recruited from Amazon's Mechanical Turk, 13 participants wer
 This left data for 164 participants.
 To form an empirical identifiability distribution $\mathcal{I}(o | x)$ that can be used in the model, we computed the proportion of participants that clicked on each of the objects $o$ for each label $x$. 
 
-Before formally testing the usefulness of these empirical priors in our model comparison, we conducted a simple test of the null hypothesis that participants use a \emph{uniform} prior over within-category objects when interpreting the definite article. 
+Before formally testing the importance of these empirical priors in our model comparison, we conducted a simple test of the null hypothesis that participants use a uniform prior over within-category objects when interpreting the definite article. 
 We performed Pearson $\chi^2$ goodness of fit tests on the response distribution for each label: a total of 32 tests. 
 We found that 69\% of these tests rejected the null hypothesis of uniformity at a (Bonferroni-corrected) significance level of $\alpha = 0.05/32 = 0.002$ indicating that the identifiability distribution often deviates from uniform: not all members of a category are equally likely to be identified as the referent of the definite description.
 
@@ -965,25 +965,26 @@ We found that 69\% of these tests rejected the null hypothesis of uniformity at 
 %We assume uniform prior probability over worlds, goals, questions, and answers. 
 %This finishes the specification of the three Questioner models and three Answerer models for our experimental situation.
 For a rigorous model comparison among our different questioner and answerer models, we conducted a Bayesian data analysis \cite{LeeWagenmakers14_BDA}. 
-First, because utterances did not differ in cost, we remove the cost term by setting $\beta=0$.
-We introduce a discrete hyperparameter $\gamma \in \{0, 1, 2\}$  determining which model to use, and jointly infer this parameter along with the continuous rationality parameter $\alpha$.
+First, because utterances did not differ in cost, we remove the cost term of the model for simplicity by setting $\beta=0$.
+%We introduce a discrete hyperparameter $\gamma \in \{0, 1, 2\}$  determining which model to use, and jointly infer this parameter along with the continuous rationality parameter $\alpha$.
 Additionally, to test whether a model using our empirically-measured identifiability prior provides a better fit to the data than a uniform prior, we add an additional parameter $w \in [0,1]$ which interpolates between them.
-In other words, we assume participants use some mixture between the pure uniform and empirical priors and we infer the mixture weight.
+In other words, we assume participants use some mixture between the pure uniform and empirical priors but we have uncertainty over the mixture weight.
 We place uninformative priors over these parameters,
-$\gamma \sim  \textrm{unif}\{0, 1, 2\}$ and 
-$\alpha   \sim  \textrm{unif}(0,20)$, 
-$w \sim \textrm{unif}(0, 1)$
-and performed inference using enumeration over discrete bins. 
+$\alpha_A   \sim  \textrm{unif}(0,40)$, 
+$\alpha_Q   \sim  \textrm{unif}(0,40)$, 
+$w \sim \textrm{unif}(0, 1)$.
 
-After marginalizing over values of $\alpha$ and $w$, the posterior $P(\gamma | \textrm{data})$ can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}.
-Results are shown as marginal likelihoods in Table \ref{tab:exp1likelihoods}. 
+We estimated the marginal likelihood of our raw answerer data under $A_0$, $A_1$, and $A_2$, and of our questioner data under $Q_0$, $Q_1$, and $Q_2$.
+Additionally, for each of these models, we constructed a lesioned variant that did not use the empirical identifiability priors (i.e. $w=0$).
+Our model comparison thus includes six questioner models and six answerer models.
+To estimate marginal likelihoods, we used annealed importance sampling \cite<AIS;>{neal2001annealed} and averaged estimates across 16 chains of 10,000 MCMC steps each to obtain stable estimates for each model. 
+
+%After marginalizing over values of $\alpha$ and $w$, the posterior $P(\gamma | \textrm{data})$ can be interpreted as the relative evidence for each model \cite{KruschkeVanPaemel15_OxfordHandbook}.
+Results of our model comparison are shown in Table \ref{tab:exp1likelihoods}. 
 We can immediately rule out $A_0$ and $Q_0$, which predict a uniform distribution of responses within each condition and performed many orders of magnitude worse than the other models.
-Among the remaining answerer models, we found overwhelming evidence for $A_2$ relative to $A_1$ (BF~$\approx~6~\times~10^{72}$). 
-For our questioner models, we found substantial evidence for $Q_2$ relative to $Q_1$ (BF~$\approx2\times~10^{7}$). 
+Among the remaining full answerer models, we found overwhelming evidence for $A_2$ relative to $A_1$ (BF~$\approx~4~\times~10^{92}$).  
+For our full questioner models, we found substantial evidence for $Q_2$ relative to $Q_1$ (BF~$\approx4\times~10^{7}$). 
 
-Next, having established support for $A_2$ and $Q_2$, we test the extent to which the introduction of empirical saliencies improved our predictions. 
-Again using Bayes Factors, which automatically penalize our hybrid model for its additional flexibility, we found strong evidence against the $w=0$ model for both the answerer (BF = $1.12\times 10^{20}$) and questioner ($2.44 \times 10^{13}$), suggesting that participants account for non-uniform knowledge about salience and conceptual typicality when interpreting the definite article.
-Finally, the posterior predictives for the best-fitting models explain a substantial proportion of the item-wise variance: $R^2 = .92$ and $R^2 = .98$, respectively (see Fig. \ref{fig:exp1predictives}). 
 
 \begin{table}[]
 \begin{center}
@@ -991,11 +992,11 @@ Finally, the posterior predictives for the best-fitting models explain a substan
 \toprule
  &  & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}uniform\\ identifiability\end{tabular}} & \multicolumn{1}{l}{\begin{tabular}[c]{@{}l@{}}empirical\\ identifiability\end{tabular}} \\ \midrule
 \multirow{3}{*}{\begin{tabular}[c]{@{}l@{}}answerer\\ models\end{tabular}} & $A_0$ & -1231.0 & -1231.0 \\ \cmidrule(l){2-4} 
- & $A_1$ & -847.5 & -767.2 \\ \cmidrule(l){2-4} 
- & $A_2$ & -645.7 & \textbf{-599.6} \\ \midrule
+ & $A_1$ & -848.5 & -767.6 \\ \cmidrule(l){2-4} 
+ & $A_2$ & -587.9 & \textbf{-554.3} \\ \midrule
 \multirow{3}{*}{\begin{tabular}[c]{@{}l@{}}questioner\\ models\end{tabular}} & $Q_0$ & -1025.9 & -1025.9 \\ \cmidrule(l){2-4} 
- & $Q_1$ & -343.8 & -328.3 \\ \cmidrule(l){2-4} 
- & $Q_2$ & -342.3 & \textbf{-311.5} \\ \bottomrule
+ & $Q_1$ & -344.2 & -329.3 \\ \cmidrule(l){2-4} 
+ & $Q_2$ & -342.9 & \textbf{-311.8} \\ \bottomrule
 \end{tabular}
 \vspace{1em}
 \end{center}
@@ -1003,6 +1004,14 @@ Finally, the posterior predictives for the best-fitting models explain a substan
 \label{tab:exp1likelihoods}
 \end{table}
 
+
+Next, having established support for $A_2$ and $Q_2$, we examine their lesioned variants to test whether the introduction of empirical identifiability distributions improved our predictions. 
+Again using Bayes Factors, which automatically penalize our full model for its additional flexibility, we found strong evidence against the $w=0$ model for both the answerer (BF~$\approx4\times~10^{14}$) and questioner ($3.2 \times 10^{13}$), suggesting that participants account for non-uniform knowledge about salience and conceptual typicality when interpreting the definite article.
+
+Finally, to examine parameter posteriors and predictives for each model, we performed inference using MCMC.
+We used a burn-in of 4000 steps and lag of 12 to obtain 500 posterior samples for each model.
+We find that the posterior predictives for the best-fitting answerer and questioner models explain a substantial proportion of the item-wise variance across domain and hierarchy type: $R^2 = .92$ and $R^2 = .98$, respectively (see Fig. \ref{fig:exp1predictives}). 
+The MAP parameters are $\alpha_A = 36, \alpha_Q = 6, w = 0.4$ for the best performing questioner model and $\alpha_A = 3.5, \alpha_Q = 21, w = 0.6$ for the best-performing answerer model.
 
 
 %
@@ -1054,8 +1063,8 @@ Hence, participants may not be choosing the house cat in this item for pragmatic
 If this were the case, including common knowledge about typicality should improve the predictions of $A_1$ and $Q_1$, thus potentially `explaining away' any benefit of deeper pragmatics. 
 After accounting for this potential confound, we still found strong evidence for $A_2$ and $Q_2$ over simpler models.
 
-Second, Fig. \ref{fig:exp1predictives} makes it clear that without the empirical priors, $A_2$ and $Q_2$ fail to capture graded responses across different domains. 
-This is especially striking in the `equivocal' condition where our models predict no preference in questioner behavior: if asking about the goldfish, which is both a ``pet'' and a ``fish,'' then the symmetry of the alternatives provides no reason to favor one label over the other. 
+Second, without the empirical priors, $A_2$ and $Q_2$ fail to capture graded responses across different domains. 
+This is especially striking in the `equivocal' condition where models using a uniform prior predict no preference in questioner behavior: if asking about the goldfish, which is both a ``pet'' and a ``fish,'' then the symmetry of the alternatives provides no reason to favor one label over the other. 
 Instead, we found a high degree of variability across domains. 
 For example, when questioners were trying to find a pet goldfish, 85\% of participants preferred the label `fish' to the label `pet,' even though both are technically true. 
 In the `artifacts' domain, on the other hand, questioners had no preference between asking about the `seat' or `metal thing' when the objects (metal chairs) fell into both categories.

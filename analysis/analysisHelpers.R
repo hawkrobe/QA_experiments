@@ -308,20 +308,21 @@ HPDlo<- function(s){
 # renormalize posterior for fixed beta/modelType
 # (returns full joint posterior if none specified)
 getRawParams = function(name, chosenBeta=NA, chosenModelType=NA) {
-  inputName <- paste0("../modeling/experiment1/Bayesian/data/", name, '.csv')
+  inputName <- paste0("../modeling/experiment1/bdaOutput/", name, '.csv')
   
   raw <- read_csv(inputName) 
+  View(read_csv("./modeling/experiment1/bdaOutput/answerer_modelComparisonPredictives.csv"))
     #filter(posteriorProb != '-Inf')
     # mutate(t = floor((row_number()-1)/4)) %>%
     # spread(parameter, value) %>%
   
   if(!is.na(chosenBeta)) {
     raw <- raw %>%
-      mutate(beta = as.character(beta)) %>%
-      filter(beta == chosenBeta) %>%
+      mutate(w = as.character(w)) %>%
+      filter(w == w) %>%
       mutate(intermed = exp(posteriorProb - max(posteriorProb))) %>%
       mutate(posteriorProb = log(intermed/sum(intermed))) %>%
-      select(-intermed, -beta) 
+      select(-intermed, -w) 
   } 
   if(!is.na(chosenModelType)){
     raw <- raw %>%
@@ -344,7 +345,7 @@ sumlogprob <- function(a, b) {
 printTable <- function(samples) {
   cat('parameter posteriors')
   print(samples %>%
-          group_by(parameter) %>%
+          group_by(source, parameter) %>%
           summarize(md_lo = round(HPDlo(value), 3),
                     md_hi = round(HPDhi(value), 3),
                     value = estimate_mode(value)))
@@ -394,22 +395,22 @@ recode <- function(samples, QorA){
 }
 
 getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
-  inputName <- paste0("../modeling/experiment1/Bayesian/data/", name, '.csv')
+  inputName <- paste0("../modeling/experiment1/bdaOutput/", name, '.csv')
   
   raw <- read_csv(inputName) %>%
     mutate(t = floor((row_number()-1)/160)) %>%
-    unite(key, parameter:value)%>%
+    unite(key, stim:value)%>%
     mutate(key = paste0(key, '~')) %>%
     spread(key, prediction)# %>%
     #filter(posteriorProb != '-Inf')
 
   if(!is.na(chosenBeta)) {
     raw <- raw %>%
-      mutate(beta = as.character(beta)) %>%
-      filter(beta == chosenBeta) %>%
+      mutate(w = as.character(w)) %>%
+      filter(w == chosenBeta) %>%
       mutate(intermed = exp(posteriorProb - max(posteriorProb))) %>%
       mutate(posteriorProb = log(intermed/sum(intermed))) %>%
-      select(-intermed, -beta) 
+      select(-intermed, -w) 
   } 
   if(!is.na(chosenModelType)){
     raw <- raw %>%
@@ -421,6 +422,6 @@ getRawPredictives <- function(name, chosenBeta = NA, chosenModelType = NA) {
   output <- raw %>% 
     gather(key, prediction, ends_with('~')) %>% 
     mutate(key = substr(key, 1, nchar(key)-1)) %>%
-    separate(key, into= c('parameter', 'item1', 'item2', 'value'), sep = '_')
+    separate(key, into= c('stim', 'item1', 'item2', 'value'), sep = '_')
   return(output)
 }

@@ -12,12 +12,7 @@ library(ggthemes)
 library(lme4)
 library(lmerTest)
 library(brms)
-
-#library(GGally)
-# library(coda)
-# library(boot)
-# library(cowplot)
-
+library(coda)
 source("./analysisHelpers.R")
 
 options("scipen"=1) 
@@ -28,7 +23,7 @@ Experiment 1 data analysis
 
 Start by setting up exclusion criteria for participants who don't speak english or didn't complete the full task.
 
-```{r}
+```{r warning=FALSE, results=FALSE}
 subjInfo = read_csv("../data/compiled-subject_information.csv")
 
 mturk = read_csv("../data/compiled-mturk.csv") %>%
@@ -130,7 +125,7 @@ cat('\nanswerer domain correlations:\n')
 cor(corData_a)
 ```
 
-### Answerer deviation from uniform
+### Answerer nested condition
 
 statistical results:
 
@@ -148,80 +143,15 @@ null.A = glmer(counts ~ 1 + (1 | domain),
            data=D.ans, family=poisson(),
             control=glmerControl(optimizer='Nelder_Mead', 
                       optCtrl=list(maxfun=2e5) ))
-summary(null.A)
+#summary(null.A)
 
 full.A = glmer(counts ~ 1 + A4diff + (1 + A4diff | domain), 
            data=D.ans, family=poisson(),
             control=glmerControl(optimizer='Nelder_Mead', 
                       optCtrl=list(maxfun=2e5) ))
-summary(full.A)
+#summary(full.A)
 
 anova(null.A, full.A)
-```
-
-get CIs for plots
-
-```{r}
-collapsed_a = d %>% 
-      mutate(response=ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
-      mutate(utterance=ordered(questionNodes,levels=c("Q1","Q2","Q3","Q4"))) %>%
-      group_by(type, utterance) %>%
-      do(getProbsAndCIs(data = ., QorA = 'a', R = 1000, TRUE)) %>%
-  mutate(source='empirical')
-```
-
-get collapsed model predictives for plot
-
-```{r}
-A0 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 'A0_unif') %>%
-  filter(posteriorProb == max(posteriorProb)) %>%
-  mutate(source = 'A0') 
-A1 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 'A1_unif') %>%
-  filter(posteriorProb == max(posteriorProb)) %>%
-  mutate(source = 'A1') 
-A2 = getRawPredictives('answerer_modelComparisonPredictives', chosenModelType = 'A2_unif') %>%
-  filter(posteriorProb == max(posteriorProb)) %>%
-  mutate(source = 'A2')
-
-models = rbind(A0, A1, A2) %>%
-  select(parameter, item1, item2, value, prediction, source) %>%
-  rename(question = parameter, answer = value, type = item1, domain = item2) %>%
-  do(mutate(., answer = vectorizedMapAnswer(type, gsub(".$", "", answer)))) %>%
-  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-  #filter(type == 'branching' & question == "Q4") %>%
-  select(domain, answer, type, question, prediction, source) %>%
-  group_by(answer, source, type, question) %>%
-  summarize(prob = mean(prediction)) %>%
-  ungroup() %>%
-  mutate(lower_ci = NA, upper_ci = NA) 
-```
-
-Plot:
-
-```{r}
-cbPalette = c(rgb(.6, .6, .4), rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
-collapsed_a %>% 
-  filter(utterance == "Q4" & type == "branching") %>%
-  ungroup() %>%
-  select(-type, -count, -utterance, -groupSize) %>%
-  rename(prob = empProb, answer = response) %>%
-  mutate(source = 'empirical') %>%
-  rbind(models) %>%
-  mutate(answer = factor(answer, levels = c('A1', 'A2', 'A3', 'A4'), 
-                       labels = c('dalmatian', 'poodle', 'cat', 'whale'))) %>%
-  ggplot(aes(x = answer, y = prob, fill = source)) +
-    geom_bar(stat='identity', position = 'dodge') +
-    geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), color = rgb(0.15,0.15,0.15), 
-                  position = position_dodge(width = 0.9), width = 0) +
-    theme_few(10) +
-    scale_fill_manual(values=cbPalette) +
-    facet_grid(~ source) +
-    ylim(0,1) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    ggtitle("answer in branching condition\nwhen asked 'Where is the animal?'")
-
-ggsave("../writing/2016/journal-manuscript/figures/BranchingModelComparison.pdf", 
-       width = 4, height=3)
 ```
 
 ### Questioner overlapping condition
@@ -247,239 +177,44 @@ extra.null.Q = glmer(counts ~ 1 + (1 | domain),
            data=D.quest, family=poisson,
             control=glmerControl(optimizer='Nelder_Mead', 
                       optCtrl=list(maxfun=2e5) ))
-summary(extra.null.Q)
+#summary(extra.null.Q)
 
 null.Q = glmer(counts ~ 1 + Q2Q3_same + (1 + Q2Q3_same | domain), 
            data=D.quest, family=poisson,
             control=glmerControl(optimizer='Nelder_Mead', 
                       optCtrl=list(maxfun=2e5) ))
-summary(null.Q)
+#summary(null.Q)
 
 full.Q = glmer(counts ~ 1 + Q2Q3_same + Q2Q3_diff + (1 + Q2Q3_same + Q2Q3_diff | domain),
            data=D.quest, family=poisson(), 
            control=glmerControl(optimizer='Nelder_Mead', 
                                 optCtrl=list(maxfun=2e5) ))
-summary(full.Q)
+#summary(full.Q)
 anova(extra.null.Q, null.Q, full.Q)
 ```
 
-Make plot
-
-```{r}
-gs = c("G1", "G2", "G3", "G4")
-qs = c("Q1","Q2","Q3","Q4")
-collapsed_q <- d %>% 
-  mutate(response = ordered(questionNodes, levels = qs)) %>%
-  mutate(goal = ordered(goalNodes, levels = gs)) %>%
-  group_by(goal,type) %>%
-  filter(type == "overlapping") %>%
-  do(getProbsAndCIs(data = ., QorA = 'q', R = 1000, TRUE)) %>%
-  mutate(empirical = empProb) %>%
-  select(goal, type, response, count, lower_ci, upper_ci, 
-         groupSize, empirical) %>%
-  mutate(source = 'empirical')
-
-Q0 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q0_unif') %>%
-  filter(alpha == 10 & beta == 0) %>%
-  mutate(source = 'Q0') 
-Q1 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q1_unif') %>%
-  filter(posteriorProb == max(posteriorProb)) %>%
-  mutate(source = 'Q1') 
-Q2 = getRawPredictives('questioner_modelComparisonPredictives', chosenModelType = 'Q2_unif') %>%
-  filter(posteriorProb == max(posteriorProb)) %>%
-  mutate(source = 'Q2')
-
-models = rbind(Q0, Q1, Q2) %>%
-  select(parameter, item1, item2, value, prediction, source) %>%
-  rename(goal = parameter, question = value, type = item1, domain = item2) %>%
-  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
-  do(mutate(., question = vectorizedMapQuestion(type, question))) %>%
-  mutate(goal = ordered(goal, levels = gs)) %>%
-  #filter(type == 'overlapping' & goal == "G2") %>%
-  select(domain, question, type, goal, prediction, source) %>%
-  group_by(question, source, type, goal) %>%
-  summarize(prob = mean(prediction)) %>%
-  ungroup() %>%
-  mutate(lower_ci = NA, upper_ci = NA) 
-```
-
-plot 
-
-```{r}
-cbPalette = c(rgb(.6, .6, .4), rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
-plottableQ = collapsed_q %>% 
-  filter(goal == "G2") %>%
-  filter(condition == 'overlapping') %>%
-  ungroup() %>%
-  select(-type, -count, -goal, -groupSize) %>%
-  rename(prob = empirical, question = response) %>%
-  mutate(source = 'empirical') %>%
-  rbind(models) %>%
-  mutate(question = factor(question, levels = qs, 
-                           labels = c('lion?', 'cat?', 'pet?', 'animal?'))) %>%
-  mutate(source = ordered(source, levels = c('Q0', 'Q1', 'Q2', 'empirical')))
-
-(ggplot(plottableQ, aes(x = question, y = prob, fill =source))
- + geom_bar(position = 'dodge', stat= 'identity')
- + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
-                 position =position_dodge(width = 0.9), width =0, color = rgb(.15, .15, .15)) 
- + ggtitle("question in overlapping condition\nwhen goal is to find 'house cat'")
- + theme_few(10)
- + scale_fill_manual(values=cbPalette) 
- + facet_grid(~ source)
- + ylim(0,1)
- + theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
- + ylab('% participants'))
-
-
-ggsave("../writing/2016/journal-manuscript/figures/OverlappingModelComparison.pdf", 
-       width = 4, height=3)
-```
-
-# Interactive Experiment
+# Quantitative results
 
 ## Model Comparison 
-
-```{r}
-modelComparison <- function(name, useTypicality) {
-  # beta <- ifelse(useTypicality, NA, 0)
-  data <- getRawParams(name)#, chosenBeta = beta)
-  return(data %>% 
-    group_by(modelType) %>% 
-    summarize(prob = reduce(logLikelihood, sumlogprob) - log(length(logLikelihood)))
-  )
-}
-```
 
 Answerers:
 
 ```{r}
-library(ggforce)
-# Marginalize over alpha
-comp.ans = modelComparison("answerer_modelComparisonParams")%>% 
-  spread(modelType, prob) 
-cat('\nBF (beta=0, answerer)', exp(comp.ans$A2_unif - comp.ans$A1_unif))
-
-comp.ans.splitout <- modelComparison("answerer_modelComparisonParams")%>% 
-  arrange(prob) %>%
-  separate(col = modelType, into = c('model', 'saliency')) %>%
-  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
-  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) 
-ggplot(comp.ans.splitout, aes(x = model, y = prob, alpha=saliency, fill = model)) +
-    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
-    guides(alpha=guide_legend(title="Saliency prior")) +
-    ylab('log-likelihood') +
-    scale_fill_manual(values = cbPalette) +
-    scale_alpha_manual(values=c(.5, 1)) +
-    theme_few(10) +
-    theme(legend.position = 'top',
-          rect = element_rect(fill = "transparent"), # bg of the panel
-          panel.background = element_rect(fill = "transparent",colour = NA),
-          plot.background = element_rect(fill = "transparent",colour = NA),
-          panel.grid.major = element_blank(), # get rid of major grid
-          panel.grid.minor = element_blank(), # get rid of minor grid
-          legend.background = element_rect(fill = "transparent",colour = NA),
-          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
-
-
-ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoods.pdf", 
-       width = 2, height=3)
-```
-
-Make little latex table
-
-```{r}
-comp.ans.splitout %>% spread(saliency, prob)
-```
-zoomed in facet
-
-```{r}
-modelComparison("answerer_modelComparisonParams")%>% 
-  arrange(prob) %>%
-  separate(col = modelType, into = c('model', 'saliency')) %>%
-  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
-  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) %>%
-  filter(model != 'A0') %>%
-  ggplot(aes(x = model, y = prob, alpha=saliency, fill = model)) +
-    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
-    guides(alpha=guide_legend(title="Saliency prior")) +
-    ylab('') +
-    scale_fill_manual(values = tail(cbPalette, 3)) +
-    scale_alpha_manual(values=c(.5, 1)) +
-    theme_few(10) +
-    coord_cartesian(ylim=c(-900, -500)) +
-    theme(legend.position = 'top', 
-          rect = element_rect(fill = "transparent"), # bg of the panel
-          panel.background = element_rect(fill = "transparent",colour = NA),
-          plot.background = element_rect(fill = "transparent",colour = NA),
-          panel.grid.major = element_blank(), # get rid of major grid
-          panel.grid.minor = element_blank(), # get rid of minor grid
-          legend.background = element_rect(fill = "transparent",colour = NA),
-          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg 
-ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoodsZoomed.pdf", 
-       width = 1.5, height=3)
+comp.ans = read_csv("../modeling/experiment1/bdaOutput/AISoutput_answerer.txt") %>% 
+  group_by(model) %>% 
+  summarize(likelihood = mean(likelihood)) %>%
+  spread(model, likelihood) 
+cat('\nBF (answerer)', exp(comp.ans$prag_emp - comp.ans$lit_emp))
+cat('\nBF (beta=0, answerer)', exp(comp.ans$prag_emp - comp.ans$prag_unif))
 ```
 
 ```{r}
-comp.quest = modelComparison("questioner_modelComparisonParams") %>% 
-  spread(modelType, prob) 
-cat('\nBF (beta=0, questioner)', exp(comp.quest$Q2_unif - comp.quest$Q1_unif))
-
-modelComparison("questioner_modelComparisonParams")%>% 
-  arrange(prob) %>%
-  separate(col = modelType, into = c('model', 'saliency')) %>%
-  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
-  mutate(model = ordered(model, levels = c('Q0', 'Q1', 'Q2'))) %>%
-  ggplot(aes(x = model, y = prob, alpha = saliency, fill = model)) +
-    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
-    guides(fill=guide_legend(title="Saliency prior")) +
-    ylab('log-likelihood') +
-    scale_fill_manual(values = cbPalette) +
-    scale_alpha_manual(values=c(.5, 1)) +
-    theme_few(10) +
-    theme(legend.position = 'top',
-          rect = element_rect(fill = "transparent"), # bg of the panel
-          panel.background = element_rect(fill = "transparent",colour = NA),
-          plot.background = element_rect(fill = "transparent",colour = NA),
-          panel.grid.major = element_blank(), # get rid of major grid
-          panel.grid.minor = element_blank(), # get rid of minor grid
-          legend.background = element_rect(fill = "transparent",colour = NA),
-          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
-
-
-ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoods.pdf", 
-       width = 2, height=3)
-```
-
-Inset
-
-```{r}
-modelComparison("questioner_modelComparisonParams")%>% 
-  arrange(prob) %>%
-  separate(col = modelType, into = c('model', 'saliency')) %>%
-  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
-  filter(model != "Q0") %>%
-  mutate(model = ordered(model, levels = c('Q1', 'Q2'))) %>%
-  ggplot(aes(x = model, y = prob, alpha = saliency, fill = model)) +
-    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
-    guides(alpha=guide_legend(title="Saliency prior")) +
-    ylab('log-likelihood') +
-    scale_fill_manual(values = tail(cbPalette, 3)) +
-    scale_alpha_manual(values=c(.5, 1)) +
-    theme_few(10) +
-    coord_cartesian(ylim=c(-350, -300)) +
-    theme(legend.position = 'top',
-          rect = element_rect(fill = "transparent"), # bg of the panel
-          panel.background = element_rect(fill = "transparent",colour = NA),
-          plot.background = element_rect(fill = "transparent",colour = NA),
-          panel.grid.major = element_blank(), # get rid of major grid
-          panel.grid.minor = element_blank(), # get rid of minor grid
-          legend.background = element_rect(fill = "transparent",colour = NA),
-          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
-
-
-ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoodsZoomed.pdf", 
-       width = 1.5, height=3)
+comp.quest = read_csv("../modeling/experiment1/bdaOutput/AISoutput_questioner.txt") %>% 
+  group_by(model) %>% 
+  summarize(likelihood = mean(likelihood)) %>%
+  spread(model, likelihood) 
+cat('\nBF (beta=0, questioner)', exp(comp.quest$prag_emp - comp.quest$lit_emp))
+cat('\nBF (beta=0, questioner)', exp(comp.quest$prag_emp - comp.quest$prag_unif))
 ```
 
 ## Examine parameter posteriors
@@ -487,122 +222,223 @@ ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoodsZoome
 Set up helper functions. Note that we only look at the parameter posterior for the model that won our model comparison (otherwise this would be a mixture of the best parameters for each model we considered)
 
 ```{r}
-examineParams <- function(name, useTypicality, winningModel) {
-  beta <- ifelse(useTypicality, NA, 0)
-
-  samples = getRawParams(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
-    mutate(MCMCprob = exp(MCMCprob)) %>%
-    filter(MCMCprob > 0.001) %>%
-    mutate(n = floor(MCMCprob*1000)) %>%
+examineParams <- function(params) {
+  
+  samples = params %>% 
+    mutate(MCMCprob = exp(posteriorProb)) %>%
+    filter(MCMCprob >= 0.001) %>%
+    mutate(n = floor(MCMCprob*500)) %>%
     do(data.frame(.[rep(1:nrow(.), .$n),])) %>%
-    select(-t, -n, -MCMCprob) %>%
-    gather(parameter, value) %>%
-    mutate(value = as.numeric(as.character( value)))
+    select(-n, -MCMCprob, -posteriorProb, -modelType, -logLikelihood) %>%
+    gather(parameter, value, alpha_A, alpha_Q, w)
 
   printTable(samples)
   
-  questionParamPosterior <- ggplot(samples, aes(x = value))+
+  paramPosterior <- ggplot(samples, aes(x = log(value)))+
       geom_histogram(aes(y=..density..), 
-                   data =subset(samples, parameter == "alpha" ), 
+                   data =subset(samples, parameter == "alpha_A" ), 
+                   binwidth = .1, colour="black", fill="white") +
+      geom_histogram(aes(y=..density..), 
+                   data=subset(samples, parameter == "alpha_Q"), 
                    binwidth = .25, colour="black", fill="white") +
       geom_histogram(aes(y=..density..), 
-                   data=subset(samples, parameter == "beta"), 
+                   data =subset(samples, parameter == "w" ), 
                    binwidth = .05, colour="black", fill="white") +
       geom_density(aes(y=..density..),
-                   data =subset(samples, parameter == "alpha" ), 
+                   data =subset(samples, parameter == "alpha_A" ), 
                    adjust = 2, alpha=.2, fill="#FF6666")+
       geom_density(aes(y=..density..),
-                   data=subset(samples, parameter == "beta"), 
-                   adjust = 5, alpha=.2, fill="#FF6666")+
-      facet_wrap(~parameter, scales = 'free') +
+                   data=subset(samples, parameter == "alpha_Q"), 
+                   adjust = 3, alpha=.2, fill="#FF6666")+
+      geom_density(aes(y=..density..),
+                   data=subset(samples, parameter == "w"), 
+                   adjust = 1, alpha=.2, fill="#FF6666")+
+      facet_grid(parameter ~ source, scales = 'free') +
       theme_few(10)
   
-  print(questionParamPosterior)
-  outputName = paste0("../writing/2016/journal-manuscript/figures/",
-                     name, ".pdf")
-  ggsave(outputName, questionParamPosterior, 
-         width = 6, height = 3, bg = "transparent")
+  print(paramPosterior)
+  outputName = paste0("../writing/2019/journal-revision/figures/Exp1/best_answerer_params.pdf")
+  ggsave(outputName, paramPosterior, width = 6, height = 3, bg = "transparent")
 }
 ```
 
-Answerer (no typicality)
+Answerer params
 
 ```{r}
-examineParams('answerer_modelComparisonParams', useTypicality=FALSE, winningModel = 'pragmatic')
+Aparams <- bind_rows(
+  read_csv('../modeling/experiment1/bdaOutput/answerer_lit_empParams.csv') %>% mutate(source = 'A1_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/answerer_prag_empParams.csv') %>% mutate(source = 'A2_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/answerer_lit_unifParams.csv') %>% mutate(source = 'A1_unif'),
+  read_csv('../modeling/experiment1/bdaOutput/answerer_prag_unifParams.csv') %>% mutate(source = 'A2_unif')
+) 
+examineParams(Aparams)
 ```
 
 Questioner (no typicality)
 
 ```{r}
-examineParams('questioner_modelComparisonParams', useTypicality=TRUE, winningModel = 'pragmatic')
+Qparams <- bind_rows(
+  read_csv('../modeling/experiment1/bdaOutput/questioner_lit_empParams.csv') %>% mutate(source = 'Q1_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/questioner_prag_empParams.csv') %>% mutate(source = 'Q2_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/questioner_lit_unifParams.csv') %>% mutate(source = 'Q1_unif'),
+  read_csv('../modeling/experiment1/bdaOutput/questioner_prag_unifParams.csv') %>% mutate(source = 'Q2_unif')
+)
+
+examineParams(Qparams)
 ```
 
-## Examine posterior predictives
+## Examine predictives
 
 ```{r}
-examinePredictives <- function(name, winningModel) {
-  inputname <- paste0('../../guessingGame/Bayesian/data/', name, '.csv')
-  beta <- NA
-  QorA <- toupper(substr(strsplit(name, '_')[[1]][1], 0, 1))
-  samples = getRawPredictives(name, chosenBeta = beta, chosenModelType = winningModel) %>% 
-    rawPredictivesToSamples()
+examinePredictives <- function(filename, predictive) {
+  predictive.plot = (ggplot(predictive, aes(x = modelProb, y = empProb)) +
+   geom_point(alpha = .5, size=1.5) + 
+   geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+   scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1)) + 
+   geom_text(aes(label = corr_label), x= 0.8, y = 0.1) + 
+   coord_fixed() + 
+   xlab("") +
+   ylim(0,1) +
+   ylab("") +
+   theme_few(10) + 
+   facet_grid( ~ source) +
+   theme(aspect.ratio = 1))
 
-  predictive = recode(samples, QorA)
-
-  cor_label = round(cor(predictive$MAP, predictive$empProb), 2)
-  title = paste0(winningModel, ' ', strsplit(name, '_')[[1]][1], " Posterior Predictive")
-  
-  predictive.plot = (ggplot(predictive, aes(x = MAP, y = empProb))
-    + xlab("")
-    + ylim(0,1)
-    + ylab("")
-    #+ geom_errorbar(aes(ymax = upper_ci, ymin = lower_ci))
-    #+ geom_errorbarh(aes(xmax = credHigh, xmin = credLow))
-    + geom_point(alpha = .5, size=1.5)#aes(colour = domain, shape = type),  size = 2)
-    + geom_abline(intercept = 0, slope = 1, linetype = "dotted")
-    + scale_x_continuous(lim = c(0,1), breaks=c(0,.5,1))
-#    + ggtitle(title)
-    #+ geom_smooth(method = "lm")
-    + annotate('text', label = paste0('r =',cor_label), x= 0.8, y = 0.1)
-    + coord_fixed()
-    + theme_few(10)
-    + theme(aspect.ratio = 1) 
-    # + theme(rect = element_rect(fill = "transparent"), # bg of the panel
-    #         panel.background = element_rect(fill = "transparent",colour = NA),
-    #         plot.background = element_rect(fill = "transparent",colour = NA),
-    #         panel.grid.major = element_blank(), # get rid of major grid
-    #         panel.grid.minor = element_blank(), # get rid of minor grid
-    #         legend.background = element_rect(fill = "transparent",colour = NA),
-    #         legend.box.background = element_rect(fill = "transparent",colour = NA) # get rid of legend panel bg
-  )
-  if(winningModel %in% c('Q2_emp', 'Q1_emp')) {
-    predictive.plot <- predictive.plot + 
-      geom_point(data = subset(predictive, type == 'overlapping'), 
-                 aes(x = MAP, y = empProb), color = rgb(0, .5, .8))
-  }
-
-  outputfile <- paste0('../writing/2016/journal-manuscript/figures/',
-                       name, '_model', winningModel, '.pdf')
+  outputfile <- paste0('../writing/2019/journal-revision/figures/Exp1/', filename,'.pdf')
   ggsave(outputfile, predictive.plot,
-         width = 1.8, height = 1.8, bg = "transparent")
+         width = 7.2, height = 1.8, bg = "transparent")
   return(predictive.plot)
 }
 ```
 
-Answerer (no typicality)
+Answerer (at domain-type-question granularity)
 
 ```{r}
-A1 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A1_unif')
-A2 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A2_unif')
-#plot_grid(A1, A2, A3, A4, nrow = 2, ncol = 2)
+Apredictives = bind_rows(
+  read_csv('../modeling/experiment1/bdaOutput/answerer_lit_empPredictives.csv') %>% mutate(source = 'A1_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/answerer_prag_empPredictives.csv') %>% mutate(source = 'A2_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/answerer_lit_unifPredictives.csv') %>% mutate(source = 'A1_unif'),
+  read_csv('../modeling/experiment1/bdaOutput/answerer_prag_unifPredictives.csv') %>% mutate(source = 'A2_unif')
+) %>%
+  left_join(Aparams) %>%
+  group_by(source) %>%
+  filter(logLikelihood == max(logLikelihood)) %>%
+  select(stim, item1, item2, value, prediction, source) %>%
+  rename(utterance = stim, response = value, type = item1, domain = item2) %>%
+  do(mutate(., response = vectorizedMapAnswer(type, response))) %>%
+  do(mutate(., utterance = vectorizedMapQuestion(type, utterance))) %>%
+  select(domain, response, type, utterance, prediction, source) %>%
+  group_by(source, domain, response, type, utterance) %>%
+  summarize(modelProb = mean(prediction)) %>%
+  ungroup() %>%
+  mutate(lower_ci = NA, upper_ci = NA, source = factor(source, levels = c('A1_unif', 'A2_unif', 'A1_emp', 'A2_emp'))) %>%
+  left_join(d_a, by = c('utterance', 'type', 'response', 'domain')) %>%
+  group_by(source) %>% 
+  mutate(corr_label = paste0('r = ', round(cor(modelProb, empProb), 2)))
+
+examinePredictives('answerer_predictives', Apredictives)
 ```
 
 Questioner (no typicality)
 
 ```{r}
-Q1 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q1_unif')
-Q2 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q2_unif')
-#plot_grid(Q1, Q2, nrow = 1)
+Qpredictives = bind_rows(
+  read_csv('../modeling/experiment1/bdaOutput/questioner_lit_empPredictives.csv') %>% mutate(source = 'Q1_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/questioner_prag_empPredictives.csv') %>% mutate(source = 'Q2_emp'),
+  read_csv('../modeling/experiment1/bdaOutput/questioner_lit_unifPredictives.csv') %>% mutate(source = 'Q1_unif'),
+  read_csv('../modeling/experiment1/bdaOutput/questioner_prag_unifPredictives.csv') %>% mutate(source = 'Q2_unif')
+) %>%
+  left_join(Qparams) %>%
+  group_by(source) %>%
+  filter(logLikelihood == max(logLikelihood)) %>%
+  select(stim, item1, item2, value, prediction, modelType) %>%
+  rename(goal = stim, response = value, type = item1, domain = item2) %>%
+  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+  do(mutate(., response = vectorizedMapQuestion(type, response))) %>%
+  select(domain, response, type, goal, prediction, modelType) %>%
+  group_by(source, domain, response, type, goal) %>%
+  summarize(modelProb = mean(prediction)) %>%
+  ungroup() %>%
+  mutate(lower_ci = NA, upper_ci = NA, source = factor(source, levels = c('Q1_unif', 'Q2_unif', 'Q1_emp', 'Q2_emp'))) %>%
+  left_join(d_q, by = c('goal', 'type', 'response', 'domain')) %>%
+  group_by(source) %>% 
+  mutate(corr_label = paste0('r = ', round(cor(modelProb, empProb), 2)))
+
+examinePredictives('questioner_predictives', Qpredictives)
+```
+
+## examine predictions collapsed across domains for qualitative pattern plots
+
+```{r}
+collapsed_a = d %>% 
+    filter(type == 'branching') %>%
+    mutate(response=ordered(answerNodes,levels=c("A1","A2","A3","A4"))) %>%
+    mutate(utterance=ordered(questionNodes,levels=c("Q1","Q2","Q3","Q4"))) %>%
+    group_by(type, utterance) %>%
+    mutate(total = n()) %>%
+    group_by(type, utterance, response) %>%
+    summarize(count = n(), prob = count/mean(total)) %>%
+    complete(utterance, response, fill = list(count = 0, prob = 0)) %>%
+    distinct() %>%
+    mutate(source='empirical')
+
+bind_rows(
+  read_csv("../modeling/experiment1/bdaOutput/answerer_prag_unifPredictives.csv") %>% mutate(source='A2_unif'),
+  read_csv("../modeling/experiment1/bdaOutput/answerer_lit_unifPredictives.csv") %>% mutate(source='A1_unif')
+) %>%
+  left_join(Aparams) %>%
+  group_by(source) %>%
+  filter(logLikelihood == max(logLikelihood)) %>%
+  select(stim, item1, item2, value, prediction, source) %>%
+  rename(utterance = stim, response = value, type = item1, domain = item2) %>%
+  filter(type == 'branching') %>%
+  do(mutate(., response = vectorizedMapAnswer(type, response))) %>%
+  do(mutate(., utterance = vectorizedMapQuestion(type, utterance))) %>%
+  select(response, type, utterance, prediction, source) %>%
+  group_by(response, source, type, utterance) %>%
+  summarize(prob = mean(prediction)) %>%
+  ungroup() %>%
+  bind_rows(collapsed_a %>% select(-count)) %>%
+  spread(source, prob) %>%
+  left_join(collapsed_a) %>%
+  arrange(utterance, response)
+```
+
+```{r}
+collapsed_q = d %>% 
+    filter(type == 'overlapping') %>%
+    mutate(response = ordered(questionNodes, levels = c("Q1","Q2","Q3","Q4"))) %>%
+    mutate(goal = ordered(goalNodes, levels = c("G1", "G2", "G3", "G4"))) %>%
+    group_by(type, goal) %>%
+    mutate(total = n()) %>%
+    group_by(type, goal, response) %>%
+    summarize(count = n(), prob = count/mean(total)) %>%
+    complete(goal, response, fill = list(count = 0, prob = 0)) %>%
+    distinct() %>%
+    mutate(source='empirical')
+
+bind_rows(
+  read_csv("../modeling/experiment1/bdaOutput/questioner_prag_unifPredictives.csv") %>% mutate(source='Q2_unif'),
+  read_csv("../modeling/experiment1/bdaOutput/questioner_lit_unifPredictives.csv") %>% mutate(source='Q1_unif')
+) %>%
+  left_join(Qparams) %>%
+  group_by(source) %>%
+  filter(logLikelihood == max(logLikelihood)) %>%
+  select(stim, item1, item2, value, prediction, source) %>%
+  rename(goal = stim, response = value, type = item1, domain = item2) %>%
+  filter(type=='overlapping') %>%
+  do(mutate(., goal = vectorizedMapGoal(type, goal))) %>%
+  do(mutate(., response = vectorizedMapQuestion(type, response))) %>%
+  select(response, type, goal, prediction, source) %>%
+  group_by(source, response, type, goal) %>%
+  summarize(prob = mean(prediction)) %>%
+  ungroup() %>%
+  bind_rows(collapsed_q %>% select(-count)) %>%
+  spread(source, prob) %>%
+  left_join(collapsed_q) %>%
+  select(-prob) %>%
+  arrange(goal, response)
+
 ```
 
 # Enriching with typicality
@@ -645,46 +481,6 @@ chisq.pvals = typData %>%
   ungroup() %>%
   select(stat)
 length(which(chisq.pvals < 0.05/length(chisq.pvals$stat))) / length(chisq.pvals$stat)
-```
-
-### Model comparison
-
-```{r}
-# Marginalize over alpha
-comp.ans = modelComparison("answerer_modelComparisonParams") %>% 
-  spread(modelType, prob) 
-cat('\nBF (beta=0, questioner)', exp(comp.ans$A2_emp - comp.ans$A1_emp))
-
-comp.quest = modelComparison("questioner_modelComparisonParams") %>% 
-  spread(modelType, prob) 
-cat('\nBF (beta=0, questioner)', exp(comp.quest$Q2_emp - comp.quest$Q1_emp))
-```
-
-### Typicality test
-
-Savage-Dickey
-
-```{r}
-exp(comp.ans$A2_emp - comp.ans$A2_unif)
-exp(comp.quest$Q2_emp - comp.quest$Q2_unif)
-```
-
-### Examine predictives 
-
-Answerer 
-
-```{r}
-A1 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A1_emp')
-A2 = examinePredictives('answerer_modelComparisonPredictives', winningModel = 'A2_emp')
-#plot_grid(A1, A2)
-```
-
-Questioner
-
-```{r}
-Q1 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q1_emp')
-Q2 = examinePredictives('questioner_modelComparisonPredictives', winningModel = 'Q2_emp')
-#plot_grid(Q1, Q2)
 ```
 
 # Make Clark simulation figure from model output on forest.db
@@ -753,3 +549,181 @@ ggplot(aes(x = source, y = y)) +
 ggsave('../writing/2019/journal-revision/figures/simulations/clarkExampleFig/answererOutput.pdf', height = 4.51, width = 7.29)
 ```
 
+# Visualize behavior in qualitative conditions (not in paper)
+
+Plot:
+
+```{r}
+cbPalette = c(rgb(.6, .6, .4), rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
+collapsed_a %>% 
+  #filter(utterance == "Q4" & type == "branching") %>%
+  ungroup() %>%
+  select(-type, -count, -utterance, -groupSize) %>%
+  rename(prob = empProb, answer = response) %>%
+  mutate(source = 'empirical') %>%
+  rbind(models) %>%
+  mutate(answer = factor(answer, levels = c('A1', 'A2', 'A3', 'A4'), 
+                       labels = c('dalmatian', 'poodle', 'cat', 'whale'))) %>%
+  ggplot(aes(x = answer, y = prob, fill = source)) +
+    geom_bar(stat='identity', position = 'dodge') +
+    geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), color = rgb(0.15,0.15,0.15), 
+                  position = position_dodge(width = 0.9), width = 0) +
+    theme_few(10) +
+    scale_fill_manual(values=cbPalette) +
+    facet_grid(~ source) +
+    ylim(0,1) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    ggtitle("answer in branching condition\nwhen asked 'Where is the animal?'")
+
+ggsave("../writing/2016/journal-manuscript/figures/BranchingModelComparison.pdf", 
+       width = 4, height=3)
+```
+
+
+```{r}
+cbPalette = c(rgb(.6, .6, .4), rgb(0, .6, .4), rgb(0, .4, .6), rgb(.4, .4, .4))
+plottableQ = collapsed_q %>% 
+  filter(goal == "G2") %>%
+  filter(condition == 'overlapping') %>%
+  ungroup() %>%
+  select(-type, -count, -goal, -groupSize) %>%
+  rename(prob = empirical, question = response) %>%
+  mutate(source = 'empirical') %>%
+  rbind(models) %>%
+  mutate(question = factor(question, levels = qs, 
+                           labels = c('lion?', 'cat?', 'pet?', 'animal?'))) %>%
+  mutate(source = ordered(source, levels = c('Q0', 'Q1', 'Q2', 'empirical')))
+
+(ggplot(plottableQ, aes(x = question, y = prob, fill =source))
+ + geom_bar(position = 'dodge', stat= 'identity')
+ + geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                 position =position_dodge(width = 0.9), width =0, color = rgb(.15, .15, .15)) 
+ + ggtitle("question in overlapping condition\nwhen goal is to find 'house cat'")
+ + theme_few(10)
+ + scale_fill_manual(values=cbPalette) 
+ + facet_grid(~ source)
+ + ylim(0,1)
+ + theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+ + ylab('% participants'))
+
+
+ggsave("../writing/2016/journal-manuscript/figures/OverlappingModelComparison.pdf", 
+       width = 4, height=3)
+```
+
+
+# Visualize likelihoods (not in paper)
+
+```{r}
+comp.ans.splitout <- modelComparison("answerer_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
+  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) 
+ggplot(comp.ans.splitout, aes(x = model, y = prob, alpha=saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(alpha=guide_legend(title="Saliency prior")) +
+    ylab('log-likelihood') +
+    scale_fill_manual(values = cbPalette) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    theme(legend.position = 'top',
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
+ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoods.pdf", 
+       width = 2, height=3)
+```
+
+zoomed in facet
+
+```{r}
+modelComparison("answerer_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
+  mutate(model = ordered(model, levels = c('A0', 'A1', 'A2'))) %>%
+  filter(model != 'A0') %>%
+  ggplot(aes(x = model, y = prob, alpha=saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(alpha=guide_legend(title="Saliency prior")) +
+    ylab('') +
+    scale_fill_manual(values = tail(cbPalette, 3)) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    coord_cartesian(ylim=c(-900, -500)) +
+    theme(legend.position = 'top', 
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg 
+ggsave("../writing/2016/journal-manuscript/figures/answererLogLikelihoodsZoomed.pdf", 
+       width = 1.5, height=3)
+```
+
+## Same with questions...
+
+```{r}
+modelComparison("questioner_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
+  mutate(model = ordered(model, levels = c('Q0', 'Q1', 'Q2'))) %>%
+  ggplot(aes(x = model, y = prob, alpha = saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(fill=guide_legend(title="Saliency prior")) +
+    ylab('log-likelihood') +
+    scale_fill_manual(values = cbPalette) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    theme(legend.position = 'top',
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
+
+
+ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoods.pdf", 
+       width = 2, height=3)
+```
+
+Inset
+
+```{r}
+modelComparison("questioner_modelComparisonParams")%>% 
+  arrange(prob) %>%
+  separate(col = modelType, into = c('model', 'saliency')) %>%
+  mutate(saliency = ordered(saliency, levels = c('unif', 'emp'), labels = c('uniform', 'empirical'))) %>%
+  filter(model != "Q0") %>%
+  mutate(model = ordered(model, levels = c('Q1', 'Q2'))) %>%
+  ggplot(aes(x = model, y = prob, alpha = saliency, fill = model)) +
+    geom_bar(stat = 'identity', position = 'dodge', width = .75) +
+    guides(alpha=guide_legend(title="Saliency prior")) +
+    ylab('log-likelihood') +
+    scale_fill_manual(values = tail(cbPalette, 3)) +
+    scale_alpha_manual(values=c(.5, 1)) +
+    theme_few(10) +
+    coord_cartesian(ylim=c(-350, -300)) +
+    theme(legend.position = 'top',
+          rect = element_rect(fill = "transparent"), # bg of the panel
+          panel.background = element_rect(fill = "transparent",colour = NA),
+          plot.background = element_rect(fill = "transparent",colour = NA),
+          panel.grid.major = element_blank(), # get rid of major grid
+          panel.grid.minor = element_blank(), # get rid of minor grid
+          legend.background = element_rect(fill = "transparent",colour = NA),
+          legend.box.background = element_rect(fill = "transparent",colour = NA)) # get rid of legend panel bg
+
+
+ggsave("../writing/2016/journal-manuscript/figures/questionerLogLikelihoodsZoomed.pdf", 
+       width = 1.5, height=3)
+```
