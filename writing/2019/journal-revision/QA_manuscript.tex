@@ -383,18 +383,20 @@ Furthermore, because $A_0$ chooses utterances using the same core utilities as t
 
 While $A_0$ is informative, he is not \emph{relevant}. When asked about the weather, he is just as likely to inform his partner about what he ate for breakfast as he is to say ``it's sunny.'' How do we incorporate relevance into the answerer's utility? 
 
-Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speaker relevance by means of a projection function. Instead of trying to increase the listener's certainty about the most fine-grained true world state, a relevant speaker only cares about the listener's certainty in a coarser space in which irrelevant features have been collapsed together. That coarser space is the image $\widehat{\mathcal{W}}$ of the goal-projection $g$.
-%$$\widehat{P^g}(w') = \sum_{w\in\mathcal{W}} \delta_{w' = g(w)} P(w)$$ 
-Thus, we modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
-\begin{equation}
-U_{A_1}(a; g, w) = \alpha_A \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a) - \beta C(a)
-\end{equation}
-where $K_g(w,w')$ is a similarity function (or kernel) between worlds, determined by the goal. 
-For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$.\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
-$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$
-%\todo[inline]{rdh: not 100\% satisfied with this notation}
-}
-\ndg{given that we use g-projection below, we should probably use it here rather than introducing it in a footnote? on the flip side, we never need a kernel which isn't delta in this paper, so it's better to mention the general case only in footnote.}
+Following \citeA{KaoWuBergenGoodman14_NonliteralNumberWords}, we formalize speaker relevance by means of a projection function. Instead of trying to increase the listener's certainty about the most fine-grained true world state, a relevant speaker only cares about the listener's certainty in a coarser space in which irrelevant features have been collapsed together. That coarser space is the image $\widehat{\mathcal{W}}$ of the goal-projection $g$. Crucially, a belief distribution over worlds, $P(w|\cdot)$, will project under $g$ to a belief distribution on this coarser space\footnote{For coarse goal-image spaces that are not discrete, it may be useful to replace the delta in this projection with a smoother kernel.}: 
+$$\widehat{P^g}(\hat{w}|\cdot) = \sum_{w \in\mathcal{W}} \delta_{\hat{w} = g(w)} P(w|\cdot).$$
+Thus, we may modify the utility from Eq. \ref{eq:A0utility} to define a relevantly informative answerer $A_1$: 
+$$U_{A_1}(a; g, w) = \alpha_A \ln \widehat{P^g}(g(w)|a)  - \beta C(a).$$
+
+%\begin{equation}
+%U_{A_1}(a; g, w) = \alpha_A \ln \sum_{w' \in \mathcal{W}} K_g(w, w') P_I(w' | a) - \beta C(a)
+%\end{equation}
+%where $K_g(w,w')$ is a similarity function (or kernel) between worlds, determined by the goal. 
+%For the discrete space of goals considered in the current work, we use the delta function $K_g(w,w') = \delta_{g(w)=g(w')}$ which combines the probabilities of all worlds that map to the same value in $\widehat{\mathcal{W}}$.\footnote{Note that $g$-projection is a generic operation on any probability distribution $P(w|\,\cdot)$, which we denote: 
+%$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$
+%%\todo[inline]{rdh: not 100\% satisfied with this notation}
+%}
+\ndg{i switched back to using g-projection here, since we need it below. and the general kernel became a footnote, since we don't use it in this paper.}
 
 %$$
 %\begin{array}{rcl}
