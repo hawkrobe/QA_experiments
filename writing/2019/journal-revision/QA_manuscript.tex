@@ -739,7 +739,7 @@ This simplification---fixing a single goal and limiting the expected behavior of
 \end{figure*}
 
 
-We developed the \emph{Hidden Goal} paradigm to address the challenge of creating the functional conditions for question and answer pragmatics in a controlled lab setting.
+We propose the \emph{Hidden Goal} paradigm to address the challenge of creating the functional conditions for question and answer pragmatics in a controlled lab setting.
 There are two key features that distinguish this paradigm from those used in prior work.
 First, while preserving the asymmetry in world knowledge between questioner and answerer used in prior work, it also explicitly introduces an asymmetry in access to \emph{goals}.
 We privately assign one of several possible goals to the questioner and withhold information about the identity of this goal from the answerer. 
@@ -757,24 +757,24 @@ Second, it establishes a \emph{joint task} shared by both participants---the ans
 In the remainder of the paper, we present three behavioral experiments in this paradigm that provide a more rigorous evaluation of both questioner and answerer models in our framework.
 Each experiment additionally demonstrates how the core computational mechanisms of our theory can be elegantly composed with other linguistic and cognitive primitives to capture more sophisticated question and answer behaviors.
 In Exp.~1, we extend our model with an underlying formal account of definite reference in questions (e.g. ``where is \emph{the} dog?'') which uses graded knowledge of concept typicality.
-In Exp.~2, we show how the model extends to more structured spaces of hierarchical goals.
+In Exp.~2, we show how the model extends to hierarchically structured spaces of goals.
 And finally, in Exp.~3, we show how the same framework straightforwardly extends to multi-round dialogue, where the answer to one question affects the next.
 
 \section{Experiment 1: \\ Definite reference and conceptual knowledge}
 
 %%%
-As a first quantitative test of our models, we designed a cooperative guessing game that relies on knowledge of concept structure. 
+As a first quantitative test of our models, we designed a cooperative guessing game that relies on knowledge of concept structure. \ndg{"concept structure" is kind of vague.. maybe something like ontological relations (e.g. a dalmatian is a dog)?}
 % This game served as a minimal case of the Hidden Goal paradigm.
 On each trial, four objects are hidden behind four doors.
 One player -- the \emph{questioner} -- is assigned one of the objects to find as a private goal but does not know which object is behind which door.
 The other player -- the \emph{answerer} -- knows each object's true location but does not know which one the questioner is looking for (Fig. \ref{fig:expviews}A). 
-To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully a location so that the questioner can guess the location of their goal object more accurately (Fig. \ref{fig:expviews}B).
+To succeed in the face of this knowledge asymmetry, the questioner must first ask a question (i.e. \emph{where is the\dots?}), then the answerer must respond helpfully so that the questioner can guess the location of their goal object more accurately (Fig. \ref{fig:expviews}B).
 
 Critically, we manipulated the sets of goals, questions, and answers across trials to create a number of different scenarios where our models make distinguishable predictions.
 To do so, we exploited the hierarchical conceptual structure provided by nominal referring expressions.
 For example, a questioner could ask about the ``Dalmatian,'' ``dog,'' ``pet,'' or ``animal'' and all could plausibly describe an image of a Dalmatian in the answerer's view \cite{Brown58_HowShallAThingBeCalled,GrafEtAl16_BasicLevel}. 
 However, among these labels, only the super-ordinate label ``animal'' could describe an image of a whale.
-These conceptual relationships, in conjunction with common knowledge of alternative questions and answers, license different pragmatic inferences.
+These conceptual relationships interact with common knowledge of alternative questions and answers to license different pragmatic inferences.
 
 \begin{figure*}[th!]
 \begin{center}
@@ -804,7 +804,7 @@ The different concept hierarchy structures were intended to serve as conditions 
 
 \subsubsection{Procedure}
 
-\begin{figure*}[h]
+\begin{figure*}[tbh]
 \begin{center}
 \includegraphics[scale = .9]{Exp1/QualitativePredictions.pdf}
 \end{center}
@@ -855,7 +855,7 @@ We found that the intercept-only model was strongly rejected in favor of the non
 %Most simply, we collapsed response counts across the domains and conducted a chi-squared goodness of fit test, finding significant deviation from a uniform distribution, $\chi^2(3) = 210.8, p < 0.001$ (see Fig. \ref{fig:exp1qualitative}A).
 
 This non-uniform pattern is only consistent with the predictions of $A_2$. 
-To understand why, consider the Gricean inference that can be made about the underlying goal from hearing the utterance ``Where is the animal?''.
+To understand why, consider the inference that can be made about the underlying goal from hearing the utterance ``Where is the animal?''.
 $A_2$ reasons that if the questioner were looking for the Dalmatian, they would be more likely to ask ``Where is the Dalmatian?''. 
 If looking for the other dog, the poodle, they would have asked ``Where is the dog?''
 More generally, they would have been more likely to ask a more direct question under any goal except the ``whale,'' and the fact that they \emph{didn't} ask one of these more direct questions is evidence that they didn't have these goals.
@@ -917,14 +917,6 @@ Before describing the results of our model comparison, we formalize the task set
 
 \subsection{Quantitative model comparison}
 
-\begin{figure*}[tbh!]
-\begin{center}
-\includegraphics[scale = .77]{Exp1/ResultsFig.pdf}
-\end{center}
-\caption{Posterior predictives for each model (excluding $A_0$ and $Q_0$). }
-%\vspace{-1cm}
-\label{fig:exp1predictives}
-\end{figure*}
 
 % Please add the following required packages to your document preamble:
 % \usepackage{booktabs}
@@ -939,13 +931,12 @@ We assume uniform prior probability over worlds, goals, questions, and answers.
 %The formal semantics of the questions in our experiment  several classic problems in linguistics.
 %The semantics of questions in this domain is 
 %To populate our question space $\mathcal{Q}$, we must specify the explicit meaning of the question ``Where is the $x$?'' for each of the four labels allowed in a given trial (see Fig. \ref{fig:hierarchyStructures}). 
-Specifying the formal semantics of the question space $\mathcal{Q}$ draws upon several results from linguistics. 
+Specifying the formal semantics of the question space $\mathcal{Q}$ draws upon ideas from linguistics. 
 The denotation of a noun phrase containing a definite article is only defined if there is a unique, salient object that the noun picks out in the world; pragmatically, the use of a definite article \emph{presupposes} the uniqueness or identifiability of some object in shared context \cite{Lewis79_Scorekeeping, clark1983common, Roberts03_UniquenessDefiniteNounPhrases}. 
-
 Thus we take the meaning of each question $q$ to be: 
 $$\textrm{\den{Where is the x?}} = q_{x}(w) = i_x$$ where $i_x$ is the \emph{identifiable} object of category $x$. 
 In contexts where there are multiple objects of category $x$, the definite article is interpreted by sampling an object from a prior identifiability distribution over objects in the labelled category: $i_x \sim \mathcal{I}(o | x)$. 
-This distribution may depend on distinctive visual properties, but on the typicality of the object for the category \cite{Rosch75}, world knowledge about which labels people tend to use to refer to different objects, and other information in common ground \cite{ClarkMarshall1981}.
+This distribution may depend on distinctive visual properties, the typicality of the object for the category \cite{Rosch75}, world knowledge about which labels people tend to use to refer to different objects, and other information in common ground \cite{ClarkMarshall1981}.
 To estimate the combined weight of these influences on interpretation, we estimated the empirical identifiability prior from an independent elicitation task.
 
 \subsubsection{Eliciting empirical identifiability priors}
@@ -980,7 +971,7 @@ For a rigorous model comparison among our different questioner and answerer mode
 First, because utterances did not differ in cost, we remove the cost term of the model for simplicity by setting $\beta=0$.
 %We introduce a discrete hyperparameter $\gamma \in \{0, 1, 2\}$  determining which model to use, and jointly infer this parameter along with the continuous rationality parameter $\alpha$.
 Additionally, to test whether a model using our empirically-measured identifiability prior provides a better fit to the data than a uniform prior, we add an additional parameter $w \in [0,1]$ which interpolates between them.
-In other words, we assume participants use some mixture between the pure uniform and empirical priors but we have uncertainty over the mixture weight.
+In other words, we assume participants use some mixture between the pure uniform \ndg{uniform over objects consistent with noun? clarify.} and empirical priors but we have uncertainty over the mixture weight.
 We place uninformative priors over these parameters,
 $\alpha_A   \sim  \textrm{unif}(0,40)$, 
 $\alpha_Q   \sim  \textrm{unif}(0,40)$, 
@@ -1025,6 +1016,14 @@ We used a burn-in of 4000 steps and lag of 12 to obtain 500 posterior samples fo
 We find that the posterior predictives for the best-fitting answerer and questioner models explain a substantial proportion of the item-wise variance across domain and hierarchy type: $R^2 = .92$ and $R^2 = .98$, respectively (see Fig. \ref{fig:exp1predictives}). 
 The MAP parameters are $\alpha_A = 36, \alpha_Q = 6, w = 0.4$ for the best performing questioner model and $\alpha_A = 3.5, \alpha_Q = 21, w = 0.6$ for the best-performing answerer model.
 
+\begin{figure*}[tb]
+\begin{center}
+\includegraphics[scale = .77]{Exp1/ResultsFig.pdf}
+\end{center}
+\caption{Posterior predictives for each model (excluding $A_0$ and $Q_0$) given data from Experiment 1 compared to empirical data.}
+%\vspace{-1cm}
+\label{fig:exp1predictives}
+\end{figure*}
 
 %
 %\begin{figure*}[t!]
@@ -1068,7 +1067,7 @@ We found strong converging support for $A_2$ relative to our other answerer mode
 While both $Q_1$ and $Q_2$ provided good predictive fits to our question-asking data, only $Q_2$ could account for asymmetries in the critical \emph{overlapping} condition and was therefore also preferred in a Bayesian model comparison. 
 We also found that incorporating realistic identifiability priors to handle the definite article provided a substantially better fit to our data. 
 
-There are main two reasons why it was important to incorporate these priors into our model.
+There are two main reasons why it was important to incorporate these priors into our model.
 First, failures to account for non-uniform factors like conceptual typicality could potentially invalidate the conclusions of our model comparison. 
 For example, we expect a house cat to be a much more typical exemplar of the category `cat' than a lion. 
 Hence, participants may not be choosing the house cat in this item for pragmatic reasons; they may just be expecting the definite description to identify the more typical member of the category. 
@@ -1087,14 +1086,15 @@ If they were looking for information about the goldfish, they would then prefer 
 In these cases, we expect that typicality strongly guides interpretation of the embedded definite article in questions.
 
 Our results in the overlapping condition also raise a broader question about depth of recursive reasoning in RSA models.
-The predicted asymmetry between ``cat?'' and ``pet?'' that we used to qualitatively distinguish our $Q_1$ and $Q_2$ models is a \emph{second-order implicature}: it only emerges at the $k =2$ level of recursion.
+The predicted asymmetry between ``cat?'' and ``pet?'' that we used to qualitatively distinguish our $Q_1$ and $Q_2$ models is a \emph{second-order implicature}: it only emerges for models with chains of more than two embedded agents (i.e.~$Q_2$ but not $Q_1$).
 Previous attempts to test such second-order implicatures outside the question-answer setting have found mixed evidence. 
 For example, \citeA{franke2016reasoning} used a hierarchical analysis to conclude that only one participant (out of 50) was accurately described as a second-order speaker in an ad-hoc implicature task \cite<see also>{frank2017rational}.
 We expect our data also represent a heterogeneous population of questioners and answerers, but it remains an open question for future work to investigate which aspects of the task facilitated this higher incidence of second-order inferences.
 One hypothesis is that the use of natural images and familiar conceptual relationships removed certain cognitive demands imposed by the \emph{ad hoc} binary properties used in prior reference games.
+A different possibility is that second-order reasoning is commonly needed for asking questions (but not for implicatures) and thus average language users exhibit this competence more in the question-answer setting.
 
-Finally, our model for Exp.~1 also served as a first demonstration of the ``composability'' of our computational framework with other formal proposals in linguistics and cognitive science.
-Because our model framework derives question and answer pragmatics given more elemental choices of literal question and answer semantics, world states, and goals, we could neatly accommodate definite reference and typicality in questions by importing formal semantic proposals for definiteness developed in linguistics and philosophy.
+Our model for Exp.~1 also served as a first demonstration of the ``composability'' of our computational framework with other formal proposals in linguistics and cognitive science.
+Our model framework derives question and answer pragmatics from choices about literal question and answer semantics, world states, and goals. This allowed us to neatly accommodate definite reference and typicality effects in questions by importing proposals about definiteness developed in linguistics and philosophy.
 In other words, the core computational framework itself did not need to be extended, only applied to the appropriate space of questions. 
 In Exp.~2, we design a more targeted experiment to test our pragmatic questioner $Q_2$ and show that our model can similarly accommodate more structured \emph{goals}.
 
