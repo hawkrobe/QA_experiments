@@ -1103,7 +1103,7 @@ In Exp.~2, we design a more targeted experiment to test our pragmatic questioner
 \begin{center}
 \includegraphics[scale = .9]{Exp2/task.pdf}
 \end{center}
-\caption{(A) Task displays and (B) procedure for Experiment 2.}
+\caption{(A) Task displays and (B) procedure for Experiment 2. \ndg{in A can't tell that goal sets are grouped by rows (was this clear in expt?). maybe add a separating line or a little more space?}}
 %\vspace{-1cm}
 \label{fig:exp2task}
 \end{figure*}
@@ -1111,8 +1111,7 @@ In Exp.~2, we design a more targeted experiment to test our pragmatic questioner
 The construct of a goal has a long history in psychology \cite{miller1960plans, Schank:1977hh, austin1996goal}.
 The simplest spaces of goals, like those used in Exp.~1, are discrete sets of projections on the world state.
 For example, in the Stroop task commonly used to study cognitive mechanisms of goal-directed behavior, the goal is either to (1) read the presented word or (2) name the color in which they are written \cite{miller2001integrative}.
-However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}. 
-We often need to achieve multiple subgoals in pursuit of a larger, more abstract goal. 
+However, for more complex behaviors, it is often useful to represent goals in \emph{hierarchically structured} spaces \cite{badre2008cognitive,botvinick2008hierarchical}: we often need to achieve multiple subgoals in pursuit of a larger, more abstract goal. 
 These more structured representations have also been key to explaining third-party goal inferences in Bayesian models of theory of mind \cite{BakerSaxeTenenbaum09_ActionUnderstandingInversePlanning}. 
 For example, if we know an agent takes the same route home every day, but one day we observe them veering off of this route toward the grocery store, we simply infer that they intend to run this errand as a subgoal of their ultimate goal of getting home. 
 
@@ -1122,14 +1121,14 @@ This has been understood as a recognition by the agent that the specific flight 
 
 Structured goals of this type are naturally accommodated by our framework. 
 To show this, we designed a simple Hidden Goal collection game inspired by recent experiments in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
-Furthermore, this task presented the opportunity to more strongly test the pragmatic questioner model $Q_2$.
+Furthermore, this task provides an additional, stronger test of the pragmatic questioner model $Q_2$.
 
 
 As in Exp.~1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
 Unlike Exp.~1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
 More specifically, the questioner was privately assigned a hand of playing cards to find (Fig. \ref{fig:exp2task}A, left). 
 The cards were scattered around a grid, and only the answerer had visibility of where the cards were located (Fig. \ref{fig:exp2task}A, right).
-The possible hands of cards the questioner might be assigned were shared in common ground.
+The possible hands of cards the questioner might be assigned to collect were shared in common ground.
 
 These multi-object goals induce a hierarchy where the ultimate goal of collecting the full set was decomposed into subgoals of finding each individual object in the set.
 A pragmatic answerer, then, ought to infer and relevantly respond not only to the questioner's current subgoal but also their likely ultimate goal.
@@ -1141,7 +1140,7 @@ A pragmatic questioner, in turn, ought to be sensitive to which questions best s
 
 We recruited 62 participants from Amazon Mechanical Turk to play a communication game.
 We excluded 4 participants who disconnected before completion, 10 participants who failed pre-specified catch trials (see below), and 3 additional participants who self-reported confusion about the instructions.
-This left 45 participants in our final sample, each of whom provided responses in both the questioner role and the answerer role.
+This left 45 participants in our final sample, each of whom provided responses in both the questioner role and the answerer role.
 
 \subsubsection{Stimuli}
 
@@ -1182,15 +1181,17 @@ In the answerer role, the artificial agent similarly responded according to $A_2
 Using our models directly in the task admittedly presents a potential for `contamination' where participants imitate or learn from the model's behavior. 
 We addressed this concern in two ways. 
 First, the experiment is limited to only six trials, minimizing the potential for learning.
-Second, because we counterbalanced the order in which roles were assigned, we will empirically test whether patterns of responses differed for participants who had already seen their partner respond in arole.
+Second, because we counterbalanced the order in which roles were assigned, we will empirically test whether patterns of responses differed for participants who had already seen their partner respond in a role.
 
 \subsection{Predictions and results}
 
 \subsubsection{Model setup}
 
+\ndg{let's discuss the math in this section...}
+
 Exp.~2 was designed to provide a strong \emph{qualitative} test of the questioner models in a scenario with more structured goals.
 We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}$ to a set of ordered pairs $\{g_{ij}\} = \{(g_i, g_i^{(j)})\}$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
-In the case of Exp.~2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the exhaustive list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
+In the case of Exp.~2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
 
 
 \begin{figure*}[th!]
@@ -1206,6 +1207,7 @@ The primary computational consequences of introducing a hierarchical goal space 
 Upon hearing a question, $A_2$ must jointly infer the ultimate goal along with the current subgoal.
 First, we assume that a questioner acting under an ordered pair $g_{ij} = (g_i, g_i^{(j)})$ attempts to gain information towards both goals:
 $$P_{Q}(q | g_{ij}) = \prod_{g\in \{g_i, g_i^{(j)}\}} P(q | g)$$
+\ndg{this is not normalized. is this actually what's implemented? it's a kind of strange assumption compared to eg adding the utilities of the two sub-goals (which is different because of normalization).}
 In other words, a question is preferred if it is both good for the current subgoal and the ultimate goal.
 % of finding the entire privately assigned combo $i$.
 Combining this assumption about the questioner $Q_1$ with the dependence between subgoal and ultimate goal, $A_2$'s goal inference factors as:
@@ -1215,13 +1217,14 @@ P(g_{ij} | q) & \propto & P(q | g_{ij})P(g_{ij}) \\
  \end{array}$$
 Given a posterior over the goal tuple $g_{ij}$, we then assume the answerer attempts to be informative with respect to both goals in the tuple: 
 $$U_{A_2}(a; q, w) = \sum_{g_{ij} \in \mathcal{G}} P(g_{ij}|q) \sum_{g\in \{g_i, g_i^{(j)}\}}\widehat{P^g_I}(w|\,a)$$
+ \ndg{hmm is there a clearer way to describe this? does it follow from the tuple projection? also, missing log}
 While this presentation was written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
 The simpler goal spaces considered earlier in the paper are special cases of this more general formulation taking goal tuples to be singletons.
 
 Given this generalization of the model to more structured goal spaces, we can derive predictions for Exp.~2. 
 The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
 Questions in the question space $\mathcal{Q}$ were of the same form as in Exp.~1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of multiple identifiability do not arise. 
-Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at location that was mentioned, and false otherwise.
+Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at the location that was mentioned, and false otherwise.
 
 
 
@@ -1267,8 +1270,12 @@ Exp.~2 was motivated by two primary aims: to provide a stronger evaluation for t
 To meet these challenges, we designed a Hidden Goal task where questioners were privately assigned a set of \emph{multiple} objects to find, inducing a hierarchy of subgoals.
 By manipulating whether objects overlapped or differed across sets in the space of possible goals, we constructed scenarios where our different models made sharply different predictions. 
 
+\ndg{somewhere should indicate why the obvious application of the model, where goals are just the location of the complete set, doesn't work.}
+
 We found that answerers reasoned beyond the literal subgoal prompted by the question to respond helpfully to the inferred ultimate goal in the hierarchy.
 Questioners, in turn, chose to ask about the objects that would most clearly signal their ultimate goal to their partner, even though these different questions would have equal expected information gain under traditional models. 
+
+\ndg{let's condense the next three paragraphs? they are kind of wordy and aside...}
 
 The minimal goal hierarchy studied in Exp.~2 is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering. 
 However, handling more complex goal structures will require composing our core computational framework with additional mechanisms.
@@ -1291,9 +1298,11 @@ While introducing such a planning mechanism into our model is outside the scope 
 In our computational framework, an answerer updates their beliefs about the questioner's goals after hearing a question, and a questioner updates their beliefs about the world state after hearing an answer. 
 In principle, this step can be repeated multiple times until the questioner's goal is resolved, allowing for an extended sequence of questions and answers: the questioner's posterior over worlds after hearing an answer to their first question becomes the prior for selecting their second, and so on.
 
+\ndg{somewhere (maybe earlier or maybe discussion for this section) should mention khani etal, and indicate some differences.}
+
 In Exp.~3, we developed a final task in the Hidden Goal paradigm to investigate how the pragmatics of asking and answering questions unfolded over multiple exchanges.
 This task was designed with several desiderata in mind.
-First, we needed a larger and more natural space of goals that weren't always possible to satisfy in a single round.
+First, we needed a larger and more natural space of goals that wouldn't always possible to satisfy in a single round.
 This would allow us to test our models' predictions about how the answer to one question may influence the choice of a subsequent question, or how the answerer's beliefs about the questioner's goal may shift after hearing additional questions.
 Second, although $A_2$'s internal goal inference mechanism was implicit in the success of our model predictions in Exps.~1 and 2, we sought explicit validation of this model component by directly eliciting answerers' beliefs about the questioner's goal.
 
@@ -1301,7 +1310,7 @@ Second, although $A_2$'s internal goal inference mechanism was implicit in the s
 \begin{center}
 \includegraphics[scale = .7]{Exp3/spatialDemo.pdf}
 \end{center}
-\caption{(A-B) Task design and procedure for Experiment 3. Answerers are shown a private map with bomb locations, while questioners are assigned a private goal. Both participants see a common board over which extended dialogues can take place. (C) Examples of initial board states in different conditions.}
+\caption{(A-B) Task design and procedure for Experiment 3. Answerers are shown a private map with bomb locations, while questioners are assigned a private goal. Both participants see a common board over which extended dialogues can take place. (C) Examples of initial board states in different conditions. \ndg{maybe indicate in B that this then repeats?}}
 %\vspace{-1cm}
 \label{fig:exp3task}
 \end{figure*}
@@ -1332,7 +1341,7 @@ This goal space was intended to be intuitive for participants, given its resembl
 
 Underlying bomb maps were sampled from the space of all assignments of bombs to locations,  subject to the constraint that it was possible to win given either goal. 
 We included this constraint so that the arrangement of bombs did not give the answerer any cues to the questioner's goal.
-Finally, the initial state of the shared board was chosen from four different conditions to create a variety of different scenarios (see Fig. \ref{fig:exp3task}B for examples).
+Finally, the initial state of the shared board was chosen from four different conditions to create a variety of different scenarios (see Fig. \ref{fig:exp3task}C for examples).
 Cells in the shared board were labeled with coordinates (A1, A2, $\dots$ ) for easy reference.
 \begin{itemize}
 \item In the \emph{empty} condition, no tiles were included in the initial state.
@@ -1370,20 +1379,20 @@ This agent acted according to our $Q_2$ and $A_2$ models, with the optimality pa
 \subsubsection{Model setup}
 
 The key innovation required to account for extended sequences is an explicit representation $s_t$ of the \emph{discourse state} at a given time. 
-For the purposes of this experiment, $s_t$ can be thought of as the literal state of the game board shared in common ground at time $t$, since all information was updated and maintained visually.
-More generally, however, the state may contain prior utterances, as well as any other non-linguistic observations about the agent's partner or context.
+In general, the discourse state could contain prior utterances and any non-linguistic observations about the agent's partner or context.
+In this experiment all information was updated and maintained visually, so it is sufficient to take as $s_t$ the literal state of the game board shared in common ground at time $t$.
 
-Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$\footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different question or answer selections lead to anticipated transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework.}.
-In our experiment, computing this distribution simply entailed removing any world states from the prior that are incompatible with previous exchanges and re-normalizing.
+Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$.\footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different question or answer selections lead to anticipated transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework. \ndg{move this comment to discussion, connect to khani etal}}
+In our experiment, computing this distribution simply entailed removing any world states from the prior that are incompatible with the current revealed state and re-normalizing.
 Now, when a questioner is selecting a question in state $s_t$, rather than taking expected information gain relative to the initial prior $P(w)$, they use their current beliefs $P(w | s_t)$ as the baseline.
-Moreover, if the discourse state $s_t$ can be taken to be in common ground, we can assume this alternative prior is used throughout internal levels of recursion, e.g. that $A_1$ also attempts to be informative with respect to this prior.
+Moreover, since the discourse state $s_t$ is in common ground, we assume this alternative prior is used throughout internal levels of recursion, e.g. that $A_1$ also attempts to be informative with respect to this prior.
 
-Aside from this novel introduction of state to handle extended exchanges, the task details were formalized similarly to the previous experiments.
+Beyond introducing state to handle extended exchanges, the task details for this experiment were formalized similarly to the previous experiments.
 The world prior was uniform across all $2^9$ assignments of bombs to tiles. 
 The question space contained the 9 options available to participants in the experiment, where ``Is A1 safe?'' is represented as a projection from the full world to the status of the queried tile. 
 The answer space contained both the literal answers ``yes, it is safe'' and ``no, it is not safe,'' as well as longer answers that additionally mentioned the state of another tile, e.g. ``yes, it is safe but A3 is not.''
 
-Goals were again represented hierarchically, with a joint representation containing rows vs. columns at the super-ordinate level and \emph{which} row or column at the subordinate level.
+Goals were again represented hierarchically, with a joint representation containing rows vs.~columns at the super-ordinate level and \emph{which} row or column at the subordinate level.
 The super-ordinate row (column) goals projected worlds to arrays of three booleans representing which rows (columns) contained bombs and which did not.
 The subgoal representing a particular row (column) projected worlds to a single boolean representing whether that particular row (column) contained bombs.
 
@@ -1416,9 +1425,9 @@ Do participants' inferences about the questioner's true goal match those interna
 
 We examined participants' goal inferences in the \emph{empty} condition, which was designed to measure the changes in answerer's beliefs about the hidden goal over repeated exchanges. 
 $A_2$ predicts that the first question should provide no information about the hidden goal: $Q_1$ is equally likely to ask about any cell under either goal.
-In the context of the information revealed in the first exchange, however, $A_2$ predicts that the second question ought to license stronger inferences.
+In the context of the information revealed in the first exchange, however, the $A_2$ model predicts that the second question ought to license stronger inferences.
 We compared these shifts in the empty condition against those in the \emph{pragmatic} condition, which served as a baseline.
-In the pragmatic condition, $A_2$ predicts that sufficient context is already available from the initial state to make a strong goal inference.
+In the pragmatic condition, the $A_2$ model predicts that sufficient context is already available from the initial state to make a strong goal inference.
 
 We aggregated data across the two possible goals by classifying responses as `correct' if they matched the true goal and `incorrect' if they differed.
 We found that after the first question in the ``empty'' condition, participants were roughly at chance between the response options, only guessing the true goal with 39\% accuracy\footnote{Apparently some proportion of participants simply guessed instead of using the ``not sure'' option, which received 31\% of responses.}.
@@ -1441,7 +1450,8 @@ Answerers in this condition therefore needed to decide how to most helpfully rev
 
 In Fig. \ref{fig:blocked}, we show a schematic view of how dialogue unfolded in an example blocked trial.
 Given the initial common ground that the top-left tile was safe, and their private goal to complete any row, questioners began by either asking about A2 or A3.
-the modal empirical answer (62\%) was to confirm that A2 was safe, but additionally reveal that A3 was not safe.
+\ndg{the next few sentences don't make sense...}
+The modal empirical answer (62\%) was to confirm that A2 was safe, but additionally reveal that A3 was not safe.
 In the first case, the modal empirical \emph{answer} (52\%) was to confirm that A3 contained a bomb, and then give additional information about a safe tile in a completable row (e.g. C1 or C2).  
 In both cases, when it was the questioner's turn to ask a second question, they were faced with a much different epistemic state than at the outset---one that suggested pursuing a different subgoal, and that differed depending on their first question. 
 This updating sequence of questions and answers qualitatively matches that of the $Q_2$ and $A_2$ models.
@@ -1456,16 +1466,17 @@ This updating sequence of questions and answers qualitatively matches that of th
  & $Q_2$ & \textbf{-1135} \\ \bottomrule
 \end{tabular}
 \end{center}
-\caption{Results of quantitative model comparison for Exp. 3; marginal likelihoods shown on log scale.}
+\caption{Results of quantitative model comparison for Exp. 3; marginal likelihoods shown on log scale. \ndg{are these marginal likelihood or maximum?}}
 \label{table:exp3likelihoods}
 \end{table}
 
 \subsection{Quantitative model comparison}
 
-Lastly, while the primary aim of Exp.~3 was to demonstrate how our model framework can be straightforwardly extended to repeated question-answer exchanges, these data also provided an opportunity to conduct an additional model comparison over a wide variety of items.
+While the primary aim of Exp.~3 was to demonstrate how our model framework can be straightforwardly extended to repeated question-answer exchanges, these data also provided an opportunity to conduct an additional model comparison over a wide variety of items.
 
 All models have exactly three parameters: a cost weight $\beta$ and optimality parameters for the questioner and answerer, $\{\alpha_Q$, $\alpha_A\}$.
 Because evaluating marginal likelihoods over this parameter space was computationally intractable, we use the Bayesian Information Criterion (BIC) instead of the Bayes Factor. 
+\ndg{why was AIS not feasible here? Or a simpler grid or importance sampling integration? Since number of params is matched you don't really need to think of this as BIC -- could just say we use max likelihood as a point estimate of marginal likelihood (as in the BIC approach).}
 %This measure is defined: $$BIC = -2 \ln \hat{L} + \ln(n) k $$ where $\ln \hat{L}$ is the maximum log likelihood, $k$ is the number of parameters, and $n$ is the number of observations. 
 Because the models we are comparing share the same parameters, the differences in BIC between models depends only on the \emph{maximum} of the likelihood function.
 We thus evaluated the maximum likelihood of our data, excluding the first six practice trials of each game, under the following parameter ranges:
