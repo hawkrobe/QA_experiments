@@ -1541,9 +1541,9 @@ We then found strong qualitative and quantitative evidence for both $A_2$ and $Q
 
 % Note that this behavior also could not be explained by the heuristic strategy raised in the earlier experiments: if questioners just ruled out labels that did not apply (e.g. ``lion''), they would have no mechanism for deciding between the two equally-good parent labels (``pet'' and ``cat'') to pick out their goal. 
 
-A central formal advance of the proposed framework is the synthesis of current (OED) approaches to optimal question asking, in active learning, with the generic social reasoning mechanisms proposed by the Rational Speech Act approach to language use. 
+A central theoretical advance of the proposed framework is the synthesis of current (OED) approaches to optimal question asking, in active learning, with the generic social reasoning mechanisms proposed by the Rational Speech Act approach to language use. 
 In addition to embedding the former approaches into a social context, this work moves RSA models beyond the production or interpretation of single utterances (in context) to consider the dynamics of simple dialogs where both listening and speaking---linguistic input and output---must be integrated within the same agent. 
-In the remainder of the discussion, we discuss several broader questions raised by our framework and note a number of avenues for future work.
+In the remainder of the discussion we address several broader issues raised by our framework and note a number of avenues for future work.
 
 \subsection{What is the meaning of a question?}
 
@@ -1551,11 +1551,11 @@ While our framework draws extensively from previous theoretical accounts of ques
 These differences stem from two psychologically meaningful distinctions at the core of our model.
 The first disentangles the literal meaning of a question from any particular set of possible answers and instead associates it with a specific goal that it raises or signals for an answerer.
 The second disentangles the space of possible latent goals in the questioner's mind from the one associated with the interrogative signal they choose to provide.
-Together, these distinctions allow us to \emph{derive} context-sensitivity at the pragmatic level via recursive reasoning that grounds out in context-independent meanings.
+Together, these distinctions allow us to \emph{derive} context-sensitivity at the pragmatic level via social reasoning that grounds out in context-independent meanings.
 
 This idea differs somewhat from the context-sensitive literal meanings suggested by \citeA{VanRooy03_QuestioningDecisionProblems}.
 As previously described, Van Rooy argued that the meaning of a question ought to be underspecified and resolved only through the contextual parameter of the questioner's decision problem.
-Once we explicitly address the issue of how the answerer actually \emph{infers} this decision problem from hearing the question (and from other context), it becomes clear that an underspecified literal question meaning would introduce a circularity\footnote{RSA models have handled vague or underspecified literal meanings by introducing a free variable into the meaning that is determined by the speaker and inferred by the pragmatic listener \cite<e.g>{LassiterGoodman15_AdjectivalVagueness,TesslerGoodman16_Generics}. An implementation of van Rooy's proposal would require the free variable in the literal meaning to be the questioner's private goal itself. This in turn would allow the literal questioner to obtain relevant information from \emph{any} question simply by having a private goal. In order for the question utterance to be informative about the goal or decision problem for the pragmatic answerer, there must be a stable base case linking goals to question utterances.}. 
+Once we explicitly address the issue of how the answerer actually \emph{infers} this decision problem from hearing the question (and from other context), it becomes unnecessary to additionally posit underspecified literal question meaning.\footnote{RSA models have handled vague or underspecified literal meanings by introducing a free variable into the meaning that is determined by the speaker and inferred by the pragmatic listener \cite<e.g>{LassiterGoodman15_AdjectivalVagueness,TesslerGoodman16_Generics}\ndg{cite bergen levy goodman}. An implementation of van Rooy's proposal would require the free variable in the literal meaning to be the derived from the questioner's private goal itself. It is unclear whether this mechanism would lead to appropriate interactions between context and question interpretation.}
 Because we take a goal to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can implement its meaning in a literal answerer who identifies the goal directly from the question.
 
 In this way, the meaning of a question in our framework resonates with dynamic accounts of question meaning \cite<e.g>{Groenendijk99_LogicOfInterrogation}, as well as recent proposals for an inquisitive semantics \cite{ciardelli2018inquisitive}, where the formal content of a question is simply the ``issue'' it raises into the context.
@@ -1567,8 +1567,8 @@ This modularity frees higher-level pragmatic considerations to handle the proble
 
 The connection to inquisitive semantics is an intriguing area for further exploration. % and we see the broader correspondence between probabilistic and logic-based notions of inquisitive content .
 For example, a fundamental insight of inquisitive semantics is that declarative sentences sometimes \emph{also} have inquisitive content.
-While we have made the simplifying assumption that declarative utterances are purely informative, the RSA framework also supports this ``hybrid'' notion.
-For example, previous RSA models have explained the use of non-literal language like hyperbole, irony, and metaphor in declarative sentences by the same mechanism: providing information about the speaker's goal \cite{KaoEtAl2014-Cogsci,KaoGoodman15_IronyCogSci,KaoWuBergenGoodman14_NonliteralNumberWords}.
+While we have made the simplifying assumption that declarative utterances are purely informative, the RSA framework could also support this ``hybrid'' notion.
+For example, previous RSA models have explained the use of non-literal language like hyperbole, irony, and metaphor in declarative sentences by the same mechanism we invoked here: providing information about the speaker's goal \cite{KaoEtAl2014-Cogsci,KaoGoodman15_IronyCogSci,KaoWuBergenGoodman14_NonliteralNumberWords}.
 A subtler difference, however, lies in the correspondence between the projection function we have used to define goals and the ``issue'' formalism in inquisitive semantics, which is not as strict. 
 Thus, the class of functions used to represent a goal in our framework may need to be expanded to properly handle embedded questions, entailment, and disjunction \cite{ciardelli2018inquisitive}.
 
@@ -1582,7 +1582,7 @@ Thus, the class of functions used to represent a goal in our framework may need 
  
 \subsection{The correspondence between questions and goals}
 
-A straightforward consequence of defining the meaning of a question to be the same kind of object as a goal, our $Q_2$ model predicts that people will ask the question most directly corresponding to their private goal if it accessible and easy to produce.
+A straightforward consequence of defining the meaning of a question to be the same kind of object as a goal, is that our $Q_2$ model predicts that people will ask the question most directly corresponding to their private goal if it accessible and easy to produce.
 After all, it would be the clearest signal.
 So why would a questioner ever ask a question that didn't directly correspond to their underlying goal? 
 Our dissociation of question meanings and latent goals raises the interesting possibility that the set of questions that is easy to verbally express is effectively a \emph{subset} of the possible latent goals one might have: there may not exist a question utterance literally encoding every underlying goal an agent may need to address, thus the need for pragmatics.
@@ -1603,7 +1603,7 @@ In games like Battleship or 20 Questions, the truly optimal questions would be `
 %\todo[inline]{Revamp this para... Say our work may shed new light on why not generating perfectly optimal questions may not be a problem in social interaction; if they're used to relying on the answerer to make inferences, they may go for a cognitively cheaper question that still effectively signals the goal. so people may still be cognitively limited in their ability to generate questions but these less informative questions may be `resource-rational' given social expectations of cooperativity (see our ToM paper?)}
 These considerations may also shed new theoretical light on recent results by \citeA{rothe2018people} finding that in games like Battleship, people often fail to ask maximally informative natural language questions (although they \emph{can} accurately rank the informativity of pre-generated questions). 
 By embedding questioning in a social, communicative context \cite<see also>{ShaftoGoodmanFrank12_LearningFromOthers, ShaftoGoodmanGriffiths14_Pedagogical}, our framework suggests that this behavior may in fact be resource-rational under the conditions where most questioning takes place \cite{GriffithsLiederGoodman15_LevelsOfAnalysis}.
-If the maximally informative questions assuming a literal answerer are longer and more syntactically or conceptually complex (e.g. ``At what location is the top left part of the purple ship?''), they may also be more cognitively demanding to generate.
+If the maximally informative questions are longer and more syntactically or conceptually complex (e.g. ``At what location is the top left part of the purple ship?''), they may also be more cognitively demanding to generate.
 When assuming a cooperative pragmatic answerer, however, a less costly question may be just as effective for signaling the goal and getting a helpful answer.
 
 \subsection{Computational challenges}
@@ -1611,12 +1611,12 @@ When assuming a cooperative pragmatic answerer, however, a less costly question 
 How do our assumptions scale up to less constrained interactions? 
 We suspect that the simple, discrete sets of goals used in our models above may need to be generalized to continuous spaces and broader mixtures of discourse topics \cite{BleiNgJordan03_LDA, GriffithsSteyversTenenbaum07_Topics}. 
 The computational challenges associated with such complex goal spaces may contribute to the difficulties young children face in answering broad, sentence-focus questions like ``what's happening?'' \cite{SalomoLievenTomasello13_ChildrenAnsweringQuestions}. 
-Similarly, to generalize beyond the tightly controlled sets of alternative questions and answers used in our models above, we may need to consider empirical frequencies or simple deletions and edits from the given question to automatically generate sets of alternatives \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. 
+%Similarly, to generalize beyond the tightly controlled sets of alternative questions and answers used in our models above, we may need to consider empirical frequencies or simple deletions and edits from the given question to automatically generate sets of alternatives \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. 
 
 As a broader point, our framework offers a rational analysis of the social inferences involved in asking and answering questions, which only adds to the many important algorithmic questions already raised by rational model of inquiry \citeA{coenen2018asking}.
-For instance, we could use without modification the sophisticated and open-ended grammar of questions developed by \citeA{rothe2017question} as the prior for the question set $\mathcal{Q}$ in our pragmatic framework, but this would turn the literal questioner agent $Q_1$ into an infinite distribution, leading to intractability at higher levels of recursion.
+For instance, we could use without modification the sophisticated and open-ended grammar of questions developed by \citeA{rothe2017question} as the prior for the question set $\mathcal{Q}$ in our pragmatic framework, but this would turn the literal questioner agent $Q_1$ into an infinite distribution, leading to very difficult inference at higher levels of recursion.
 Similarly, taking an analytic expectation over all possible worlds quickly becomes intractable as the size of the world space $\mathcal{W}$ grows.
-We used exact enumeration for all of our results for theoretical precision, but it is clear that an algorithmic account must address how these computations can be effectively approximated, whether by Monte Carlo search or by feed-forward neural network approximations.
+We used exact enumeration for all of our results for theoretical precision, but it is clear that an algorithmic account must address how these computations can be effectively approximated, perhaps via Monte Carlo integration of approximation by neural networks.
 
 %\todo[inline]{finally, note that even though we offered a rational analysis of what is required to solve this problem through Bayesian reasoning, aspects of the computation such as the goal prediction problem may be approximated by a feed-forward neural network}
 
@@ -1627,9 +1627,9 @@ We used exact enumeration for all of our results for theoretical precision, but 
 While the applications throughout this paper have primarily focused on canonical \emph{epistemic} questions in a cooperative context, our framework also provides a tool set for formalizing pragmatic accounts of other question phenomena. 
 We briefly highlight four potential applications: rhetorical questions, pedagogical questions, politeness, and uncooperative interrogation.
 
-First, rhetorical questions are characterized by being either completely obvious or completely unanswerable (\emph{What’s going to happen to these kids when they grow up?}).
+First, rhetorical questions are characterized by being either completely obvious or completely unanswerable (\emph{What's going to happen to these kids when they grow up?}).
 A pragmatic answerer hearing such a question in our framework would reason that a questioner is unlikely to have chosen it with the epistemic goal of getting information and instead must have another goal in mind such as signaling common ground or expressing affect \cite{KaoWuBergenGoodman14_NonliteralNumberWords}. 
-In this way, one could derive the assertive force of rhetorical questions from generic pragmatic principles \cite<see>{Rohde06_rhetorical}.
+In this way, one could derive the assertive force of rhetorical questions from pragmatic principles \cite<see>{Rohde06_rhetorical}.
 
 Second, consider how we could account for pedagogical questions asked by parents or educators \cite{MaradlouGinzburg14_SemDial, Gall70_QuestionsInTeaching}. 
 A math instructor asking a question like ``what is $2+2$?'' already knows the answer, so what utility could there be in asking? 
@@ -1641,7 +1641,7 @@ These indirect forms of questions are often analyzed as being motivated by \emph
 The same politeness considerations may influence answerer behavior as well. 
 For instance, when people do give literal answers they may use more words than necessary to avoid seeming curt or unhelpful \cite<see also>{chaudhry2019thanking}. 
 %are often something like `yes, I do' or `no, but good luck!' One way to think about this is that the questioner has some uncertainty over the answerer's relative balance between utterance cost and helpfulness, and questioners will jointly infer this. 
-Such politeness considerations have been formally incorporated into RSA models as a kind of goal that takes into account social utility and notions of face \cite{yoon2016talking}, which could be straightforwardly incorporated into a questioner model.
+Such politeness considerations have been formally incorporated into RSA models as a kind of goal that takes into account social and presentational utilities \cite{yoon2016talking}, which could be straightforwardly incorporated into a questioner model.
 
 Finally, although we have assumed basic prosociality and transparency in our agents, some of the most intriguing question-answering scenarios flout this expectation. 
 In politics or court of law, for instance, it is sometimes in the answerer's best interest to be minimally informative while still appearing to address the literal semantics of the question.
