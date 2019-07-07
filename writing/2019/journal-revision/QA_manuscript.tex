@@ -98,7 +98,7 @@ Q: Which category is this?\\
 A: It's a \emph{dax}.}
 
 In other words, an OED questioner expects answers to come from an impartial oracle that responds truthfully but literally with the requested information.
-This answering strategy has been implemented in sophisticated semantic parsers that extract the logical form of the question and either execute it on the world state \cite{rothe2017question} or efficiently search a database for an entity that satisfies it \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. \ndg{it's sort of unclear why these refs to QA in nlp are here...}
+This answering strategy has been implemented in sophisticated semantic parsers that extract the logical form of the question and either execute it on the world state or efficiently search a database for an entity that satisfies it \cite{rothe2017question}.
 
 While this `oracle' assumption has been sufficient to capture a wide variety of inquiry phenomena in active learning domains, including causal learning \cite{bramley2015conservative} and sequential information search \cite{RuggeriLombrozo15_ChildrenAdaptQuestions}, it is violated precisely under the social learning conditions where inquiry may be most prevalent and useful: asking linguistic questions to other social agents in cooperative dialogue.
 Answerers regularly go \emph{beyond} the literal meaning of a question in helpful, context-dependent ways.
@@ -135,8 +135,7 @@ These cases present two immediate challenges for computational models of inquiry
 First, if people do not simply respond literally to questions, how \emph{do} they choose answers? 
 What makes an answer more or less helpful?
 To extend rational models of question asking to social settings, we must first formulate a social and context-sensitive model of question \emph{answering} that captures the relevant psycholinguistic phenomena.
-Second, if questions cannot simply be represented as a distribution over their possible (literal) answers, then what is the appropriate representation of a question?
-\ndg{this is unclear. tie back to oed questions above...}
+Second, if questions are not just distributions over their possible (literal) answers, as OED models have assumed, then what is the meaning of a question?
 This problem has been addressed extensively in a largely independent literature in linguistics focusing on the semantics of questions and answers \cite{GroenendijkStokhof84_SemanticsOfQuestions,Ginzburg95_ResolvingQuestions,VanRooy03_QuestioningDecisionProblems,ciardelli2013inquisitive}. 
 These formal accounts have successfully worked through a number of thorny semantic problems, but a psychological account of question \emph{pragmatics} based on these insights has remained elusive.
 
@@ -226,7 +225,7 @@ Next, we turn to a set of existing formal proposals about how goals may be incor
 The earliest attempts to construct artificial agents who could answer natural-language questions in a goal-sensitive manner took place within the artificial intelligence community \cite{Simmons65_QuestionsComputer, Lehnert77_QuestionAnswering, AllenPerrault80_IntentionUtterances, GreenCarberry94_IndirectAnswersModel, MollaVicedo07_QARestrictedDomains}. 
 Many of these classic systems were essentially domain-restricted interfaces for databases, with applications in customer service, technical support, health care, or financial consulting.
 Other systems, however, built on insights from early work in cognitive science to represent questioner intentions as schemas or plans. 
-For instance, the system designed by \citeA{AllenPerrault80_IntentionUtterances} used a set of logical rules to generate a space of possible plans, searched this space using a set of heuristics, identified obstacles to fulfilling this plan, and finally took a set of actions to address the obstacles for the questioner. 
+For instance, the system designed by \citeA{AllenPerrault80_IntentionUtterances} used a set of logical rules to generate a space of possible plans the questioner may be pursuing, searched this space using a set of heuristics, identified obstacles to fulfilling likely plans, and finally took a set of actions to address the obstacles to help the questioner. 
 Because these systems relied heavily on problem-specific rules and heuristics, it has not been straightforward to generalize them into a broader computational framework for inquiry.
 
 A more promising thread of formal work on goal-sensitivity in inquiry has been developed in the field of linguistics \cite<see>[for a thorough review of this literature]{ciardelli2018inquisitive}. 
@@ -250,7 +249,7 @@ Because both questioner and answerer expect one another to behave rationally, th
 
 We take this proposal as a starting point for approaching context-sensitivity in our social inference framework below.
 Our account, however, seeks to address a critical limitation the earlier proposal faces as a cognitive model of inquiry: how does the answerer know what the decision problem is? 
-\citeA{VanRooy03_QuestioningDecisionProblems} and subsequent accounts in this tradition \cite<e.g.>{benz2006utility} implicitly assume that the decision problem is \emph{already mutual knowledge shared by both questioner and answerer}: ``On the assumption that the answerer knows what the agents decision problem is, the coarser-grained, and thus partial, answer is [...] preferred.'' (p. 738).
+\citeA{VanRooy03_QuestioningDecisionProblems} and subsequent accounts in this tradition \cite<e.g.>{benz2006utility} implicitly assume that the decision problem is \emph{already mutual knowledge shared by both questioner and answerer}: ``On the assumption that the answerer knows what the agent's decision problem is, the coarser-grained, and thus partial, answer is [...] preferred.'' (p. 738).
 
 In our view, this assumption undermines the two-sided functional conditions motivating inquiry. 
 A cognitive account of answerer goal-sensitivity must provide an explicit mechanism for how the answerer learns the goal. 
