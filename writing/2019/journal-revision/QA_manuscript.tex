@@ -351,14 +351,14 @@ Our models of questioners depend on the answerer they imagine responses to come 
 
 \subsection{$A_0$: Purely informative answerer}
 
-We begin with the simplest possible answerer, $A_0$, which attempts to be informative about the state of the world without considering relevance to his partner's goals. 
+We begin with the simplest possible answerer, $A_0$, who attempts to be informative about the state of the world without considering relevance to his partner's goals. 
 Formally, $A_0$ hears a question utterance $q \in \mathcal{Q}$ and has private knowledge about the true world state $w \in \mathcal{W}$. 
 He then uses a soft-max decision rule to choose an utterance $a \in \mathcal{A}$ proportional to the epistemic utility of that utterance to his communication partner: 
-$$P_{A_0}(a | q, w) \propto \exp\{U_{A_0}(a;w)\}\cdot P(a)$$ 
+$$P_{A_0}(a | q, w) \propto \exp\{U_{A_0}(a;w)\}$$ 
+For simplicity, we omit the implicit uniform prior over answers $P(a)$, which strictly serves to specify the space of answers considered.
 
-\ndg{we don't need P(a) and P(q), since we have cost terms. is it worth including them for symmetry? i'd slightly favor leaving them out.}
-
-We define the utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interlocutor's $I$'s certainty about the true state of the world after hearing $a$. This surprisal is traded off against the cost $C(a)$ of producing the answer utterance:
+We define the utility of the utterance using the information-theoretic measure of surprisal: the increase in an imagined interlocutor's $I$'s certainty about the true state of the world after hearing $a$. 
+This surprisal is traded off against the cost $C(a)$ of producing the answer utterance:
 \begin{equation}
 \label{eq:A0utility}
 U_{A_0}(a;w) =  \alpha_A \ln P_I(w|a) - \beta C(a)
@@ -367,7 +367,7 @@ where $\alpha_A$ and $\beta$ are parameters weighting the importance of each ter
 
 $A_0$ assumes that $I$ uses Bayesian inference to update their beliefs about worlds, conditioning on the literal meaning of the declarative utterance $a$ being true:
 $$P_I(w|a) \propto \delta_{\textrm{\den{a}}(w)} P(w)$$
-where $\delta_{e}$ is the delta function returning 1 when $e$ evaluates to true and 0 otherwise, and $P(w)$ is the (shared) prior over true states of the world. 
+where $\delta_{e}$ is the delta function returning 1 when $e$ evaluates to true and 0 otherwise, and $P(w)$ is the (shared) prior over states of the world. 
 %In other words, the interpreter constrains the prior on worlds to the subset of its support that is consistent with the given utterance, and $A_0$ attempts to (soft)-maximize the probability of the true world in this posterior. 
 
 This formulation of $A_0$ is equivalent to the pragmatic speaker $S_1$ for declarative utterances in previous RSA models \cite{GoodmanFrank16_RSATiCS}. 
@@ -395,8 +395,6 @@ $$U_{A_1}(a; g, w) = \alpha_A \ln \widehat{P^g}(g(w)|a)  - \beta C(a).$$
 %$$\widehat{P}^g(w|\, \cdot) = \E{P(w'|\, \cdot)}{K(w,w')}$$
 %%\todo[inline]{rdh: not 100\% satisfied with this notation}
 %}
-\ndg{i switched back to using g-projection here, since we need it below. and the general kernel became a footnote, since we don't use it in this paper.}
-
 %$$
 %\begin{array}{rcl}
 %U(a; g, w) & = & \ln \widehat{P^g_I}(g(w)|a) \\
@@ -404,12 +402,12 @@ $$U_{A_1}(a; g, w) = \alpha_A \ln \widehat{P^g}(g(w)|a)  - \beta C(a).$$
 %                 & = & \ln \sum_{w'\in\mathcal{W}} K_g(w,w')P_I(w' | a)
 %\end{array}
 %$$
-In the context of a question answerer, the simplest assumption about the goal projection is that it is the literal meaning of the question:
+In the context of answering a question, the simplest assumption about the goal projection is that it is the literal meaning of the question:
 %This modified utility suggests simply using the literal meaning of the question $q$ itself as the goal projection:
-$$P_{A_1}(a|q,w) \propto \exp\{U_{A_1}(a; q,w)\} \cdot P(a)$$
+$$P_{A_1}(a|q,w) \propto \exp\{U_{A_1}(a; q,w)\}$$
 This implements a literal answerer: $A_1$ directly interprets a question as an (epistemic) goal, then produces an informative utterance that reduces the questioner's uncertainty under that goal projection.
 We note, however, that $A_1$ is not otherwise constrained in their set of possible answers by the question. 
-For example, $A_1$ is capable of giving non-yes/no answers to polar questions to the extent that they resolve the literal goal raised by the question\footnote{Having the utility only depend on informativeness under the goal projection can lead to behavior where the goal-relevant answerer is happy to say something literally false as long as it maps to a truthful resolution of the coarser goal. Sometimes this is desired (as when we round the time to the nearest hour), but other times it is unintuitive. In principle, this problem could be solved by introducing the notion of a \emph{goal hierarchy} where the pure identity goal always has some small weight (see Exp.~2 for a formalization of this notion). In our simulations, however, we use a ``hard'' version of the same idea that removes literally false utterances from the possible answer set and then renormalizes the answer prior before computing the utility.}. 
+For example, $A_1$ is capable of giving non-yes/no answers to polar questions to the extent that they resolve the literal goal raised by the question\footnote{Note that having the utility only depend on informativeness under the goal projection can lead to behavior where the goal-relevant answerer is happy to say something literally false as long as it maps to a truthful resolution of the coarser goal. Sometimes this is desired (as when we round the time to the nearest hour), but other times it is unintuitive. In principle, this problem could be solved by introducing the notion of a \emph{goal hierarchy} where the pure identity goal always has some small weight (see Exp.~2 for a formalization of this notion). In our simulations, however, we use a ``hard'' version of the same idea that removes literally false utterances from the possible answer set and then renormalizes the answer prior before computing the utility.}. 
 
 $A_1$ may be sufficient for simple fact-based questions, like ``Who was the 16th president of the U.S.?'' given a rich enough semantic parser to supply the semantics of $q$ \cite{BerantChouFrostigLiang13_FreebaseQAPairs}. 
 But the context-sensitivity and indirectness displayed in everyday communication suggests that deeper social reasoning may be at play. 
@@ -429,14 +427,14 @@ More formally, a questioner agent takes a goal $g \in \mathcal{G}$ as input and 
 %
 $$
 \begin{array}{lcl}
-P_{Q_i}(q|g)  & \propto & \exp\{U_{Q_i}(q;g)\} \cdot P(q)\\
+P_{Q_i}(q|g)  & \propto & \exp\{U_{Q_i}(q;g)\}\\
 U_{Q_i}(q;g) & = & \alpha_Q \E{P(w)}{ \E{P_{A_i}(a|q,w)}{IG^g(a,q)}}\\
 %	 & = & \alpha_Q \sum_{w\in\mathcal{W}} P_{A_i}(a|q,w)P(w) IG^g(a,q) 
 \end{array}
 $$
 %
 The expectation describes a questioner who first imagines what state the answerer might know the world to be in, then imagines what answer the answerer would thusly provide.
-The value of this answer depends on its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer.\footnote{A cost term $C(q)$ would also be appropriate in this utility, but for the cases we consider in this paper, the questions of interest have the same length, so we omit cost for simplicity.} Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected world prior and posterior after hearing $a$:
+The value of this answer depends on its \emph{information gain} $IG^g(a,q)$: the gap between the questioner's beliefs about the $g$-relevant state of the world before and after hearing an answer.\footnote{As with our answerer, we omit the implicit uniform prior over questions $P(q)$. A cost term $C(q)$ would be appropriate in the questioner's utility, but for the cases we consider in this paper, the questions of interest have the same length, so we also omit cost for simplicity.} Drawing again upon information theory, we formalize the notion of information gain using the Kullback-Leibler divergence between the $g$-projected world prior and posterior after hearing $a$:
 %
 $$
 IG^g(a,q) = \KL{\widehat{P^g}(w|q, a)}{\widehat{P^g}(w)}\\
@@ -445,7 +443,11 @@ $$
 In order to anticipate her posterior beliefs after hearing an answer, the questioner must again make use of an imagined answerer, but now imagining herself as a listener in the future and inverting that model to infer the true world the answerer was trying to communicate:
 $$P(w|q,a) \propto P_{A_i}(a| q, w)P(w).$$
 
-The above equations specify a questioner for each answerer model. $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative but not necessarily relevant) answers. $Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. It therefore instantiates a version of the expected information gain measure of usefulness proposed by Optimal Experiment Design (OED) models \cite{coenen2018asking}. Critically, in contrast to classical views \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions} the questioner's behavior is not necessarily governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. They coincide when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
+The above equations specify a questioner for each answerer model. $Q_0$, who plans their question by reasoning about the likely responses of $A_0$, does not prefer any utterance over any other, because they will all lead to the same distribution of (informative but not necessarily relevant) answers. 
+$Q_1$, on the other hand, expects $A_1$ to directly interpret her question as a goal and respond informatively and relevantly, thus allowing for some questions to be better than others. 
+It therefore instantiates a version of the expected information gain measure of usefulness proposed by Optimal Experiment Design (OED) models \cite{coenen2018asking}. 
+Critically, in contrast to classical views \cite<e.g.>{GroenendijkStokhof84_SemanticsOfQuestions} the questioner's behavior is not necessarily governed fully by the semantics of the question she asks, but by what she actually expects her partner to say after hearing it. 
+They coincide when reasoning about the simple $A_1$ answerer, but we next turn to a more socially perspicacious answerer where they diverge.
 
 \subsection{$A_2$: Goal-Sensitive Answerer}
 
@@ -616,23 +618,23 @@ Because this is the only example of M-implicature that arises in this paper, and
 \item ``Do you accept credit cards?'' 
 \end{enumerate}
 %He analyzed the likelihood that the respondent gave a literal yes/no answer, compared to the likelihood of giving the exhaustive list of exactly which cards were accepted.  
-\citeA{Clark79_IndirectSpeechActs} found that (1) and (2) were nearly always answered literally, with a `yes' or `no', while (3) was significantly more likely to be answered with full information (a list of al credit cards accepted). Which, if any, of our answerer models show this pattern of responses? % (see Table \ref{table:clark79exp5}). 
+\citeA{Clark79_IndirectSpeechActs} found that (1) and (2) were nearly always answered literally, with a `yes' or `no', while (3) was significantly more likely to be answered with full information (a list of all credit cards accepted). Which, if any, of our answerer models show this pattern of responses? % (see Table \ref{table:clark79exp5}). 
 %As in the first case study above, we are only interested in the ratio of literal answers vs. over-informative answers $p_l = n_l/(n_l + n_i)$ and $p_i = n_i/(n_l + n_i)$, not in responses including both. 
 
 We formalize the scenario as follows. The set of possible worlds $\mathcal{W}$ is given by the power set $\mathcal{P}(\mathcal{C})$, where $\mathcal{C} = \{$Visa, MasterCard, American Express, Diner's Club, and Carte Blanche$\}$, the set of five possible credit cards. %This power set contains all $2^5 = 32$ subsets of cards that the restaurant might accept. 
 The prior distribution over worlds, $P(w)$, can in principle take into account the empirical likelihoods of restaurants accepting different cards, but we treat them as uniform to make the dynamics of our simulations clearer. % Clark reports these likelihoods to be 72, 71, 38, 12, and 10\% for Visa, Master Card, American Express, Diner's Club, and Carte Blanche, respectively. 
 
-The question space $\mathcal{Q}$ contains the five basic questions (``Do you accept $c$?" with $c \in \mathcal{C}$ one of the five cards) in addition to ``Do you accept credit cards?'' For the literal semantics of the five basic questions, indexed by $c$, we use the function $q_c(w) = \delta_{c \in w}$, which projects worlds to a boolean corresponding to whether they accept card $c$ or not.
+The question space $\mathcal{Q}$ contains the five basic questions (``Do you accept $c$?" with $c \in \mathcal{C}$ one of the five cards) in addition to ``Do you accept credit cards?'' For the literal semantics of the five basic questions, indexed by $c$, we use the function $q_c(w) = c \in w$, which projects worlds to a boolean corresponding to whether they accept card $c$ or not.
 %partitions the space of possible worlds into two cells: one  in which card $c$ is accepted and another in which it is not accepted. 
-The latter question $q_{any}(w)  = \delta_{|w| > 0}$ projects to a boolean corresponding to whether any cards are accepted at all. %The prior distribution $P(q)$ over these questions is proportional to question length, which happens to be uniform.
+The latter question $q_{any}(w)  = |w| > 0$ projects to a boolean corresponding to whether any cards are accepted at all. %The prior distribution $P(q)$ over these questions is proportional to question length, which happens to be uniform.
 
-The answer space $\mathcal{A}$ includes lists of cards (e.g. ``the cards we accept are Visa and MasterCard''), which are interpreted exhaustively, and  `yes' and `no.' We take the denotations of these polar responses to depend on the literal meaning of the previous question: $a_{\text{yes}}(w;q) = \delta_{\textrm{\den{q}}(w)}$ and $a_{\text{no}}(w;q) = \delta_{\neg \textrm{\den{q}}(w)}$.
-\ndg{the delta functions are a little sloppy: since they take a boolean but return a 0/1, here the typing is wrong. we can ignore this, or just get rid of the deltas since it's fine if all semantics is in booleans, not real.}
+The answer space $\mathcal{A}$ includes lists of cards (e.g. ``the cards we accept are Visa and MasterCard''), which are interpreted exhaustively, and  `yes' and `no.' 
+We take the denotations of these polar responses to depend on the literal meaning of the previous question: $a_{\text{yes}}(w;q) = q(w)$ and $a_{\text{no}}(w;q) = \neg q(w)$.
  %Thus, the restauranteur could respond to the question ``Do you accept Master Charge cards?" by saying ``Yes'' or by saying something like ``We accept Visa and Diner's Club." 
 %As in our early case study of Clark's (1979) whiskey experiment, we assign prior probability $p = 0.5$ to ``yes''/``no'' type responses, and prior probability $p = 0.5$ to card type responses, with uniform distributions within each category. 
 
 Finally, we take the possible goals, $\mathcal{G}$, of the questioner to be finding out whether the restaurant accepts at least one of a set of cards of interest (i.e.~``does the restaurant take any card in my wallet?''). This family of goals is parametrized by $\mathcal{C}_q \in \mathcal{W}$, the set of cards that the questioner is actually interested in: 
-$g_{\mathcal{C}_q}(w) = \delta_{|\mathcal{C}_q \cap w | > 0}$.
+$g_{\mathcal{C}_q}(w) = |\mathcal{C}_q \cap w | > 0$.
 %The prior $P(g)$ over goals is the same that governs the world prior. 
 %\footnote{This corresponds to an assumption that restaurants accept cards proportional to the percentage of people being interested in those cards. This assumption was suggested by Clark (1979), but not used in his informal analysis).}. 
 %Formally, for the goal $g_{\mathcal{C}_q}$, we define a projection to a boolean corresponding to whether the restaurant accepts at least one card in $\mathcal{C}_q$:
@@ -692,17 +694,15 @@ To address this concern, we ran two additional analyses.
 First, for our simulation evaluating sensitivity to context, we previously only included a single possible question (to isolate the effect of the context sentence).
 Does this context effect disappear if a question directly corresponding to the other goal were available?
 We re-ran our model after supplementing the set of possible questions with the alternative ``How much does a fifth of Jim Beam cost?'' which we assigned a literal meaning that is identical to the exact price goal, $g_{=}$.
-We found that the existence of this alternative does slightly reduce the answerer's preference for responding with the exact price (from 62\% to 60\%, because $A_2$ reasons that if $Q_1$ really cared about the exact price, they would have asked this other question), but it has the same effect for the other context sentence, leaving the qualitative context effect unchanged.
-%As the rationality parameter increases, this effect increasingly overwhelms the effect of the context prior, but 
-\ndg{does this depend on cost of the new question? if so indicate, if not delete me.}
+We found that the existence of this alternative does slightly reduce the answerer's preference for responding with the exact price (from 62\% to 60\%, because $A_2$ reasons that if $Q_1$ really cared about the exact price, they would have asked this other question).
+However, this alternative has the same effect under both contexts, leaving the qualitative context effect unchanged.
 
-A similar question arises in the credit card scenario: if the most direct question, ``What cards do you accept?'', was a potential alternative, would it interfere with the answerer's sensitivity to the questions they were asked?
-To explore this, we assigned this question a literal meaning that projects the world to the exact list of cards that are accepted and re-compute $A_2$'s behavior.
+A similar question arises in the credit card scenario: if the most direct question, ``What cards do you accept?'', were a potential alternative, would it interfere with the answerer's sensitivity to the questions they were asked?
+To explore this case, we assigned this question a literal meaning that projects the world to the exact list of cards that are accepted and re-computed $A_2$'s behavior.
 Again, we found that the qualitative effect of interest was robust to this change. 
 %The key insight for understanding why lies in the observation that this question is good for all goals. 
 Because $Q_1$ will consider this a good question regardless of their goal, failing to ask it is not particularly informative about the goal: the more informative signal, for $A_2$, about the goal is provided by the \emph{relative differences} in preferences for the other questions, which roughly puts us back in the case when we did not include this question in the set of possibilities.
 We conclude that, at least in the most obviously worrisome cases, our model's qualitative pattern of behavior does not change with larger spaces of question alternatives, although the effect size may differ.
-%Because the precise numerical output was already sensitive to the rationality parameters and numerical choices of answer costs, we .
 %Our aim in these simulations was not to fit exact values but to demonstrate how qualitative effects emerge in the $A_2$ model.
 % and the mathematical form of the various priors
 
@@ -710,7 +710,7 @@ We conclude that, at least in the most obviously worrisome cases, our model's qu
 
 These case studies focus on answerer behavior and demonstrate how social reasoning explains prior experimental findings in a unified formal framework. 
 However, our framework also generates novel predictions not addressed by existing experimental data.
-Most conspicuously, there is a relative lack of data on how people \emph{choose questions} in the similar social scenarios---when the questioner knows her partner wants to be helpful but may not know ahead of time exactly what goal she is pursing.
+Most conspicuously, there is a relative lack of data on how people \emph{choose questions} in similar social scenarios---when the questioner knows her partner wants to be helpful but may not know ahead of time exactly what goal she is pursing.
 We therefore designed a new experimental paradigm---the \emph{Hidden Goal} paradigm---to simultaneously probe questioner and answerer behavior under such conditions.
 This paradigm allows us to rigorously compare our different models, and to empirically justify our modeling assumptions.
 
