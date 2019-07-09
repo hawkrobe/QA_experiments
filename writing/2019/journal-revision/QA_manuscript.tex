@@ -470,6 +470,7 @@ They coincide when reasoning about the simple $A_1$ answerer, but we next turn t
 
 Now that we have defined the utility of asking a question, we can construct our final pragmatic answerer: $A_2$. The speaker component of this answerer attempts to informatively and relevantly address the questioner's goal, like $A_1$. The listener component, however, accounts for the generative process of an asker with an underlying goal rather than taking that goal to be identical to the literal meaning of the question. That is, $A_2$ assumes that the question was produced by a rational agent $Q_1$, who is trying to address a private goal $g \in \mathcal{G}$, and then attempts to be relevantly informative with respect to his posterior over \emph{underlying} goals given the question $P(g|q)$:
 \begin{equation}
+\label{eq:A2utility}
 U_{A_2}(a; q, w) = \alpha_A \E{P(g|q)}{\ln \widehat{P^g_I}(w|\,a) }- \beta C(a)
 % \alpha_A \sum_{g \in \mathcal{G}} P(g|q) \ln \widehat{P^g_I}(w|\,a) - \beta C(a)
 \end{equation}
@@ -658,7 +659,7 @@ Because $A_0$ does not consider the question meaning, ``yes'' and ``no'' are not
 
 By reasoning about the questioner's underlying goals, $A_2$ displays the pattern that \citeA{Clark79_IndirectSpeechActs} observed: a higher probability of giving a literal yes/no response to ``MasterCard?'' and ''American Express?'' than to "Credit cards?''. To understand \emph{why} $A_2$ behaves this way, we walk through the chain of pragmatic reasoning (Fig. \ref{fig:clarkExample}).
 
-The key observation lies in the evidence provided by the question about the questioner's likely goal: $P(g | q) \propto P_{Q_1}(q|g)P(g)$. Consider two cases, beginning with the questioner's perspective  (left-most column of Fig. \ref{fig:clarkExample}). First, suppose $Q_1$ is only interested in an American Express card (goal $g_{\{AmEx\}}$). Any answer $A_1$ gives to $q_{AmEx}$ (the question ``American Express?'') would fully resolve her goal. ``Yes'' would yield certainty in accepting it and ``no'' in not accepting it. On the other hand, some answers to $q_{any}$ (``Credit cards?'') would not be resolving: if $A_1$ responded ``yes'', there would still be substantial uncertainty over whether the shop takes American Express in particular (for example, $A_1$ could informatively say ``yes'' if they only accepted Visa). A questioner with goal $g_{\{AmEx\}}$  is thus more likely to ask $q_{AmEx}$.
+The key observation lies in the evidence provided by the question about the questioner's likely goal: $P(g | q)$. Consider two cases, beginning with the questioner's perspective  (left-most column of Fig. \ref{fig:clarkExample}). First, suppose $Q_1$ is only interested in an American Express card (goal $g_{\{AmEx\}}$). Any answer $A_1$ gives to $q_{AmEx}$ (the question ``American Express?'') would fully resolve her goal. ``Yes'' would yield certainty in accepting it and ``no'' in not accepting it. On the other hand, some answers to $q_{any}$ (``Credit cards?'') would not be resolving: if $A_1$ responded ``yes'', there would still be substantial uncertainty over whether the shop takes American Express in particular (for example, $A_1$ could informatively say ``yes'' if they only accepted Visa). A questioner with goal $g_{\{AmEx\}}$  is thus more likely to ask $q_{AmEx}$.
 
 
 %We find that when the questioner asks ``Do you accept MasterCard?'', the pragmatic answerer gives a literal ``yes''/``no'' answer with probability $p = 0.92$ (compared to $p=1.00$ empirically). Similarly, when the questioner asks ``Do you accept American Express?'', the pragmatic answerer gives a literal answer with probability $p = 0.96$ (also compared to $p=1.00$ empirically). The small difference between these predicted response probabilities comes from the relative likelihoods of the different cards in the true world. However, when the questioner asks ``Do you accept credit cards?'', the probability of a literal response drops to $p = 0.76$ (compared to $p=0.73$ empirically). Our model output therefore provides a good fit to the original experiment data, both qualitatively and quantitatively.
@@ -761,7 +762,7 @@ And finally, in Exp.~3, we show how the same framework straightforwardly extends
 \section{Experiment 1: \\ Definite reference and conceptual knowledge}
 
 %%%
-As a first quantitative test of our models, we designed a cooperative guessing game that relies on knowledge of concept structure. \ndg{"concept structure" is kind of vague.. maybe something like ontological relations (e.g. a dalmatian is a dog)?}
+As a first quantitative test of our models, we designed a cooperative guessing game that relies on knowledge of ontological relations between concepts.
 % This game served as a minimal case of the Hidden Goal paradigm.
 On each trial, four objects are hidden behind four doors.
 One player -- the \emph{questioner} -- is assigned one of the objects to find as a private goal but does not know which object is behind which door.
@@ -953,7 +954,7 @@ Of 192 participants recruited from Amazon's Mechanical Turk, 13 participants wer
 This left data for 164 participants.
 To form an empirical identifiability distribution $\mathcal{I}(o | x)$ that can be used in the model, we computed the proportion of participants that clicked on each of the objects $o$ for each label $x$. 
 
-Before formally testing the importance of these empirical priors in our model comparison, we conducted a simple test of the null hypothesis that participants use a uniform prior over within-category objects when interpreting the definite article. 
+Before formally testing the importance of these empirical priors in our model comparison, we conducted a simple test of the null hypothesis that participants use a \emph{uniform} prior over objects consistent with the noun when interpreting the definite article. 
 We performed Pearson $\chi^2$ goodness of fit tests on the response distribution for each label: a total of 32 tests. 
 We found that 69\% of these tests rejected the null hypothesis of uniformity at a (Bonferroni-corrected) significance level of $\alpha = 0.05/32 = 0.002$ indicating that the identifiability distribution often deviates from uniform: not all members of a category are equally likely to be identified as the referent of the definite description.
 
@@ -969,7 +970,7 @@ For a rigorous model comparison among our different questioner and answerer mode
 First, because utterances did not differ in cost, we remove the cost term of the model for simplicity by setting $\beta=0$.
 %We introduce a discrete hyperparameter $\gamma \in \{0, 1, 2\}$  determining which model to use, and jointly infer this parameter along with the continuous rationality parameter $\alpha$.
 Additionally, to test whether a model using our empirically-measured identifiability prior provides a better fit to the data than a uniform prior, we add an additional parameter $w \in [0,1]$ which interpolates between them.
-In other words, we assume participants use some mixture between the pure uniform \ndg{uniform over objects consistent with noun? clarify.} and empirical priors but we have uncertainty over the mixture weight.
+In other words, we assume participants use some mixture between the uniform prior (over objects consistent with the noun) and empirical priors, but we have uncertainty over the mixture weight.
 We place uninformative priors over these parameters,
 $\alpha_A   \sim  \textrm{unif}(0,40)$, 
 $\alpha_Q   \sim  \textrm{unif}(0,40)$, 
@@ -1101,7 +1102,7 @@ In Exp.~2, we design a more targeted experiment to test our pragmatic questioner
 \begin{center}
 \includegraphics[scale = .9]{Exp2/task.pdf}
 \end{center}
-\caption{(A) Task displays and (B) procedure for Experiment 2. \ndg{in A can't tell that goal sets are grouped by rows (was this clear in expt?). maybe add a separating line or a little more space?}}
+\caption{(A) Task displays and (B) procedure for Experiment 2.}
 %\vspace{-1cm}
 \label{fig:exp2task}
 \end{figure*}
@@ -1185,12 +1186,9 @@ Second, because we counterbalanced the order in which roles were assigned, we wi
 
 \subsubsection{Model setup}
 
-\ndg{let's discuss the math in this section...}
-
 Exp.~2 was designed to provide a strong \emph{qualitative} test of the questioner models in a scenario with more structured goals.
 We formalize the notion of a goal hierarchy by extending the goal space $\mathcal{G}$ from a set of possible goal projections $\{g_i\}$ to a set of ordered pairs $\{g_{ij}\} = \{(g_i, g_i^{(j)})\}$ where $g_i$ represents an ultimate goal and $g_i^{(j)}$ represents a subgoal of $g_i$. 
 In the case of Exp.~2, $g_i$ represents the goal of finding an entire combo $i$ --- the projection from the world $w$ to the list of locations of all cards in the combo --- while $g_i^{(j)}$ represents the simpler goal of finding just the single $j$th card in the $i$th combo. 
-
 
 \begin{figure*}[th!]
 \begin{center}
@@ -1202,36 +1200,38 @@ In the case of Exp.~2, $g_i$ represents the goal of finding an entire combo $i$ 
 \end{figure*}
 
 The primary computational consequences of introducing a hierarchical goal space emerge from the pragmatic answerer $A_2$. 
-Upon hearing a question, $A_2$ must jointly infer the ultimate goal along with the current subgoal.
-First, we assume that a questioner acting under an ordered pair $g_{ij} = (g_i, g_i^{(j)})$ attempts to gain information towards both goals:
-$$P_{Q}(q | g_{ij}) = \prod_{g\in \{g_i, g_i^{(j)}\}} P(q | g)$$
-\ndg{this is not normalized. is this actually what's implemented? it's a kind of strange assumption compared to eg adding the utilities of the two sub-goals (which is different because of normalization).}
-In other words, a question is preferred if it is both good for the current subgoal and the ultimate goal.
-% of finding the entire privately assigned combo $i$.
-Combining this assumption about the questioner $Q_1$ with the dependence between subgoal and ultimate goal, $A_2$'s goal inference factors as:
-$$\begin{array}{rcl}
+Upon hearing a question, $A_2$ must jointly infer the ordered pair $g_{ij} = (g_i, g_i^{(j)})$ containing both the questioner's ultimate goal and their local subgoal:
+$$
+\begin{array}{rcl}
 P(g_{ij} | q) & \propto & P(q | g_{ij})P(g_{ij}) \\
- & = & P(q | g_i)P(g_i) \cdot P(q | g_i^{(j)}) P(g_i^{(j)} | g_i)
- \end{array}$$
-Given a posterior over the goal tuple $g_{ij}$, we then assume the answerer attempts to be informative with respect to both goals in the tuple: 
-$$U_{A_2}(a; q, w) = \sum_{g_{ij} \in \mathcal{G}} P(g_{ij}|q) \sum_{g\in \{g_i, g_i^{(j)}\}}\widehat{P^g_I}(w|\,a)$$
- \ndg{hmm is there a clearer way to describe this? does it follow from the tuple projection? also, missing log}
-While this presentation was written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
-The simpler goal spaces considered earlier in the paper are special cases of this more general formulation taking goal tuples to be singletons.
+ & = & P(q | g_i)P(g_i) \times P(q | g_i^{(j)}) P(g_i^{(j)} | g_i)
+ \end{array}
+ $$
+This inference factors into an ultimate goal term and subgoal term, given two assumptions.
+First, that the subgoal $g_i^{(j)}$ depends only on the ultimate goal $g_i$, and \emph{second}, that the likelihood of the questioner asking a question $q$ under a tuple is the product of the likelihoods under its component goals.
+This is equivalent to assuming that the questioner sums the utilities of the different goals in their tuple to obtain a composite utility.
+A question will be preferred if it is expected to be informative for both the subgoal \emph{and} ultimate goal.
+%$$P_{Q}(q | g_{ij}) = \prod_{g\in \{g_i, g_i^{(j)}\}} P(q | g)$$
+%\ndg{this is not normalized. is this actually what's implemented? it's a kind of strange assumption compared to eg adding the utilities of the two sub-goals (which is different because of normalization).}
+% of finding the entire privately assigned combo $i$.
+
+Given this posterior over the goal tuple $g_{ij}$, we can then generalize Equation \ref{eq:A2utility} by assuming the answerer attempts to be informative with respect to each goal in the tuple:
+$$U_{A_2}(a; q, w) = \alpha_A\E{P(g_{ij}|q)}{\sum_{g\in \{g_i, g_i^{(j)}\}}\ln \widehat{P^g_I}(w|\,a)} - \beta C(a)$$
+In other words, the goal tuple induces a tuple of relevance projections, and the answerer averages over them when choosing a response.
+While this presentation is written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
+The simpler goal spaces considered earlier in the paper are special cases of this more general formulation, taking goal tuples to be singletons.
 
 Given this generalization of the model to more structured goal spaces, we can derive predictions for Exp.~2. 
 The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
 Questions in the question space $\mathcal{Q}$ were of the same form as in Exp.~1 (``Where is the X?''), but because X was always constrained to be a unique card, issues of multiple identifiability do not arise. 
 Finally, the answer space $\mathcal{A}$ consisted of any combination of one or two card locations, which evaluate to true in worlds where the card or cards are in fact at the location that was mentioned, and false otherwise.
 
-
-
 \subsubsection{Answerer results}
 
 Although the different conditions of the experiment were primarily designed as a stronger qualitative test of the questioner model, it also provides another opportunity to test the answerer models. 
 To begin, consider the simple catch trials, where each goal contained only one card.
 Here, both $A_1$ and $A_2$ make the same prediction: that participants will reveal the single card that was asked about with high probability and, with lower probability, they may be ``overinformative'' by revealing both the card that was asked about along with some other card.
-Indeed, we found that 83\% of participants responded literally with the exact card asked about, while the remaining 17\% gave overinformative responses (Fig. \ref{fig:exp2results}A).
+Indeed, we found that 83\% of participants responded literally with the exact card asked about, while the remaining 17\% gave overinformative responses (Fig.~\ref{fig:exp2results}A).
 The precise probability the models put on such overinformative responses depends on the optimality parameter $\alpha$ and a cost parameter penalizing longer answers; at a cost penalty of $1$, the empirical response distribution is obtained with moderate values of $\alpha=3$ for $A_2$ and $\alpha = 3.5$ for $A_1$.
 
 In the \emph{baseline} and \emph{overlapping} conditions, however, $A_1$ and $A_2$ make diverging predictions. 
@@ -1256,7 +1256,7 @@ Thus, $Q_2$ predicts that participants will prefer to ask about the unique card.
 The \emph{baseline} condition serves as a control where both cards are unique, hence both questioner models predict no preference over the two cards.
 
 We found that 77\% of participants asked about the unique card in the overlap condition, which is significantly different from the null probability of 50\% predicted by $Q_1$, $\chi^2(1) = 11.3, p < 0.001$. 
-Meanwhile, the proportion of participants (48\%) who asked about the card in the same position in baseline trials did not differ from chance: the Bayes Factor for binomial proportions  \cite{morey2016philosophy, morey2015package} shows weak evidence in favor of the null, $BF = 0.37$, Fig. \ref{fig:exp2results}B. 
+Meanwhile, the proportion of participants (48\%) who asked about the card in the same position in baseline trials did not differ from chance: the Bayes Factor for binomial proportions  \cite{morey2016philosophy, morey2015package} shows weak evidence in favor of the null, $BF = 0.37$, Fig.~\ref{fig:exp2results}B. 
 This qualitative pattern of responses is consistent with the predictions of $Q_2$ but cannot be explained by $Q_1$.
 
 It was possible, however, that this pattern was driven by participants who had already seen their partner ask about the unique card on a previous trial and were copying their behavior. 
@@ -1267,28 +1267,14 @@ To address this concern, we examined these response patterns for the subset of p
 Exp.~2 was motivated by two primary aims: to provide a stronger evaluation for the questioner models, and to demonstrate how our core framework generalizes to more structured spaces of goals.
 To meet these challenges, we designed a Hidden Goal task where questioners were privately assigned a set of \emph{multiple} objects to find, inducing a hierarchy of subgoals.
 By manipulating whether objects overlapped or differed across sets in the space of possible goals, we constructed scenarios where our different models made sharply different predictions. 
-
-\ndg{somewhere should indicate why the obvious application of the model, where goals are just the location of the complete set, doesn't work.}
-
 We found that answerers reasoned beyond the literal subgoal prompted by the question to respond helpfully to the inferred ultimate goal in the hierarchy.
 Questioners, in turn, chose to ask about the objects that would most clearly signal their ultimate goal to their partner, even though these different questions would have equal expected information gain under traditional models. 
 
-\ndg{let's condense the next three paragraphs? they are kind of wordy and aside...}
-
 The minimal goal hierarchy studied in Exp.~2 is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering. 
 However, handling more complex goal structures will require composing our core computational framework with additional mechanisms.
-In particular, we relied on the simplifying assumption of different subgoals being \emph{conditionally independent} given their parent in the hierarchy. 
-This assumption justified the representation of subgoals as ordered pairs with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal. 
-
-This assumption is clearly violated in certain real-world cases.
-For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on \cite{jackendoff2007language}. 
-These subgoals unfold in time, introducing sequential dependencies.
-If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied, leading to more or less optimal sequences of questions.
-Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your coffee beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
-
-Deciding how to ask and answer questions in the presence of such sequential dependences in the goal space likely requires a \emph{planning} mechanism over a persistent state.
+In particular, deciding how to ask and answer questions in the presence of sequential dependences in the goal space likely requires a \emph{planning} mechanism over a persistent state.
 Planning may also be necessary for integrating the pragmatics of question asking and answering into longer dialogue sequences, as it has been for other domains \cite<e.g.>{bramley2015conservative}.
-While introducing such a planning mechanism into our model is outside the scope of this paper\footnote{The optimality of asking questions based on global planning policies, compared to locally `greedy' policies, is not yet well-understood even in the non-social case of querying an oracle, though see \cite{nelson_meder_jones_2018} for recent theoretical progress.}, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time in a step-wise manner.
+While introducing such a planning mechanism into our model is outside the scope of this paper\footnote{The optimality of asking questions based on global planning policies, compared to locally `greedy' policies, is not yet well-understood even in the non-social case of querying an oracle, though see \citeA{nelson_meder_jones_2018} for recent theoretical progress.}, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time in a step-wise manner.
 %In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
 \section{Experiment 3: Extended dialogue}
@@ -1503,6 +1489,17 @@ The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}
 \label{fig:exp3predictives}
 \end{figure}
 
+\subsection{Discussion}
+
+We relied on the simplifying assumption of different subgoals being \emph{conditionally independent} given their parent in the hierarchy. 
+This assumption justified the representation of subgoals as ordered pairs with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal. 
+
+This assumption is clearly violated in certain real-world cases.
+For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on \cite{jackendoff2007language}. 
+These subgoals unfold in time, introducing sequential dependencies.
+If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied, leading to more or less optimal sequences of questions.
+Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your coffee beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
+
 
 %\begin{figure*}[tbh!]
 %\begin{center}
@@ -1553,7 +1550,7 @@ Together, these distinctions allow us to \emph{derive} context-sensitivity at th
 
 This idea differs somewhat from the context-sensitive literal meanings suggested by \citeA{VanRooy03_QuestioningDecisionProblems}.
 As previously described, Van Rooy argued that the meaning of a question ought to be underspecified and resolved only through the contextual parameter of the questioner's decision problem.
-Once we explicitly address the issue of how the answerer actually \emph{infers} this decision problem from hearing the question (and from other context), it becomes unnecessary to additionally posit underspecified literal question meaning.\footnote{RSA models have handled vague or underspecified literal meanings by introducing a free variable into the meaning that is determined by the speaker and inferred by the pragmatic listener \cite<e.g>{LassiterGoodman15_AdjectivalVagueness,TesslerGoodman16_Generics}\ndg{cite bergen levy goodman}. An implementation of van Rooy's proposal would require the free variable in the literal meaning to be the derived from the questioner's private goal itself. It is unclear whether this mechanism would lead to appropriate interactions between context and question interpretation.}
+Once we explicitly address the issue of how the answerer actually \emph{infers} this decision problem from hearing the question (and from other context), it becomes unnecessary to additionally posit an underspecified literal question meaning.\footnote{RSA models have handled vague or underspecified literal meanings by introducing a free variable into the meaning that is determined by the speaker and inferred by the pragmatic listener \cite<e.g>{LassiterGoodman15_AdjectivalVagueness,BergenLevyGoodman16_LexicalUncertainty}. An implementation of van Rooy's proposal would require the free variable in the literal meaning to be derived from the questioner's private goal itself. It is unclear how such a free variable could be inferred without circularity, or whether such a mechanism could lead to appropriate interactions between context and question interpretation.}
 Because we take a goal to be the same type of object as a classic partition-based question meaning \cite{GroenendijkStokhof84_SemanticsOfQuestions}, we can implement its meaning in a literal answerer who identifies the goal directly from the question.
 
 In this way, the meaning of a question in our framework resonates with dynamic accounts of question meaning \cite<e.g>{Groenendijk99_LogicOfInterrogation}, as well as recent proposals for an inquisitive semantics \cite{ciardelli2018inquisitive}, where the formal content of a question is simply the ``issue'' it raises into the context.
@@ -1611,10 +1608,10 @@ We suspect that the simple, discrete sets of goals used in our models above may 
 The computational challenges associated with such complex goal spaces may contribute to the difficulties young children face in answering broad, sentence-focus questions like ``what's happening?'' \cite{SalomoLievenTomasello13_ChildrenAnsweringQuestions}. 
 %Similarly, to generalize beyond the tightly controlled sets of alternative questions and answers used in our models above, we may need to consider empirical frequencies or simple deletions and edits from the given question to automatically generate sets of alternatives \cite<e.g.>{GibsonBergenPiantadosi13_RationalIntegrationNoisy}. 
 
-As a broader point, our framework offers a rational analysis of the social inferences involved in asking and answering questions, which only adds to the many important algorithmic questions already raised by rational model of inquiry \citeA{coenen2018asking}.
+As a broader point, our framework offers a rational analysis of the social inferences involved in asking and answering questions, which only adds to the many important algorithmic questions already raised by rational models of inquiry \citeA{coenen2018asking}.
 For instance, we could use without modification the sophisticated and open-ended grammar of questions developed by \citeA{rothe2017question} as the prior for the question set $\mathcal{Q}$ in our pragmatic framework, but this would turn the literal questioner agent $Q_1$ into an infinite distribution, leading to very difficult inference at higher levels of recursion.
 Similarly, taking an analytic expectation over all possible worlds quickly becomes intractable as the size of the world space $\mathcal{W}$ grows.
-We used exact enumeration for all of our results for theoretical precision, but it is clear that an algorithmic account must address how these computations can be effectively approximated, perhaps via Monte Carlo integration of approximation by neural networks.
+We used exact enumeration for all of our results for theoretical precision, but it is clear that an algorithmic account must address how these computations can be effectively approximated, perhaps via Monte Carlo integration or approximation by neural networks.
 
 %\todo[inline]{finally, note that even though we offered a rational analysis of what is required to solve this problem through Bayesian reasoning, aspects of the computation such as the goal prediction problem may be approximated by a feed-forward neural network}
 
