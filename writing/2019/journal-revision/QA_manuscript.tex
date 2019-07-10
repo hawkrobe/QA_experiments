@@ -1122,7 +1122,6 @@ Structured goals of this type are naturally accommodated by our framework.
 To show this, we designed a simple Hidden Goal collection game inspired by recent experiments in multi-task reinforcement learning \cite{oh2017zero, andreas2017modular}.
 Furthermore, this task provides an additional, stronger test of the pragmatic questioner model $Q_2$.
 
-
 As in Exp.~1, participants were either assigned the role of questioner or answerer, the questioner was given a private goal, and the answerer was given private information that was necessary for the questioner to fulfill this goal.
 Unlike Exp.~1, however, each goal was a \emph{combination} of multiple objects that must be collected rather than a single object.
 More specifically, the questioner was privately assigned a hand of playing cards to find (Fig. \ref{fig:exp2task}A, left). 
@@ -1203,23 +1202,21 @@ The primary computational consequences of introducing a hierarchical goal space 
 Upon hearing a question, $A_2$ must jointly infer the ordered pair $g_{ij} = (g_i, g_i^{(j)})$ containing both the questioner's ultimate goal and their local subgoal:
 $$
 \begin{array}{rcl}
-P(g_{ij} | q) & \propto & P(q | g_{ij})P(g_{ij}) \\
- & = & P(q | g_i)P(g_i) \times P(q | g_i^{(j)}) P(g_i^{(j)} | g_i)
- \end{array}
- $$
-This inference factors into an ultimate goal term and subgoal term, given two assumptions.
-First, that the subgoal $g_i^{(j)}$ depends only on the ultimate goal $g_i$, and \emph{second}, that the likelihood of the questioner asking a question $q$ under a tuple is the product of the likelihoods under its component goals.
-This is equivalent to assuming that the questioner sums the utilities of the different goals in their tuple to obtain a composite utility.
-A question will be preferred if it is expected to be informative for both the subgoal \emph{and} ultimate goal.
-%$$P_{Q}(q | g_{ij}) = \prod_{g\in \{g_i, g_i^{(j)}\}} P(q | g)$$
+P(g_{ij} | q) & \propto & P_{Q}(q | g_{ij})P(g_{ij}) \\
+\end{array}
+$$
+If the subgoal $g_i^{(j)}$ depends only on the ultimate goal $g_i$, then the prior factors as $P(g_{ij}) = P(g_i)\cdot P(g_i^{(j)} | g_i)$.
+To compute the likelihood $P_Q(q|g_{ij})$ of a particular question $q$ under a tuple of goals, we assume the questioner simply sums the utilities of asking $q$ under the component goals: % inference factors into an ultimate goal term and subgoal term, given two assumptions.
+$$U_{Q}(q; g_{ij}) = U_{Q}(q; g_i) + U_Q(q; g_i^{(j)})$$
+That is, they assume a question will be preferred if it is expected to be informative for both the subgoal \emph{and} ultimate goal.
 %\ndg{this is not normalized. is this actually what's implemented? it's a kind of strange assumption compared to eg adding the utilities of the two sub-goals (which is different because of normalization).}
 % of finding the entire privately assigned combo $i$.
 
-Given this posterior over the goal tuple $g_{ij}$, we can then generalize Equation \ref{eq:A2utility} by assuming the answerer attempts to be informative with respect to each goal in the tuple:
+Given this posterior over the goal tuple $g_{ij}$, we can generalize Equation \ref{eq:A2utility} by assuming the answerer attempts to be informative with respect to each goal in the tuple:
 $$U_{A_2}(a; q, w) = \alpha_A\E{P(g_{ij}|q)}{\sum_{g\in \{g_i, g_i^{(j)}\}}\ln \widehat{P^g_I}(w|\,a)} - \beta C(a)$$
-In other words, the goal tuple induces a tuple of relevance projections, and the answerer averages over them when choosing a response.
+In other words, the goal tuple induces a tuple of relevance projections, and the answerer aggregates over them when choosing a response.
 While this presentation is written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
-The simpler goal spaces considered earlier in the paper are special cases of this more general formulation, taking goal tuples to be singletons.
+The simpler goal spaces considered earlier in the paper are special cases of this more general formulation, where the goal tuples are singletons ($n=1$).
 
 Given this generalization of the model to more structured goal spaces, we can derive predictions for Exp.~2. 
 The world space $\mathcal{W}$ consisted of all assignments of cards to locations.
@@ -1490,8 +1487,8 @@ The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}
 
 In Exp. 3, we examined more extended sequences of questions and answers.
 We equipped our models with a persistent representation of the state and tested their predictions in a multi-round Hidden Goal task where the content of earlier exchanges may influence later exchanges.
-By directly eliciting the answerer's beliefs about the questioner's goal, we showed that the $A_2$ model's internal goal inference mechanism is required to account for the dynamics of how these beliefs shift over successive questions.
-For this reason, the $A_2$ model also accounted for the answerer's behavior substantially better than the $A_1$ model.
+By directly eliciting the answerer's beliefs about the questioner's goal, we validated the goal inference mechanism in the $A_2$ model.
+Because it successfully accounts for the dynamics of how these beliefs shift over successive questions, the $A_2$ model also accounted for the answerer's behavior substantially better than the $A_1$ model in a quantitative model comparison.
 Next, we examined cases where the answer to one question affects the questioner's subsequent choice of question.
 Given their representation of the state, both the $Q_1$ and $Q_2$ models accurately predicted the dynamics of questioner behavior over the sequential exchange.
 
