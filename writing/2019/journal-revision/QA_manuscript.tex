@@ -1273,8 +1273,7 @@ Questioners, in turn, chose to ask about the objects that would most clearly sig
 The minimal goal hierarchy studied in Exp.~2 is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering. 
 However, handling more complex goal structures will require composing our core computational framework with additional mechanisms.
 In particular, deciding how to ask and answer questions in the presence of sequential dependences in the goal space likely requires a \emph{planning} mechanism over a persistent state.
-Planning may also be necessary for integrating the pragmatics of question asking and answering into longer dialogue sequences, as it has been for other domains \cite<e.g.>{bramley2015conservative}.
-While introducing such a planning mechanism into our model is outside the scope of this paper\footnote{The optimality of asking questions based on global planning policies, compared to locally `greedy' policies, is not yet well-understood even in the non-social case of querying an oracle, though see \citeA{nelson_meder_jones_2018} for recent theoretical progress.}, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time in a step-wise manner.
+While introducing such a planning mechanism into our model is outside the scope of this paper\footnote{Optimal questioning policies based on global planning, compared to locally `greedy' policies, are not yet well-understood even in the non-social case of querying an oracle, though see \citeA{nelson_meder_jones_2018} for recent theoretical progress.}, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time in a step-wise manner.
 %In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
 \section{Experiment 3: Extended dialogue}
@@ -1286,7 +1285,7 @@ In principle, this step can be repeated multiple times until the questioner's go
 
 In Exp.~3, we developed a final task in the Hidden Goal paradigm to investigate how the pragmatics of asking and answering questions unfolded over multiple exchanges.
 This task was designed with several desiderata in mind.
-First, we needed a larger and more natural space of goals that wouldn't always possible to satisfy in a single round.
+First, we needed a larger and more natural space of goals that wouldn't always be possible to satisfy in a single round.
 This would allow us to test our models' predictions about how the answer to one question may influence the choice of a subsequent question, or how the answerer's beliefs about the questioner's goal may shift after hearing additional questions.
 Second, although $A_2$'s internal goal inference mechanism was implicit in the success of our model predictions in Exps.~1 and 2, we sought explicit validation of this model component by directly eliciting answerers' beliefs about the questioner's goal.
 
@@ -1294,7 +1293,7 @@ Second, although $A_2$'s internal goal inference mechanism was implicit in the s
 \begin{center}
 \includegraphics[scale = .7]{Exp3/spatialDemo.pdf}
 \end{center}
-\caption{(A-B) Task design and procedure for Experiment 3. Answerers are shown a private map with bomb locations, while questioners are assigned a private goal. Both participants see a common board over which extended dialogues can take place. (C) Examples of initial board states in different conditions. \ndg{maybe indicate in B that this then repeats?}}
+\caption{(A-B) Task design and procedure for Experiment 3. Answerers are shown a private map with bomb locations, while questioners are assigned a private goal. Both participants see a common board over which extended dialogues can take place. (C) Examples of initial board states in different conditions.}
 %\vspace{-1cm}
 \label{fig:exp3task}
 \end{figure*}
@@ -1366,7 +1365,7 @@ The key innovation required to account for extended sequences is an explicit rep
 In general, the discourse state could contain prior utterances and any non-linguistic observations about the agent's partner or context.
 In this experiment all information was updated and maintained visually, so it is sufficient to take as $s_t$ the literal state of the game board shared in common ground at time $t$.
 
-Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$.\footnote{This notion of a belief state can in principle be used to define a Markov Decision Process, where different question or answer selections lead to anticipated transitions in beliefs. This connection suggests a future avenue toward embedding our pragmatic agents in a planning framework. \ndg{move this comment to discussion, connect to khani etal}}
+Each state is then associated with a conditional belief distribution over the world, $P(w | s_t)$.
 In our experiment, computing this distribution simply entailed removing any world states from the prior that are incompatible with the current revealed state and re-normalizing.
 Now, when a questioner is selecting a question in state $s_t$, rather than taking expected information gain relative to the initial prior $P(w)$, they use their current beliefs $P(w | s_t)$ as the baseline.
 Moreover, since the discourse state $s_t$ is in common ground, we assume this alternative prior is used throughout internal levels of recursion, e.g. that $A_1$ also attempts to be informative with respect to this prior.
@@ -1450,7 +1449,7 @@ This updating sequence of questions and answers qualitatively matches that of th
  & $Q_2$ & \textbf{-1135} \\ \bottomrule
 \end{tabular}
 \end{center}
-\caption{Results of quantitative model comparison for Exp. 3; marginal likelihoods shown on log scale. \ndg{are these marginal likelihood or maximum?}}
+\caption{Results of quantitative model comparison for Exp. 3; maximum likelihoods shown on log scale.}
 \label{table:exp3likelihoods}
 \end{table}
 
@@ -1459,10 +1458,8 @@ This updating sequence of questions and answers qualitatively matches that of th
 While the primary aim of Exp.~3 was to demonstrate how our model framework can be straightforwardly extended to repeated question-answer exchanges, these data also provided an opportunity to conduct an additional model comparison over a wide variety of items.
 
 All models have exactly three parameters: a cost weight $\beta$ and optimality parameters for the questioner and answerer, $\{\alpha_Q$, $\alpha_A\}$.
-Because evaluating marginal likelihoods over this parameter space was computationally intractable, we use the Bayesian Information Criterion (BIC) instead of the Bayes Factor. 
-\ndg{why was AIS not feasible here? Or a simpler grid or importance sampling integration? Since number of params is matched you don't really need to think of this as BIC -- could just say we use max likelihood as a point estimate of marginal likelihood (as in the BIC approach).}
-%This measure is defined: $$BIC = -2 \ln \hat{L} + \ln(n) k $$ where $\ln \hat{L}$ is the maximum log likelihood, $k$ is the number of parameters, and $n$ is the number of observations. 
-Because the models we are comparing share the same parameters, the differences in BIC between models depends only on the \emph{maximum} of the likelihood function.
+Because evaluating marginal likelihoods over this parameter space was computationally intractable, we use the maximum likelihood as a point estimate of the marginal likelihood.
+This is equivalent to an AIC or BIC model comparison approach because the number of parameters is matched across the candidate models.
 We thus evaluated the maximum likelihood of our data, excluding the first six practice trials of each game, under the following parameter ranges:
 $$
 \begin{array}{rcl}
@@ -1491,14 +1488,28 @@ The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}
 
 \subsection{Discussion}
 
+In Exp. 3, we examined more extended sequences of questions and answers.
+We equipped our models with a persistent representation of the state and tested their predictions in a multi-round Hidden Goal task where the content of earlier exchanges may influence later exchanges.
+By directly eliciting the answerer's beliefs about the questioner's goal, we showed that the $A_2$ model's internal goal inference mechanism is required to account for the dynamics of how these beliefs shift over successive questions.
+For this reason, the $A_2$ model also accounted for the answerer's behavior substantially better than the $A_1$ model.
+Next, we examined cases where the answer to one question affects the questioner's subsequent choice of question.
+Given their representation of the state, both the $Q_1$ and $Q_2$ models accurately predicted the dynamics of questioner behavior over the sequential exchange.
+
+These results show that extending our framework with a persistent state is sufficient to explain some key features of sequential exchanges.
+However, we expect that \emph{planning} will be necessary for integrating the pragmatics of question asking and answering into longer dialogue sequences, as it has been for other domains \cite<e.g.>{bramley2015conservative}.
+While working out this mechanism in detail is outside the scope of the current paper, our notion of a belief state can in principle be used to define a Markov Decision Process, where different question or answer selections lead to anticipated transitions in beliefs. 
+\cite<e.g.>{khani2018planning}.
+This connection suggests a future avenue toward embedding our pragmatic agents in a full planning framework.
+
+Similarly, \dots 
 We relied on the simplifying assumption of different subgoals being \emph{conditionally independent} given their parent in the hierarchy. 
 This assumption justified the representation of subgoals as ordered pairs with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal. 
-
 This assumption is clearly violated in certain real-world cases.
 For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on \cite{jackendoff2007language}. 
 These subgoals unfold in time, introducing sequential dependencies.
 If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied, leading to more or less optimal sequences of questions.
 Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your coffee beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
+
 
 
 %\begin{figure*}[tbh!]
@@ -1512,8 +1523,6 @@ Conversely, answerers may take advantage of schematic knowledge of this sequenti
 
 % \subsection{Discussion}
 %To generalize to dialogues lasting longer than a single exchange, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate, and the longer-term planning needed for agents to reason effectively about such interactions.
-
-%\cite<e.g>{khani2018planning,young2013pomdp,gao2019neural}
 
 \section{General discussion}
 \label{sec:gd}
