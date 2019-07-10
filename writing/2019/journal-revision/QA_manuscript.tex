@@ -1270,15 +1270,13 @@ Questioners, in turn, chose to ask about the objects that would most clearly sig
 The minimal goal hierarchy studied in Exp.~2 is a key first step toward formally addressing more structured spaces of goals in cognitive models of question asking and answering. 
 However, handling more complex goal structures will require composing our core computational framework with additional mechanisms.
 In particular, deciding how to ask and answer questions in the presence of sequential dependences in the goal space likely requires a \emph{planning} mechanism over a persistent state.
-While introducing such a planning mechanism into our model is outside the scope of this paper\footnote{Optimal questioning policies based on global planning, compared to locally `greedy' policies, are not yet well-understood even in the non-social case of querying an oracle, though see \citeA{nelson_meder_jones_2018} for recent theoretical progress.}, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time in a step-wise manner.
+While introducing such a planning mechanism into our model is outside the scope of this paper\footnote{Optimal policies based on global planning, compared to locally `greedy' policies, are not yet well-understood even in the simpler non-pragmatic case of querying an oracle, though see \citeA{nelson_meder_jones_2018} for recent theoretical progress.}, our final experiment aims to set a foundation for future work by (1) introducing a notion of persistent state into the model and (2) investigating several pragmatic phenomena that emerge from iterating our model forward in time in a step-wise manner.
 %In the next section, we set the foundation for future work on more extended dialogue by investigating certain features of multi-round dialogue that do not require planning.
 
 \section{Experiment 3: Extended dialogue}
 
 In our computational framework, an answerer updates their beliefs about the questioner's goals after hearing a question, and a questioner updates their beliefs about the world state after hearing an answer. 
 In principle, this step can be repeated multiple times until the questioner's goal is resolved, allowing for an extended sequence of questions and answers: the questioner's posterior over worlds after hearing an answer to their first question becomes the prior for selecting their second, and so on.
-
-\ndg{somewhere (maybe earlier or maybe discussion for this section) should mention khani etal, and indicate some differences.}
 
 In Exp.~3, we developed a final task in the Hidden Goal paradigm to investigate how the pragmatics of asking and answering questions unfolded over multiple exchanges.
 This task was designed with several desiderata in mind.
@@ -1485,41 +1483,28 @@ The posterior predictives for $A_2$ are shown in  Fig. \ref{fig:exp3predictives}
 
 \subsection{Discussion}
 
-In Exp. 3, we examined more extended sequences of questions and answers.
+In Exp. 3, we considered sequences of questions and answers that extended beyond a single exchange.
 We equipped our models with a persistent representation of the state and tested their predictions in a multi-round Hidden Goal task where the content of earlier exchanges may influence later exchanges.
-By directly eliciting the answerer's beliefs about the questioner's goal, we validated the goal inference mechanism in the $A_2$ model.
-Because it successfully accounts for the dynamics of how these beliefs shift over successive questions, the $A_2$ model also accounted for the answerer's behavior substantially better than the $A_1$ model in a quantitative model comparison.
+First, we validated the goal inference mechanism in the $A_2$ model by directly eliciting the answerer's beliefs about the questioner's goal.
+The $A_2$ model successfully accounted for the dynamics of how these beliefs shift over successive questions, and thus was substantially preferred over the $A_1$ model in a quantitative model comparison.
 Next, we examined cases where the answer to one question affects the questioner's subsequent choice of question.
 Given their representation of the state, both the $Q_1$ and $Q_2$ models accurately predicted the dynamics of questioner behavior over the sequential exchange.
 
 These results show that extending our framework with a persistent state is sufficient to explain some key features of sequential exchanges.
 However, we expect that \emph{planning} will be necessary for integrating the pragmatics of question asking and answering into longer dialogue sequences, as it has been for other domains \cite<e.g.>{bramley2015conservative}.
-While working out this mechanism in detail is outside the scope of the current paper, our notion of a belief state can in principle be used to define a Markov Decision Process, where different question or answer selections lead to anticipated transitions in beliefs. 
-\cite<e.g.>{khani2018planning}.
-This connection suggests a future avenue toward embedding our pragmatic agents in a full planning framework.
+Our proposed extension maintaining a (belief) state could be used to define a Markov Decision Process where different question or answer selections lead to anticipated transitions in beliefs about goals or the world, respectively. 
+A related approach was recently taken by \citeA{khani2018planning}, who used a forward-looking recursive utility to define an action policy in a sequential language game.
+In this task, pragmatic agents took turns saying one- or two-word utterances, informing their partner about the world state, but were not permitted to ask questions. 
+An important step for future work is thus to work out an appropriate planning mechanism for updating beliefs about \emph{goals} using question utterances.
 
-Similarly, \dots 
-We relied on the simplifying assumption of different subgoals being \emph{conditionally independent} given their parent in the hierarchy. 
-This assumption justified the representation of subgoals as ordered pairs with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal. 
-This assumption is clearly violated in certain real-world cases.
-For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on \cite{jackendoff2007language}. 
-These subgoals unfold in time, introducing sequential dependencies.
-If we are trying to make coffee in an unfamiliar kitchen, certain questions may only be useful once earlier subgoals have been satisfied, leading to more or less optimal sequences of questions.
-Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate subsequent subgoals: if a questioner asks ``Where do you keep your coffee beans?'', they are likely earlier in the process than if they asked ``Do you have a mug?'' 
-
-
-
-%\begin{figure*}[tbh!]
-%\begin{center}
-%\includegraphics[scale = .7]{Exp3/spatialQualitativeQuestioner.pdf}
-%\end{center}
-%\caption{Posterior predictives for each model, which indicate good overall fit (excluding $A_0$ and $Q_0$). Blue dots on $Q$ plots indicate overlapping condition.}
-%%\vspace{-1cm}
-%\label{fig:exp1predictives}
-%\end{figure*}
-
-% \subsection{Discussion}
-%To generalize to dialogues lasting longer than a single exchange, we must specify the way in which the contributions of questioner and answerer affect the \emph{context} in which later utterances operate, and the longer-term planning needed for agents to reason effectively about such interactions.
+Another challenge for future work concerns the structure of goals and subgoals.
+In Exp. 2 and 3, we assumed that subgoals were \emph{conditionally independent} given their parent in the hierarchy. 
+%This assumption justified the representation of subgoals as ordered pairs with their parent, as well as the decomposition of the utility such that each subgoal equally contributes to the ultimate goal. 
+However, this assumption is clearly violated in certain real-world cases.
+For instance, sequential dependencies are introduced when subgoals unfold in time.
+%For example, the overarching goal of making coffee decomposes into subgoals of turning on the faucet, boiling water, grinding beans, and so on . 
+Certain questions may only be useful once earlier subgoals have been satisfied, leading to more or less optimal sequences of questions.
+Conversely, answerers may take advantage of schematic knowledge of this sequential structure to anticipate and address subsequent subgoals \cite{jackendoff2007language}.
 
 \section{General discussion}
 \label{sec:gd}
