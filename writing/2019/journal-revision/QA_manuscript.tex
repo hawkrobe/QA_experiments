@@ -1208,13 +1208,14 @@ $$
 If the subgoal $g_i^{(j)}$ depends only on the ultimate goal $g_i$, then the prior factors as $P(g_{ij}) = P(g_i)\cdot P(g_i^{(j)} | g_i)$.
 To compute the likelihood $P_Q(q|g_{ij})$ of a particular question $q$ under a tuple of goals, we assume the questioner simply sums the utilities of asking $q$ under the component goals: % inference factors into an ultimate goal term and subgoal term, given two assumptions.
 $$U_{Q}(q; g_{ij}) = U_{Q}(q; g_i) + U_Q(q; g_i^{(j)})$$
-That is, they assume a question will be preferred if it is expected to be informative for both the subgoal \emph{and} ultimate goal.
+That is, a question will be preferred if it is expected to be informative for both the subgoal \emph{and} ultimate goal.
 %\ndg{this is not normalized. is this actually what's implemented? it's a kind of strange assumption compared to eg adding the utilities of the two sub-goals (which is different because of normalization).}
 % of finding the entire privately assigned combo $i$.
 
-Given this posterior over the goal tuple $g_{ij}$, we can generalize Equation \ref{eq:A2utility} by assuming the answerer attempts to be informative with respect to each goal in the tuple:
+Given this posterior over the goal tuple $g_{ij}$, we can generalize Equation \ref{eq:A2utility} by assuming the answerer also has a combined utility. That is, she attempts to be informative with respect to each goal in the tuple:
 $$U_{A_2}(a; q, w) = \alpha_A\E{P(g_{ij}|q)}{\sum_{g\in \{g_i, g_i^{(j)}\}}\ln \widehat{P^g_I}(w|\,a)} - \beta C(a)$$
-In other words, the goal tuple induces a tuple of relevance projections, and the answerer aggregates over them when choosing a response.
+%In other words, the goal tuple induces a tuple of relevance projections, and the answerer aggregates over them when choosing a response.
+Information relevant to the ultimate goal would already provide information relevant to the subgoal; adding the subgoal explicitly in this utility increases the desire of the answerer to address the current subgoal compared to others (that are still part of the ultimate goal).
 While this presentation is written in terms of ordered pairs, it straightforwardly extends to deeper goal hierarchies represented as $n$-tuples. 
 The simpler goal spaces considered earlier in the paper are special cases of this more general formulation, where the goal tuples are singletons ($n=1$).
 
