@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "csv-parse": "~0.0.6",
+    "csv-parse": "~4.4.6",
     "express": "^4.16.4",
     "node-uuid": "1.4.1",
     "socket.io": "~2.0.0",
