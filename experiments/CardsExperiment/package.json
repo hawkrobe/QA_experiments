@@ -15,7 +15,7 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "mongodb": "^2.2.35",
-    "node-uuid": "1.4.1",
+    "node-uuid": "1.4.8",
     "request": "^2.87.0",
     "socket.io": "^2.1.1",
     "underscore": "~1.7.0",
