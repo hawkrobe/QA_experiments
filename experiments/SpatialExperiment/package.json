@@ -16,7 +16,7 @@
     "lodash": "^4.17.13",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "mongodb": "^2.2.35",
+    "mongodb": "^3.1.13",
     "node-uuid": "1.4.1",
     "request": "^2.87.0",
     "socket.io": "^2.1.1",
