@@ -8,6 +8,6 @@
     "express": "^4.16.4",
     "node-uuid": "1.4.1",
     "socket.io": "~2.0.0",
-    "underscore": "~1.7.0"
+    "underscore": "~1.12.1"
   }
 }
