@@ -19,7 +19,7 @@
     "mongodb": "^2.2.35",
     "node-uuid": "1.4.1",
     "request": "^2.87.0",
-    "socket.io": "^2.1.1",
+    "socket.io": "^2.5.0",
     "socket.io-client": "^2.2.0",
     "underscore": "~1.7.0",
     "webpack": "^4.28.3",
