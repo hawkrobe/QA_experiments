@@ -26,6 +26,6 @@
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
-    "webpack-cli": "^3.2.0"
+    "webpack-cli": "^3.3.12"
   }
 }
